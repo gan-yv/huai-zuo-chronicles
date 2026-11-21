@@ -215,6 +215,13 @@ namespace Demo02.Editor
                     "Dialogue effects did not select the stance-specific reminder."
                 );
             }
+            if (OptionalObjectiveRuntime.FindActive(content, state) != null)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Optional tea objective activated before the seal was found."
+                );
+            }
 
             DialogueScriptDefinition teahouseEarly =
                 DialogueContentRuntime.Find(content, "teahouse", state);
@@ -232,8 +239,12 @@ namespace Demo02.Editor
             state.CollectClue("official-seal");
             DialogueScriptDefinition teahouseRumor =
                 DialogueContentRuntime.Find(content, "teahouse", state);
+            OptionalObjectiveDefinition teaObjective =
+                OptionalObjectiveRuntime.FindActive(content, state);
             if (teahouseRumor == null
-                || teahouseRumor.Id != "teahouse-rumor-seal")
+                || teahouseRumor.Id != "teahouse-rumor-seal"
+                || teaObjective == null
+                || teaObjective.Id != "optional-teahouse-cart-rumor")
             {
                 Object.DestroyImmediate(probe);
                 throw new System.InvalidOperationException(
@@ -247,13 +258,27 @@ namespace Demo02.Editor
             );
             DialogueScriptDefinition teahouseAfterChoice =
                 DialogueContentRuntime.Find(content, "teahouse", state);
+            OptionalObjectiveDefinition recordObjective =
+                OptionalObjectiveRuntime.FindActive(content, state);
             if (!state.HasFact("teahouse-cart-testimony")
+                || !state.HasFact("teahouse-event-completed")
                 || teahouseAfterChoice == null
-                || teahouseAfterChoice.Id != "teahouse-after-cart-testimony")
+                || teahouseAfterChoice.Id != "teahouse-after-cart-testimony"
+                || recordObjective == null
+                || recordObjective.Id
+                    != "optional-record-teahouse-testimony")
             {
                 Object.DestroyImmediate(probe);
                 throw new System.InvalidOperationException(
                     "The teahouse choice did not persist its story fact."
+                );
+            }
+            state.SetFact("teahouse-written-record");
+            if (OptionalObjectiveRuntime.FindActive(content, state) != null)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Completed optional objectives were still active."
                 );
             }
 

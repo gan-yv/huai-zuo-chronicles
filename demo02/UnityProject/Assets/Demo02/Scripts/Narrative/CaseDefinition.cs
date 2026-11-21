@@ -80,6 +80,18 @@ namespace Demo02.Narrative
         public bool ConsumeOnUse = true;
     }
 
+    [Serializable]
+    public sealed class OptionalObjectiveDefinition
+    {
+        public string Id;
+        public string Title;
+        [TextArea(2, 5)] public string Description;
+        public string TrackerHint;
+        public string TargetObjectName;
+        public List<DialogueConditionDefinition> ActivationConditions = new();
+        public List<DialogueConditionDefinition> CompletionConditions = new();
+    }
+
     [CreateAssetMenu(
         fileName = "Chapter01_Case",
         menuName = "Demo02/Content/Case Definition"
@@ -99,6 +111,8 @@ namespace Demo02.Narrative
         [SerializeField] private List<DialogueScriptDefinition> dialogueScripts = new();
         [SerializeField] private List<StoryFactDefinition> storyFacts = new();
         [SerializeField] private List<InventoryItemDefinition> inventoryItems = new();
+        [SerializeField] private List<OptionalObjectiveDefinition> optionalObjectives =
+            new();
 
         public int ContentVersion => contentVersion;
         public string CaseId => caseId;
@@ -113,6 +127,8 @@ namespace Demo02.Narrative
         public IReadOnlyList<StoryFactDefinition> StoryFacts => storyFacts;
         public IReadOnlyList<InventoryItemDefinition> InventoryItems =>
             inventoryItems;
+        public IReadOnlyList<OptionalObjectiveDefinition> OptionalObjectives =>
+            optionalObjectives;
 
         public EvidenceDefinition FindEvidence(string evidenceId)
         {
@@ -277,6 +293,7 @@ namespace Demo02.Narrative
             ValidateConclusionCopy(errors);
             ValidateStoryFacts(errors);
             ValidateInventoryItems(errors);
+            ValidateOptionalObjectives(errors);
             ValidateDialogueScripts(errors);
             return errors;
         }
@@ -666,6 +683,85 @@ namespace Demo02.Narrative
             }
         }
 
+        private void ValidateOptionalObjectives(List<string> errors)
+        {
+            if (optionalObjectives == null)
+            {
+                errors.Add("No optional objective list is configured.");
+                return;
+            }
+
+            HashSet<string> ids = new();
+            for (int index = 0; index < optionalObjectives.Count; index++)
+            {
+                OptionalObjectiveDefinition objective = optionalObjectives[index];
+                if (objective == null
+                    || string.IsNullOrWhiteSpace(objective.Id)
+                    || string.IsNullOrWhiteSpace(objective.Title)
+                    || string.IsNullOrWhiteSpace(objective.Description)
+                    || string.IsNullOrWhiteSpace(objective.TrackerHint))
+                {
+                    errors.Add($"Optional objective [{index}] is incomplete.");
+                    continue;
+                }
+                if (!ids.Add(objective.Id))
+                {
+                    errors.Add(
+                        $"Duplicate optional objective ID: {objective.Id}"
+                    );
+                }
+                if (objective.ActivationConditions == null
+                    || objective.ActivationConditions.Count == 0
+                    || objective.CompletionConditions == null
+                    || objective.CompletionConditions.Count == 0)
+                {
+                    errors.Add(
+                        $"Optional objective '{objective.Id}' needs conditions."
+                    );
+                    continue;
+                }
+                ValidateConditionFacts(
+                    errors,
+                    $"Optional objective '{objective.Id}'",
+                    objective.ActivationConditions
+                );
+                ValidateConditionFacts(
+                    errors,
+                    $"Optional objective '{objective.Id}'",
+                    objective.CompletionConditions
+                );
+            }
+        }
+
+        private void ValidateConditionFacts(
+            List<string> errors,
+            string owner,
+            IReadOnlyList<DialogueConditionDefinition> conditions)
+        {
+            for (int index = 0; index < conditions.Count; index++)
+            {
+                DialogueConditionDefinition condition = conditions[index];
+                if (condition != null
+                    && condition.Type == DialogueConditionType.HasFact
+                    && FindStoryFact(condition.StoryFactId) == null)
+                {
+                    errors.Add(
+                        $"{owner} references missing fact "
+                        + $"'{condition.StoryFactId}'."
+                    );
+                }
+                if (condition != null
+                    && condition.Type == DialogueConditionType.HasEvidence
+                    && FindEvidence(condition.EvidenceId) == null)
+                {
+                    errors.Add(
+                        $"{owner} references missing evidence "
+                        + $"'{condition.EvidenceId}'."
+                    );
+                }
+            }
+        }
+
         private void ValidateEffectFacts(
             List<string> errors,
             string dialogueId,
@@ -704,7 +800,8 @@ namespace Demo02.Narrative
             List<ConclusionCopyDefinition> newConclusionCopy,
             List<DialogueScriptDefinition> newDialogueScripts,
             List<StoryFactDefinition> newStoryFacts,
-            List<InventoryItemDefinition> newInventoryItems)
+            List<InventoryItemDefinition> newInventoryItems,
+            List<OptionalObjectiveDefinition> newOptionalObjectives)
         {
             caseId = newCaseId;
             title = newTitle;
@@ -718,7 +815,8 @@ namespace Demo02.Narrative
             dialogueScripts = newDialogueScripts;
             storyFacts = newStoryFacts;
             inventoryItems = newInventoryItems;
-            contentVersion = 6;
+            optionalObjectives = newOptionalObjectives;
+            contentVersion = 7;
         }
 
         public void ConfigureStoryContentForEditor(
@@ -739,6 +837,19 @@ namespace Demo02.Narrative
             storyFacts = newStoryFacts;
             inventoryItems = newInventoryItems;
             contentVersion = 6;
+        }
+
+        public void ConfigureOptionalContentForEditor(
+            List<DialogueScriptDefinition> newDialogueScripts,
+            List<StoryFactDefinition> newStoryFacts,
+            List<InventoryItemDefinition> newInventoryItems,
+            List<OptionalObjectiveDefinition> newOptionalObjectives)
+        {
+            dialogueScripts = newDialogueScripts;
+            storyFacts = newStoryFacts;
+            inventoryItems = newInventoryItems;
+            optionalObjectives = newOptionalObjectives;
+            contentVersion = 7;
         }
 #endif
     }

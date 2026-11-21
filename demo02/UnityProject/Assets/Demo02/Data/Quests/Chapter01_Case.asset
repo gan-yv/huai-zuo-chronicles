@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7a824fa490c4e68b47aa81ab533c610, type: 3}
   m_Name: Chapter01_Case
   m_EditorClassIdentifier: Assembly-CSharp::Demo02.Narrative.CaseDefinition
-  contentVersion: 6
+  contentVersion: 7
   caseId: chapter-01
   title: "\u6D88\u5931\u7684\u76D0\u5F15"
   chapterLabel: CHAPTER 01
@@ -869,6 +869,10 @@ MonoBehaviour:
         Stance: 0
         EvidencePlan: 0
         StoryFactId: teahouse-cart-testimony
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: teahouse-event-completed
     - Text: "\u5230\u6B64\u4E3A\u6B62\uFF0C\u522B\u8BA9\u8336\u8086\u5377\u8FDB\u9646\u5D07\u7684\u89C6\u7EBF\u3002"
       Conditions: []
       Effects:
@@ -876,6 +880,10 @@ MonoBehaviour:
         Stance: 0
         EvidencePlan: 0
         StoryFactId: teahouse-keeper-protected
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: teahouse-event-completed
     CompletionEffects: []
     ShowChoicesImmediately: 0
   - Id: teahouse-early
@@ -919,6 +927,9 @@ MonoBehaviour:
   - Id: teahouse-written-record
     Title: "\u8336\u8086\u65C1\u8BC1\u6284\u5F55"
     Detail: "\u4F60\u628A\u8336\u8086\u638C\u67DC\u5173\u4E8E\u521D\u4E94\u7A7A\u4ED3\u548C\u521D\u4E03\u76D0\u8F66\u7684\u8BF4\u6CD5\u6284\u5728\u7A7A\u767D\u8D26\u9875\u4E0A\uFF0C\u5F62\u6210\u4E00\u4EFD\u53EF\u968F\u65F6\u590D\u67E5\u7684\u65C1\u8BC1\u8BB0\u5F55\u3002"
+  - Id: teahouse-event-completed
+    Title: "\u8336\u8086\u76D0\u8F66\u4E8B\u4EF6\u7ED3\u675F"
+    Detail: "\u4F60\u5DF2\u7ECF\u51B3\u5B9A\u662F\u8FFD\u95EE\u76D0\u8F66\u7EC6\u8282\uFF0C\u8FD8\u662F\u4FDD\u62A4\u8336\u8086\u4E0D\u88AB\u5377\u5165\u3002"
   inventoryItems:
   - Id: salt-token-charm
     DisplayName: "\u76D0\u5F15\u94DC\u94B1"
@@ -957,3 +968,74 @@ MonoBehaviour:
     RequiredStoryFactId: teahouse-cart-testimony
     ResultStoryFactId: teahouse-written-record
     ConsumeOnUse: 1
+  optionalObjectives:
+  - Id: optional-teahouse-cart-rumor
+    Title: "\u4E1C\u5173\u8857\u7684\u76D0\u8F66\u65C1\u8BC1"
+    Description: "\u5C01\u6761\u65E5\u671F\u4E0E\u8D26\u724C\u8BB0\u5F55\u5BF9\u4E0D\u4E0A\u3002\u53BB\u4E1C\u5173\u8857\u627E\u8336\u8086\u638C\u67DC\uFF0C\u95EE\u95EE\u521D\u4E03\u591C\u91CC\u662F\u5426\u6709\u76D0\u8F66\u7ECF\u8FC7\u3002"
+    TrackerHint: "\u53EF\u9009 \xB7 \u4E1C\u5173\u8857\u8336\u8086"
+    TargetObjectName: NPC_TeaMaster
+    ActivationConditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId:
+      Negate: 0
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId:
+      Negate: 0
+    - Type: 7
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: official-seal
+      StoryFactId:
+      Negate: 0
+    CompletionConditions:
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId: teahouse-event-completed
+      Negate: 0
+  - Id: optional-record-teahouse-testimony
+    Title: "\u628A\u8336\u8086\u65C1\u8BC1\u6284\u8FDB\u8D26\u9875"
+    Description: "\u4F60\u5DF2\u542C\u5230\u8336\u8086\u638C\u67DC\u5173\u4E8E\u76D0\u8F66\u65F6\u95F4\u7684\u8BC1\u8BCD\u3002\u6253\u5F00\u80CC\u5305\uFF0C\u7528\u7A7A\u767D\u8D26\u9875\u6284\u5F55\u8FD9\u6BB5\u65C1\u8BC1\u3002"
+    TrackerHint: "\u53EF\u9009 \xB7 \u6253\u5F00\u80CC\u5305 [B]"
+    TargetObjectName:
+    ActivationConditions:
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId:
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId: teahouse-cart-testimony
+      Negate: 0
+    CompletionConditions:
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId: teahouse-written-record
+      Negate: 0

@@ -20,12 +20,14 @@ namespace Demo02.Editor
         private SerializedProperty conclusionCopy;
         private SerializedProperty storyFacts;
         private SerializedProperty inventoryItems;
+        private SerializedProperty optionalObjectives;
         private SerializedProperty dialogueScripts;
 
         private bool showMetadata = true;
         private bool showCaseContent = true;
         private bool showStoryContent = true;
         private bool showInventory = true;
+        private bool showOptionalObjectives = true;
         private bool showDialogue = true;
 
         private void OnEnable()
@@ -42,6 +44,7 @@ namespace Demo02.Editor
             conclusionCopy = serializedObject.FindProperty("conclusionCopy");
             storyFacts = serializedObject.FindProperty("storyFacts");
             inventoryItems = serializedObject.FindProperty("inventoryItems");
+            optionalObjectives = serializedObject.FindProperty("optionalObjectives");
             dialogueScripts = serializedObject.FindProperty("dialogueScripts");
         }
 
@@ -122,6 +125,16 @@ namespace Demo02.Editor
                 DrawProperty(inventoryItems, "物品定义");
             }
 
+            showOptionalObjectives = EditorGUILayout.Foldout(
+                showOptionalObjectives,
+                "可选目标",
+                toggleOnLabelClick: true
+            );
+            if (showOptionalObjectives)
+            {
+                DrawProperty(optionalObjectives, "支线目标");
+            }
+
             showDialogue = EditorGUILayout.Foldout(
                 showDialogue,
                 "对白脚本",
@@ -167,6 +180,7 @@ namespace Demo02.Editor
                 + $"证词 {content.Testimonies.Count}  ·  "
                 + $"剧情事实 {content.StoryFacts.Count}  ·  "
                 + $"物品 {content.InventoryItems.Count}  ·  "
+                + $"可选目标 {content.OptionalObjectives.Count}  ·  "
                 + $"对白脚本 {content.DialogueScripts.Count}"
             );
             EditorGUILayout.LabelField(

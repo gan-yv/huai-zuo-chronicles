@@ -33,16 +33,17 @@ namespace Demo02.Editor
             if (existing != null)
             {
                 if (existing.DialogueScripts.Count == 0
-                    || existing.ContentVersion < 6)
+                    || existing.ContentVersion < 7)
                 {
-                    existing.ConfigureInventoryContentForEditor(
+                    existing.ConfigureOptionalContentForEditor(
                         CreateDialogueScripts(),
                         CreateStoryFacts(),
-                        CreateInventoryItems()
+                        CreateInventoryItems(),
+                        CreateOptionalObjectives()
                     );
                     EditorUtility.SetDirty(existing);
                     AssetDatabase.SaveAssets();
-                    Debug.Log("Upgraded chapter asset to content version 6.");
+                    Debug.Log("Upgraded chapter asset to content version 7.");
                 }
                 return existing;
             }
@@ -61,7 +62,8 @@ namespace Demo02.Editor
                 CreateConclusionCopy(),
                 CreateDialogueScripts(),
                 CreateStoryFacts(),
-                CreateInventoryItems()
+                CreateInventoryItems(),
+                CreateOptionalObjectives()
             );
             AssetDatabase.CreateAsset(definition, Chapter01AssetPath);
             AssetDatabase.SaveAssets();
@@ -307,6 +309,13 @@ namespace Demo02.Editor
                     Detail =
                         "你把茶肆掌柜关于初五空仓和初七盐车的说法"
                         + "抄在空白账页上，形成一份可随时复查的旁证记录。"
+                },
+                new()
+                {
+                    Id = "teahouse-event-completed",
+                    Title = "茶肆盐车事件结束",
+                    Detail =
+                        "你已经决定是追问盐车细节，还是保护茶肆不被卷入。"
                 }
             };
         }
@@ -364,6 +373,52 @@ namespace Demo02.Editor
                     RequiredStoryFactId = "teahouse-cart-testimony",
                     ResultStoryFactId = "teahouse-written-record",
                     ConsumeOnUse = true
+                }
+            };
+        }
+
+        private static List<OptionalObjectiveDefinition> CreateOptionalObjectives()
+        {
+            return new List<OptionalObjectiveDefinition>
+            {
+                new()
+                {
+                    Id = "optional-teahouse-cart-rumor",
+                    Title = "东关街的盐车旁证",
+                    Description =
+                        "封条日期与账牌记录对不上。去东关街找茶肆掌柜，"
+                        + "问问初七夜里是否有盐车经过。",
+                    TrackerHint = "可选 · 东关街茶肆",
+                    TargetObjectName = "NPC_TeaMaster",
+                    ActivationConditions = new List<DialogueConditionDefinition>
+                    {
+                        StageAtLeastCondition(ChapterStage.Investigate),
+                        StageBeforeCondition(ChapterStage.Resolved),
+                        HasEvidenceCondition("official-seal")
+                    },
+                    CompletionConditions = new List<DialogueConditionDefinition>
+                    {
+                        HasFactCondition("teahouse-event-completed")
+                    }
+                },
+                new()
+                {
+                    Id = "optional-record-teahouse-testimony",
+                    Title = "把茶肆旁证抄进账页",
+                    Description =
+                        "你已听到茶肆掌柜关于盐车时间的证词。"
+                        + "打开背包，用空白账页抄录这段旁证。",
+                    TrackerHint = "可选 · 打开背包 [B]",
+                    TargetObjectName = string.Empty,
+                    ActivationConditions = new List<DialogueConditionDefinition>
+                    {
+                        StageBeforeCondition(ChapterStage.Resolved),
+                        HasFactCondition("teahouse-cart-testimony")
+                    },
+                    CompletionConditions = new List<DialogueConditionDefinition>
+                    {
+                        HasFactCondition("teahouse-written-record")
+                    }
                 }
             };
         }
@@ -864,11 +919,13 @@ namespace Demo02.Editor
                     {
                         Choice(
                             "请掌柜细说那七辆车经过的经过。",
-                            SetFactEffect("teahouse-cart-testimony")
+                            SetFactEffect("teahouse-cart-testimony"),
+                            SetFactEffect("teahouse-event-completed")
                         ),
                         Choice(
                             "到此为止，别让茶肆卷进陆崇的视线。",
-                            SetFactEffect("teahouse-keeper-protected")
+                            SetFactEffect("teahouse-keeper-protected"),
+                            SetFactEffect("teahouse-event-completed")
                         )
                     },
                     npcId: "teahouse"
@@ -1019,12 +1076,12 @@ namespace Demo02.Editor
 
         private static DialogueChoiceDefinition Choice(
             string text,
-            DialogueEffectDefinition effect)
+            params DialogueEffectDefinition[] effects)
         {
             return new DialogueChoiceDefinition
             {
                 Text = text,
-                Effects = new List<DialogueEffectDefinition> { effect }
+                Effects = new List<DialogueEffectDefinition>(effects)
             };
         }
 

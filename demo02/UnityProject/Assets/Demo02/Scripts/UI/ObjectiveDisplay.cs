@@ -1,4 +1,5 @@
 using Demo02.Narrative;
+using System;
 using UnityEngine;
 
 namespace Demo02.UI
@@ -11,6 +12,21 @@ namespace Demo02.UI
         private void Awake()
         {
             investigationState = GetComponent<InvestigationState>();
+        }
+
+        private void Start()
+        {
+            if (investigationState != null
+                && Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
+                    "--preview-optional"
+                ) >= 0)
+            {
+                investigationState.CompleteWitnessBriefing();
+                investigationState.CollectClue("old-street-sign");
+                investigationState.CollectClue("salt-ledger");
+                investigationState.CollectClue("official-seal");
+            }
         }
 
         private void OnGUI()
@@ -32,6 +48,11 @@ namespace Demo02.UI
             }
 
             string text = ChapterCopy.GetObjective(investigationState);
+            OptionalObjectiveDefinition optional =
+                OptionalObjectiveRuntime.FindActive(
+                    investigationState.CaseContent,
+                    investigationState
+                );
             if (investigationState.IsConclusionReached)
             {
                 text += "。按 R 重新开始";
@@ -42,7 +63,7 @@ namespace Demo02.UI
                 20f * scale,
                 20f * scale,
                 448f * scale,
-                66f * scale
+                (optional != null ? 92f : 66f) * scale
             );
             UiTheme.DrawRect(panel, UiTheme.Ink);
             UiTheme.DrawRect(
@@ -78,6 +99,25 @@ namespace Demo02.UI
                 text,
                 UiTheme.Label(16)
             );
+            if (optional != null)
+            {
+                GUIStyle optionalStyle = UiTheme.Label(
+                    11,
+                    TextAnchor.MiddleLeft,
+                    bold: true
+                );
+                optionalStyle.normal.textColor = UiTheme.Accent;
+                GUI.Label(
+                    new Rect(
+                        panel.x + 18f * scale,
+                        panel.y + 57f * scale,
+                        panel.width - 32f * scale,
+                        26f * scale
+                    ),
+                    $"可选目标 · {optional.Title}    {optional.TrackerHint}",
+                    optionalStyle
+                );
+            }
         }
     }
 }

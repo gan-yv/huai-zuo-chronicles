@@ -207,11 +207,16 @@ namespace Demo02.UI
 
         private void DrawObjective(Rect column, float scale)
         {
+            OptionalObjectiveDefinition optional =
+                OptionalObjectiveRuntime.FindActive(
+                    investigationState.CaseContent,
+                    investigationState
+                );
             Rect objective = new(
                 column.x,
                 column.y,
                 column.width,
-                64f * scale
+                (optional != null ? 96f : 64f) * scale
             );
             UiTheme.DrawRect(objective, UiTheme.Ink);
             UiTheme.DrawRect(
@@ -238,6 +243,25 @@ namespace Demo02.UI
                 ChapterCopy.GetObjective(investigationState),
                 UiTheme.Label(14)
             );
+            if (optional != null)
+            {
+                GUIStyle optionalStyle = UiTheme.Label(
+                    11,
+                    TextAnchor.MiddleLeft,
+                    bold: true
+                );
+                optionalStyle.normal.textColor = UiTheme.Accent;
+                GUI.Label(
+                    new Rect(
+                        objective.x + 16f * scale,
+                        objective.y + 58f * scale,
+                        objective.width - 28f * scale,
+                        30f * scale
+                    ),
+                    $"可选 · {optional.Title}\n{optional.TrackerHint}",
+                    optionalStyle
+                );
+            }
         }
 
         private void DrawEvidenceList(Rect column, float scale)
@@ -253,7 +277,11 @@ namespace Demo02.UI
                 return;
             }
 
-            float listTop = column.y + 78f * scale;
+            bool hasOptional = OptionalObjectiveRuntime.FindActive(
+                investigationState.CaseContent,
+                investigationState
+            ) != null;
+            float listTop = column.y + (hasOptional ? 110f : 78f) * scale;
             GUI.Label(
                 new Rect(column.x, listTop, column.width, 24f * scale),
                 "证据记录",
