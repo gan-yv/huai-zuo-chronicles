@@ -1,5 +1,6 @@
 using System.Linq;
 using Demo02.Combat;
+using Demo02.Core;
 using Demo02.Interaction;
 using Demo02.Narrative;
 using Demo02.Player;
@@ -70,6 +71,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("RepairSite_TimeRift") == null
                     || existingRoot.transform.Find("PartnerPlaceholder") == null
                     || existingRoot.transform.Find("Enemy_Patrol_01") == null
+                    || existingRoot.transform.Find("Choice_Preserve") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -199,6 +201,46 @@ namespace Demo02.Editor
             CreateEnemy(root.transform, "Enemy_Patrol_01", new Vector3(-1.2f, 0.9f, 12f));
             CreateEnemy(root.transform, "Enemy_Patrol_02", new Vector3(1.4f, 0.9f, 24f));
 
+            GameObject preserveOutcome = CreateBlock(
+                root.transform,
+                "Outcome_OldStreetPreserved",
+                new Vector3(0f, 0.15f, 30.5f),
+                new Vector3(9f, 0.3f, 1.4f)
+            );
+            preserveOutcome.SetActive(false);
+
+            GameObject sealOutcome = CreateBlock(
+                root.transform,
+                "Outcome_OldStreetSealed",
+                new Vector3(0f, 2f, 31f),
+                new Vector3(14f, 4f, 0.5f)
+            );
+            sealOutcome.SetActive(false);
+
+            GameObject preserveChoice = CreateBlock(
+                root.transform,
+                "Choice_Preserve",
+                new Vector3(-3f, 1.1f, 26f),
+                new Vector3(1.3f, 2.2f, 0.3f)
+            );
+            preserveChoice.AddComponent<EndingChoiceInteractable>().Configure(
+                ConclusionChoice.Preserve,
+                preserveOutcome,
+                sealOutcome
+            );
+
+            GameObject sealChoice = CreateBlock(
+                root.transform,
+                "Choice_Seal",
+                new Vector3(3f, 1.1f, 26f),
+                new Vector3(1.3f, 2.2f, 0.3f)
+            );
+            sealChoice.AddComponent<EndingChoiceInteractable>().Configure(
+                ConclusionChoice.Seal,
+                preserveOutcome,
+                sealOutcome
+            );
+
             GameObject gameSession = new GameObject("GameSession");
             gameSession.transform.SetParent(root.transform);
             gameSession.AddComponent<InvestigationState>();
@@ -206,6 +248,12 @@ namespace Demo02.Editor
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
             party.Configure(player.transform, partner.transform);
             gameSession.AddComponent<CombatHud>();
+            gameSession.AddComponent<GameFlowController>();
+
+            EditorBuildSettings.scenes = new[]
+            {
+                new EditorBuildSettingsScene(ScenePath, true)
+            };
 
             GameObject spawn = new GameObject("PlayerSpawn");
             spawn.transform.SetParent(root.transform);
