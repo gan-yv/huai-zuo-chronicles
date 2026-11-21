@@ -293,6 +293,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Chapter01_StorySetup") == null
                     || existingRoot.transform.Find("Chapter01_ArtPass") == null
                     || existingRoot.transform.Find("Chapter01_VisionSystem") == null
+                    || existingRoot.transform.Find("Chapter01_ArchitecturePolish") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -340,6 +341,14 @@ namespace Demo02.Editor
                 new Color(0.55f, 0.52f, 0.46f)
             );
             ground.isStatic = true;
+            CreateStonePaving(
+                root.transform,
+                "OfficialStreetPaving",
+                new Vector3(0f, 0f, 5f),
+                15f,
+                52f,
+                new Color(0.46f, 0.43f, 0.38f)
+            );
 
             float[] buildingZPositions = { -14f, -4f, 6f, 16f, 26f };
             foreach (float z in buildingZPositions)
@@ -375,7 +384,8 @@ namespace Demo02.Editor
                     left.transform.position,
                     new Vector3(6f, 6f, 8f),
                     facadeDirection: 1f,
-                    styleIndex: styleIndex
+                    styleIndex: styleIndex,
+                    includeAwning: z > 10f
                 );
                 if (right != null)
                 {
@@ -385,7 +395,8 @@ namespace Demo02.Editor
                         right.transform.position,
                         new Vector3(6f, 6f, 8f),
                         facadeDirection: -1f,
-                        styleIndex: styleIndex + 1
+                        styleIndex: styleIndex + 1,
+                        includeAwning: z > 10f
                     );
                 }
             }
@@ -659,6 +670,9 @@ namespace Demo02.Editor
             GameObject visionMarker = new GameObject("Chapter01_VisionSystem");
             visionMarker.transform.SetParent(root.transform);
 
+            GameObject polishMarker = new GameObject("Chapter01_ArchitecturePolish");
+            polishMarker.transform.SetParent(root.transform);
+
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
             WorldRuntime worldRuntime = worldRuntimeObject.AddComponent<WorldRuntime>();
@@ -743,7 +757,7 @@ namespace Demo02.Editor
             block.transform.localScale = scale;
             if (tint.HasValue)
             {
-                block.AddComponent<ColorTint>().Configure(tint.Value);
+                block.AddComponent<ColorTint>().Configure(tint.Value, 0.12f);
             }
 
             return block;
@@ -826,6 +840,45 @@ namespace Demo02.Editor
                     new Vector3(0.2f, 0.38f, 0.2f),
                     trousers
                 );
+                CreateAvatarPart(
+                    character.transform,
+                    side < 0 ? "LeftShoe" : "RightShoe",
+                    PrimitiveType.Cube,
+                    new Vector3(0.2f * side, -0.89f, 0.08f),
+                    new Vector3(0.3f, 0.13f, 0.45f),
+                    new Color(0.1f, 0.08f, 0.065f)
+                );
+            }
+
+            if (name.Contains("Player"))
+            {
+                CreateAvatarPart(
+                    character.transform,
+                    "RepairTool",
+                    PrimitiveType.Cylinder,
+                    new Vector3(0.47f, -0.22f, -0.08f),
+                    new Vector3(0.13f, 0.34f, 0.13f),
+                    new Color(0.52f, 0.4f, 0.18f)
+                );
+                CreateAvatarPart(
+                    character.transform,
+                    "RecordSatchel",
+                    PrimitiveType.Cube,
+                    new Vector3(-0.42f, -0.2f, -0.08f),
+                    new Vector3(0.3f, 0.34f, 0.18f),
+                    new Color(0.2f, 0.14f, 0.09f)
+                );
+            }
+            else if (name.Contains("Partner"))
+            {
+                CreateAvatarPart(
+                    character.transform,
+                    "TravelBag",
+                    PrimitiveType.Cube,
+                    new Vector3(-0.43f, -0.2f, -0.08f),
+                    new Vector3(0.28f, 0.3f, 0.16f),
+                    new Color(0.4f, 0.25f, 0.12f)
+                );
             }
 
             if (addNpcCollider)
@@ -853,7 +906,7 @@ namespace Demo02.Editor
             part.transform.localPosition = localPosition;
             part.transform.localScale = localScale;
             Object.DestroyImmediate(part.GetComponent<Collider>());
-            part.AddComponent<ColorTint>().Configure(tint);
+            part.AddComponent<ColorTint>().Configure(tint, 0.32f);
             return part;
         }
 
@@ -863,7 +916,8 @@ namespace Demo02.Editor
             Vector3 center,
             Vector3 size,
             float facadeDirection,
-            int styleIndex)
+            int styleIndex,
+            bool includeAwning = true)
         {
             Color roofColor = new(0.11f, 0.12f, 0.125f);
             Color woodColor = new(0.25f, 0.16f, 0.1f);
@@ -880,31 +934,66 @@ namespace Demo02.Editor
             float frontX = center.x + facadeDirection * size.x * 0.5f;
             float roofY = center.y + size.y * 0.5f + 0.28f;
 
-            CreateDecorBlock(
+            GameObject leftRoof = CreateDecorBlock(
                 parent,
-                $"{namePrefix}_Roof",
-                new Vector3(center.x, roofY, center.z),
-                new Vector3(size.x + 1.1f, 0.34f, size.z + 1.1f),
+                $"{namePrefix}_RoofLeft",
+                new Vector3(center.x - size.x * 0.24f, roofY + 0.22f, center.z),
+                new Vector3(size.x * 0.64f, 0.18f, size.z + 1.25f),
                 roofColor
             );
+            leftRoof.transform.rotation = Quaternion.Euler(0f, 0f, 18f);
+            GameObject rightRoof = CreateDecorBlock(
+                parent,
+                $"{namePrefix}_RoofRight",
+                new Vector3(center.x + size.x * 0.24f, roofY + 0.22f, center.z),
+                new Vector3(size.x * 0.64f, 0.18f, size.z + 1.25f),
+                roofColor
+            );
+            rightRoof.transform.rotation = Quaternion.Euler(0f, 0f, -18f);
             CreateDecorBlock(
                 parent,
-                $"{namePrefix}_RoofTop",
-                new Vector3(center.x, roofY + 0.38f, center.z),
-                new Vector3(size.x * 0.72f, 0.28f, size.z * 0.72f),
-                new Color(0.17f, 0.18f, 0.18f)
+                $"{namePrefix}_RoofRidge",
+                new Vector3(center.x, roofY + 0.58f, center.z),
+                new Vector3(0.28f, 0.22f, size.z + 1.3f),
+                new Color(0.18f, 0.19f, 0.19f)
             );
             CreateDecorBlock(
                 parent,
-                $"{namePrefix}_Awning",
-                new Vector3(
-                    frontX + facadeDirection * 0.72f,
-                    3.15f,
-                    center.z
-                ),
-                new Vector3(1.45f, 0.18f, size.z * 0.72f),
-                bannerColor
+                $"{namePrefix}_Eave",
+                new Vector3(frontX + facadeDirection * 0.18f, roofY - 0.08f, center.z),
+                new Vector3(0.28f, 0.18f, size.z + 1.05f),
+                woodColor
             );
+            if (includeAwning)
+            {
+                GameObject awning = CreateDecorBlock(
+                    parent,
+                    $"{namePrefix}_Awning",
+                    new Vector3(
+                        frontX + facadeDirection * 0.72f,
+                        3.15f,
+                        center.z
+                    ),
+                    new Vector3(1.05f, 0.13f, size.z * 0.44f),
+                    bannerColor
+                );
+                awning.transform.rotation = Quaternion.Euler(
+                    0f,
+                    0f,
+                    -8f * facadeDirection
+                );
+                CreateDecorBlock(
+                    parent,
+                    $"{namePrefix}_AwningValance",
+                    new Vector3(
+                        frontX + facadeDirection * 1.16f,
+                        2.92f,
+                        center.z
+                    ),
+                    new Vector3(0.07f, 0.34f, size.z * 0.44f),
+                    Color.Lerp(bannerColor, Color.black, 0.2f)
+                );
+            }
             CreateDecorBlock(
                 parent,
                 $"{namePrefix}_Door",
@@ -912,6 +1001,46 @@ namespace Demo02.Editor
                 new Vector3(0.14f, 2.5f, Mathf.Min(2f, size.z * 0.3f)),
                 doorColor
             );
+            CreateDecorBlock(
+                parent,
+                $"{namePrefix}_DoorStep",
+                new Vector3(frontX + facadeDirection * 0.34f, 0.1f, center.z),
+                new Vector3(0.75f, 0.2f, Mathf.Min(2.5f, size.z * 0.34f)),
+                new Color(0.27f, 0.27f, 0.25f)
+            );
+            CreateDecorBlock(
+                parent,
+                $"{namePrefix}_SignBoard",
+                new Vector3(frontX + facadeDirection * 0.15f, 3.62f, center.z),
+                new Vector3(0.12f, 0.72f, 1.45f),
+                new Color(0.13f, 0.09f, 0.06f)
+            );
+            CreateDecorBlock(
+                parent,
+                $"{namePrefix}_SignFace",
+                new Vector3(frontX + facadeDirection * 0.22f, 3.62f, center.z),
+                new Vector3(0.06f, 0.56f, 1.18f),
+                bannerColor
+            );
+
+            foreach (float windowOffset in new[]
+            {
+                -size.z * 0.24f,
+                size.z * 0.24f
+            })
+            {
+                CreateDecorBlock(
+                    parent,
+                    $"{namePrefix}_Window_{windowOffset:0}",
+                    new Vector3(
+                        frontX + facadeDirection * 0.08f,
+                        1.85f,
+                        center.z + windowOffset
+                    ),
+                    new Vector3(0.08f, 0.92f, 1.05f),
+                    new Color(0.12f, 0.16f, 0.16f)
+                );
+            }
             CreateDecorBlock(
                 parent,
                 $"{namePrefix}_Banner",
@@ -967,7 +1096,7 @@ namespace Demo02.Editor
             part.transform.position = position;
             part.transform.localScale = scale;
             Object.DestroyImmediate(part.GetComponent<Collider>());
-            part.AddComponent<ColorTint>().Configure(tint);
+            part.AddComponent<ColorTint>().Configure(tint, 0.22f);
             return part;
         }
 
@@ -984,12 +1113,67 @@ namespace Demo02.Editor
             echo.transform.SetParent(parent);
             echo.transform.position = position;
             echo.transform.localScale = new Vector3(0.34f, 0.34f, 0.34f);
-            echo.AddComponent<ColorTint>().Configure(new Color(0.98f, 0.76f, 0.3f));
+            echo.AddComponent<ColorTint>().Configure(new Color(0.98f, 0.76f, 0.3f), 0.55f);
 
             SphereCollider trigger = echo.GetComponent<SphereCollider>();
             trigger.isTrigger = true;
             trigger.radius = 1.35f;
             echo.AddComponent<MemoryEchoInteractable>().Configure(echoId, title, text);
+        }
+
+        private static void CreateStonePaving(
+            Transform parent,
+            string name,
+            Vector3 center,
+            float width,
+            float length,
+            Color baseColor)
+        {
+            int laneCount = Mathf.Max(3, Mathf.RoundToInt(width / 2.4f));
+            float laneWidth = width / laneCount;
+            for (int lane = 0; lane < laneCount; lane++)
+            {
+                float x = center.x - width * 0.5f + laneWidth * (lane + 0.5f);
+                Color stoneColor = lane % 2 == 0
+                    ? baseColor
+                    : Color.Lerp(baseColor, new Color(0.23f, 0.24f, 0.23f), 0.16f);
+                CreateDecorBlock(
+                    parent,
+                    $"{name}_Lane_{lane + 1}",
+                    new Vector3(x, center.y + 0.012f, center.z),
+                    new Vector3(laneWidth * 0.94f, 0.024f, length),
+                    stoneColor
+                );
+            }
+
+            Color seamColor = Color.Lerp(baseColor, Color.black, 0.34f);
+            for (float z = center.z - length * 0.5f + 3f;
+                z < center.z + length * 0.5f;
+                z += 4.5f)
+            {
+                CreateDecorBlock(
+                    parent,
+                    $"{name}_Seam_{z:0}",
+                    new Vector3(center.x, center.y + 0.03f, z),
+                    new Vector3(width * 0.96f, 0.02f, 0.055f),
+                    seamColor
+                );
+            }
+
+            CreateDecorBlock(
+                parent,
+                $"{name}_CurbLeft",
+                new Vector3(center.x - width * 0.5f + 0.2f, center.y + 0.12f, center.z),
+                new Vector3(0.38f, 0.24f, length),
+                new Color(0.3f, 0.3f, 0.28f)
+            );
+            CreateDecorBlock(
+                parent,
+                $"{name}_CurbRight",
+                new Vector3(center.x + width * 0.5f - 0.2f, center.y + 0.12f, center.z),
+                new Vector3(0.38f, 0.24f, length),
+                new Color(0.3f, 0.3f, 0.28f)
+            );
         }
 
         private static Combatant CreateEnemy(Transform parent, string name, Vector3 position)
@@ -1234,6 +1418,14 @@ namespace Demo02.Editor
                 new Vector3(60f, -0.55f, 58f),
                 new Vector3(20f, 1f, 160f),
                 new Color(0.52f, 0.48f, 0.4f)
+            );
+            CreateStonePaving(
+                areaRoot,
+                "DongguanPaving",
+                new Vector3(60f, 0f, 58f),
+                19f,
+                158f,
+                new Color(0.43f, 0.4f, 0.35f)
             );
 
             float[] shopPositions =
@@ -1496,6 +1688,14 @@ namespace Demo02.Editor
                 new Vector3(60f, -0.56f, 225f),
                 new Vector3(18f, 1f, 130f),
                 new Color(0.4f, 0.42f, 0.43f)
+            );
+            CreateStonePaving(
+                areaRoot,
+                "CaiyiPaving",
+                new Vector3(60f, 0.005f, 225f),
+                17f,
+                128f,
+                new Color(0.35f, 0.36f, 0.36f)
             );
 
             float[] shopPositions =

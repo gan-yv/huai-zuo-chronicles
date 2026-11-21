@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.3.0
+# Huai-Zuo Chronicles v1.4.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.3.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.4.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.3.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.4.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-AA033AA6204DCF4B677502659E91FC0064BE7878F08F43B5CF9F6007DDD1AAAA
+AED56A08842B757C12686947721AB4C6237B8E7B85122ADA4D5F92A8E0AA7C49
 ```
 
 ## 已包含
@@ -35,6 +35,9 @@ AA033AA6204DCF4B677502659E91FC0064BE7878F08F43B5CF9F6007DDD1AAAA
 - 证据、人物、当前推理和时间锚点进度会随章节推进更新。
 - `V` 修痕视界显示附近目标，并揭示三处可选记忆回声。
 - 回声发现状态进入存档和调查案卷统计。
+- 店铺加入坡屋顶、屋脊、檐口、窗格、门阶和招牌层次。
+- 街道加入石板分缝、路缘和中央通道，降低平面灰盒感。
+- 角色增加鞋履、修复工具、记录挎包和材质粗糙度差异。
 - 程序化人物轮廓和三层店铺立面组成的第一遍美术 pass。
 - 屋檐、门面、立柱、布幡与灯笼覆盖官署前街、东关街和彩衣街。
 - 沈伯委托、沈砚失踪、七车私盐和陆崇除名封条组成的证据链。

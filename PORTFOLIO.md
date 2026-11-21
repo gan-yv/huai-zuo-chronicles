@@ -36,6 +36,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 程序化人物轮廓与店铺屋檐、门面、布幡、灯笼组成的第一遍美术 pass。
 - `J` 调查案卷汇总目标、证据、人物关系和随剧情变化的当前推理。
 - `V` 修痕视界高亮附近目标，并显现三处可选隐藏记忆回声。
+- 第二遍建筑打磨：坡屋顶、檐口、门窗、门阶、招牌、石板路和路缘。
 - 可选战斗、攻击预警和闪避无敌帧。
 - JSON 存档、自动检查点和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -61,10 +62,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.3.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.4.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.3.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.4.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -115,6 +116,7 @@ R          结局或队伍倒下后重开
 ## 已知限制
 
 - 美术仍为程序化占位模型与基础材质，但角色和店铺已具备统一轮廓。
+- 正式角色、建筑和贴图将由外部生成工具制作，再替换现有占位资源。
 - 界面主要使用原型级 OnGUI。
 - 当前音频为程序化占位反馈，车辆、人群、正式音乐和 VFX 尚未制作。
 - 大地图目前由街内远距离区域验证，后续需要拆分 Additive Scene。
