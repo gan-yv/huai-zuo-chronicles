@@ -14,6 +14,8 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ![修痕视界](demo02/docs/screenshots/investigation-vision.png)
 
+![对白选择](demo02/docs/screenshots/dialogue-choice.png)
+
 ## 目标岗位
 
 - Unity 客户端 / Gameplay 程序
@@ -37,6 +39,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - `J` 调查案卷汇总目标、证据、人物关系和随剧情变化的当前推理。
 - `V` 修痕视界高亮附近目标，并显现三处可选隐藏记忆回声。
 - 第二遍建筑打磨：坡屋顶、檐口、门窗、门阶、招牌、石板路和路缘。
+- 对白选择、调查立场、证据去向、沈伯动态反应和分支片尾文本。
 - 可选战斗、攻击预警和闪避无敌帧。
 - JSON 存档、自动检查点和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -62,10 +65,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.4.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.5.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.4.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.5.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 

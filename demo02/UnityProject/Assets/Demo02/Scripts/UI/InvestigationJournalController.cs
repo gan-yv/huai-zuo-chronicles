@@ -437,6 +437,8 @@ namespace Demo02.UI
                     + $"\n\n时间锚点：{investigationState.StabilizedTimeAnchorCount}"
                     + $"/{investigationState.RequiredTimeAnchorCount}"
                     + $"\n残留回声：{investigationState.DiscoveredEchoCount}/3"
+                    + $"\n调查立场：{ChapterCopy.GetStanceLabel(investigationState)}"
+                    + $"\n证据去向：{ChapterCopy.GetPlanLabel(investigationState)}"
                     + "\n按 V 开启修痕视界，寻找隐藏回声。",
                 UiTheme.Label(12, TextAnchor.UpperLeft)
             );

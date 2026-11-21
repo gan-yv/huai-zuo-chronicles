@@ -18,7 +18,9 @@ namespace Demo02.UI
             if (investigationState == null
                 || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
                 || (InvestigationJournalController.Instance != null
-                    && InvestigationJournalController.Instance.IsOpen))
+                    && InvestigationJournalController.Instance.IsOpen)
+                || (DialogueController.Instance != null
+                    && DialogueController.Instance.IsOpen))
             {
                 return;
             }

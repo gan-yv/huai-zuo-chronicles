@@ -22,6 +22,20 @@ namespace Demo02.Narrative
         Resolved
     }
 
+    public enum WitnessStance
+    {
+        Undecided,
+        EvidenceFirst,
+        PersonFirst
+    }
+
+    public enum EvidencePlan
+    {
+        Undecided,
+        PublicRecord,
+        PrivateProtection
+    }
+
     public sealed class InvestigationState : MonoBehaviour
     {
         [SerializeField, Min(1)] private int requiredClueCount = 3;
@@ -34,6 +48,8 @@ namespace Demo02.Narrative
         public event Action<int, int> ClueCountChanged;
         public event Action<ChapterStage> StageChanged;
         public ChapterStage Stage { get; private set; } = ChapterStage.Arrival;
+        public WitnessStance Stance { get; private set; } = WitnessStance.Undecided;
+        public EvidencePlan Plan { get; private set; } = EvidencePlan.Undecided;
         public int CollectedClueCount => collectedClueIds.Count;
         public int RequiredClueCount => requiredClueCount;
         public bool HasAllClues => CollectedClueCount >= requiredClueCount;
@@ -141,6 +157,28 @@ namespace Demo02.Narrative
             return !string.IsNullOrWhiteSpace(echoId) && discoveredEchoIds.Add(echoId);
         }
 
+        public bool SetWitnessStance(WitnessStance stance)
+        {
+            if (Stance != WitnessStance.Undecided || stance == WitnessStance.Undecided)
+            {
+                return false;
+            }
+
+            Stance = stance;
+            return true;
+        }
+
+        public bool SetEvidencePlan(EvidencePlan plan)
+        {
+            if (Plan != EvidencePlan.Undecided || plan == EvidencePlan.Undecided)
+            {
+                return false;
+            }
+
+            Plan = plan;
+            return true;
+        }
+
         public string[] ExportClueIds() => new List<string>(collectedClueIds).ToArray();
         public string[] ExportTimeAnchorIds() => new List<string>(stabilizedTimeAnchorIds).ToArray();
         public string[] ExportEchoIds() => new List<string>(discoveredEchoIds).ToArray();
@@ -151,7 +189,9 @@ namespace Demo02.Narrative
             bool repaired,
             ConclusionChoice conclusion,
             ChapterStage stage,
-            IEnumerable<string> echoIds = null)
+            IEnumerable<string> echoIds = null,
+            WitnessStance stance = WitnessStance.Undecided,
+            EvidencePlan plan = EvidencePlan.Undecided)
         {
             collectedClueIds.Clear();
             stabilizedTimeAnchorIds.Clear();
@@ -192,6 +232,8 @@ namespace Demo02.Narrative
 
             IsRepaired = repaired;
             SelectedConclusion = repaired ? conclusion : ConclusionChoice.None;
+            Stance = stance;
+            Plan = plan;
             Stage = stage;
             if (collectedClueIds.Count > 0 && Stage < ChapterStage.Investigate)
             {

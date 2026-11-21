@@ -1,5 +1,6 @@
 using Demo02.Combat;
 using Demo02.Core;
+using Demo02.Narrative;
 using Demo02.Player;
 using Demo02.WorldState;
 using UnityEngine;
@@ -45,6 +46,10 @@ namespace Demo02.UI
             }
             if (InvestigationJournalController.Instance != null
                 && InvestigationJournalController.Instance.IsOpen)
+            {
+                return;
+            }
+            if (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
             {
                 return;
             }

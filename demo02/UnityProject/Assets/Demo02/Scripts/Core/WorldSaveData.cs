@@ -18,6 +18,8 @@ namespace Demo02.Core
         public TimeLayer TimeLayer;
         public string AreaId;
         public string AreaName;
+        public WitnessStance Stance;
+        public EvidencePlan EvidencePlan;
         public List<string> ClueIds = new();
         public List<string> TimeAnchorIds = new();
         public List<string> EchoIds = new();

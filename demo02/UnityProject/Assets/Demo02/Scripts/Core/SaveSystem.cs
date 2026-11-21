@@ -135,6 +135,8 @@ namespace Demo02.Core
                 TimeLayer = timeLayerController.CurrentLayer,
                 AreaId = runtime != null ? runtime.CurrentAreaId : string.Empty,
                 AreaName = runtime != null ? runtime.CurrentAreaName : string.Empty,
+                Stance = investigationState.Stance,
+                EvidencePlan = investigationState.Plan,
                 ClueIds = new List<string>(investigationState.ExportClueIds()),
                 TimeAnchorIds = new List<string>(investigationState.ExportTimeAnchorIds()),
                 EchoIds = new List<string>(investigationState.ExportEchoIds()),
@@ -221,7 +223,9 @@ namespace Demo02.Core
                 data.IsRepaired,
                 data.Conclusion,
                 data.ChapterStage,
-                data.EchoIds
+                data.EchoIds,
+                data.Stance,
+                data.EvidencePlan
             );
             timeLayerController.SetLayer(data.TimeLayer);
             party.RestoreActiveCharacter(data.ActivePartyIndex);
@@ -302,6 +306,8 @@ namespace Demo02.Core
                 investigationState.StabilizedTimeAnchorCount,
                 investigationState.DiscoveredEchoCount,
                 investigationState.Stage,
+                investigationState.Stance,
+                investigationState.Plan,
                 investigationState.IsRepaired,
                 investigationState.SelectedConclusion,
                 timeLayerController.CurrentLayer,

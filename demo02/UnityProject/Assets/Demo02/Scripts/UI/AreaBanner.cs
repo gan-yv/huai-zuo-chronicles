@@ -105,6 +105,8 @@ namespace Demo02.UI
                     && InvestigationJournalController.Instance.IsOpen)
                 || (InvestigationVisionController.Instance != null
                     && InvestigationVisionController.Instance.IsActive)
+                || (DialogueController.Instance != null
+                    && DialogueController.Instance.IsOpen)
                 || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
             {
                 return;

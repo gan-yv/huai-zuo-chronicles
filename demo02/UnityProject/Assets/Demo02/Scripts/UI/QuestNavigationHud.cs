@@ -130,6 +130,8 @@ namespace Demo02.UI
             if ((WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
                 || (InvestigationJournalController.Instance != null
                     && InvestigationJournalController.Instance.IsOpen)
+                || (DialogueController.Instance != null
+                    && DialogueController.Instance.IsOpen)
                 || currentTarget == null
                 || party == null
                 || party.ActiveCharacter == null)

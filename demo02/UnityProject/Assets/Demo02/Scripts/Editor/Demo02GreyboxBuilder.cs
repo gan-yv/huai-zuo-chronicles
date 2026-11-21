@@ -113,6 +113,7 @@ namespace Demo02.Editor
                     "The chapter did not enter the investigation stage."
                 );
             }
+            state.SetWitnessStance(WitnessStance.PersonFirst);
 
             if (!state.CollectClue("chapter-test-1")
                 || !state.CollectClue("chapter-test-2")
@@ -133,6 +134,7 @@ namespace Demo02.Editor
                 );
             }
 
+            state.SetEvidencePlan(EvidencePlan.PrivateProtection);
             if (!state.CompleteEvidenceReview()
                 || state.Stage != ChapterStage.StabilizeAnchors)
             {
@@ -141,7 +143,6 @@ namespace Demo02.Editor
                     "Evidence review did not unlock time anchors."
                 );
             }
-
             if (!state.StabilizeTimeAnchor("chapter-anchor-1")
                 || !state.StabilizeTimeAnchor("chapter-anchor-2")
                 || !state.StabilizeTimeAnchor("chapter-anchor-3")
@@ -169,10 +170,15 @@ namespace Demo02.Editor
                 new[] { "chapter-anchor-1", "chapter-anchor-2", "chapter-anchor-3" },
                 true,
                 ConclusionChoice.Seal,
-                ChapterStage.Resolved
+                ChapterStage.Resolved,
+                null,
+                WitnessStance.PersonFirst,
+                EvidencePlan.PrivateProtection
             );
             if (state.Stage != ChapterStage.Resolved
-                || state.SelectedConclusion != ConclusionChoice.Seal)
+                || state.SelectedConclusion != ConclusionChoice.Seal
+                || state.Stance != WitnessStance.PersonFirst
+                || state.Plan != EvidencePlan.PrivateProtection)
             {
                 Object.DestroyImmediate(probe);
                 throw new System.InvalidOperationException(
