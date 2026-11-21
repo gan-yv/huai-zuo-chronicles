@@ -6,6 +6,10 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ![标题界面](demo02/docs/screenshots/title-screen.png)
 
+![广陵街区探索](demo02/docs/screenshots/world-overview-v020.png)
+
+![世界地图](demo02/docs/screenshots/map-screen.png)
+
 ## 目标岗位
 
 - Unity 客户端 / Gameplay 程序
@@ -20,7 +24,8 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 现世/旧时时间层与三个修复锚点。
 - 官署前街、旧仓内院、旧仓室内、东关街和彩衣街。
 - 街内传送与世界地图快速旅行。
-- 街区切换淡入淡出和近距离可交互目标反馈。
+- 三街区路线地图、当前区域高亮和调查进度汇总。
+- 街区切换淡入淡出、区域到达标题卡和可交互目标反馈。
 - 可选战斗、攻击预警和闪避无敌帧。
 - JSON 存档、自动检查点和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -37,10 +42,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.19.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.20.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.19.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.20.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -57,7 +62,7 @@ E          调查、对话、修复
 Tab        切换出场角色
 Q          切换时间层
 M          世界地图与快速传送
-Esc        暂停
+Esc        暂停 / 关闭地图
 F5 / F9    保存 / 读取
 R          结局或队伍倒下后重开
 ```
@@ -82,6 +87,7 @@ R          结局或队伍倒下后重开
 - NPC 对白采用逐句数据，不依赖专用过场。
 - 时间层通过可见性和碰撞切换管理。
 - 灰盒场景由可重复运行的 Editor Builder 生成，降低手工维护成本。
+- 演示截图通过 Unity 内部截屏参数生成，避免窗口缩放和环境遮挡。
 
 ## 已知限制
 

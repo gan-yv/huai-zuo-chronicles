@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v0.19.0
+# Huai-Zuo Chronicles v0.20.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.19.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.20.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.19.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.20.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-E27ABF7657945EB65F2DCA7F523C4EBBE7E27DF7906BC1793286E9C807B0EBD0
+608EFBAD5C5C51E0F3CACE3973EECF31381D58F670A8707B717CD8F3D63C2C8B
 ```
 
 ## 已包含
@@ -35,6 +35,9 @@ E27ABF7657945EB65F2DCA7F523C4EBBE7E27DF7906BC1793286E9C807B0EBD0
 - 世界地图与街内快速旅行。
 - 街区传送与地图传送的淡出、黑场、淡入过渡。
 - 近距离可交互目标的轻微转动提示。
+- 三街区路线地图、当前区域高亮和调查进度汇总。
+- 首次进入或传送后的区域到达标题卡。
+- 远景雾、暖色主光、柔和阴影和自适应窗口尺寸。
 - NPC 对话和街区小故事。
 - 线索调查、任务罗盘和时间层。
 - 三个时间锚点和街尾修复。
@@ -48,7 +51,7 @@ E27ABF7657945EB65F2DCA7F523C4EBBE7E27DF7906BC1793286E9C807B0EBD0
 ## 已知问题
 
 - 当前为灰盒版本，视觉和音频尚未完成。
-- 界面采用原型 UI，分辨率和字体适配仍需正式整理。
+- UI 已支持基础缩放，但仍需替换正式字体和视觉资产。
 - 大型场景尚未拆分或做流式加载。
 - 战斗数值仅用于演示，不代表最终平衡。
 - 长时间游玩、低配置和不同显卡兼容性尚未完成系统测试。
@@ -58,7 +61,7 @@ E27ABF7657945EB65F2DCA7F523C4EBBE7E27DF7906BC1793286E9C807B0EBD0
 - Windows x64 构建成功。
 - 构建版进程正常启动并保持响应。
 - 构建启动场景顺序：`Boot → Greybox`。
-- 标题界面截图已验证。
+- 标题界面、街区画面和世界地图均使用 Unity 内部截屏重新生成。
 - 最新场景生成与脚本编译通过。
 - 发布包逐文件与 Unity 输出比对一致。
 - 地图打开时暂停世界，关闭后恢复；`Esc` 只负责关闭地图，不叠加暂停菜单。

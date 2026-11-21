@@ -34,6 +34,11 @@ namespace Demo02.UI
 
         private void OnGUI()
         {
+            if (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
+            {
+                return;
+            }
+
             Transform activeCharacter = party != null ? party.ActiveCharacter : null;
             Combatant activeHealth = activeCharacter != null
                 ? activeCharacter.GetComponent<Combatant>()
@@ -91,12 +96,37 @@ namespace Demo02.UI
 
             DrawEnemyHealthBars();
 
+            float scale = UiTheme.Scale;
+            float utilityWidth = 100f * scale;
+            float utilityHeight = 30f * scale;
+            float utilityY = Screen.height - utilityHeight - 12f * scale;
+            float right = Screen.width - 18f * scale;
+
             if (GUI.Button(
-                new Rect(Screen.width - 116f, Screen.height - 42f, 92f, 28f),
-                "F1 操作"
+                new Rect(
+                    right - utilityWidth,
+                    utilityY,
+                    utilityWidth,
+                    utilityHeight
+                ),
+                "F1 操作",
+                UiTheme.Button(13)
             ))
             {
                 showHelp = !showHelp;
+            }
+            if (GUI.Button(
+                new Rect(
+                    right - utilityWidth * 2f - 10f * scale,
+                    utilityY,
+                    utilityWidth,
+                    utilityHeight
+                ),
+                "M 地图",
+                UiTheme.Button(13)
+            ))
+            {
+                WorldMapController.Instance?.ToggleMap();
             }
 
             if (showHelp)

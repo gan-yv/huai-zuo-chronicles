@@ -116,7 +116,10 @@ namespace Demo02.UI
 
         private void OnGUI()
         {
-            if (currentTarget == null || party == null || party.ActiveCharacter == null)
+            if ((WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
+                || currentTarget == null
+                || party == null
+                || party.ActiveCharacter == null)
             {
                 return;
             }

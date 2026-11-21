@@ -10,7 +10,7 @@ namespace Demo02.Editor
     public static class Demo02Build
     {
         private const string ProductName = "Huai-Zuo Chronicles";
-        private const string Version = "0.19.0";
+        private const string Version = "0.20.0";
         private const string OutputDirectory = "Builds/WindowsDemo";
         private const string ExecutableName = "HuaiZuoChronicles.exe";
 
@@ -81,8 +81,8 @@ namespace Demo02.Editor
             PlayerSettings.companyName = "gan-yv";
             PlayerSettings.productName = ProductName;
             PlayerSettings.bundleVersion = Version;
-            PlayerSettings.defaultScreenWidth = 1600;
-            PlayerSettings.defaultScreenHeight = 900;
+            PlayerSettings.defaultScreenWidth = 1280;
+            PlayerSettings.defaultScreenHeight = 720;
             PlayerSettings.fullScreenMode = FullScreenMode.Windowed;
             PlayerSettings.resizableWindow = true;
             PlayerSettings.runInBackground = true;

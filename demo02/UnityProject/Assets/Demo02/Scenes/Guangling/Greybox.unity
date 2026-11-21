@@ -3037,6 +3037,7 @@ GameObject:
   - component: {fileID: 282816254}
   - component: {fileID: 282816253}
   - component: {fileID: 282816264}
+  - component: {fileID: 282816265}
   m_Layer: 0
   m_Name: GameSession
   m_TagString: Untagged
@@ -3138,6 +3139,18 @@ MonoBehaviour:
   fadeOutDuration: 0.2
   blackHoldDuration: 0.08
   fadeInDuration: 0.25
+--- !u!114 &282816265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 282816251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7f0d5d81a7d4c2b9c52db6db7d6cb90, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Demo02.UI.AreaBanner
 --- !u!114 &282816258
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -15,7 +15,8 @@ namespace Demo02.UI
 
         private void OnGUI()
         {
-            if (investigationState == null)
+            if (investigationState == null
+                || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen))
             {
                 return;
             }

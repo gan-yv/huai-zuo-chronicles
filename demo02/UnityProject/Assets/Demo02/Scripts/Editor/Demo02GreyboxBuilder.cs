@@ -10,6 +10,7 @@ using Demo02.WorldState;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 namespace Demo02.Editor
@@ -489,6 +490,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<QuestNavigationHud>();
             gameSession.AddComponent<WorldMapController>();
             gameSession.AddComponent<ScreenFade>();
+            gameSession.AddComponent<AreaBanner>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
             party.Configure(player.transform, partner.transform);
             gameSession.AddComponent<CombatHud>();
@@ -541,7 +543,28 @@ namespace Demo02.Editor
             {
                 sceneCamera.transform.position = new Vector3(0f, 5f, -16f);
                 sceneCamera.transform.rotation = Quaternion.Euler(20f, 0f, 0f);
+                sceneCamera.farClipPlane = 220f;
             }
+
+            Light sun = scene
+                .GetRootGameObjects()
+                .SelectMany(item => item.GetComponentsInChildren<Light>(includeInactive: true))
+                .FirstOrDefault(light => light.type == LightType.Directional);
+            if (sun != null)
+            {
+                sun.color = new Color(1f, 0.86f, 0.68f);
+                sun.intensity = 1.15f;
+                sun.shadows = LightShadows.Soft;
+                sun.shadowStrength = 0.74f;
+            }
+
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = FogMode.Linear;
+            RenderSettings.fogColor = new Color(0.55f, 0.62f, 0.68f);
+            RenderSettings.fogStartDistance = 48f;
+            RenderSettings.fogEndDistance = 165f;
+            RenderSettings.ambientMode = AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(0.42f, 0.46f, 0.52f);
         }
 
         private static GameObject CreateBlock(
