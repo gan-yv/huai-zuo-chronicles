@@ -9,6 +9,7 @@ namespace Demo02.Core
     public sealed class WorldSaveData
     {
         public int Version = 1;
+        public string SavedAtUtc;
         public string SceneName;
         public float PlayerX;
         public float PlayerY;

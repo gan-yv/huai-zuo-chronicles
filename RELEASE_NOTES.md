@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.8.0
+# Huai-Zuo Chronicles v1.9.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.8.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.9.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.8.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.9.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-B4BEE2A0D5B8AA8A81C72F9074A54937A614EFD111D4BF04B383D156EB9CEDC7
+486F4AB55C39A9D6D7181C9E0B48550C5BDF1CE23D356630BBFD812D04C9407A
 ```
 
 ## 已包含
@@ -48,6 +48,12 @@ B4BEE2A0D5B8AA8A81C72F9074A54937A614EFD111D4BF04B383D156EB9CEDC7
 - 错序会重置锚点，任务罗盘会指向下一处正确目标。
 - 新增持久化主音量、界面缩放和镜头灵敏度。
 - 新增减弱动态效果，减少程序步态和身体起伏。
+- 存档升级为自动存档与三个独立手动槽位。
+- 暂停菜单可查看槽位区域、章节阶段、调查统计和保存时间。
+- 自动存档保持只读，手动槽支持保存、覆盖、读取和删除。
+- 覆盖、读取和删除都有二次确认，降低误操作风险。
+- 旧版单存档首次运行会自动迁移，不会直接丢失已有进度。
+- 存档、设置、地图、案卷和对白互斥输入，避免后台快捷键误触。
 - 程序化人物轮廓和三层店铺立面组成的第一遍美术 pass。
 - 屋檐、门面、立柱、布幡与灯笼覆盖官署前街、东关街和彩衣街。
 - 沈伯委托、沈砚失踪、七车私盐和陆崇除名封条组成的证据链。
@@ -70,7 +76,7 @@ B4BEE2A0D5B8AA8A81C72F9074A54937A614EFD111D4BF04B383D156EB9CEDC7
 - 三个时间锚点和街尾修复。
 - 可选战斗、闪避和敌人攻击预警。
 - 两个结局结果。
-- 自动存档、F5 保存、F9 读取。
+- 自动存档、`F5` 快捷保存、`F9` 快捷读取。
 - 新游戏开场旁白与目标说明。
 - 精简 HUD，常驻操作说明改为 F1 帮助。
 - 完整结局页和队伍失败页。
@@ -98,3 +104,5 @@ B4BEE2A0D5B8AA8A81C72F9074A54937A614EFD111D4BF04B383D156EB9CEDC7
 - 干净临时工程重建成功，Input System 与 URP 包清单校验通过。
 - 时间锚点顺序、错序重置和读档恢复自动测试通过。
 - 设置界面预览与 Windows 构建验证通过。
+- 存档面板打开时世界保持暂停，`Esc` 先返回暂停菜单。
+- 自动槽、三个手动槽、覆盖确认、删除确认和最近存档选择纳入回归检查。

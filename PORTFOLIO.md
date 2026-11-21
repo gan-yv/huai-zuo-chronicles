@@ -18,6 +18,8 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ![游戏设置](demo02/docs/screenshots/settings-screen.png)
 
+![多槽位存档](demo02/docs/screenshots/save-slots.png)
+
 ## 目标岗位
 
 - Unity 客户端 / Gameplay 程序
@@ -46,8 +48,9 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 证据处置选择会生成官署告示或封存证物箱等场景后续。
 - 时间锚点按“西仓 → 东验 → 中册”的顺序解谜，错序会重置并重新导航。
 - 持久化设置：音量、UI 缩放、镜头灵敏度和减弱动态效果。
+- 自动存档与三个手动槽位，支持覆盖、读取、删除确认和旧存档迁移。
 - 可选战斗、攻击预警和闪避无敌帧。
-- JSON 存档、自动检查点和标题界面继续游戏。
+- 版本化 JSON 存档、自动检查点、三槽位管理和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
 - 两个街道结局状态与重新开始流程。
 
@@ -71,10 +74,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.8.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.9.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.8.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.9.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -113,7 +116,10 @@ R          结局或队伍倒下后重开
 
 - 版本化 JSON 存档。
 - 保存场景、位置、队伍、线索、时间层、锚点、战斗状态和结局。
-- 支持自动检查点、`F5` 手动保存和 `F9` 读取。
+- 自动存档与三个手动槽位分离，自动槽保持只读。
+- 槽位摘要展示区域、章节阶段、调查统计和保存时间。
+- 旧单文件存档自动迁移，覆盖、读取和删除都有确认流程。
+- 支持自动检查点、`F5` 快捷保存和 `F9` 快捷读取。
 
 ### 内容系统
 

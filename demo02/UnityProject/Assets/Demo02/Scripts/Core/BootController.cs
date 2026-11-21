@@ -40,7 +40,8 @@ namespace Demo02.Core
                 || System.Array.IndexOf(arguments, "--preview-journal") >= 0
                 || System.Array.IndexOf(arguments, "--preview-vision") >= 0
                 || System.Array.IndexOf(arguments, "--preview-choice") >= 0
-                || System.Array.IndexOf(arguments, "--preview-settings") >= 0)
+                || System.Array.IndexOf(arguments, "--preview-settings") >= 0
+                || System.Array.IndexOf(arguments, "--preview-saves") >= 0)
             {
                 StartGame(showOpening: false);
             }
@@ -238,7 +239,7 @@ namespace Demo02.Core
 
         private static void ContinueGame()
         {
-            SaveSystem.LoadSavedGame(out _);
+            SaveSystem.LoadLatestSavedGame(out _);
         }
 
         private static void QuitGame()

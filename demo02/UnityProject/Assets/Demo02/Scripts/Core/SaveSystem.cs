@@ -15,9 +15,21 @@ namespace Demo02.Core
     [DefaultExecutionOrder(50)]
     public sealed class SaveSystem : MonoBehaviour
     {
-        private const string SaveFileName = "demo02-save.json";
-        private static string SavePath =>
-            Path.Combine(Application.persistentDataPath, SaveFileName);
+        public const int AutoSlot = 0;
+        public const int ManualSlotCount = 3;
+        private const string LegacySaveFileName = "demo02-save.json";
+        private const string AutoSaveFileName = "demo02-save-auto.json";
+
+        public static int ActiveManualSlot { get; private set; }
+
+#if UNITY_EDITOR
+        public static string SaveDirectoryOverrideForTests { get; set; }
+
+        public static string GetSlotPathForTests(int slotIndex)
+        {
+            return GetSlotPath(slotIndex);
+        }
+#endif
 
         private InvestigationState investigationState;
         private PlayerPartyController party;
@@ -29,7 +41,95 @@ namespace Demo02.Core
 
         public static bool HasSave()
         {
-            return TryReadSave(out _);
+            EnsureLegacySaveMigrated();
+            for (int slot = AutoSlot; slot <= ManualSlotCount; slot++)
+            {
+                if (TryReadSave(slot, out _))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static string GetSlotPath(int slotIndex)
+        {
+            string fileName = slotIndex == AutoSlot
+                ? AutoSaveFileName
+                : $"demo02-save-slot-{slotIndex}.json";
+            return Path.Combine(GetSaveDirectory(), fileName);
+        }
+
+        private static string GetSaveDirectory()
+        {
+#if UNITY_EDITOR
+            if (!string.IsNullOrWhiteSpace(SaveDirectoryOverrideForTests))
+            {
+                return SaveDirectoryOverrideForTests;
+            }
+#endif
+            return Application.persistentDataPath;
+        }
+
+        public static string GetSlotDisplayName(int slotIndex)
+        {
+            return slotIndex == AutoSlot ? "自动存档" : $"存档槽 {slotIndex}";
+        }
+
+        public static DateTime GetSlotLastWriteTime(int slotIndex)
+        {
+            if (slotIndex < AutoSlot || slotIndex > ManualSlotCount)
+            {
+                return DateTime.MinValue;
+            }
+
+            string savePath = GetSlotPath(slotIndex);
+            return File.Exists(savePath)
+                ? File.GetLastWriteTime(savePath)
+                : DateTime.MinValue;
+        }
+
+        private static void EnsureLegacySaveMigrated()
+        {
+            string legacyPath = Path.Combine(
+                GetSaveDirectory(),
+                LegacySaveFileName
+            );
+            string autoPath = GetSlotPath(AutoSlot);
+            if (!File.Exists(legacyPath) || File.Exists(autoPath))
+            {
+                return;
+            }
+
+            try
+            {
+                string legacyJson = File.ReadAllText(legacyPath);
+                WorldSaveData legacyData = JsonUtility.FromJson<WorldSaveData>(
+                    legacyJson
+                );
+                if (legacyData != null
+                    && string.IsNullOrWhiteSpace(legacyData.SavedAtUtc))
+                {
+                    legacyData.SavedAtUtc = File
+                        .GetLastWriteTimeUtc(legacyPath)
+                        .ToString("O");
+                    File.WriteAllText(
+                        autoPath,
+                        JsonUtility.ToJson(legacyData, prettyPrint: true)
+                    );
+                }
+                else
+                {
+                    File.Copy(legacyPath, autoPath);
+                }
+
+                Debug.Log($"Migrated legacy save to {autoPath}");
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+            }
         }
 
         private void Start()
@@ -60,10 +160,21 @@ namespace Demo02.Core
 
             if (Keyboard.current.f5Key.wasPressedThisFrame)
             {
-                SaveCurrentState();
+                if (IsExclusiveUiOpen())
+                {
+                    return;
+                }
+
+                int quickSlot = ActiveManualSlot > 0 ? ActiveManualSlot : 1;
+                SaveCurrentState(announce: true, slotIndex: quickSlot);
             }
             else if (Keyboard.current.f9Key.wasPressedThisFrame)
             {
+                if (IsExclusiveUiOpen())
+                {
+                    return;
+                }
+
                 LoadSavedState();
             }
 
@@ -74,7 +185,7 @@ namespace Demo02.Core
                 if (!string.IsNullOrWhiteSpace(lastStateSignature)
                     && signature != lastStateSignature)
                 {
-                    SaveCurrentState(announce: false);
+                    SaveCurrentState(announce: false, slotIndex: AutoSlot);
                 }
 
                 lastStateSignature = signature;
@@ -113,7 +224,7 @@ namespace Demo02.Core
             );
         }
 
-        public void SaveCurrentState(bool announce = true)
+        public void SaveCurrentState(bool announce = true, int slotIndex = AutoSlot)
         {
             if (!RefreshReferences())
             {
@@ -121,11 +232,13 @@ namespace Demo02.Core
                 return;
             }
 
+            slotIndex = Mathf.Clamp(slotIndex, AutoSlot, ManualSlotCount);
             Transform activeCharacter = party.ActiveCharacter;
             WorldRuntime runtime = WorldRuntime.Instance;
             WorldSaveData data = new()
             {
                 Version = 1,
+                SavedAtUtc = DateTime.UtcNow.ToString("O"),
                 SceneName = SceneManager.GetActiveScene().name,
                 PlayerX = activeCharacter.position.x,
                 PlayerY = activeCharacter.position.y,
@@ -159,11 +272,20 @@ namespace Demo02.Core
             try
             {
                 string json = JsonUtility.ToJson(data, prettyPrint: true);
-                File.WriteAllText(SavePath, json);
-                Debug.Log($"{(announce ? "Saved" : "Auto-saved")} game to {SavePath}");
+                string savePath = GetSlotPath(slotIndex);
+                File.WriteAllText(savePath, json);
+                if (slotIndex > AutoSlot)
+                {
+                    ActiveManualSlot = slotIndex;
+                }
+
+                Debug.Log(
+                    $"{(announce ? "Saved" : "Auto-saved")} game to "
+                    + $"{GetSlotDisplayName(slotIndex)} ({savePath})"
+                );
                 if (announce)
                 {
-                    ShowStatus("游戏已保存");
+                    ShowStatus($"已保存到{GetSlotDisplayName(slotIndex)}");
                     GameAudio.PlayConfirm();
                 }
             }
@@ -178,22 +300,37 @@ namespace Demo02.Core
         {
             if (pauseStatus)
             {
-                SaveCurrentState(announce: false);
+                SaveCurrentState(announce: false, slotIndex: AutoSlot);
             }
         }
 
         private void OnApplicationQuit()
         {
-            SaveCurrentState(announce: false);
+            SaveCurrentState(announce: false, slotIndex: AutoSlot);
         }
 
-        public static bool LoadSavedGame(out WorldSaveData data)
+        public static bool LoadLatestSavedGame(out WorldSaveData data)
         {
-            if (!TryReadSave(out data))
+            if (!TryReadLatestSave(out data, out int slotIndex))
             {
                 return false;
             }
 
+            return LoadSaveData(data, slotIndex);
+        }
+
+        public static bool LoadSavedGame(int slotIndex, out WorldSaveData data)
+        {
+            if (!TryReadSave(slotIndex, out data))
+            {
+                return false;
+            }
+
+            return LoadSaveData(data, slotIndex);
+        }
+
+        private static bool LoadSaveData(WorldSaveData data, int slotIndex)
+        {
             WorldRuntime runtime = WorldRuntime.Instance;
             if (runtime == null)
             {
@@ -203,16 +340,36 @@ namespace Demo02.Core
 
             Time.timeScale = 1f;
             runtime.QueueSaveLoad(data);
+            ActiveManualSlot = slotIndex == AutoSlot ? 0 : slotIndex;
             SceneManager.LoadScene(data.SceneName);
             return true;
         }
 
         private void LoadSavedState()
         {
-            if (!LoadSavedGame(out _))
+            bool loaded = ActiveManualSlot > 0
+                ? LoadSavedGame(ActiveManualSlot, out _)
+                : LoadLatestSavedGame(out _);
+            if (!loaded)
             {
                 ShowStatus("没有可读取的存档");
             }
+        }
+
+        private static bool IsExclusiveUiOpen()
+        {
+            return (SettingsController.Instance != null
+                    && SettingsController.Instance.IsOpen)
+                || (WorldMapController.Instance != null
+                    && WorldMapController.Instance.IsOpen)
+                || (InvestigationJournalController.Instance != null
+                    && InvestigationJournalController.Instance.IsOpen)
+                || (DialogueController.Instance != null
+                    && DialogueController.Instance.IsOpen)
+                || (SaveSlotController.Instance != null
+                    && SaveSlotController.Instance.IsOpen)
+                || (GameFlowController.Instance != null
+                    && GameFlowController.Instance.IsPaused);
         }
 
         private void ApplySave(WorldSaveData data)
@@ -316,17 +473,23 @@ namespace Demo02.Core
             );
         }
 
-        private static bool TryReadSave(out WorldSaveData data)
+        public static bool TryReadSave(int slotIndex, out WorldSaveData data)
         {
             data = null;
-            if (!File.Exists(SavePath))
+            if (slotIndex < AutoSlot || slotIndex > ManualSlotCount)
+            {
+                return false;
+            }
+
+            string savePath = GetSlotPath(slotIndex);
+            if (!File.Exists(savePath))
             {
                 return false;
             }
 
             try
             {
-                string json = File.ReadAllText(SavePath);
+                string json = File.ReadAllText(savePath);
                 data = JsonUtility.FromJson<WorldSaveData>(json);
                 return data != null
                     && data.Version == 1
@@ -336,6 +499,68 @@ namespace Demo02.Core
             {
                 Debug.LogException(exception);
                 data = null;
+                return false;
+            }
+        }
+
+        public static bool TryReadLatestSave(
+            out WorldSaveData data,
+            out int slotIndex)
+        {
+            EnsureLegacySaveMigrated();
+            data = null;
+            slotIndex = -1;
+            DateTime latestTime = DateTime.MinValue;
+            for (int slot = AutoSlot; slot <= ManualSlotCount; slot++)
+            {
+                if (!TryReadSave(slot, out WorldSaveData candidate))
+                {
+                    continue;
+                }
+
+                DateTime timestamp = DateTime.TryParse(
+                    candidate.SavedAtUtc,
+                    out DateTime parsed
+                )
+                    ? parsed.ToUniversalTime()
+                    : File.GetLastWriteTimeUtc(GetSlotPath(slot));
+                if (timestamp > latestTime)
+                {
+                    latestTime = timestamp;
+                    data = candidate;
+                    slotIndex = slot;
+                }
+            }
+
+            return data != null;
+        }
+
+        public static bool DeleteSlot(int slotIndex)
+        {
+            if (slotIndex <= AutoSlot || slotIndex > ManualSlotCount)
+            {
+                return false;
+            }
+
+            string savePath = GetSlotPath(slotIndex);
+            if (!File.Exists(savePath))
+            {
+                return false;
+            }
+
+            try
+            {
+                File.Delete(savePath);
+                if (ActiveManualSlot == slotIndex)
+                {
+                    ActiveManualSlot = 0;
+                }
+
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
                 return false;
             }
         }

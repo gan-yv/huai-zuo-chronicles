@@ -10,13 +10,18 @@ namespace Demo02.Core
     [DefaultExecutionOrder(-50)]
     public sealed class GameFlowController : MonoBehaviour
     {
+        public static GameFlowController Instance { get; private set; }
+
         private InvestigationState investigationState;
         private PlayerPartyController party;
         private bool isPaused;
         private bool isEndingFrozen;
 
+        public bool IsPaused => isPaused;
+
         private void Awake()
         {
+            Instance = this;
             investigationState = FindAnyObjectByType<InvestigationState>();
             party = FindAnyObjectByType<PlayerPartyController>();
         }
@@ -45,6 +50,12 @@ namespace Demo02.Core
             }
 
             if (SettingsController.Instance != null && SettingsController.Instance.IsOpen)
+            {
+                return;
+            }
+
+            if (SaveSlotController.Instance != null
+                && SaveSlotController.Instance.IsOpen)
             {
                 return;
             }
@@ -88,9 +99,23 @@ namespace Demo02.Core
             Time.timeScale = 1f;
         }
 
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
         private void OnGUI()
         {
             if (!isPaused && !IsEnding)
+            {
+                return;
+            }
+
+            if (SaveSlotController.Instance != null
+                && SaveSlotController.Instance.IsOpen)
             {
                 return;
             }
@@ -168,7 +193,16 @@ namespace Demo02.Core
             {
                 TogglePause();
             }
-            float restartY = IsEnding ? y : y + 62f * scale;
+            float saveY = y + 62f * scale;
+            if (!IsEnding && GUI.Button(
+                new Rect(x, saveY, width, buttonHeight),
+                "存档与读档",
+                UiTheme.Button(16)
+            ))
+            {
+                OpenSaveSlots();
+            }
+            float restartY = IsEnding ? saveY : saveY + 62f * scale;
             if (GUI.Button(
                 new Rect(x, restartY, width, buttonHeight),
                 "重新开始",
@@ -195,6 +229,20 @@ namespace Demo02.Core
         {
             isPaused = !isPaused;
             Time.timeScale = isPaused ? 0f : 1f;
+        }
+
+        public void OpenSaveSlots()
+        {
+            if (!isPaused)
+            {
+                isPaused = true;
+                Time.timeScale = 0f;
+            }
+
+            if (SaveSlotController.Instance != null)
+            {
+                SaveSlotController.Instance.Open();
+            }
         }
 
         public void RestartCurrentScene()

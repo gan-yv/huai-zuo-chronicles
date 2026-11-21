@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Demo02.Combat;
 using Demo02.Core;
@@ -68,6 +69,17 @@ namespace Demo02.Editor
             Debug.Log("Combat damage verification passed: 60 HP defeated in two 30 damage hits.");
         }
 
+        public static void VerifyAllForBatch()
+        {
+            VerifyCombatDamageForBatch();
+            VerifyTimeLayerForBatch();
+            VerifyChapterFlowForBatch();
+            VerifySaveSlotsForBatch();
+            Debug.Log(
+                "All automated checks passed: combat, time layer, chapter and saves."
+            );
+        }
+
         public static void VerifyTimeLayerForBatch()
         {
             GameObject probe = new GameObject("TimeLayerProbe");
@@ -89,6 +101,151 @@ namespace Demo02.Editor
 
             Object.DestroyImmediate(probe);
             Debug.Log("Time layer verification passed: Present <-> Past.");
+        }
+
+        public static void VerifySaveSlotsForBatch()
+        {
+            string testDirectory = Path.Combine(
+                Application.temporaryCachePath,
+                "Demo02SaveSlotVerification"
+            );
+            if (Directory.Exists(testDirectory))
+            {
+                Directory.Delete(testDirectory, recursive: true);
+            }
+
+            Directory.CreateDirectory(testDirectory);
+            SaveSystem.SaveDirectoryOverrideForTests = testDirectory;
+            try
+            {
+                string legacyPath = Path.Combine(
+                    testDirectory,
+                    "demo02-save.json"
+                );
+                WriteTestSave(
+                    legacyPath,
+                    null
+                );
+                File.SetLastWriteTimeUtc(
+                    legacyPath,
+                    new System.DateTime(
+                        2026,
+                        11,
+                        21,
+                        10,
+                        0,
+                        0,
+                        System.DateTimeKind.Utc
+                    )
+                );
+                if (!SaveSystem.HasSave()
+                    || !SaveSystem.TryReadSave(
+                        SaveSystem.AutoSlot,
+                        out WorldSaveData migratedData
+                    )
+                    || string.IsNullOrWhiteSpace(migratedData.SavedAtUtc)
+                    || File.Exists(legacyPath) == false)
+                {
+                    throw new System.InvalidOperationException(
+                        "Legacy save migration to the automatic slot failed."
+                    );
+                }
+
+                WriteTestSave(
+                    SaveSystem.GetSlotPathForTests(1),
+                    "2026-11-21T11:00:00.0000000Z"
+                );
+                WriteTestSave(
+                    SaveSystem.GetSlotPathForTests(2),
+                    "2026-11-21T12:00:00.0000000Z"
+                );
+                WriteTestSave(
+                    SaveSystem.GetSlotPathForTests(3),
+                    "2026-11-21T13:00:00.0000000Z"
+                );
+
+                for (int slot = 1; slot <= SaveSystem.ManualSlotCount; slot++)
+                {
+                    if (!SaveSystem.TryReadSave(slot, out WorldSaveData data)
+                        || data.SceneName != SceneNames.Guangling
+                        || data.ClueIds.Count != 2
+                        || data.TimeAnchorIds.Count != 1
+                        || data.EchoIds.Count != 1)
+                    {
+                        throw new System.InvalidOperationException(
+                            $"Manual slot {slot} did not round-trip correctly."
+                        );
+                    }
+                }
+
+                if (!SaveSystem.TryReadLatestSave(
+                        out _,
+                        out int latestSlot
+                    )
+                    || latestSlot != 3)
+                {
+                    throw new System.InvalidOperationException(
+                        "Latest-save selection did not choose manual slot 3."
+                    );
+                }
+
+                if (SaveSystem.DeleteSlot(SaveSystem.AutoSlot))
+                {
+                    throw new System.InvalidOperationException(
+                        "The automatic save slot must remain read-only."
+                    );
+                }
+
+                if (!SaveSystem.DeleteSlot(3)
+                    || SaveSystem.TryReadSave(3, out _)
+                    || !SaveSystem.TryReadLatestSave(out _, out latestSlot)
+                    || latestSlot != 2)
+                {
+                    throw new System.InvalidOperationException(
+                        "Manual slot deletion or latest-save fallback failed."
+                    );
+                }
+            }
+            finally
+            {
+                SaveSystem.SaveDirectoryOverrideForTests = null;
+                if (Directory.Exists(testDirectory))
+                {
+                    Directory.Delete(testDirectory, recursive: true);
+                }
+            }
+
+            Debug.Log(
+                "Save verification passed: migration, 3 manual slots, "
+                + "latest selection, read-only auto slot and deletion."
+            );
+        }
+
+        private static void WriteTestSave(string path, string savedAtUtc)
+        {
+            WorldSaveData data = new()
+            {
+                SavedAtUtc = savedAtUtc,
+                SceneName = SceneNames.Guangling,
+                AreaId = "official-street",
+                AreaName = "官署前街",
+                PlayerX = 1.5f,
+                PlayerY = 0f,
+                PlayerZ = -3f,
+                ActivePartyIndex = 1,
+                TimeLayer = TimeLayer.Past,
+                Stance = WitnessStance.PersonFirst,
+                EvidencePlan = EvidencePlan.PrivateProtection,
+                ChapterStage = ChapterStage.Investigate,
+                ClueIds = new List<string>
+                {
+                    "clue-salt-permit",
+                    "clue-ledger"
+                },
+                TimeAnchorIds = new List<string> { "past-02" },
+                EchoIds = new List<string> { "echo-coin" }
+            };
+            File.WriteAllText(path, JsonUtility.ToJson(data, prettyPrint: true));
         }
 
         public static void VerifyChapterFlowForBatch()
@@ -707,6 +864,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<InvestigationJournalController>();
             gameSession.AddComponent<InvestigationVisionController>();
             gameSession.AddComponent<SettingsController>();
+            gameSession.AddComponent<SaveSlotController>();
             gameSession.AddComponent<ScreenFade>();
             gameSession.AddComponent<AreaBanner>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
@@ -742,6 +900,9 @@ namespace Demo02.Editor
 
             GameObject settingsMarker = new GameObject("Chapter01_SettingsSystem");
             settingsMarker.transform.SetParent(root.transform);
+
+            GameObject saveSlotsMarker = new GameObject("Chapter01_MultiSlotSaves");
+            saveSlotsMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
