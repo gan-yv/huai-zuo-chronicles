@@ -68,6 +68,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 背包支持分类筛选，盐引铜钱与空白账页可通过使用产生持久剧情记录。
 - 可选目标会根据证据与剧情事实自动激活、切换和完成，并在 HUD 与案卷中提示。
 - 开场采用上下文教学，并为主线和可选目标提供双罗盘导航。
+- 运行时可打开 `F3` 性能面板，并通过命令行生成可复查的性能基准报告。
 - 可选战斗、攻击预警和闪避无敌帧。
 - 版本化 JSON 存档、自动检查点、三槽位管理和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -93,10 +94,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.19.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.20.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.19.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.20.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -142,6 +143,13 @@ R          结局或队伍倒下后重开
 - 旧单文件存档自动迁移，覆盖、读取和删除都有确认流程。
 - 支持自动检查点、`F5` 快捷保存和 `F9` 快捷读取。
 
+### 运行验证
+
+- 2026-11-22 在本机 NVIDIA RTX 3060 Laptop、1280×720 窗口下完成 15 秒自动采样。
+- 平均 172.6 FPS，1% Low 102.4 FPS，平均帧耗时 5.8 ms，托管内存约 4.9 MB。
+- 最低瞬时帧 25.1 FPS、最差帧 39.9 ms，属于运行期间偶发卡顿，仍需继续优化。
+- [查看原始 JSON 基准报告](demo02/docs/benchmarks/v1.20.0-windows-x64.json)
+
 ### 内容系统
 
 - 案件资产位于 `Assets/Demo02/Data/Quests/Chapter01_Case.asset`，可直接在 Inspector 编辑。
@@ -156,6 +164,7 @@ R          结局或队伍倒下后重开
 - 关键物品可消费或保留，并通过剧情事实影响案卷和后续内容。
 - 可选目标支持配置条件、追踪提示、目标对象和自动完成。
 - 上下文教学按阶段渐进提示，交互和拾取反馈使用统一主题 UI。
+- 运行诊断与自动基准支持 FPS、1% Low、帧耗时和托管内存记录。
 - 时间层通过可见性和碰撞切换管理。
 - 灰盒场景由可重复运行的 Editor Builder 生成，降低手工维护成本。
 - 演示截图通过 Unity 内部截屏参数生成，避免窗口缩放和环境遮挡。

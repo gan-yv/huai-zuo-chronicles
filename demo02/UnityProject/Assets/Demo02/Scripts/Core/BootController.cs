@@ -35,7 +35,15 @@ namespace Demo02.Core
                 StartCoroutine(CaptureTitle(capturePath));
             }
 
-            if (System.Array.IndexOf(arguments, "--preview-world") >= 0
+            bool benchmarkRequested = System.Array.Exists(
+                arguments,
+                argument => argument.StartsWith(
+                    "--benchmark-",
+                    System.StringComparison.Ordinal
+                )
+            );
+            if (benchmarkRequested
+                || System.Array.IndexOf(arguments, "--preview-world") >= 0
                 || System.Array.IndexOf(arguments, "--preview-map") >= 0
                 || System.Array.IndexOf(arguments, "--preview-journal") >= 0
                 || System.Array.IndexOf(arguments, "--preview-vision") >= 0

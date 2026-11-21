@@ -338,7 +338,11 @@ namespace Demo02.Core
                 if (argument.StartsWith(
                     "--preview-",
                     StringComparison.Ordinal
-                ))
+                )
+                    || argument.StartsWith(
+                        "--benchmark-",
+                        StringComparison.Ordinal
+                    ))
                 {
                     return true;
                 }

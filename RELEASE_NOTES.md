@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.19.0
+# Huai-Zuo Chronicles v1.20.0
 
 发布日期：2026-11-22
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.19.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.20.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.19.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.20.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-02C77A1B85BCFE477286627FA55069A977B2D73AF695E27F6CDD50B4653B9298
+F6C21DF6E8EF7A2655292F025C9B457129C9F0C7C23533F3D72A873FC9A82623
 ```
 
 ## 已包含
@@ -47,6 +47,8 @@ SHA256：
 - 新增上下文教学，只在对应阶段提示移动、调查、案卷、证词和时间层操作。
 - 主线与可选目标同时显示独立方向和距离。
 - 调整交互半径、移动启停缓冲和镜头碰撞回弹，减少操作僵硬感。
+- 新增 `F3` 性能面板和命令行自动基准，可记录 FPS、1% Low、最差帧和内存。
+- UI 按钮样式加入缓存，减少重复样式创建。
 - 案件资产加入内容版本与自动迁移，并固定条件枚举编号以兼容旧资产。
 - 对白支持章节、立场、证据去向和结局条件，并自动匹配对应脚本。
 - 对白选项可设置剧情状态，对白结束效果可推进章节阶段。
@@ -142,3 +144,5 @@ SHA256：
 - 剧情物品前置条件、事实写入、物品消耗和治疗效果自动验证通过。
 - 可选目标激活、切换、完成和茶肆分支自动验证通过。
 - 开场教学、双罗盘、交互提示和完整章节回归通过。
+- Windows 构建完成 15 秒自动性能采样，详细结果保存在 `demo02/docs/benchmarks`。
+- 测试机 1280×720 平均 172.6 FPS，1% Low 102.4 FPS，平均帧耗时 5.8 ms。

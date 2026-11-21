@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Demo02.Core;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace Demo02.UI
         private static readonly Texture2D PanelTexture = CreateTexture(Panel);
         private static readonly Texture2D PanelHoverTexture = CreateTexture(PanelHover);
         private static readonly Texture2D AccentTexture = CreateTexture(Accent);
+        private static readonly Dictionary<int, GUIStyle> ButtonStyleCache = new();
 
         public static float Scale =>
             Mathf.Clamp(
@@ -39,10 +41,19 @@ namespace Demo02.UI
 
         public static GUIStyle Button(int fontSize)
         {
-            return new GUIStyle(GUI.skin.button)
+            int pixelFontSize = Mathf.Max(10, Mathf.RoundToInt(fontSize * Scale));
+            if (ButtonStyleCache.TryGetValue(
+                pixelFontSize,
+                out GUIStyle cached
+            ))
+            {
+                return cached;
+            }
+
+            GUIStyle style = new(GUI.skin.button)
             {
                 alignment = TextAnchor.MiddleCenter,
-                fontSize = Mathf.Max(10, Mathf.RoundToInt(fontSize * Scale)),
+                fontSize = pixelFontSize,
                 fontStyle = FontStyle.Bold,
                 wordWrap = true,
                 normal =
@@ -61,6 +72,8 @@ namespace Demo02.UI
                     background = AccentTexture
                 }
             };
+            ButtonStyleCache[pixelFontSize] = style;
+            return style;
         }
 
         public static void DrawRect(Rect rect, Color color)
