@@ -929,11 +929,11 @@ PlayerSettings:
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: 443de5f9-b4a6-4947-9b77-935f40a4a6af
+  cloudProjectId:
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: UnityProject
-  organizationId: ganyv1314
+  organizationId:
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

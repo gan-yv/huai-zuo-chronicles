@@ -6,6 +6,14 @@
 
 - 继续完善广陵街道的视觉辨识、剧情对白和试玩流程。
 
+## v0.8.1 - 2026-11-21
+
+标签：`demo02-clean-editor-v0.8.1`
+
+- 清除项目创建时自动写入的 Unity Cloud 项目和组织绑定。
+- 解决 Unity Editor 因缺失 `services-gateway` 服务配置而持续输出 `KeyNotFoundException` 的问题。
+- 当前项目不需要 Unity Cloud 或 Collaboration 服务，Git 继续作为唯一版本管理来源。
+
 ## v0.8 - 2026-11-21
 
 标签：`demo02-save-system-v0.8`
