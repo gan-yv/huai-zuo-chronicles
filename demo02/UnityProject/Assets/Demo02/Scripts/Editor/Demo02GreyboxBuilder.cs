@@ -291,6 +291,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("NPC_WarehouseWorker") == null
                     || existingRoot.transform.Find("NPC_ShenBo") == null
                     || existingRoot.transform.Find("Chapter01_StorySetup") == null
+                    || existingRoot.transform.Find("Chapter01_ArtPass") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -365,6 +366,27 @@ namespace Demo02.Editor
                 {
                     right.isStatic = true;
                 }
+
+                int styleIndex = Mathf.RoundToInt((z + 14f) / 10f);
+                CreateShopFacadeDetails(
+                    root.transform,
+                    $"LeftBuilding_{z:0}",
+                    left.transform.position,
+                    new Vector3(6f, 6f, 8f),
+                    facadeDirection: 1f,
+                    styleIndex: styleIndex
+                );
+                if (right != null)
+                {
+                    CreateShopFacadeDetails(
+                        root.transform,
+                        $"RightBuilding_{z:0}",
+                        right.transform.position,
+                        new Vector3(6f, 6f, 8f),
+                        facadeDirection: -1f,
+                        styleIndex: styleIndex + 1
+                    );
+                }
             }
 
             GameObject endWall = CreateBlock(
@@ -393,12 +415,14 @@ namespace Demo02.Editor
                 new Color(0.45f, 0.3f, 0.17f)
             );
 
-            GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            player.name = "PlayerPlaceholder";
-            player.transform.SetParent(root.transform);
-            player.transform.position = new Vector3(0f, 1f, -10f);
-            Object.DestroyImmediate(player.GetComponent<CapsuleCollider>());
-            player.AddComponent<ColorTint>().Configure(new Color(0.25f, 0.55f, 0.9f));
+            GameObject player = CreateCharacter(
+                root.transform,
+                "PlayerPlaceholder",
+                new Vector3(0f, 1f, -10f),
+                new Color(0.2f, 0.43f, 0.68f),
+                new Color(0.82f, 0.65f, 0.3f),
+                addNpcCollider: false
+            );
             player.AddComponent<CharacterController>();
             player.AddComponent<ThirdPersonController>();
             player.AddComponent<PlayerInteractor>();
@@ -413,12 +437,14 @@ namespace Demo02.Editor
             Object.DestroyImmediate(meleeArc.GetComponent<BoxCollider>());
             meleeArc.SetActive(false);
 
-            GameObject partner = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            partner.name = "PartnerPlaceholder";
-            partner.transform.SetParent(root.transform);
-            partner.transform.position = new Vector3(-1.6f, 1f, -11.5f);
-            Object.DestroyImmediate(partner.GetComponent<CapsuleCollider>());
-            partner.AddComponent<ColorTint>().Configure(new Color(0.3f, 0.75f, 0.55f));
+            GameObject partner = CreateCharacter(
+                root.transform,
+                "PartnerPlaceholder",
+                new Vector3(-1.6f, 1f, -11.5f),
+                new Color(0.24f, 0.56f, 0.42f),
+                new Color(0.76f, 0.58f, 0.24f),
+                addNpcCollider: false
+            );
             partner.AddComponent<CharacterController>();
             ThirdPersonController partnerController = partner.AddComponent<ThirdPersonController>();
             partnerController.enabled = false;
@@ -428,11 +454,14 @@ namespace Demo02.Editor
             partnerInteractor.enabled = false;
             partner.AddComponent<Combatant>().Configure(CombatTeam.Player, 100f);
 
-            GameObject worker = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            worker.name = "NPC_WarehouseWorker";
-            worker.transform.SetParent(root.transform);
-            worker.transform.position = new Vector3(-4.7f, 1f, 1f);
-            worker.AddComponent<ColorTint>().Configure(new Color(0.85f, 0.5f, 0.18f));
+            GameObject worker = CreateCharacter(
+                root.transform,
+                "NPC_WarehouseWorker",
+                new Vector3(-4.7f, 1f, 1f),
+                new Color(0.62f, 0.37f, 0.18f),
+                new Color(0.85f, 0.58f, 0.24f),
+                addNpcCollider: true
+            );
             NpcDialogueInteractable workerDialogue = worker.AddComponent<NpcDialogueInteractable>();
             workerDialogue.Configure(
                 "盐仓搬运工",
@@ -596,6 +625,9 @@ namespace Demo02.Editor
             GameObject chapterMarker = new GameObject("Chapter01_StorySetup");
             chapterMarker.transform.SetParent(root.transform);
 
+            GameObject artMarker = new GameObject("Chapter01_ArtPass");
+            artMarker.transform.SetParent(root.transform);
+
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
             WorldRuntime worldRuntime = worldRuntimeObject.AddComponent<WorldRuntime>();
@@ -684,6 +716,228 @@ namespace Demo02.Editor
             }
 
             return block;
+        }
+
+        private static GameObject CreateCharacter(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Color outfit,
+            Color accent,
+            bool addNpcCollider)
+        {
+            GameObject character = new(name);
+            character.transform.SetParent(parent);
+            character.transform.position = position;
+
+            Color skin = new(0.82f, 0.66f, 0.52f);
+            Color hair = new(0.13f, 0.09f, 0.075f);
+            Color trousers = Color.Lerp(outfit, Color.black, 0.38f);
+
+            CreateAvatarPart(
+                character.transform,
+                "Body",
+                PrimitiveType.Capsule,
+                new Vector3(0f, -0.15f, 0f),
+                new Vector3(0.72f, 0.64f, 0.72f),
+                outfit
+            );
+            CreateAvatarPart(
+                character.transform,
+                "Sash",
+                PrimitiveType.Cube,
+                new Vector3(0f, -0.08f, -0.37f),
+                new Vector3(0.18f, 0.58f, 0.05f),
+                accent
+            );
+            CreateAvatarPart(
+                character.transform,
+                "Belt",
+                PrimitiveType.Cube,
+                new Vector3(0f, -0.24f, 0f),
+                new Vector3(0.74f, 0.1f, 0.74f),
+                Color.Lerp(accent, Color.black, 0.28f)
+            );
+            CreateAvatarPart(
+                character.transform,
+                "Head",
+                PrimitiveType.Sphere,
+                new Vector3(0f, 0.67f, 0f),
+                new Vector3(0.58f, 0.62f, 0.58f),
+                skin
+            );
+            CreateAvatarPart(
+                character.transform,
+                "Hair",
+                PrimitiveType.Sphere,
+                new Vector3(0f, 0.88f, -0.03f),
+                new Vector3(0.6f, 0.25f, 0.6f),
+                hair
+            );
+
+            for (int side = -1; side <= 1; side += 2)
+            {
+                GameObject arm = CreateAvatarPart(
+                    character.transform,
+                    side < 0 ? "LeftArm" : "RightArm",
+                    PrimitiveType.Capsule,
+                    new Vector3(0.43f * side, -0.03f, 0f),
+                    new Vector3(0.17f, 0.39f, 0.17f),
+                    outfit
+                );
+                arm.transform.localRotation = Quaternion.Euler(0f, 0f, -13f * side);
+
+                CreateAvatarPart(
+                    character.transform,
+                    side < 0 ? "LeftLeg" : "RightLeg",
+                    PrimitiveType.Capsule,
+                    new Vector3(0.2f * side, -0.63f, 0f),
+                    new Vector3(0.2f, 0.38f, 0.2f),
+                    trousers
+                );
+            }
+
+            if (addNpcCollider)
+            {
+                CapsuleCollider collider = character.AddComponent<CapsuleCollider>();
+                collider.center = Vector3.zero;
+                collider.height = 2f;
+                collider.radius = 0.48f;
+            }
+
+            return character;
+        }
+
+        private static GameObject CreateAvatarPart(
+            Transform parent,
+            string name,
+            PrimitiveType primitive,
+            Vector3 localPosition,
+            Vector3 localScale,
+            Color tint)
+        {
+            GameObject part = GameObject.CreatePrimitive(primitive);
+            part.name = name;
+            part.transform.SetParent(parent, worldPositionStays: false);
+            part.transform.localPosition = localPosition;
+            part.transform.localScale = localScale;
+            Object.DestroyImmediate(part.GetComponent<Collider>());
+            part.AddComponent<ColorTint>().Configure(tint);
+            return part;
+        }
+
+        private static void CreateShopFacadeDetails(
+            Transform parent,
+            string namePrefix,
+            Vector3 center,
+            Vector3 size,
+            float facadeDirection,
+            int styleIndex)
+        {
+            Color roofColor = new(0.11f, 0.12f, 0.125f);
+            Color woodColor = new(0.25f, 0.16f, 0.1f);
+            Color doorColor = new(0.16f, 0.105f, 0.075f);
+            Color lanternColor = new(0.72f, 0.105f, 0.075f);
+            Color lanternCap = new(0.82f, 0.58f, 0.18f);
+            Color[] bannerColors =
+            {
+                new Color(0.64f, 0.16f, 0.12f),
+                new Color(0.16f, 0.42f, 0.43f),
+                new Color(0.68f, 0.46f, 0.16f)
+            };
+            Color bannerColor = bannerColors[styleIndex % bannerColors.Length];
+            float frontX = center.x + facadeDirection * size.x * 0.5f;
+            float roofY = center.y + size.y * 0.5f + 0.28f;
+
+            CreateDecorBlock(
+                parent,
+                $"{namePrefix}_Roof",
+                new Vector3(center.x, roofY, center.z),
+                new Vector3(size.x + 1.1f, 0.34f, size.z + 1.1f),
+                roofColor
+            );
+            CreateDecorBlock(
+                parent,
+                $"{namePrefix}_RoofTop",
+                new Vector3(center.x, roofY + 0.38f, center.z),
+                new Vector3(size.x * 0.72f, 0.28f, size.z * 0.72f),
+                new Color(0.17f, 0.18f, 0.18f)
+            );
+            CreateDecorBlock(
+                parent,
+                $"{namePrefix}_Awning",
+                new Vector3(
+                    frontX + facadeDirection * 0.72f,
+                    3.15f,
+                    center.z
+                ),
+                new Vector3(1.45f, 0.18f, size.z * 0.72f),
+                bannerColor
+            );
+            CreateDecorBlock(
+                parent,
+                $"{namePrefix}_Door",
+                new Vector3(frontX + facadeDirection * 0.04f, 1.35f, center.z),
+                new Vector3(0.14f, 2.5f, Mathf.Min(2f, size.z * 0.3f)),
+                doorColor
+            );
+            CreateDecorBlock(
+                parent,
+                $"{namePrefix}_Banner",
+                new Vector3(
+                    frontX + facadeDirection * 0.09f,
+                    3.95f,
+                    center.z + size.z * 0.31f
+                ),
+                new Vector3(0.08f, 1.45f, 0.72f),
+                bannerColor
+            );
+
+            foreach (float zOffset in new[] { -size.z * 0.34f, size.z * 0.34f })
+            {
+                CreateDecorBlock(
+                    parent,
+                    $"{namePrefix}_Column_{zOffset:0}",
+                    new Vector3(frontX + facadeDirection * 0.12f, 1.55f, center.z + zOffset),
+                    new Vector3(0.16f, 3.1f, 0.16f),
+                    woodColor
+                );
+            }
+
+            float lanternZ = center.z - size.z * 0.35f;
+            CreateDecorBlock(
+                parent,
+                $"{namePrefix}_Lantern",
+                new Vector3(frontX + facadeDirection * 0.34f, 2.72f, lanternZ),
+                new Vector3(0.34f, 0.48f, 0.34f),
+                lanternColor,
+                PrimitiveType.Sphere
+            );
+            CreateDecorBlock(
+                parent,
+                $"{namePrefix}_LanternCap",
+                new Vector3(frontX + facadeDirection * 0.34f, 3f, lanternZ),
+                new Vector3(0.24f, 0.1f, 0.24f),
+                lanternCap
+            );
+        }
+
+        private static GameObject CreateDecorBlock(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Vector3 scale,
+            Color tint,
+            PrimitiveType primitive = PrimitiveType.Cube)
+        {
+            GameObject part = GameObject.CreatePrimitive(primitive);
+            part.name = name;
+            part.transform.SetParent(parent);
+            part.transform.position = position;
+            part.transform.localScale = scale;
+            Object.DestroyImmediate(part.GetComponent<Collider>());
+            part.AddComponent<ColorTint>().Configure(tint);
+            return part;
         }
 
         private static Combatant CreateEnemy(Transform parent, string name, Vector3 position)
@@ -781,11 +1035,14 @@ namespace Demo02.Editor
                 "旧仓内院"
             );
 
-            GameObject keeper = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            keeper.name = "NPC_ShenBo";
-            keeper.transform.SetParent(root);
-            keeper.transform.position = new Vector3(16.5f, 1f, 8f);
-            keeper.AddComponent<ColorTint>().Configure(new Color(0.76f, 0.6f, 0.32f));
+            GameObject keeper = CreateCharacter(
+                root,
+                "NPC_ShenBo",
+                new Vector3(16.5f, 1f, 8f),
+                new Color(0.48f, 0.38f, 0.22f),
+                new Color(0.76f, 0.6f, 0.32f),
+                addNpcCollider: true
+            );
             keeper.AddComponent<ShenBoInteractable>();
 
             GameObject notice = CreateBlock(
@@ -956,6 +1213,22 @@ namespace Demo02.Editor
                     new Vector3(6f, 6f, 8f),
                     rightColor
                 );
+                CreateShopFacadeDetails(
+                    areaRoot,
+                    $"Dongguan_LeftShop_{index + 1}",
+                    new Vector3(52f, 3f, z),
+                    new Vector3(6f, 6f, 8f),
+                    facadeDirection: 1f,
+                    styleIndex: index
+                );
+                CreateShopFacadeDetails(
+                    areaRoot,
+                    $"Dongguan_RightShop_{index + 1}",
+                    new Vector3(68f, 3f, z),
+                    new Vector3(6f, 6f, 8f),
+                    facadeDirection: -1f,
+                    styleIndex: index + 1
+                );
             }
 
             CreateBlock(
@@ -1088,11 +1361,14 @@ namespace Demo02.Editor
                 "E  返回官署前街"
             );
 
-            GameObject storyteller = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            storyteller.name = "NPC_DongguanStoryteller";
-            storyteller.transform.SetParent(areaRoot);
-            storyteller.transform.position = new Vector3(56f, 1f, -4f);
-            storyteller.AddComponent<ColorTint>().Configure(new Color(0.3f, 0.56f, 0.72f));
+            GameObject storyteller = CreateCharacter(
+                areaRoot,
+                "NPC_DongguanStoryteller",
+                new Vector3(56f, 1f, -4f),
+                new Color(0.2f, 0.4f, 0.58f),
+                new Color(0.72f, 0.58f, 0.3f),
+                addNpcCollider: true
+            );
             NpcDialogueInteractable storytellerDialogue =
                 storyteller.AddComponent<NpcDialogueInteractable>();
             storytellerDialogue.Configure(
@@ -1108,12 +1384,13 @@ namespace Demo02.Editor
                 )
             );
 
-            GameObject clothMerchant = CreateBlock(
+            GameObject clothMerchant = CreateCharacter(
                 areaRoot,
                 "NPC_ClothMerchant",
                 new Vector3(63.5f, 1f, 64f),
-                new Vector3(1.1f, 2f, 1.1f),
-                new Color(0.55f, 0.28f, 0.38f)
+                new Color(0.48f, 0.22f, 0.32f),
+                new Color(0.85f, 0.55f, 0.28f),
+                addNpcCollider: true
             );
             NpcDialogueInteractable merchantDialogue =
                 clothMerchant.AddComponent<NpcDialogueInteractable>();
@@ -1130,11 +1407,14 @@ namespace Demo02.Editor
                 )
             );
 
-            GameObject teaMaster = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            teaMaster.name = "NPC_TeaMaster";
-            teaMaster.transform.SetParent(areaRoot);
-            teaMaster.transform.position = new Vector3(56.5f, 1f, 112f);
-            teaMaster.AddComponent<ColorTint>().Configure(new Color(0.35f, 0.62f, 0.35f));
+            GameObject teaMaster = CreateCharacter(
+                areaRoot,
+                "NPC_TeaMaster",
+                new Vector3(56.5f, 1f, 112f),
+                new Color(0.24f, 0.46f, 0.27f),
+                new Color(0.78f, 0.62f, 0.32f),
+                addNpcCollider: true
+            );
             NpcDialogueInteractable teaDialogue =
                 teaMaster.AddComponent<NpcDialogueInteractable>();
             teaDialogue.Configure(
@@ -1216,6 +1496,22 @@ namespace Demo02.Editor
                         ? new Color(0.68f, 0.46f, 0.16f)
                         : new Color(0.56f, 0.22f, 0.32f)
                 );
+                CreateShopFacadeDetails(
+                    areaRoot,
+                    $"Caiyi_LeftShop_{index + 1}",
+                    new Vector3(52.5f, height * 0.5f, z),
+                    new Vector3(5f, height, 9f),
+                    facadeDirection: 1f,
+                    styleIndex: index + 1
+                );
+                CreateShopFacadeDetails(
+                    areaRoot,
+                    $"Caiyi_RightShop_{index + 1}",
+                    new Vector3(67.5f, height * 0.5f, z),
+                    new Vector3(5f, height, 9f),
+                    facadeDirection: -1f,
+                    styleIndex: index + 2
+                );
             }
 
             for (int index = 0; index < 8; index++)
@@ -1290,11 +1586,14 @@ namespace Demo02.Editor
                 "E  前往彩衣街"
             );
 
-            GameObject tailor = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            tailor.name = "NPC_CaiyiTailor";
-            tailor.transform.SetParent(areaRoot);
-            tailor.transform.position = new Vector3(56f, 1f, 190f);
-            tailor.AddComponent<ColorTint>().Configure(new Color(0.65f, 0.3f, 0.32f));
+            GameObject tailor = CreateCharacter(
+                areaRoot,
+                "NPC_CaiyiTailor",
+                new Vector3(56f, 1f, 190f),
+                new Color(0.55f, 0.24f, 0.26f),
+                new Color(0.8f, 0.58f, 0.3f),
+                addNpcCollider: true
+            );
             NpcDialogueInteractable tailorDialogue =
                 tailor.AddComponent<NpcDialogueInteractable>();
             tailorDialogue.Configure(
@@ -1310,12 +1609,13 @@ namespace Demo02.Editor
                 )
             );
 
-            GameObject snackVendor = CreateBlock(
+            GameObject snackVendor = CreateCharacter(
                 areaRoot,
                 "NPC_CaiyiSnackVendor",
                 new Vector3(64f, 1f, 245f),
-                new Vector3(1.1f, 2f, 1.1f),
-                new Color(0.78f, 0.45f, 0.18f)
+                new Color(0.66f, 0.36f, 0.13f),
+                new Color(0.88f, 0.65f, 0.3f),
+                addNpcCollider: true
             );
             NpcDialogueInteractable vendorDialogue =
                 snackVendor.AddComponent<NpcDialogueInteractable>();

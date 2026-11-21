@@ -29,6 +29,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 街区切换淡入淡出、区域到达标题卡和可交互目标反馈。
 - 程序化环境风声、脚步和完整交互反馈音，支持 `F2` 持久静音。
 - 统一深色金色视觉体系，覆盖目标、罗盘、生命、对白和系统菜单。
+- 程序化人物轮廓与店铺屋檐、门面、布幡、灯笼组成的第一遍美术 pass。
 - 可选战斗、攻击预警和闪避无敌帧。
 - JSON 存档、自动检查点和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -54,10 +55,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.0.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.1.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.0.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.1.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -105,7 +106,7 @@ R          结局或队伍倒下后重开
 
 ## 已知限制
 
-- 美术仍为灰色占位与基础颜色。
+- 美术仍为程序化占位模型与基础材质，但角色和店铺已具备统一轮廓。
 - 界面主要使用原型级 OnGUI。
 - 当前音频为程序化占位反馈，车辆、人群、正式音乐和 VFX 尚未制作。
 - 大地图目前由街内远距离区域验证，后续需要拆分 Additive Scene。
