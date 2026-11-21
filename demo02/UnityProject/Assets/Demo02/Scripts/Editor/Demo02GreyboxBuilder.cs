@@ -35,6 +35,32 @@ namespace Demo02.Editor
             BuildScene(forceRebuild: true);
         }
 
+        public static void VerifyCombatDamageForBatch()
+        {
+            GameObject probe = new GameObject("CombatantDamageProbe");
+            Combatant combatant = probe.AddComponent<Combatant>();
+            combatant.Configure(CombatTeam.Enemy, 60f);
+
+            combatant.TakeDamage(30f);
+            if (Mathf.Approximately(combatant.CurrentHealth, 30f) == false
+                || combatant.IsAlive == false)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException("First hit did not reduce enemy health to 30.");
+            }
+
+            combatant.TakeDamage(30f);
+            if (Mathf.Approximately(combatant.CurrentHealth, 0f) == false
+                || combatant.IsAlive)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException("Second hit did not kill the enemy.");
+            }
+
+            Object.DestroyImmediate(probe);
+            Debug.Log("Combat damage verification passed: 60 HP defeated in two 30 damage hits.");
+        }
+
         private static void BuildIfNeeded()
         {
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath) == null)

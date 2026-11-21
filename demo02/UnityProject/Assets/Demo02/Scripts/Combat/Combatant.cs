@@ -16,20 +16,22 @@ namespace Demo02.Combat
         [SerializeField, Min(1f)] private float maxHealth = 100f;
 
         private float currentHealth;
+        private bool isInitialized;
 
         public event Action<Combatant> HealthChanged;
         public event Action<Combatant> Died;
 
         public CombatTeam Team => team;
         public float MaxHealth => maxHealth;
-        public float CurrentHealth => currentHealth > 0f ? currentHealth : maxHealth;
+        public float CurrentHealth => currentHealth;
         public bool IsAlive => CurrentHealth > 0f;
 
         private void Awake()
         {
-            if (currentHealth <= 0f)
+            if (!isInitialized)
             {
                 currentHealth = maxHealth;
+                isInitialized = true;
             }
         }
 
@@ -38,6 +40,7 @@ namespace Demo02.Combat
             team = combatTeam;
             maxHealth = Mathf.Max(1f, health);
             currentHealth = maxHealth;
+            isInitialized = true;
         }
 
         public void TakeDamage(float damage)
