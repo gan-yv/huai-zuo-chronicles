@@ -10,12 +10,16 @@ namespace Demo02.UI
         private PlayerPartyController party;
         private EncounterState encounterState;
         private TimeLayerController timeLayerController;
+        private WorldRuntime worldRuntime;
 
         private void Awake()
         {
             party = FindAnyObjectByType<PlayerPartyController>();
             encounterState = FindAnyObjectByType<EncounterState>();
             timeLayerController = FindAnyObjectByType<TimeLayerController>();
+            worldRuntime = WorldRuntime.Instance != null
+                ? WorldRuntime.Instance
+                : FindAnyObjectByType<WorldRuntime>();
         }
 
         private void OnGUI()
@@ -61,6 +65,20 @@ namespace Demo02.UI
                 {
                     timeLayerController.ToggleLayer();
                 }
+            }
+
+            if (worldRuntime != null && !string.IsNullOrWhiteSpace(worldRuntime.CurrentAreaName))
+            {
+                GUI.Label(
+                    new Rect(24f, Screen.height - 74f, 360f, 34f),
+                    $"区域：{worldRuntime.CurrentAreaName}",
+                    new GUIStyle(GUI.skin.box)
+                    {
+                        alignment = TextAnchor.MiddleLeft,
+                        fontSize = 16,
+                        padding = new RectOffset(12, 12, 6, 6)
+                    }
+                );
             }
 
             DrawEnemyHealthBars();

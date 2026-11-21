@@ -125,13 +125,21 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Choice_Preserve") == null
                     || existingRoot.transform.Find("PlayerPlaceholder/MeleeArc") == null
                     || existingRoot.transform.Find("TimeAnchor_Present_01") == null
+                    || existingRoot.transform.Find("Area_OfficialStreet") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
             {
+                GameObject existingRuntime = greyboxScene
+                    .GetRootGameObjects()
+                    .FirstOrDefault(root => root.name == "WorldRuntime");
                 if (existingRoot != null)
                 {
                     Object.DestroyImmediate(existingRoot);
+                }
+                if (existingRuntime != null)
+                {
+                    Object.DestroyImmediate(existingRuntime);
                 }
 
                 SceneManager.SetActiveScene(greyboxScene);
@@ -338,6 +346,11 @@ namespace Demo02.Editor
             gameSession.AddComponent<CombatHud>();
             gameSession.AddComponent<GameFlowController>();
 
+            GameObject worldRuntimeObject = new GameObject("WorldRuntime");
+            SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
+            WorldRuntime worldRuntime = worldRuntimeObject.AddComponent<WorldRuntime>();
+            worldRuntime.SetCurrentArea("official-street", "官署前街");
+
             EditorBuildSettings.scenes = new[]
             {
                 new EditorBuildSettingsScene(ScenePath, true)
@@ -346,6 +359,32 @@ namespace Demo02.Editor
             GameObject spawn = new GameObject("PlayerSpawn");
             spawn.transform.SetParent(root.transform);
             spawn.transform.position = new Vector3(0f, 0f, -10f);
+            spawn.AddComponent<WorldSpawnPoint>().Configure("guangling_start");
+
+            CreateWorldArea(
+                root.transform,
+                "Area_OfficialStreet",
+                new Vector3(0f, 1f, -8f),
+                new Vector3(9f, 3f, 16f),
+                "official-street",
+                "官署前街"
+            );
+            CreateWorldArea(
+                root.transform,
+                "Area_SaltStreet",
+                new Vector3(0f, 1f, 6f),
+                new Vector3(9f, 3f, 12f),
+                "salt-street",
+                "盐仓横街"
+            );
+            CreateWorldArea(
+                root.transform,
+                "Area_TideAlley",
+                new Vector3(0f, 1f, 22f),
+                new Vector3(9f, 3f, 20f),
+                "tide-alley",
+                "回潮巷"
+            );
 
             Camera sceneCamera = scene
                 .GetRootGameObjects()
@@ -378,6 +417,29 @@ namespace Demo02.Editor
             combatant.Configure(CombatTeam.Enemy, 60f);
             enemy.AddComponent<EnemyAI>();
             return combatant;
+        }
+
+        private static void CreateWorldArea(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Vector3 size,
+            string areaId,
+            string displayName)
+        {
+            GameObject area = new GameObject(name);
+            area.transform.SetParent(parent);
+            area.transform.position = position;
+
+            BoxCollider trigger = area.AddComponent<BoxCollider>();
+            trigger.isTrigger = true;
+            trigger.size = size;
+
+            Rigidbody body = area.AddComponent<Rigidbody>();
+            body.isKinematic = true;
+            body.useGravity = false;
+
+            area.AddComponent<WorldArea>().Configure(areaId, displayName);
         }
 
         private static void CreateTimeAnchor(
