@@ -192,6 +192,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Area_OfficialStreet") == null
                     || existingRoot.transform.Find("Area_WarehouseCourtyard") == null
                     || existingRoot.transform.Find("Area_WarehouseInterior") == null
+                    || existingRoot.transform.Find("DongguanStreet") == null
                     || existingRoot.transform.Find("NPC_WarehouseWorker") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
@@ -525,6 +526,8 @@ namespace Demo02.Editor
                 "回潮巷"
             );
 
+            BuildDongguanStreet(root.transform, spawn.transform);
+
             Camera sceneCamera = scene
                 .GetRootGameObjects()
                 .SelectMany(item => item.GetComponentsInChildren<Camera>(includeInactive: true))
@@ -793,6 +796,176 @@ namespace Demo02.Editor
                 new DialogueLine(
                     "主角",
                     "这些页不是自然损坏。有人先改写了这里，再让整条旧街从记录里消失。"
+                )
+            );
+        }
+
+        private static void BuildDongguanStreet(Transform root, Transform guanglingSpawn)
+        {
+            Transform areaRoot = new GameObject("DongguanStreet").transform;
+            areaRoot.SetParent(root);
+
+            CreateBlock(
+                areaRoot,
+                "Dongguan_Ground",
+                new Vector3(60f, -0.55f, 5f),
+                new Vector3(20f, 1f, 62f),
+                new Color(0.52f, 0.48f, 0.4f)
+            );
+
+            float[] shopPositions = { -22f, -12f, -2f, 8f, 18f, 28f };
+            for (int index = 0; index < shopPositions.Length; index++)
+            {
+                float z = shopPositions[index];
+                Color leftColor = index % 2 == 0
+                    ? new Color(0.38f, 0.25f, 0.2f)
+                    : new Color(0.42f, 0.31f, 0.22f);
+                Color rightColor = index % 2 == 0
+                    ? new Color(0.29f, 0.3f, 0.27f)
+                    : new Color(0.36f, 0.24f, 0.24f);
+
+                CreateBlock(
+                    areaRoot,
+                    $"Dongguan_LeftShop_{index + 1}",
+                    new Vector3(52f, 3f, z),
+                    new Vector3(6f, 6f, 8f),
+                    leftColor
+                );
+                CreateBlock(
+                    areaRoot,
+                    $"Dongguan_RightShop_{index + 1}",
+                    new Vector3(68f, 3f, z),
+                    new Vector3(6f, 6f, 8f),
+                    rightColor
+                );
+            }
+
+            CreateBlock(
+                areaRoot,
+                "Dongguan_EndWall",
+                new Vector3(60f, 2f, 35f),
+                new Vector3(18f, 4f, 2f),
+                new Color(0.36f, 0.27f, 0.22f)
+            );
+            CreateBlock(
+                areaRoot,
+                "Dongguan_Arch_Left",
+                new Vector3(56.5f, 2f, -18f),
+                new Vector3(0.8f, 4f, 0.8f),
+                new Color(0.5f, 0.32f, 0.18f)
+            );
+            CreateBlock(
+                areaRoot,
+                "Dongguan_Arch_Right",
+                new Vector3(63.5f, 2f, -18f),
+                new Vector3(0.8f, 4f, 0.8f),
+                new Color(0.5f, 0.32f, 0.18f)
+            );
+            CreateBlock(
+                areaRoot,
+                "Dongguan_Arch_Beam",
+                new Vector3(60f, 4.1f, -18f),
+                new Vector3(7.8f, 0.8f, 0.8f),
+                new Color(0.62f, 0.42f, 0.2f)
+            );
+
+            CreateBlock(
+                areaRoot,
+                "Dongguan_Stall_A",
+                new Vector3(57f, 0.7f, 3f),
+                new Vector3(3f, 1.4f, 2f),
+                new Color(0.7f, 0.35f, 0.22f)
+            );
+            CreateBlock(
+                areaRoot,
+                "Dongguan_Stall_B",
+                new Vector3(63f, 0.7f, 14f),
+                new Vector3(3f, 1.4f, 2f),
+                new Color(0.25f, 0.5f, 0.48f)
+            );
+
+            GameObject dongguanSpawn = new("DongguanSpawn");
+            dongguanSpawn.transform.SetParent(areaRoot);
+            dongguanSpawn.transform.position = new Vector3(60f, 0f, -14f);
+            dongguanSpawn.AddComponent<WorldSpawnPoint>().Configure("dongguan_start");
+
+            CreateWorldArea(
+                areaRoot,
+                "Area_DongguanStreet",
+                new Vector3(60f, 1f, 5f),
+                new Vector3(10f, 3f, 54f),
+                "dongguan-street",
+                "东关街"
+            );
+
+            GameObject gateway = CreateBlock(
+                root,
+                "Gate_ToDongguan",
+                new Vector3(-4.7f, 1.2f, -14f),
+                new Vector3(1.5f, 2.4f, 0.35f),
+                new Color(0.86f, 0.62f, 0.22f)
+            );
+            gateway.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+            gateway.AddComponent<LocalWorldPortal>().Configure(
+                dongguanSpawn.transform,
+                "dongguan-street",
+                "东关街",
+                "E  前往东关街"
+            );
+
+            GameObject returnGate = CreateBlock(
+                areaRoot,
+                "Gate_ReturnGuangling",
+                new Vector3(60f, 1.2f, -21f),
+                new Vector3(1.5f, 2.4f, 0.35f),
+                new Color(0.8f, 0.55f, 0.2f)
+            );
+            returnGate.AddComponent<LocalWorldPortal>().Configure(
+                guanglingSpawn,
+                "official-street",
+                "官署前街",
+                "E  返回官署前街"
+            );
+
+            GameObject storyteller = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            storyteller.name = "NPC_DongguanStoryteller";
+            storyteller.transform.SetParent(areaRoot);
+            storyteller.transform.position = new Vector3(56f, 1f, -4f);
+            storyteller.AddComponent<ColorTint>().Configure(new Color(0.3f, 0.56f, 0.72f));
+            NpcDialogueInteractable storytellerDialogue =
+                storyteller.AddComponent<NpcDialogueInteractable>();
+            storytellerDialogue.Configure(
+                "说书人",
+                "E  与说书人交谈",
+                new DialogueLine(
+                    "说书人",
+                    "东关街的铺子一日比一日多，可老住户却一日比一日少。你说是生意变了，还是人变了？"
+                ),
+                new DialogueLine(
+                    "说书人",
+                    "城里的故事总要有人讲。没人讲的，久了就像从来没发生过。"
+                )
+            );
+
+            GameObject clothMerchant = CreateBlock(
+                areaRoot,
+                "NPC_ClothMerchant",
+                new Vector3(63.5f, 1f, 10f),
+                new Vector3(1.1f, 2f, 1.1f),
+                new Color(0.55f, 0.28f, 0.38f)
+            );
+            NpcDialogueInteractable merchantDialogue =
+                clothMerchant.AddComponent<NpcDialogueInteractable>();
+            merchantDialogue.Configure(
+                "绸缎商",
+                "E  与绸缎商交谈",
+                new DialogueLine(
+                    "绸缎商",
+                    "这几日布料上的花色总在变。昨日的客人说，他明明买过一样的料子，账上却查不到。"
+                ),
+                new DialogueLine(
+                    "绸缎商",
+                    "若连买卖都能被改，东关街还算得上是谁的街？"
                 )
             );
         }

@@ -15,7 +15,7 @@ namespace Demo02.Core
     public sealed class SaveSystem : MonoBehaviour
     {
         private const string SaveFileName = "demo02-save.json";
-        private static readonly string SavePath =
+        private static string SavePath =>
             Path.Combine(Application.persistentDataPath, SaveFileName);
 
         private InvestigationState investigationState;
