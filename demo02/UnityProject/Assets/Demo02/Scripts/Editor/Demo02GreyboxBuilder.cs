@@ -483,6 +483,7 @@ namespace Demo02.Editor
             encounterState.Configure(enemies);
             gameSession.AddComponent<DialogueController>();
             gameSession.AddComponent<ObjectiveDisplay>();
+            gameSession.AddComponent<QuestNavigationHud>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
             party.Configure(player.transform, partner.transform);
             gameSession.AddComponent<CombatHud>();

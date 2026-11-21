@@ -10,6 +10,8 @@ namespace Demo02.WorldState
         private Renderer[] renderers;
         private Collider[] colliders;
 
+        public TimeLayer VisibleLayer => visibleLayer;
+
         private void Awake()
         {
             renderers = GetComponentsInChildren<Renderer>(includeInactive: true);

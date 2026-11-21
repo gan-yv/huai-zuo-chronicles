@@ -13,6 +13,7 @@ namespace Demo02.Interaction
         private bool hasBeenRead;
         private InvestigationState investigationState;
 
+        public string ClueId => clueId;
         public string Prompt => hasBeenRead ? "E  再看一次旧街招牌" : prompt;
         public bool CanInteract => true;
 

@@ -1,4 +1,3 @@
-using Demo02.Combat;
 using Demo02.Narrative;
 using UnityEngine;
 
@@ -9,8 +8,8 @@ namespace Demo02.Interaction
         [SerializeField] private string anchorId = "time-anchor";
 
         private InvestigationState investigationState;
-        private EncounterState encounterState;
 
+        public string AnchorId => anchorId;
         public bool CanInteract =>
             investigationState == null || !investigationState.HasStabilizedAnchor(anchorId);
 
@@ -28,11 +27,6 @@ namespace Demo02.Interaction
                     return "E  检查时间锚点（记录不足）";
                 }
 
-                if (encounterState != null && !encounterState.IsCleared)
-                {
-                    return "E  清除附近巡逻队";
-                }
-
                 return "E  稳定时间锚点";
             }
         }
@@ -40,7 +34,6 @@ namespace Demo02.Interaction
         private void Start()
         {
             investigationState = FindAnyObjectByType<InvestigationState>();
-            encounterState = FindAnyObjectByType<EncounterState>();
         }
 
         public void Configure(string id)
@@ -58,11 +51,6 @@ namespace Demo02.Interaction
             if (!investigationState.HasAllClues)
             {
                 return "现有记录不足以校正这个锚点。先调查街区并稳定其他锚点。";
-            }
-
-            if (encounterState != null && !encounterState.IsCleared)
-            {
-                return "巡逻队干扰了时间层，先清除威胁。";
             }
 
             if (!investigationState.StabilizeTimeAnchor(anchorId))

@@ -1,4 +1,3 @@
-using Demo02.Combat;
 using Demo02.Narrative;
 using UnityEngine;
 
@@ -8,12 +7,10 @@ namespace Demo02.UI
     public sealed class ObjectiveDisplay : MonoBehaviour
     {
         private InvestigationState investigationState;
-        private EncounterState encounterState;
 
         private void Awake()
         {
             investigationState = GetComponent<InvestigationState>();
-            encounterState = FindAnyObjectByType<EncounterState>();
         }
 
         private void OnGUI()
@@ -35,12 +32,6 @@ namespace Demo02.UI
             else if (investigationState.IsRepaired)
             {
                 text = "目标：在街尾决定保留还是封存旧街";
-            }
-            else if (investigationState.HasAllClues
-                && encounterState != null
-                && !encounterState.IsCleared)
-            {
-                text = $"目标：击退巡逻队  {encounterState.AliveEnemyCount}/{encounterState.TotalEnemyCount}";
             }
             else if (investigationState.HasAllClues
                 && !investigationState.HasAllTimeAnchors)

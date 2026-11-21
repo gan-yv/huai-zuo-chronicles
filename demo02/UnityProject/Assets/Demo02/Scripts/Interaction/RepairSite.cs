@@ -1,4 +1,3 @@
-using Demo02.Combat;
 using Demo02.Narrative;
 using UnityEngine;
 
@@ -7,7 +6,6 @@ namespace Demo02.Interaction
     public sealed class RepairSite : MonoBehaviour, IInteractable
     {
         private InvestigationState investigationState;
-        private EncounterState encounterState;
 
         public string Prompt
         {
@@ -16,11 +14,6 @@ namespace Demo02.Interaction
                 if (!CanInteract)
                 {
                     return "时缝已经暂时稳定";
-                }
-
-                if (encounterState != null && !encounterState.IsCleared)
-                {
-                    return $"E  清除附近巡逻队  ({encounterState.AliveEnemyCount}/{encounterState.TotalEnemyCount})";
                 }
 
                 if (investigationState != null && !investigationState.HasAllTimeAnchors)
@@ -39,7 +32,6 @@ namespace Demo02.Interaction
         private void Start()
         {
             investigationState = FindAnyObjectByType<InvestigationState>();
-            encounterState = FindAnyObjectByType<EncounterState>();
         }
 
         public string Interact(PlayerInteractor interactor)
@@ -52,11 +44,6 @@ namespace Demo02.Interaction
             if (!investigationState.HasAllClues)
             {
                 return $"记录不足。还需要 {investigationState.RequiredClueCount - investigationState.CollectedClueCount} 条线索。";
-            }
-
-            if (encounterState != null && !encounterState.IsCleared)
-            {
-                return "巡逻队仍在附近，修复工具无法稳定暴露的接点。";
             }
 
             if (!investigationState.HasAllTimeAnchors)
