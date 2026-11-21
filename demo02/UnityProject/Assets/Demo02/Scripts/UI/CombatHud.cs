@@ -54,15 +54,13 @@ namespace Demo02.UI
                 string layerName = timeLayerController.CurrentLayer == TimeLayer.Present
                     ? "现世"
                     : "旧时";
-                GUI.Box(
-                    new Rect(Screen.width * 0.5f - 110f, 24f, 220f, 42f),
-                    $"当前时间层：{layerName}",
-                    new GUIStyle(GUI.skin.box)
-                    {
-                        alignment = TextAnchor.MiddleCenter,
-                        fontSize = 17
-                    }
-                );
+                if (GUI.Button(
+                    new Rect(Screen.width * 0.5f - 120f, 24f, 240f, 42f),
+                    $"当前时间层：{layerName}  （Q/点击切换）"
+                ))
+                {
+                    timeLayerController.ToggleLayer();
+                }
             }
 
             DrawEnemyHealthBars();

@@ -21,8 +21,13 @@ namespace Demo02.WorldState
         {
             if (Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame)
             {
-                SetLayer(currentLayer == TimeLayer.Present ? TimeLayer.Past : TimeLayer.Present);
+                ToggleLayer();
             }
+        }
+
+        public void ToggleLayer()
+        {
+            SetLayer(currentLayer == TimeLayer.Present ? TimeLayer.Past : TimeLayer.Present);
         }
 
         public void SetLayer(TimeLayer layer)
@@ -34,6 +39,7 @@ namespace Demo02.WorldState
 
             currentLayer = layer;
             LayerChanged?.Invoke(currentLayer);
+            Debug.Log($"Time layer changed to {currentLayer}.");
         }
     }
 }

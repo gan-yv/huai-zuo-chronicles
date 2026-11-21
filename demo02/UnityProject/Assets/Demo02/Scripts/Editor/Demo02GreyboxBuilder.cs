@@ -62,6 +62,29 @@ namespace Demo02.Editor
             Debug.Log("Combat damage verification passed: 60 HP defeated in two 30 damage hits.");
         }
 
+        public static void VerifyTimeLayerForBatch()
+        {
+            GameObject probe = new GameObject("TimeLayerProbe");
+            TimeLayerController controller = probe.AddComponent<TimeLayerController>();
+
+            controller.ToggleLayer();
+            if (controller.CurrentLayer != TimeLayer.Past)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException("Time layer did not switch to Past.");
+            }
+
+            controller.ToggleLayer();
+            if (controller.CurrentLayer != TimeLayer.Present)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException("Time layer did not switch back to Present.");
+            }
+
+            Object.DestroyImmediate(probe);
+            Debug.Log("Time layer verification passed: Present <-> Past.");
+        }
+
         private static void BuildIfNeeded()
         {
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath) == null)
