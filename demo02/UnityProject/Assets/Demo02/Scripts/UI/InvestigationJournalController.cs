@@ -9,27 +9,6 @@ namespace Demo02.UI
 {
     public sealed class InvestigationJournalController : MonoBehaviour
     {
-        private static readonly string[] EvidenceIds =
-        {
-            "old-street-sign",
-            "salt-ledger",
-            "official-seal"
-        };
-
-        private static readonly string[] EvidenceTitles =
-        {
-            "盐引巷门牌",
-            "七车盐账牌",
-            "陆崇除名封条"
-        };
-
-        private static readonly string[] EvidenceDetails =
-        {
-            "旧漆下藏着“盐引巷”三字。这里是盐船入城后的第一处验引点。",
-            "七车盐在暴雨夜卸入旧仓，复核签字为沈砚。",
-            "封条日期早于旧街消失一天，背面写着“知情人沈砚，宜除名”。"
-        };
-
         private InvestigationState investigationState;
         private bool isOpen;
         private float previousTimeScale = 1f;
@@ -177,7 +156,7 @@ namespace Demo02.UI
                     panel.width - 56f * scale,
                     20f * scale
                 ),
-                "CHAPTER 01 · INVESTIGATION FILE",
+                $"{investigationState.CaseContent?.ChapterLabel ?? "CHAPTER"} · INVESTIGATION FILE",
                 eyebrowStyle
             );
             GUI.Label(
@@ -187,7 +166,7 @@ namespace Demo02.UI
                     panel.width - 56f * scale,
                     38f * scale
                 ),
-                "调查案卷 · 消失的盐引",
+                $"调查案卷 · {investigationState.CaseContent?.Title ?? "内容未加载"}",
                 UiTheme.Label(25, TextAnchor.MiddleLeft, bold: true)
             );
 
@@ -263,6 +242,17 @@ namespace Demo02.UI
 
         private void DrawEvidenceList(Rect column, float scale)
         {
+            CaseDefinition content = investigationState.CaseContent;
+            if (content == null)
+            {
+                GUI.Label(
+                    new Rect(column.x, column.y, column.width, 30f * scale),
+                    "案件内容资产尚未加载",
+                    UiTheme.Label(14)
+                );
+                return;
+            }
+
             float listTop = column.y + 78f * scale;
             GUI.Label(
                 new Rect(column.x, listTop, column.width, 24f * scale),
@@ -273,16 +263,20 @@ namespace Demo02.UI
             float cardTop = listTop + 30f * scale;
             float available = column.yMax - cardTop;
             float gap = 8f * scale;
-            float cardHeight = (available - gap * 2f) / 3f;
-            for (int index = 0; index < EvidenceIds.Length; index++)
+            int count = content.Evidence.Count;
+            float cardHeight = count > 0
+                ? (available - gap * (count - 1)) / count
+                : available;
+            for (int index = 0; index < count; index++)
             {
+                EvidenceDefinition evidence = content.Evidence[index];
                 Rect card = new(
                     column.x,
                     cardTop + index * (cardHeight + gap),
                     column.width,
                     cardHeight
                 );
-                bool discovered = investigationState.HasClue(EvidenceIds[index]);
+                bool discovered = investigationState.HasClue(evidence.Id);
                 UiTheme.DrawRect(card, discovered ? UiTheme.Panel : UiTheme.Ink);
                 UiTheme.DrawRect(
                     new Rect(card.x, card.y, 3f * scale, card.height),
@@ -305,7 +299,7 @@ namespace Demo02.UI
                         card.width - 96f * scale,
                         20f * scale
                     ),
-                    $"{index + 1:00}  {EvidenceTitles[index]}",
+                    $"{index + 1:00}  {evidence.Title}",
                     titleStyle
                 );
                 GUIStyle statusStyle = UiTheme.Label(
@@ -334,7 +328,7 @@ namespace Demo02.UI
                         card.height - 30f * scale
                     ),
                     discovered
-                        ? EvidenceDetails[index]
+                        ? evidence.Detail
                         : "这条记录仍藏在盐引巷中。",
                     UiTheme.Label(12, TextAnchor.UpperLeft)
                 );
@@ -349,7 +343,10 @@ namespace Demo02.UI
                 UiTheme.Label(15, TextAnchor.MiddleLeft, bold: true)
             );
 
-            bool knowsLuChong = investigationState.HasClue("official-seal");
+            bool knowsLuChong = investigationState.CaseContent != null
+                && investigationState.HasClue(
+                    investigationState.CaseContent.CulpritEvidenceId
+                );
             string[] names =
             {
                 "沈伯",

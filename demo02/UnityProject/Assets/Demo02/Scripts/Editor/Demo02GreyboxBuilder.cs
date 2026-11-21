@@ -71,6 +71,7 @@ namespace Demo02.Editor
 
         public static void VerifyAllForBatch()
         {
+            CaseDefinitionSeeder.ValidateOrThrow();
             VerifyCombatDamageForBatch();
             VerifyTimeLayerForBatch();
             VerifyChapterFlowForBatch();
@@ -252,6 +253,8 @@ namespace Demo02.Editor
         {
             GameObject probe = new("ChapterFlowProbe");
             InvestigationState state = probe.AddComponent<InvestigationState>();
+            CaseDefinition content = CaseDefinitionSeeder.LoadOrCreateChapter01();
+            state.ConfigureContent(content);
 
             if (state.CanInvestigateClues
                 || state.CollectClue("old-street-sign"))
@@ -304,14 +307,14 @@ namespace Demo02.Editor
                 );
             }
             if (state.SubmitContradiction(
-                    "teahouse-salt-carts",
-                    "salt-ledger"
+                    content.Testimonies[1].Id,
+                    content.Contradiction.EvidenceId
                 ) != ContradictionResult.Incorrect
                 || state.ContradictionAttempts != 1
                 || state.Stage != ChapterStage.CrossExamineTestimony
                 || state.SubmitContradiction(
-                    TestimonyPuzzleRules.StatementId,
-                    TestimonyPuzzleRules.EvidenceId
+                    content.Contradiction.StatementId,
+                    content.Contradiction.EvidenceId
                 ) != ContradictionResult.Correct
                 || state.ContradictionAttempts != 2
                 || !state.TestimonyContradictionSolved
@@ -515,6 +518,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Chapter01_ProceduralAnimation") == null
                     || existingRoot.transform.Find("Chapter01_TimeAnchorPuzzle") == null
                     || existingRoot.transform.Find("Chapter01_SettingsSystem") == null
+                    || existingRoot.transform.Find("Chapter01_DataDrivenContent") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -532,7 +536,9 @@ namespace Demo02.Editor
                 }
 
                 SceneManager.SetActiveScene(greyboxScene);
-                BuildGeometry(greyboxScene);
+                CaseDefinition chapterContent =
+                    CaseDefinitionSeeder.LoadOrCreateChapter01();
+                BuildGeometry(greyboxScene, chapterContent);
                 EditorSceneManager.MarkSceneDirty(greyboxScene);
                 EditorSceneManager.SaveScene(greyboxScene);
                 Debug.Log("Demo02 greybox scene generated.");
@@ -549,7 +555,9 @@ namespace Demo02.Editor
             }
         }
 
-        private static void BuildGeometry(Scene scene)
+        private static void BuildGeometry(
+            Scene scene,
+            CaseDefinition chapterContent)
         {
             GameObject root = new GameObject(RootName);
             SceneManager.MoveGameObjectToScene(root, scene);
@@ -717,11 +725,15 @@ namespace Demo02.Editor
                 new Color(0.95f, 0.72f, 0.25f)
             );
             clue.transform.rotation = Quaternion.Euler(0f, -20f, 0f);
+            EvidenceDefinition oldStreetEvidence = RequireEvidence(
+                chapterContent,
+                "old-street-sign"
+            );
             ClueInteractable oldStreetSign = clue.AddComponent<ClueInteractable>();
             oldStreetSign.Configure(
-                "old-street-sign",
-                "E  调查旧街门牌",
-                "门牌背面刮着一层旧漆。对着光能认出“盐引巷”，三枚铜钉下还刻着：西仓、东验、中册。"
+                oldStreetEvidence.Id,
+                oldStreetEvidence.InteractionPrompt,
+                oldStreetEvidence.DiscoveredText
             );
 
             GameObject saltLedger = CreateBlock(
@@ -732,11 +744,15 @@ namespace Demo02.Editor
                 new Color(0.82f, 0.56f, 0.25f)
             );
             saltLedger.transform.rotation = Quaternion.Euler(0f, 20f, 0f);
+            EvidenceDefinition ledgerEvidence = RequireEvidence(
+                chapterContent,
+                "salt-ledger"
+            );
             ClueInteractable ledger = saltLedger.AddComponent<ClueInteractable>();
             ledger.Configure(
-                "salt-ledger",
-                "E  调查盐仓账牌",
-                "账牌背面残留七车盐的押运编号。复核签字是“沈砚”，日期正是暴雨封城的那一夜。"
+                ledgerEvidence.Id,
+                ledgerEvidence.InteractionPrompt,
+                ledgerEvidence.DiscoveredText
             );
 
             GameObject officialSeal = CreateBlock(
@@ -747,11 +763,15 @@ namespace Demo02.Editor
                 new Color(0.82f, 0.28f, 0.2f)
             );
             officialSeal.transform.rotation = Quaternion.Euler(0f, -20f, 0f);
+            EvidenceDefinition sealEvidence = RequireEvidence(
+                chapterContent,
+                "official-seal"
+            );
             ClueInteractable seal = officialSeal.AddComponent<ClueInteractable>();
             seal.Configure(
-                "official-seal",
-                "E  调查官府封条",
-                "封条属于转运副使陆崇，日期比盐引巷从地图消失早一天。背面还有一行小字：知情人沈砚，宜除名。"
+                sealEvidence.Id,
+                sealEvidence.InteractionPrompt,
+                sealEvidence.DiscoveredText
             );
 
             CreateMemoryEcho(
@@ -900,7 +920,9 @@ namespace Demo02.Editor
             GameObject gameSession = new GameObject("GameSession");
             gameSession.transform.SetParent(root.transform);
             gameSession.AddComponent<TimeLayerController>();
-            gameSession.AddComponent<InvestigationState>();
+            InvestigationState investigationState =
+                gameSession.AddComponent<InvestigationState>();
+            investigationState.ConfigureContent(chapterContent);
             EncounterState encounterState = gameSession.AddComponent<EncounterState>();
             encounterState.Configure(enemies);
             gameSession.AddComponent<DialogueController>();
@@ -954,6 +976,9 @@ namespace Demo02.Editor
 
             GameObject testimonyMarker = new GameObject("Chapter01_TestimonyBoard");
             testimonyMarker.transform.SetParent(root.transform);
+
+            GameObject contentMarker = new GameObject("Chapter01_DataDrivenContent");
+            contentMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
@@ -1043,6 +1068,21 @@ namespace Demo02.Editor
             }
 
             return block;
+        }
+
+        private static EvidenceDefinition RequireEvidence(
+            CaseDefinition content,
+            string evidenceId)
+        {
+            EvidenceDefinition evidence = content.FindEvidence(evidenceId);
+            if (evidence == null)
+            {
+                throw new System.InvalidOperationException(
+                    $"Case content is missing evidence '{evidenceId}'."
+                );
+            }
+
+            return evidence;
         }
 
         private static GameObject CreateCharacter(

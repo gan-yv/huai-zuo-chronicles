@@ -10,48 +10,6 @@ namespace Demo02.UI
 {
     public sealed class TestimonyBoardController : MonoBehaviour
     {
-        private static readonly string[] StatementIds =
-        {
-            TestimonyPuzzleRules.StatementId,
-            "teahouse-salt-carts",
-            "clerk-removal-order"
-        };
-
-        private static readonly string[] StatementSources =
-        {
-            "沈伯 · 守仓人",
-            "茶铺伙计 · 街口",
-            "官署抄书吏 · 册页旁证"
-        };
-
-        private static readonly string[] Statements =
-        {
-            "封条是初五傍晚贴上的。那天阿砚还在仓里，门外还没有那七车盐。",
-            "初五到初八都见过盐车，我记不清七车究竟是在哪一夜卸下的。",
-            "旧街的名字是在封仓之后，才从官署册页上一起消失的。"
-        };
-
-        private static readonly string[] EvidenceIds =
-        {
-            "old-street-sign",
-            "salt-ledger",
-            "official-seal"
-        };
-
-        private static readonly string[] EvidenceTitles =
-        {
-            "盐引巷门牌",
-            "七车盐账牌",
-            "陆崇除名封条"
-        };
-
-        private static readonly string[] EvidenceDetails =
-        {
-            "旧漆下藏着“盐引巷”三字，背面铜钉标出旧时锚点顺序。",
-            "七车私盐于初七后半夜入城，复核签字为沈砚。",
-            "封条落款为初五，背面写着“知情人沈砚，宜除名”。"
-        };
-
         public static TestimonyBoardController Instance { get; private set; }
 
         private InvestigationState investigationState;
@@ -148,10 +106,12 @@ namespace Demo02.UI
                 Cursor.visible = true;
                 if (investigationState.TestimonyContradictionSolved)
                 {
-                    selectedStatementId = TestimonyPuzzleRules.StatementId;
-                    selectedEvidenceId = TestimonyPuzzleRules.EvidenceId;
+                    ContradictionDefinition rule =
+                        investigationState.CaseContent?.Contradiction;
+                    selectedStatementId = rule?.StatementId;
+                    selectedEvidenceId = rule?.EvidenceId;
                     SetFeedback(
-                        TestimonyPuzzleRules.CorrectExplanation,
+                        rule?.Explanation ?? "证词矛盾已经解决。",
                         UiTheme.Accent
                     );
                 }
@@ -210,27 +170,29 @@ namespace Demo02.UI
                 selectedStatementId,
                 selectedEvidenceId
             );
+            ContradictionDefinition rule =
+                investigationState.CaseContent?.Contradiction;
             switch (result)
             {
                 case ContradictionResult.Correct:
                     SetFeedback(
-                        TestimonyPuzzleRules.CorrectExplanation,
+                        rule?.Explanation ?? "证词矛盾已经解决。",
                         UiTheme.Accent
                     );
                     GameAudio.PlayConfirm();
                     break;
                 case ContradictionResult.Incorrect:
                     SetFeedback(
-                        TestimonyPuzzleRules.GetIncorrectHint(
-                            investigationState.ContradictionAttempts
-                        ),
+                        investigationState.ContradictionAttempts >= 2
+                            ? rule?.RepeatedHint ?? "重新比对两份记录。"
+                            : rule?.FirstHint ?? "这两份记录不能同时成立。",
                         new Color(0.94f, 0.58f, 0.32f)
                     );
                     GameAudio.PlayInteraction();
                     break;
                 case ContradictionResult.AlreadySolved:
                     SetFeedback(
-                        TestimonyPuzzleRules.CorrectExplanation,
+                        rule?.Explanation ?? "证词矛盾已经解决。",
                         UiTheme.Accent
                     );
                     break;
@@ -273,6 +235,21 @@ namespace Demo02.UI
             );
             DrawPanel(panel);
             DrawHeader(panel, scale);
+            CaseDefinition content = investigationState.CaseContent;
+            if (content == null)
+            {
+                GUI.Label(
+                    new Rect(
+                        panel.x + 28f * scale,
+                        panel.y + 100f * scale,
+                        panel.width - 56f * scale,
+                        40f * scale
+                    ),
+                    "案件内容资产尚未加载。",
+                    UiTheme.Label(16, TextAnchor.MiddleCenter)
+                );
+                return;
+            }
 
             float padding = 28f * scale;
             float gap = 18f * scale;
@@ -299,9 +276,10 @@ namespace Demo02.UI
                 statementColumn,
                 "证词",
                 "选择一段人物说法",
-                StatementIds,
-                StatementSources,
-                Statements,
+                content.Testimonies.Count,
+                index => content.Testimonies[index].Id,
+                index => content.Testimonies[index].Source,
+                index => content.Testimonies[index].Text,
                 selectedStatementId,
                 select =>
                 {
@@ -313,9 +291,10 @@ namespace Demo02.UI
                 evidenceColumn,
                 "证据",
                 "选择一份账册或封条",
-                EvidenceIds,
-                EvidenceTitles,
-                EvidenceDetails,
+                content.Evidence.Count,
+                index => content.Evidence[index].Id,
+                index => content.Evidence[index].Title,
+                index => content.Evidence[index].Detail,
                 selectedEvidenceId,
                 select =>
                 {
@@ -377,9 +356,10 @@ namespace Demo02.UI
             Rect column,
             string title,
             string subtitle,
-            string[] ids,
-            string[] headings,
-            string[] bodies,
+            int count,
+            Func<int, string> getId,
+            Func<int, string> getHeading,
+            Func<int, string> getBody,
             string selectedId,
             Action<string> select)
         {
@@ -407,9 +387,12 @@ namespace Demo02.UI
 
             float top = column.y + 50f * scale;
             float gap = 8f * scale;
-            float cardHeight = (column.yMax - top - gap * 2f) / 3f;
-            for (int index = 0; index < ids.Length; index++)
+            float cardHeight = count > 0
+                ? (column.yMax - top - gap * (count - 1)) / count
+                : column.yMax - top;
+            for (int index = 0; index < count; index++)
             {
+                string id = getId(index);
                 Rect card = new(
                     column.x,
                     top + index * (cardHeight + gap),
@@ -418,11 +401,11 @@ namespace Demo02.UI
                 );
                 DrawChoiceCard(
                     card,
-                    ids[index],
-                    headings[index],
-                    bodies[index],
-                    ids[index] == selectedId,
-                    () => select(ids[index])
+                    id,
+                    getHeading(index),
+                    getBody(index),
+                    id == selectedId,
+                    () => select(id)
                 );
             }
         }
@@ -584,8 +567,9 @@ namespace Demo02.UI
             investigationState.SetWitnessStance(WitnessStance.PersonFirst);
             investigationState.SetEvidencePlan(EvidencePlan.PrivateProtection);
             investigationState.CompleteEvidenceReview();
-            selectedStatementId = TestimonyPuzzleRules.StatementId;
-            selectedEvidenceId = TestimonyPuzzleRules.EvidenceId;
+            ContradictionDefinition rule = investigationState.CaseContent?.Contradiction;
+            selectedStatementId = rule?.StatementId;
+            selectedEvidenceId = rule?.EvidenceId;
             SetFeedback(
                 "已选：沈伯关于初五封条的说法 + 七车盐账牌。确认两者是否能够同时成立。",
                 UiTheme.Muted

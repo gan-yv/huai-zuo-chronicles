@@ -10,13 +10,14 @@ namespace Demo02.Editor
     public static class Demo02Build
     {
         private const string ProductName = "Huai-Zuo Chronicles";
-        private const string Version = "1.10.0";
+        private const string Version = "1.11.0";
         private const string OutputDirectory = "Builds/WindowsDemo";
         private const string ExecutableName = "HuaiZuoChronicles.exe";
 
         [MenuItem("Demo02/Build Windows Demo")]
         public static void BuildWindowsDemo()
         {
+            CaseDefinitionSeeder.ValidateOrThrow();
             Demo02GreyboxBuilder.RebuildForBatch();
             ConfigurePlayer();
 

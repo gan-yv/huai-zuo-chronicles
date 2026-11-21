@@ -62,7 +62,8 @@ namespace Demo02.UI
                     panel.width - 32f * scale,
                     20f * scale
                 ),
-                "CHAPTER 01 · 消失的盐引",
+                $"{investigationState.CaseContent?.ChapterLabel ?? "CHAPTER"} · "
+                + $"{investigationState.CaseContent?.Title ?? "内容未加载"}",
                 eyebrowStyle
             );
             GUI.Label(

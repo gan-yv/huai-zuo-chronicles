@@ -52,6 +52,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 时间锚点按“西仓 → 东验 → 中册”的顺序解谜，错序会重置并重新导航。
 - 持久化设置：音量、UI 缩放、镜头灵敏度和减弱动态效果。
 - 自动存档与三个手动槽位，支持覆盖、读取、删除确认和旧存档迁移。
+- 第一章线索、证词、矛盾答案、目标和推理文本由 `CaseDefinition` 数据资产驱动。
 - 可选战斗、攻击预警和闪避无敌帧。
 - 版本化 JSON 存档、自动检查点、三槽位管理和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -77,10 +78,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.10.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.11.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.10.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.11.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -127,6 +128,9 @@ R          结局或队伍倒下后重开
 
 ### 内容系统
 
+- 案件资产位于 `Assets/Demo02/Data/Quests/Chapter01_Case.asset`，可直接在 Inspector 编辑。
+- 调查案卷、证词面板、任务目标和推理文本只读取同一个案件资产。
+- 内容校验会检查重复 ID、缺失证据引用、矛盾答案和缺失阶段文案。
 - NPC 对白采用逐句数据，不依赖专用过场。
 - 时间层通过可见性和碰撞切换管理。
 - 灰盒场景由可重复运行的 Editor Builder 生成，降低手工维护成本。
