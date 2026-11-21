@@ -193,6 +193,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Area_WarehouseCourtyard") == null
                     || existingRoot.transform.Find("Area_WarehouseInterior") == null
                     || existingRoot.transform.Find("DongguanStreet") == null
+                    || existingRoot.transform.Find("CaiyiStreet") == null
                     || existingRoot.transform.Find("NPC_WarehouseWorker") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
@@ -1035,6 +1036,203 @@ namespace Demo02.Editor
                     "茶凉了还能续，人会从纸上消失，可就续不回来了。"
                 )
             );
+
+            BuildCaiyiStreet(root, dongguanSpawn.transform);
+        }
+
+        private static void BuildCaiyiStreet(Transform root, Transform dongguanSpawn)
+        {
+            Transform areaRoot = new GameObject("CaiyiStreet").transform;
+            areaRoot.SetParent(root);
+
+            CreateBlock(
+                areaRoot,
+                "Caiyi_Ground",
+                new Vector3(60f, -0.56f, 225f),
+                new Vector3(18f, 1f, 130f),
+                new Color(0.4f, 0.42f, 0.43f)
+            );
+
+            float[] shopPositions =
+            {
+                170f, 181f, 192f, 203f, 214f, 225f,
+                236f, 247f, 258f, 269f, 280f
+            };
+
+            for (int index = 0; index < shopPositions.Length; index++)
+            {
+                float z = shopPositions[index];
+                float height = 4.5f + (index % 3) * 0.8f;
+                Color leftWall = index % 2 == 0
+                    ? new Color(0.58f, 0.55f, 0.5f)
+                    : new Color(0.5f, 0.45f, 0.4f);
+                Color rightWall = index % 2 == 0
+                    ? new Color(0.5f, 0.42f, 0.38f)
+                    : new Color(0.57f, 0.52f, 0.46f);
+
+                CreateBlock(
+                    areaRoot,
+                    $"Caiyi_LeftShop_{index + 1}",
+                    new Vector3(52.5f, height * 0.5f, z),
+                    new Vector3(5f, height, 9f),
+                    leftWall
+                );
+                CreateBlock(
+                    areaRoot,
+                    $"Caiyi_RightShop_{index + 1}",
+                    new Vector3(67.5f, height * 0.5f, z),
+                    new Vector3(5f, height, 9f),
+                    rightWall
+                );
+
+                CreateBlock(
+                    areaRoot,
+                    $"Caiyi_LeftAwning_{index + 1}",
+                    new Vector3(55.8f, 2.9f, z),
+                    new Vector3(2.2f, 0.18f, 3.2f),
+                    index % 2 == 0
+                        ? new Color(0.72f, 0.22f, 0.18f)
+                        : new Color(0.22f, 0.48f, 0.5f)
+                );
+                CreateBlock(
+                    areaRoot,
+                    $"Caiyi_RightAwning_{index + 1}",
+                    new Vector3(64.2f, 2.9f, z),
+                    new Vector3(2.2f, 0.18f, 3.2f),
+                    index % 2 == 0
+                        ? new Color(0.68f, 0.46f, 0.16f)
+                        : new Color(0.56f, 0.22f, 0.32f)
+                );
+            }
+
+            for (int index = 0; index < 8; index++)
+            {
+                float z = 174f + index * 15f;
+                CreateCaiyiTree(
+                    areaRoot,
+                    $"Caiyi_Tree_{index + 1}",
+                    new Vector3(index % 2 == 0 ? 55.2f : 64.8f, 0f, z)
+                );
+            }
+
+            for (int index = 0; index < 6; index++)
+            {
+                CreateBlock(
+                    areaRoot,
+                    $"Caiyi_CrosswalkStart_{index + 1}",
+                    new Vector3(56.2f + index * 1.5f, 0.02f, 170f),
+                    new Vector3(0.8f, 0.04f, 4.2f),
+                    new Color(0.85f, 0.85f, 0.78f)
+                );
+            }
+
+            CreateBlock(
+                areaRoot,
+                "Caiyi_EndWall",
+                new Vector3(60f, 2f, 290f),
+                new Vector3(18f, 4f, 2f),
+                new Color(0.32f, 0.29f, 0.26f)
+            );
+
+            GameObject caiyiSpawn = new("CaiyiSpawn");
+            caiyiSpawn.transform.SetParent(areaRoot);
+            caiyiSpawn.transform.position = new Vector3(60f, 0f, 166f);
+            caiyiSpawn.AddComponent<WorldSpawnPoint>().Configure("caiyi_start");
+
+            CreateWorldArea(
+                areaRoot,
+                "Area_CaiyiStreet",
+                new Vector3(60f, 1f, 230f),
+                new Vector3(10f, 3f, 120f),
+                "caiyi-street",
+                "彩衣街"
+            );
+
+            GameObject caiyiGate = CreateBlock(
+                areaRoot,
+                "Gate_ReturnDongguan",
+                new Vector3(60f, 1.2f, 162f),
+                new Vector3(1.5f, 2.4f, 0.35f),
+                new Color(0.55f, 0.32f, 0.18f)
+            );
+            caiyiGate.AddComponent<LocalWorldPortal>().Configure(
+                dongguanSpawn,
+                "dongguan-street",
+                "东关街",
+                "E  返回东关街"
+            );
+
+            GameObject dongguanToCaiyi = CreateBlock(
+                root,
+                "Gate_DongguanToCaiyi",
+                new Vector3(64.5f, 1.2f, -17.5f),
+                new Vector3(1.5f, 2.4f, 0.35f),
+                new Color(0.85f, 0.32f, 0.2f)
+            );
+            dongguanToCaiyi.transform.rotation = Quaternion.Euler(0f, -90f, 0f);
+            dongguanToCaiyi.AddComponent<LocalWorldPortal>().Configure(
+                caiyiSpawn.transform,
+                "caiyi-street",
+                "彩衣街",
+                "E  前往彩衣街"
+            );
+
+            GameObject tailor = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            tailor.name = "NPC_CaiyiTailor";
+            tailor.transform.SetParent(areaRoot);
+            tailor.transform.position = new Vector3(56f, 1f, 190f);
+            tailor.AddComponent<ColorTint>().Configure(new Color(0.65f, 0.3f, 0.32f));
+            NpcDialogueInteractable tailorDialogue =
+                tailor.AddComponent<NpcDialogueInteractable>();
+            tailorDialogue.Configure(
+                "裁衣铺掌柜",
+                "E  与裁衣铺掌柜交谈",
+                new DialogueLine(
+                    "裁衣铺掌柜",
+                    "彩衣街的衣裳讲究配色，一段布接错了，整件衣裳都不是原来的样子。"
+                ),
+                new DialogueLine(
+                    "裁衣铺掌柜",
+                    "街和衣裳也一样。少了一段，旁人未必看得出来，住在这里的人却知道。"
+                )
+            );
+
+            GameObject snackVendor = CreateBlock(
+                areaRoot,
+                "NPC_CaiyiSnackVendor",
+                new Vector3(64f, 1f, 245f),
+                new Vector3(1.1f, 2f, 1.1f),
+                new Color(0.78f, 0.45f, 0.18f)
+            );
+            NpcDialogueInteractable vendorDialogue =
+                snackVendor.AddComponent<NpcDialogueInteractable>();
+            vendorDialogue.Configure(
+                "小吃摊主",
+                "E  与小吃摊主交谈",
+                new DialogueLine(
+                    "小吃摊主",
+                    "街口那棵树我从小看到大。可前些天有人指着这里说，这条路从前根本没有树。"
+                )
+            );
+        }
+
+        private static void CreateCaiyiTree(Transform parent, string name, Vector3 position)
+        {
+            GameObject trunk = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            trunk.name = $"{name}_Trunk";
+            trunk.transform.SetParent(parent);
+            trunk.transform.position = position + Vector3.up * 1.4f;
+            trunk.transform.localScale = new Vector3(0.35f, 1.4f, 0.35f);
+            Object.DestroyImmediate(trunk.GetComponent<CapsuleCollider>());
+            trunk.AddComponent<ColorTint>().Configure(new Color(0.3f, 0.2f, 0.12f));
+
+            GameObject canopy = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            canopy.name = $"{name}_Canopy";
+            canopy.transform.SetParent(parent);
+            canopy.transform.position = position + Vector3.up * 3.5f;
+            canopy.transform.localScale = new Vector3(3.4f, 1.8f, 3.4f);
+            Object.DestroyImmediate(canopy.GetComponent<SphereCollider>());
+            canopy.AddComponent<ColorTint>().Configure(new Color(0.18f, 0.42f, 0.2f));
         }
 
         private static void CreateTimeAnchor(
