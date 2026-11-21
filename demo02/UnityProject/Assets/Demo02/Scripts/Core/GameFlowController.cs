@@ -44,6 +44,11 @@ namespace Demo02.Core
                 return;
             }
 
+            if (SettingsController.Instance != null && SettingsController.Instance.IsOpen)
+            {
+                return;
+            }
+
             if (IsEnding)
             {
                 if (!isEndingFrozen)

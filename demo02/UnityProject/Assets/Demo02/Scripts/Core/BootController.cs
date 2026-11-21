@@ -39,7 +39,8 @@ namespace Demo02.Core
                 || System.Array.IndexOf(arguments, "--preview-map") >= 0
                 || System.Array.IndexOf(arguments, "--preview-journal") >= 0
                 || System.Array.IndexOf(arguments, "--preview-vision") >= 0
-                || System.Array.IndexOf(arguments, "--preview-choice") >= 0)
+                || System.Array.IndexOf(arguments, "--preview-choice") >= 0
+                || System.Array.IndexOf(arguments, "--preview-settings") >= 0)
             {
                 StartGame(showOpening: false);
             }

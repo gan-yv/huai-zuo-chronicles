@@ -19,6 +19,8 @@ namespace Demo02.UI
                 || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
                 || (InvestigationJournalController.Instance != null
                     && InvestigationJournalController.Instance.IsOpen)
+                || (SettingsController.Instance != null
+                    && SettingsController.Instance.IsOpen)
                 || (DialogueController.Instance != null
                     && DialogueController.Instance.IsOpen))
             {

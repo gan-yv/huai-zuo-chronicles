@@ -16,6 +16,8 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ![对白选择](demo02/docs/screenshots/dialogue-choice.png)
 
+![游戏设置](demo02/docs/screenshots/settings-screen.png)
+
 ## 目标岗位
 
 - Unity 客户端 / Gameplay 程序
@@ -43,6 +45,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 程序化角色动作、NPC 面向、对话镜头和电影黑边。
 - 证据处置选择会生成官署告示或封存证物箱等场景后续。
 - 时间锚点按“西仓 → 东验 → 中册”的顺序解谜，错序会重置并重新导航。
+- 持久化设置：音量、UI 缩放、镜头灵敏度和减弱动态效果。
 - 可选战斗、攻击预警和闪避无敌帧。
 - JSON 存档、自动检查点和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -68,10 +71,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.7.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.8.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.7.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.8.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -90,6 +93,7 @@ Q          切换时间层
 M          世界地图与快速传送
 J          调查案卷
 V          修痕视界
+O          游戏设置
 Esc        暂停 / 关闭地图或案卷
 F2         静音 / 恢复声音
 F5 / F9    保存 / 读取

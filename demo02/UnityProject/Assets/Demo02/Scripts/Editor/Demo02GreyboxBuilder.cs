@@ -310,6 +310,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Chapter01_ChoiceConsequences") == null
                     || existingRoot.transform.Find("Chapter01_ProceduralAnimation") == null
                     || existingRoot.transform.Find("Chapter01_TimeAnchorPuzzle") == null
+                    || existingRoot.transform.Find("Chapter01_SettingsSystem") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -705,6 +706,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<WorldMapController>();
             gameSession.AddComponent<InvestigationJournalController>();
             gameSession.AddComponent<InvestigationVisionController>();
+            gameSession.AddComponent<SettingsController>();
             gameSession.AddComponent<ScreenFade>();
             gameSession.AddComponent<AreaBanner>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
@@ -737,6 +739,9 @@ namespace Demo02.Editor
 
             GameObject puzzleMarker = new GameObject("Chapter01_TimeAnchorPuzzle");
             puzzleMarker.transform.SetParent(root.transform);
+
+            GameObject settingsMarker = new GameObject("Chapter01_SettingsSystem");
+            settingsMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);

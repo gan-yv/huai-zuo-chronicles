@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.7.0
+# Huai-Zuo Chronicles v1.8.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.7.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.8.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.7.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.8.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-6F26EDAE7D8AE822A3BA96713249D24ED2D4F759F8944AABFC83C1094DA31127
+B4BEE2A0D5B8AA8A81C72F9074A54937A614EFD111D4BF04B383D156EB9CEDC7
 ```
 
 ## 已包含
@@ -46,6 +46,8 @@ SHA256：
 - 公开/私下证据选择会在场景中生成对应后续交互物。
 - 时间锚点按“西仓 → 东验 → 中册”顺序稳定。
 - 错序会重置锚点，任务罗盘会指向下一处正确目标。
+- 新增持久化主音量、界面缩放和镜头灵敏度。
+- 新增减弱动态效果，减少程序步态和身体起伏。
 - 程序化人物轮廓和三层店铺立面组成的第一遍美术 pass。
 - 屋檐、门面、立柱、布幡与灯笼覆盖官署前街、东关街和彩衣街。
 - 沈伯委托、沈砚失踪、七车私盐和陆崇除名封条组成的证据链。
@@ -95,3 +97,4 @@ SHA256：
 - 章节状态机测试通过，包含调查立场和证据去向的存档恢复。
 - 干净临时工程重建成功，Input System 与 URP 包清单校验通过。
 - 时间锚点顺序、错序重置和读档恢复自动测试通过。
+- 设置界面预览与 Windows 构建验证通过。

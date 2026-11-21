@@ -76,13 +76,18 @@ namespace Demo02.Player
 
             float stride = Mathf.Sin(phase) * 24f * movementBlend;
             float armSwing = Mathf.Sin(phase) * 18f * movementBlend;
+            float motionScale = Demo02.Core.GameSettings.ReduceMotion ? 0.28f : 1f;
+            stride *= motionScale;
+            armSwing *= motionScale;
             ApplySwing(leftArm, leftArmBase, armSwing);
             ApplySwing(rightArm, rightArmBase, -armSwing);
             ApplySwing(leftLeg, leftLegBase, -stride);
             ApplySwing(rightLeg, rightLegBase, stride);
 
-            float bob = Mathf.Abs(Mathf.Sin(phase)) * 0.035f * movementBlend;
-            float idleBreath = Mathf.Sin(Time.unscaledTime * 1.55f) * (isNpc ? 0.01f : 0.016f);
+            float bob = Mathf.Abs(Mathf.Sin(phase)) * 0.035f * movementBlend * motionScale;
+            float idleBreath = Mathf.Sin(Time.unscaledTime * 1.55f)
+                * (isNpc ? 0.01f : 0.016f)
+                * motionScale;
             body.localPosition = bodyPositionBase + Vector3.up * (bob + idleBreath);
             head.localPosition = headPositionBase + Vector3.up * (bob * 0.55f + idleBreath * 0.7f);
 

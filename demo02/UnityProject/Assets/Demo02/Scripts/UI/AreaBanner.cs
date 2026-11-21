@@ -103,6 +103,8 @@ namespace Demo02.UI
                 || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
                 || (InvestigationJournalController.Instance != null
                     && InvestigationJournalController.Instance.IsOpen)
+                || (SettingsController.Instance != null
+                    && SettingsController.Instance.IsOpen)
                 || (InvestigationVisionController.Instance != null
                     && InvestigationVisionController.Instance.IsActive)
                 || (DialogueController.Instance != null

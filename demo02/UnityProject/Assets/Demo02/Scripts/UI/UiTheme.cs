@@ -1,3 +1,4 @@
+using Demo02.Core;
 using UnityEngine;
 
 namespace Demo02.UI
@@ -15,7 +16,11 @@ namespace Demo02.UI
         private static readonly Texture2D AccentTexture = CreateTexture(Accent);
 
         public static float Scale =>
-            Mathf.Clamp(Screen.height / 900f, 0.82f, 1.35f);
+            Mathf.Clamp(
+                Screen.height / 900f * GameSettings.UiScaleMultiplier,
+                0.72f,
+                1.55f
+            );
 
         public static GUIStyle Label(
             int fontSize,

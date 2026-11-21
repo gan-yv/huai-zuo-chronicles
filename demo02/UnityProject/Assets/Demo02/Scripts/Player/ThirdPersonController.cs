@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Demo02.Core;
 
 namespace Demo02.Player
 {
@@ -94,8 +95,9 @@ namespace Demo02.Player
             }
 
             Vector2 delta = mouse.delta.ReadValue();
-            cameraYaw += delta.x * mouseSensitivity;
-            cameraPitch = Mathf.Clamp(cameraPitch - delta.y * mouseSensitivity, minPitch, maxPitch);
+            float sensitivity = mouseSensitivity * GameSettings.CameraSensitivity;
+            cameraYaw += delta.x * sensitivity;
+            cameraPitch = Mathf.Clamp(cameraPitch - delta.y * sensitivity, minPitch, maxPitch);
         }
 
         private void UpdateMovement()

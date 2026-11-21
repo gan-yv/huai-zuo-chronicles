@@ -135,7 +135,12 @@ namespace Demo02.Core
 
         private void ApplyMuteState()
         {
-            AudioListener.volume = IsMuted ? 0f : 1f;
+            AudioListener.volume = IsMuted ? 0f : GameSettings.MasterVolume;
+        }
+
+        public static void RefreshVolume()
+        {
+            Instance?.ApplyMuteState();
         }
 
         private AudioSource CreateSource(string sourceName, bool loop, float volume)
