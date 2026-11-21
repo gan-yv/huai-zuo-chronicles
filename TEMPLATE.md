@@ -3,7 +3,7 @@
 当前稳定模板：
 
 - Git 分支：`template/world-rpg-base`
-- 版本标签：`template-world-rpg-v1.1`
+- 版本标签：`template-world-rpg-v1.2`
 - 来源版本：`demo02-world-navigation-v0.13`
 
 ## 已包含

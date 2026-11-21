@@ -85,7 +85,7 @@ if ($Minimal)
     $readme = @'
 # {0}
 
-本项目从 `template-world-rpg-v1` 世界游戏模板创建。
+本项目从通用世界游戏模板创建。
 
 ## 开始
 
