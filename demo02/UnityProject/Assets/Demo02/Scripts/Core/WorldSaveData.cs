@@ -1,0 +1,35 @@
+using System;
+using System.Collections.Generic;
+using Demo02.Narrative;
+using Demo02.WorldState;
+
+namespace Demo02.Core
+{
+    [Serializable]
+    public sealed class WorldSaveData
+    {
+        public int Version = 1;
+        public string SceneName;
+        public float PlayerX;
+        public float PlayerY;
+        public float PlayerZ;
+        public float PlayerRotationY;
+        public int ActivePartyIndex;
+        public TimeLayer TimeLayer;
+        public string AreaId;
+        public string AreaName;
+        public List<string> ClueIds = new();
+        public List<string> TimeAnchorIds = new();
+        public bool IsRepaired;
+        public ConclusionChoice Conclusion;
+        public List<CombatantSaveData> Combatants = new();
+    }
+
+    [Serializable]
+    public sealed class CombatantSaveData
+    {
+        public string ObjectName;
+        public float Health;
+        public bool Active;
+    }
+}

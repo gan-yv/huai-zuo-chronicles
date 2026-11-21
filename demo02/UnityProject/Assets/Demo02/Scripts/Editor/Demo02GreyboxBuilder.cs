@@ -429,6 +429,7 @@ namespace Demo02.Editor
             party.Configure(player.transform, partner.transform);
             gameSession.AddComponent<CombatHud>();
             gameSession.AddComponent<GameFlowController>();
+            gameSession.AddComponent<SaveSystem>();
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);

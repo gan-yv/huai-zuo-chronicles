@@ -13,6 +13,7 @@ namespace Demo02.Player
 
         public Transform ActiveCharacter =>
             characters.Length > activeIndex ? characters[activeIndex] : null;
+        public int ActiveIndex => activeIndex;
         public bool IsPartyDefeated
         {
             get
@@ -36,6 +37,16 @@ namespace Demo02.Player
         {
             characters = new[] { first, second };
             activeIndex = 0;
+        }
+
+        public void RestoreActiveCharacter(int index)
+        {
+            if (characters == null || index < 0 || index >= characters.Length)
+            {
+                return;
+            }
+
+            SetActiveCharacter(index, moveToActivePosition: false);
         }
 
         private void Start()

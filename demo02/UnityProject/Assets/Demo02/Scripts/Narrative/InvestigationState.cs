@@ -77,5 +77,44 @@ namespace Demo02.Narrative
             SelectedConclusion = choice;
             return true;
         }
+
+        public string[] ExportClueIds() => new List<string>(collectedClueIds).ToArray();
+        public string[] ExportTimeAnchorIds() => new List<string>(stabilizedTimeAnchorIds).ToArray();
+
+        public void RestoreProgress(
+            IEnumerable<string> clueIds,
+            IEnumerable<string> timeAnchorIds,
+            bool repaired,
+            ConclusionChoice conclusion)
+        {
+            collectedClueIds.Clear();
+            stabilizedTimeAnchorIds.Clear();
+
+            if (clueIds != null)
+            {
+                foreach (string clueId in clueIds)
+                {
+                    if (!string.IsNullOrWhiteSpace(clueId))
+                    {
+                        collectedClueIds.Add(clueId);
+                    }
+                }
+            }
+
+            if (timeAnchorIds != null)
+            {
+                foreach (string anchorId in timeAnchorIds)
+                {
+                    if (!string.IsNullOrWhiteSpace(anchorId))
+                    {
+                        stabilizedTimeAnchorIds.Add(anchorId);
+                    }
+                }
+            }
+
+            IsRepaired = repaired;
+            SelectedConclusion = repaired ? conclusion : ConclusionChoice.None;
+            ClueCountChanged?.Invoke(CollectedClueCount, requiredClueCount);
+        }
     }
 }

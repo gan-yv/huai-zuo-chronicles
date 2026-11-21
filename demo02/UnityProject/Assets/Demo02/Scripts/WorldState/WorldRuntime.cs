@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Demo02.Core;
 using Demo02.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,6 +18,7 @@ namespace Demo02.WorldState
         public string CurrentDistrictId { get; private set; }
         public string CurrentAreaId { get; private set; }
         public string CurrentAreaName { get; private set; }
+        public WorldSaveData PendingSave { get; private set; }
 
         private void Awake()
         {
@@ -64,6 +66,16 @@ namespace Demo02.WorldState
         {
             CurrentAreaId = areaId;
             CurrentAreaName = displayName;
+        }
+
+        public void QueueSaveLoad(WorldSaveData saveData)
+        {
+            PendingSave = saveData;
+        }
+
+        public void ClearPendingSave()
+        {
+            PendingSave = null;
         }
 
         public void RequestSceneLoad(string sceneName, string spawnId)

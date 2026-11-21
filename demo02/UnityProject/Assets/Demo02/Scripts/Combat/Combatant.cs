@@ -58,5 +58,13 @@ namespace Demo02.Combat
                 Died?.Invoke(this);
             }
         }
+
+        public void RestoreHealth(float health)
+        {
+            maxHealth = Mathf.Max(1f, maxHealth);
+            currentHealth = Mathf.Clamp(health, 0f, maxHealth);
+            isInitialized = true;
+            HealthChanged?.Invoke(this);
+        }
     }
 }

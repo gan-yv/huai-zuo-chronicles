@@ -6,6 +6,13 @@ namespace Demo02.Core
 {
     public sealed class BootController : MonoBehaviour
     {
+        private bool hasSave;
+
+        private void Awake()
+        {
+            hasSave = SaveSystem.HasSave();
+        }
+
         private void OnGUI()
         {
             Color previousColor = GUI.color;
@@ -44,15 +51,25 @@ namespace Demo02.Core
             const float buttonWidth = 300f;
             const float buttonHeight = 52f;
             float buttonX = (Screen.width - buttonWidth) * 0.5f;
-            float buttonY = Screen.height * 0.55f;
+            float buttonY = Screen.height * 0.5f;
 
             if (GUI.Button(new Rect(buttonX, buttonY, buttonWidth, buttonHeight), "开始游戏"))
             {
                 StartGame();
             }
 
+            GUI.enabled = hasSave;
             if (GUI.Button(
-                new Rect(buttonX, buttonY + 72f, buttonWidth, buttonHeight),
+                new Rect(buttonX, buttonY + 68f, buttonWidth, buttonHeight),
+                "继续游戏"
+            ))
+            {
+                ContinueGame();
+            }
+            GUI.enabled = true;
+
+            if (GUI.Button(
+                new Rect(buttonX, buttonY + 136f, buttonWidth, buttonHeight),
                 "退出游戏"
             ))
             {
@@ -68,6 +85,8 @@ namespace Demo02.Core
 
         private static void StartGame()
         {
+            WorldRuntime.Instance?.ClearPendingSave();
+            WorldRuntime.Instance?.SetCurrentArea("official-street", "官署前街");
             if (WorldRuntime.Instance != null)
             {
                 WorldRuntime.Instance.RequestSceneLoad(SceneNames.Guangling, "guangling_start");
@@ -76,6 +95,11 @@ namespace Demo02.Core
             {
                 SceneManager.LoadScene(SceneNames.Guangling);
             }
+        }
+
+        private static void ContinueGame()
+        {
+            SaveSystem.LoadSavedGame(out _);
         }
 
         private static void QuitGame()
