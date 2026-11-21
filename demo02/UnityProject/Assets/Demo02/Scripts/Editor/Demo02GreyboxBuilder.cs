@@ -73,6 +73,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("PartnerPlaceholder") == null
                     || existingRoot.transform.Find("Enemy_Patrol_01") == null
                     || existingRoot.transform.Find("Choice_Preserve") == null
+                    || existingRoot.transform.Find("PlayerPlaceholder/MeleeArc") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -133,6 +134,14 @@ namespace Demo02.Editor
             player.AddComponent<PlayerInteractor>();
             player.AddComponent<PlayerCombat>();
             player.AddComponent<Combatant>().Configure(CombatTeam.Player, 100f);
+
+            GameObject meleeArc = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            meleeArc.name = "MeleeArc";
+            meleeArc.transform.SetParent(player.transform, worldPositionStays: false);
+            meleeArc.transform.localPosition = new Vector3(0f, 0.15f, 1.1f);
+            meleeArc.transform.localScale = new Vector3(0.9f, 0.18f, 2f);
+            Object.DestroyImmediate(meleeArc.GetComponent<BoxCollider>());
+            meleeArc.SetActive(false);
 
             GameObject partner = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             partner.name = "PartnerPlaceholder";

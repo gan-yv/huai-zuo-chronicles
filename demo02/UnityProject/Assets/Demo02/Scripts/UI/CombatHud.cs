@@ -46,6 +46,8 @@ namespace Demo02.UI
                 style
             );
 
+            DrawEnemyHealthBars();
+
             if (party != null && party.IsPartyDefeated)
             {
                 GUI.Box(
@@ -57,6 +59,52 @@ namespace Demo02.UI
                         fontSize = 22
                     }
                 );
+            }
+        }
+
+        private void DrawEnemyHealthBars()
+        {
+            Camera sceneCamera = Camera.main;
+            if (encounterState == null || sceneCamera == null)
+            {
+                return;
+            }
+
+            foreach (Combatant enemy in encounterState.Enemies)
+            {
+                if (enemy == null || !enemy.IsAlive)
+                {
+                    continue;
+                }
+
+                Vector3 screenPoint = sceneCamera.WorldToScreenPoint(
+                    enemy.transform.position + Vector3.up * 1.4f
+                );
+                if (screenPoint.z <= 0f)
+                {
+                    continue;
+                }
+
+                const float width = 72f;
+                const float height = 10f;
+                Rect background = new Rect(
+                    screenPoint.x - width * 0.5f,
+                    Screen.height - screenPoint.y - height,
+                    width,
+                    height
+                );
+                Rect fill = new Rect(
+                    background.x + 1f,
+                    background.y + 1f,
+                    (width - 2f) * Mathf.Clamp01(enemy.CurrentHealth / enemy.MaxHealth),
+                    height - 2f
+                );
+
+                GUI.Box(background, string.Empty);
+                Color previousColor = GUI.color;
+                GUI.color = new Color(0.85f, 0.2f, 0.15f, 1f);
+                GUI.DrawTexture(fill, Texture2D.whiteTexture);
+                GUI.color = previousColor;
             }
         }
 

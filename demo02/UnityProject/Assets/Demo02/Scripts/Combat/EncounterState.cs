@@ -11,6 +11,7 @@ namespace Demo02.Combat
         public int TotalEnemyCount => enemies.Length;
         public int AliveEnemyCount => enemies.Count(enemy => enemy != null && enemy.IsAlive);
         public bool IsCleared => TotalEnemyCount > 0 && AliveEnemyCount == 0;
+        public IReadOnlyList<Combatant> Enemies => enemies;
 
         public void Configure(IEnumerable<Combatant> encounterEnemies)
         {
