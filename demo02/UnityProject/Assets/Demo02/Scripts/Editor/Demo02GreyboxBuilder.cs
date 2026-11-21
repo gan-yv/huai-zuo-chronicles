@@ -300,6 +300,8 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Chapter01_ArtPass") == null
                     || existingRoot.transform.Find("Chapter01_VisionSystem") == null
                     || existingRoot.transform.Find("Chapter01_ArchitecturePolish") == null
+                    || existingRoot.transform.Find("Chapter01_ChoiceConsequences") == null
+                    || existingRoot.transform.Find("Chapter01_ProceduralAnimation") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -645,6 +647,40 @@ namespace Demo02.Editor
                 sealOutcome
             );
 
+            GameObject publicRecordVisual = CreateBlock(
+                root.transform,
+                "Consequence_PublicRecord",
+                new Vector3(-4.4f, 1.25f, 7.5f),
+                new Vector3(1.8f, 2.15f, 0.22f),
+                new Color(0.88f, 0.68f, 0.28f)
+            );
+            publicRecordVisual.AddComponent<NpcDialogueInteractable>().Configure(
+                "官署抄录告示",
+                "E  查看已经送交官署的记录",
+                new DialogueLine(
+                    "官署抄录告示",
+                    "盐引巷七车盐账已抄录三份。沈砚的名字重新出现在官署门外的告示上，来往行人都能看见。"
+                )
+            );
+            publicRecordVisual.SetActive(false);
+
+            GameObject privateRecordVisual = CreateBlock(
+                root.transform,
+                "Consequence_ProtectedEvidence",
+                new Vector3(14.5f, 0.7f, 10.5f),
+                new Vector3(1.4f, 1.4f, 1.4f),
+                new Color(0.3f, 0.19f, 0.1f)
+            );
+            privateRecordVisual.AddComponent<NpcDialogueInteractable>().Configure(
+                "封存证物箱",
+                "E  查看封存的账页副本",
+                new DialogueLine(
+                    "封存证物箱",
+                    "账页副本藏在旧仓最暗的角落。只有沈伯和你知道这里，但真相也因此暂时无法被官署销毁。"
+                )
+            );
+            privateRecordVisual.SetActive(false);
+
             GameObject gameSession = new GameObject("GameSession");
             gameSession.transform.SetParent(root.transform);
             gameSession.AddComponent<TimeLayerController>();
@@ -666,6 +702,9 @@ namespace Demo02.Editor
             gameSession.AddComponent<GameFlowController>();
             gameSession.AddComponent<SaveSystem>();
             gameSession.AddComponent<GameAudio>();
+            gameSession
+                .AddComponent<EvidencePlanDisplay>()
+                .Configure(publicRecordVisual, privateRecordVisual);
 
             GameObject chapterMarker = new GameObject("Chapter01_StorySetup");
             chapterMarker.transform.SetParent(root.transform);
@@ -678,6 +717,12 @@ namespace Demo02.Editor
 
             GameObject polishMarker = new GameObject("Chapter01_ArchitecturePolish");
             polishMarker.transform.SetParent(root.transform);
+
+            GameObject consequenceMarker = new GameObject("Chapter01_ChoiceConsequences");
+            consequenceMarker.transform.SetParent(root.transform);
+
+            GameObject animationMarker = new GameObject("Chapter01_ProceduralAnimation");
+            animationMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
@@ -893,7 +938,10 @@ namespace Demo02.Editor
                 collider.center = Vector3.zero;
                 collider.height = 2f;
                 collider.radius = 0.48f;
+                character.AddComponent<NpcFacingController>();
             }
+
+            character.AddComponent<ProceduralCharacterAnimator>().Configure(addNpcCollider);
 
             return character;
         }

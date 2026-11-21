@@ -30,7 +30,7 @@ namespace Demo02.Interaction
                 return "对话系统尚未初始化。";
             }
 
-            controller.Begin(lines);
+            controller.Begin(lines, null, transform);
             return string.Empty;
         }
     }

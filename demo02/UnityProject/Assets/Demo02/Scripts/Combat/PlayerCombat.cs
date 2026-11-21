@@ -48,6 +48,7 @@ namespace Demo02.Combat
         private void Attack()
         {
             ShowAttackVisual();
+            GetComponent<Demo02.Player.ProceduralCharacterAnimator>()?.PlayAttack();
             Vector3 center = transform.position + Vector3.up + transform.forward * attackRange;
             int count = Physics.OverlapSphereNonAlloc(
                 center,

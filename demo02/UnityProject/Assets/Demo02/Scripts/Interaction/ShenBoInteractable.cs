@@ -68,6 +68,7 @@ namespace Demo02.Interaction
                     new DialogueChoice("如果沈砚还活着，我会先把他带回来。")
                 },
                 _ => { },
+                cameraFocus: transform,
                 showChoicesImmediately: true
             );
 
@@ -170,7 +171,8 @@ namespace Demo02.Interaction
                         ? WitnessStance.EvidenceFirst
                         : WitnessStance.PersonFirst
                 ),
-                () => investigationState.CompleteWitnessBriefing()
+                () => investigationState.CompleteWitnessBriefing(),
+                transform
             );
         }
 
@@ -186,7 +188,7 @@ namespace Demo02.Interaction
                     "守仓人 沈伯",
                     "沈砚不会无缘无故带走账页。去找旧街招牌、盐仓账牌和官府封条。三张纸放在一起，才有人肯信。"
                 )
-            });
+            }, cameraFocus: transform);
         }
 
         private void BeginEvidenceReview(DialogueController dialogue)
@@ -221,7 +223,8 @@ namespace Demo02.Interaction
                         ? EvidencePlan.PublicRecord
                         : EvidencePlan.PrivateProtection
                 ),
-                () => investigationState.CompleteEvidenceReview()
+                () => investigationState.CompleteEvidenceReview(),
+                transform
             );
         }
 
@@ -241,7 +244,7 @@ namespace Demo02.Interaction
                     "主角",
                     "那是旧时层留下的影子。按 Q 在现世与旧时之间切换，找到三处漂移的时间锚点。"
                 )
-            });
+            }, cameraFocus: transform);
         }
 
         private void BeginRepairGuidance(DialogueController dialogue)
@@ -260,7 +263,7 @@ namespace Demo02.Interaction
                     "主角",
                     "沈砚的名字还在裂缝另一侧。压下时缝，我就能看见最后那一页。"
                 )
-            });
+            }, cameraFocus: transform);
         }
 
         private void BeginFinalChoice(DialogueController dialogue)
@@ -279,7 +282,7 @@ namespace Demo02.Interaction
                     "主角",
                     "记录不会替我们选。要保住一个人、一条街，总得有人承担它重新出现后的代价。"
                 )
-            });
+            }, cameraFocus: transform);
         }
 
         private void BeginEpilogue(DialogueController dialogue)
@@ -298,7 +301,7 @@ namespace Demo02.Interaction
                             ? "街口又空了。我知道你已经尽力，可阿砚还是没能回来。至少别忘记他。"
                             : "街口又空了。记录稳定了，阿砚却仍不在册。或许这就是只相信纸张的代价。"
                 )
-            });
+            }, cameraFocus: transform);
         }
     }
 }
