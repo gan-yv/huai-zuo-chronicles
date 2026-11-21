@@ -14,6 +14,8 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ![证词对照](demo02/docs/screenshots/testimony-board.png)
 
+![支线事实提示](demo02/docs/screenshots/story-fact-toast.png)
+
 ![修痕视界](demo02/docs/screenshots/investigation-vision.png)
 
 ![对白选择](demo02/docs/screenshots/dialogue-choice.png)
@@ -55,6 +57,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 第一章线索、证词、矛盾答案、目标、推理和沈伯对白由 `CaseDefinition` 数据资产驱动。
 - 东关街茶肆掌柜使用同一资产系统，会根据调查阶段、证据和结局改变对白。
 - 茶肆盐车事件支持“追问 / 保护”两种选择，结果保存为持久化剧情事实。
+- 支线事实获得后会在游戏内显示旁证提示卡，并可在案卷中复查。
 - 可选战斗、攻击预警和闪避无敌帧。
 - 版本化 JSON 存档、自动检查点、三槽位管理和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -80,10 +83,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.14.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.15.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.14.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.15.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -137,6 +140,7 @@ R          结局或队伍倒下后重开
 - 选项可设置立场或证据去向，完成效果可推进委托、复核和章节。
 - 案件资产带内容版本和自动迁移，新增字段或条件不会破坏旧内容。
 - 剧情事实支持存档、对白条件、对白效果和调查案卷展示。
+- 案件资产拥有专用 Inspector、内容数量概览、一键校验和快捷菜单入口。
 - 时间层通过可见性和碰撞切换管理。
 - 灰盒场景由可重复运行的 Editor Builder 生成，降低手工维护成本。
 - 演示截图通过 Unity 内部截屏参数生成，避免窗口缩放和环境遮挡。

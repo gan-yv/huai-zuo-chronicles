@@ -17,6 +17,14 @@ namespace Demo02.Editor
             ValidateOrThrow();
         }
 
+        [MenuItem("Demo02/Open Chapter Case Content")]
+        public static void OpenChapterCase()
+        {
+            CaseDefinition definition = LoadOrCreateChapter01();
+            Selection.activeObject = definition;
+            EditorGUIUtility.PingObject(definition);
+        }
+
         public static CaseDefinition LoadOrCreateChapter01()
         {
             CaseDefinition existing = AssetDatabase.LoadAssetAtPath<CaseDefinition>(

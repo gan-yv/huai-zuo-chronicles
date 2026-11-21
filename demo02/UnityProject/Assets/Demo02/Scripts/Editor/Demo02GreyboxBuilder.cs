@@ -656,6 +656,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Chapter01_TimeAnchorPuzzle") == null
                     || existingRoot.transform.Find("Chapter01_SettingsSystem") == null
                     || existingRoot.transform.Find("Chapter01_DataDrivenContent") == null
+                    || existingRoot.transform.Find("Chapter01_StoryFacts") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -1072,6 +1073,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<TestimonyBoardController>();
             gameSession.AddComponent<SettingsController>();
             gameSession.AddComponent<SaveSlotController>();
+            gameSession.AddComponent<StoryFactNotification>();
             gameSession.AddComponent<ScreenFade>();
             gameSession.AddComponent<AreaBanner>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
@@ -1116,6 +1118,9 @@ namespace Demo02.Editor
 
             GameObject contentMarker = new GameObject("Chapter01_DataDrivenContent");
             contentMarker.transform.SetParent(root.transform);
+
+            GameObject storyFactMarker = new GameObject("Chapter01_StoryFacts");
+            storyFactMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);

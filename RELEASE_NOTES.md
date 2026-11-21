@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.14.0
+# Huai-Zuo Chronicles v1.15.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.14.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.15.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.14.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.15.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-CCF7DE0F700A2F605AB21AA2816BCEDC2361E4F6814B7BEFE39F5171DA1482D0
+E52B97BAA2E2502960685B73CF1D1CAE92464647FB7E70CD25A41123B29846D9
 ```
 
 ## 已包含
@@ -35,6 +35,8 @@ CCF7DE0F700A2F605AB21AA2816BCEDC2361E4F6814B7BEFE39F5171DA1482D0
 - 东关街茶肆掌柜新增状态事件，会根据调查进度、证据和结局改变对白。
 - 茶肆盐车事件支持追问详情或保护茶肆，两种结果会持久保存。
 - 已获得的茶肆旁证会改变沈伯反应，并显示在调查案卷中。
+- 支线事实获得时会显示旁证提示卡，多条信息会排队展示。
+- 案件资产新增专用 Inspector、内容概览和一键校验工具。
 - 案件资产加入内容版本与自动迁移，并固定条件枚举编号以兼容旧资产。
 - 对白支持章节、立场、证据去向和结局条件，并自动匹配对应脚本。
 - 对白选项可设置剧情状态，对白结束效果可推进章节阶段。
@@ -125,3 +127,4 @@ CCF7DE0F700A2F605AB21AA2816BCEDC2361E4F6814B7BEFE39F5171DA1482D0
 - 对白条件、立场分支、选项效果、完成效果和章节推进自动回归通过。
 - 茶肆阶段事件、封条证据触发、结局分支和资产升级自动回归通过。
 - 剧情事实、茶肆选择和剧情事实存档恢复自动回归通过。
+- 案件内容作者工具与支线事实提示已完成干净工程编译验证。

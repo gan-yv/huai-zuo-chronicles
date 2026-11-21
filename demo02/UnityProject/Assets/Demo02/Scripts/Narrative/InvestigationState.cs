@@ -68,6 +68,7 @@ namespace Demo02.Narrative
         public event Action<int, int> ClueCountChanged;
         public event Action<int, int> AnchorCountChanged;
         public event Action<ChapterStage> StageChanged;
+        public event Action<string> StoryFactAdded;
         public CaseDefinition CaseContent => caseContent;
         public ChapterStage Stage { get; private set; } = ChapterStage.Arrival;
         public WitnessStance Stance { get; private set; } = WitnessStance.Undecided;
@@ -252,7 +253,13 @@ namespace Demo02.Narrative
 
         public bool SetFact(string factId)
         {
-            return !string.IsNullOrWhiteSpace(factId) && storyFactIds.Add(factId);
+            if (string.IsNullOrWhiteSpace(factId) || !storyFactIds.Add(factId))
+            {
+                return false;
+            }
+
+            StoryFactAdded?.Invoke(factId);
+            return true;
         }
 
         public bool SetWitnessStance(WitnessStance stance)

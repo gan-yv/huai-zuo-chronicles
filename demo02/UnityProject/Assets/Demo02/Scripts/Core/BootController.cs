@@ -42,7 +42,8 @@ namespace Demo02.Core
                 || System.Array.IndexOf(arguments, "--preview-choice") >= 0
                 || System.Array.IndexOf(arguments, "--preview-settings") >= 0
                 || System.Array.IndexOf(arguments, "--preview-saves") >= 0
-                || System.Array.IndexOf(arguments, "--preview-testimony") >= 0)
+                || System.Array.IndexOf(arguments, "--preview-testimony") >= 0
+                || System.Array.IndexOf(arguments, "--preview-fact") >= 0)
             {
                 StartGame(showOpening: false);
             }
