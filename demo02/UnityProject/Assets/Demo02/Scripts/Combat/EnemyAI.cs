@@ -1,4 +1,5 @@
 using Demo02.Player;
+using Demo02.Core;
 using UnityEngine;
 
 namespace Demo02.Combat
@@ -11,6 +12,7 @@ namespace Demo02.Combat
         [SerializeField, Min(0f)] private float attackDistance = 1.7f;
         [SerializeField, Min(0f)] private float attackDamage = 10f;
         [SerializeField, Min(0.1f)] private float attackCooldown = 1.2f;
+        [SerializeField, Min(0.05f)] private float attackWindup = 0.4f;
         [SerializeField] private float gravity = -24f;
 
         private CharacterController controller;
@@ -18,11 +20,15 @@ namespace Demo02.Combat
         private PlayerPartyController party;
         private float verticalVelocity;
         private float nextAttackTime;
+        private float attackWindupRemaining;
+        private bool isWindingUp;
+        private ColorTint colorTint;
 
         private void Awake()
         {
             controller = GetComponent<CharacterController>();
             self = GetComponent<Combatant>();
+            colorTint = GetComponent<ColorTint>();
         }
 
         private void Start()
@@ -49,6 +55,11 @@ namespace Demo02.Combat
             toTarget.y = 0f;
             float distance = toTarget.magnitude;
 
+            if (distance > aggroDistance || distance > attackDistance * 1.15f)
+            {
+                CancelAttackWindup();
+            }
+
             if (distance <= aggroDistance && distance > attackDistance)
             {
                 Vector3 direction = toTarget.normalized;
@@ -64,12 +75,55 @@ namespace Demo02.Combat
                 ApplyGravity();
             }
 
-            if (distance <= attackDistance && Time.time >= nextAttackTime)
+            if (distance <= attackDistance && Time.time >= nextAttackTime && !isWindingUp)
             {
-                nextAttackTime = Time.time + attackCooldown;
-                Combatant targetHealth = target.GetComponent<Combatant>();
-                targetHealth?.TakeDamage(attackDamage);
+                BeginAttackWindup();
             }
+
+            if (isWindingUp)
+            {
+                attackWindupRemaining -= Time.deltaTime;
+                if (attackWindupRemaining <= 0f)
+                {
+                    ResolveAttack(target);
+                }
+            }
+        }
+
+        private void BeginAttackWindup()
+        {
+            isWindingUp = true;
+            attackWindupRemaining = attackWindup;
+            colorTint?.Configure(new Color(1f, 0.68f, 0.16f));
+        }
+
+        private void ResolveAttack(Transform target)
+        {
+            nextAttackTime = Time.time + attackCooldown;
+            isWindingUp = false;
+            colorTint?.Configure(new Color(0.68f, 0.16f, 0.16f));
+
+            ThirdPersonController targetController = target.GetComponent<ThirdPersonController>();
+            if (targetController != null && targetController.IsInvulnerable)
+            {
+                Debug.Log("Enemy attack dodged.");
+                return;
+            }
+
+            Combatant targetHealth = target.GetComponent<Combatant>();
+            targetHealth?.TakeDamage(attackDamage);
+        }
+
+        private void CancelAttackWindup()
+        {
+            if (!isWindingUp)
+            {
+                return;
+            }
+
+            isWindingUp = false;
+            attackWindupRemaining = 0f;
+            colorTint?.Configure(new Color(0.68f, 0.16f, 0.16f));
         }
 
         private void ApplyGravity()
