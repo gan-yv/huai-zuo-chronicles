@@ -32,30 +32,62 @@ namespace Demo02.UI
             }
             else if (investigationState.IsRepaired)
             {
-                text = "目标：在街尾决定保留还是封存旧街";
+                text = "在街尾决定保留还是封存旧街";
             }
             else if (investigationState.HasAllClues
                 && !investigationState.HasAllTimeAnchors)
             {
-                text = $"目标：切换时间层，稳定锚点  {investigationState.StabilizedTimeAnchorCount}/{investigationState.RequiredTimeAnchorCount}";
+                text = $"切换时间层，稳定锚点  {investigationState.StabilizedTimeAnchorCount}/{investigationState.RequiredTimeAnchorCount}";
             }
             else if (investigationState.HasAllClues)
             {
-                text = "目标：前往街尾，稳定时空接点";
+                text = "前往街尾，稳定时空接点";
             }
             else
             {
-                text = $"目标：调查异常线索  {investigationState.CollectedClueCount}/{investigationState.RequiredClueCount}";
+                text = $"调查异常线索  {investigationState.CollectedClueCount}/{investigationState.RequiredClueCount}";
             }
 
-            GUIStyle style = new GUIStyle(GUI.skin.box)
-            {
-                alignment = TextAnchor.MiddleLeft,
-                fontSize = 17,
-                padding = new RectOffset(16, 16, 10, 10)
-            };
+            float scale = UiTheme.Scale;
+            Rect panel = new(
+                20f * scale,
+                20f * scale,
+                448f * scale,
+                66f * scale
+            );
+            UiTheme.DrawRect(panel, UiTheme.Ink);
+            UiTheme.DrawRect(
+                new Rect(panel.x, panel.y, 4f * scale, panel.height),
+                UiTheme.Accent
+            );
+            UiTheme.DrawBorder(panel, new Color(1f, 1f, 1f, 0.1f));
 
-            GUI.Box(new Rect(24f, 24f, 460f, 54f), text, style);
+            GUIStyle eyebrowStyle = UiTheme.Label(
+                11,
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            eyebrowStyle.normal.textColor = UiTheme.Accent;
+            GUI.Label(
+                new Rect(
+                    panel.x + 18f * scale,
+                    panel.y + 8f * scale,
+                    panel.width - 32f * scale,
+                    20f * scale
+                ),
+                "CURRENT OBJECTIVE · 当前目标",
+                eyebrowStyle
+            );
+            GUI.Label(
+                new Rect(
+                    panel.x + 18f * scale,
+                    panel.y + 27f * scale,
+                    panel.width - 32f * scale,
+                    30f * scale
+                ),
+                text,
+                UiTheme.Label(16)
+            );
         }
     }
 }

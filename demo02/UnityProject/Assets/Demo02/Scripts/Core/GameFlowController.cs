@@ -84,23 +84,11 @@ namespace Demo02.Core
                 return;
             }
 
-            Color previousColor = GUI.color;
-            GUI.color = new Color(0f, 0f, 0f, 0.78f);
-            GUI.DrawTexture(new Rect(0f, 0f, Screen.width, Screen.height), Texture2D.whiteTexture);
-            GUI.color = previousColor;
-
-            GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
-            {
-                alignment = TextAnchor.MiddleCenter,
-                fontSize = 30,
-                fontStyle = FontStyle.Bold
-            };
-            GUIStyle bodyStyle = new GUIStyle(GUI.skin.label)
-            {
-                alignment = TextAnchor.MiddleCenter,
-                fontSize = 18,
-                wordWrap = true
-            };
+            UiTheme.DrawRect(
+                new Rect(0f, 0f, Screen.width, Screen.height),
+                new Color(0.015f, 0.02f, 0.03f, 0.86f)
+            );
+            float scale = UiTheme.Scale;
 
             string title;
             string body;
@@ -130,30 +118,57 @@ namespace Demo02.Core
                 body = "世界已经停止，选择接下来的行动。";
             }
 
-            GUI.Label(
-                new Rect(0f, Screen.height * 0.25f, Screen.width, 54f),
-                title,
-                titleStyle
+            UiTheme.DrawRect(
+                new Rect(
+                    Screen.width * 0.5f - 48f * scale,
+                    Screen.height * 0.22f,
+                    96f * scale,
+                    3f
+                ),
+                UiTheme.Accent
             );
             GUI.Label(
-                new Rect(Screen.width * 0.2f, Screen.height * 0.34f, Screen.width * 0.6f, 64f),
+                new Rect(0f, Screen.height * 0.255f, Screen.width, 54f * scale),
+                title,
+                UiTheme.Label(31, TextAnchor.MiddleCenter, bold: true)
+            );
+            GUI.Label(
+                new Rect(
+                    Screen.width * 0.18f,
+                    Screen.height * 0.35f,
+                    Screen.width * 0.64f,
+                    74f * scale
+                ),
                 body,
-                bodyStyle
+                UiTheme.Label(17, TextAnchor.MiddleCenter)
             );
 
-            const float width = 280f;
+            float width = 300f * scale;
             float x = (Screen.width - width) * 0.5f;
-            float y = Screen.height * 0.46f;
-            if (!IsEnding && GUI.Button(new Rect(x, y, width, 48f), "继续游戏"))
+            float y = Screen.height * 0.48f;
+            float buttonHeight = 48f * scale;
+            if (!IsEnding && GUI.Button(
+                new Rect(x, y, width, buttonHeight),
+                "继续游戏",
+                UiTheme.Button(16)
+            ))
             {
                 TogglePause();
             }
-            float restartY = IsEnding ? y : y + 64f;
-            if (GUI.Button(new Rect(x, restartY, width, 48f), "重新开始"))
+            float restartY = IsEnding ? y : y + 62f * scale;
+            if (GUI.Button(
+                new Rect(x, restartY, width, buttonHeight),
+                "重新开始",
+                UiTheme.Button(16)
+            ))
             {
                 RestartCurrentScene();
             }
-            if (GUI.Button(new Rect(x, restartY + 64f, width, 48f), "返回标题"))
+            if (GUI.Button(
+                new Rect(x, restartY + 62f * scale, width, buttonHeight),
+                "返回标题",
+                UiTheme.Button(16)
+            ))
             {
                 ReturnToTitle();
             }

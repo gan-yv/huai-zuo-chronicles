@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Demo02.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Demo02.UI;
@@ -74,6 +75,10 @@ namespace Demo02.Combat
             }
 
             Debug.Log($"PlayerCombat attack resolved with {hits} hit(s).");
+            if (hits > 0)
+            {
+                GameAudio.PlayHit();
+            }
         }
 
         private void ShowAttackVisual()

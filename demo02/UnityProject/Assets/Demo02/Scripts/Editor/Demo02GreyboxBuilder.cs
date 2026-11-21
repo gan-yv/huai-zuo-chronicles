@@ -496,6 +496,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<CombatHud>();
             gameSession.AddComponent<GameFlowController>();
             gameSession.AddComponent<SaveSystem>();
+            gameSession.AddComponent<GameAudio>();
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);

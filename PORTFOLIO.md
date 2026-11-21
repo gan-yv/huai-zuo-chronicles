@@ -6,7 +6,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ![标题界面](demo02/docs/screenshots/title-screen.png)
 
-![广陵街区探索](demo02/docs/screenshots/world-overview-v020.png)
+![广陵街区探索](demo02/docs/screenshots/world-overview-v021.png)
 
 ![世界地图](demo02/docs/screenshots/map-screen.png)
 
@@ -26,6 +26,8 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 街内传送与世界地图快速旅行。
 - 三街区路线地图、当前区域高亮和调查进度汇总。
 - 街区切换淡入淡出、区域到达标题卡和可交互目标反馈。
+- 程序化环境风声、脚步和完整交互反馈音，支持 `F2` 持久静音。
+- 统一深色金色视觉体系，覆盖目标、罗盘、生命、对白和系统菜单。
 - 可选战斗、攻击预警和闪避无敌帧。
 - JSON 存档、自动检查点和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -42,10 +44,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.20.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.21.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.20.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.21.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -63,6 +65,7 @@ Tab        切换出场角色
 Q          切换时间层
 M          世界地图与快速传送
 Esc        暂停 / 关闭地图
+F2         静音 / 恢复声音
 F5 / F9    保存 / 读取
 R          结局或队伍倒下后重开
 ```
@@ -93,7 +96,7 @@ R          结局或队伍倒下后重开
 
 - 美术仍为灰色占位与基础颜色。
 - 界面主要使用原型级 OnGUI。
-- 车辆、人群、正式音频和 VFX 尚未制作。
+- 当前音频为程序化占位反馈，车辆、人群、正式音乐和 VFX 尚未制作。
 - 大地图目前由街内远距离区域验证，后续需要拆分 Additive Scene。
 - 长时间游玩和低配置性能尚未完成系统测试。
 

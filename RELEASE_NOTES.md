@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v0.20.0
+# Huai-Zuo Chronicles v0.21.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.20.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.21.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.20.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.21.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-608EFBAD5C5C51E0F3CACE3973EECF31381D58F670A8707B717CD8F3D63C2C8B
+32F38AA00A6242DE01F0752C89F875EB6269D07F4BCD691107932E032F93D9C7
 ```
 
 ## 已包含
@@ -38,6 +38,9 @@ SHA256：
 - 三街区路线地图、当前区域高亮和调查进度汇总。
 - 首次进入或传送后的区域到达标题卡。
 - 远景雾、暖色主光、柔和阴影和自适应窗口尺寸。
+- 程序化环境风声、脚步、调查、传送、命中和受伤反馈。
+- 支持持久化 `F2` 静音和 HUD 声音开关。
+- 任务目标、方向罗盘、生命值、区域提示、对白框和系统菜单统一视觉。
 - NPC 对话和街区小故事。
 - 线索调查、任务罗盘和时间层。
 - 三个时间锚点和街尾修复。
@@ -51,7 +54,7 @@ SHA256：
 ## 已知问题
 
 - 当前为灰盒版本，视觉和音频尚未完成。
-- UI 已支持基础缩放，但仍需替换正式字体和视觉资产。
+- 音频为程序化占位反馈，后续仍需替换正式音乐和声效资产。
 - 大型场景尚未拆分或做流式加载。
 - 战斗数值仅用于演示，不代表最终平衡。
 - 长时间游玩、低配置和不同显卡兼容性尚未完成系统测试。

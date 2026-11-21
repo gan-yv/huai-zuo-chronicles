@@ -144,15 +144,24 @@ namespace Demo02.UI
                 text += $"    {navigationHint}";
             }
 
-            GUI.Box(
-                new Rect(Screen.width * 0.5f - 210f, 76f, 420f, 42f),
-                text,
-                new GUIStyle(GUI.skin.box)
-                {
-                    alignment = TextAnchor.MiddleCenter,
-                    fontSize = 16
-                }
+            float scale = UiTheme.Scale;
+            float width = 430f * scale;
+            Rect panel = new(
+                (Screen.width - width) * 0.5f,
+                84f * scale,
+                width,
+                48f * scale
             );
+            UiTheme.DrawRect(panel, UiTheme.Panel);
+            UiTheme.DrawRect(
+                new Rect(panel.x, panel.y, panel.width, 2f),
+                UiTheme.Accent
+            );
+            UiTheme.DrawBorder(panel, new Color(1f, 1f, 1f, 0.12f));
+
+            GUIStyle style = UiTheme.Label(15, TextAnchor.MiddleCenter, bold: true);
+            style.normal.textColor = new Color(0.92f, 0.82f, 0.62f);
+            GUI.Label(panel, text, style);
         }
 
         private static string GetDirectionLabel(float angle)

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Demo02.Core;
 using Demo02.Narrative;
 using Demo02.UI;
 
@@ -49,6 +50,7 @@ namespace Demo02.Interaction
 
             statusMessage = currentInteractable.Interact(this);
             statusMessageUntil = Time.time + messageDuration;
+            GameAudio.PlayInteraction();
         }
 
         private void OnGUI()

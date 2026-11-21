@@ -1,4 +1,5 @@
 using System;
+using Demo02.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -101,46 +102,58 @@ namespace Demo02.Narrative
                 return;
             }
 
-            float width = Mathf.Min(900f, Screen.width - 80f);
+            float scale = UiTheme.Scale;
+            float width = Mathf.Min(960f * scale, Screen.width - 64f);
             Rect panel = new Rect(
                 (Screen.width - width) * 0.5f,
-                Screen.height - 240f,
+                Screen.height - 232f * scale,
                 width,
-                176f
+                192f * scale
             );
 
-            GUIStyle speakerStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 22,
-                fontStyle = FontStyle.Bold,
-                padding = new RectOffset(20, 20, 12, 4)
-            };
-            GUIStyle textStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = 19,
-                wordWrap = true,
-                padding = new RectOffset(20, 20, 8, 8)
-            };
-            GUIStyle hintStyle = new GUIStyle(GUI.skin.label)
-            {
-                alignment = TextAnchor.LowerRight,
-                fontSize = 14
-            };
+            UiTheme.DrawRect(panel, UiTheme.Ink);
+            UiTheme.DrawBorder(panel, new Color(1f, 1f, 1f, 0.12f));
+            UiTheme.DrawRect(
+                new Rect(panel.x, panel.y, panel.width, 3f),
+                UiTheme.Accent
+            );
 
-            GUI.Box(panel, string.Empty);
+            GUIStyle speakerStyle = UiTheme.Label(
+                20,
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            speakerStyle.normal.textColor = UiTheme.Accent;
             GUI.Label(
-                new Rect(panel.x, panel.y + 8f, panel.width, 38f),
+                new Rect(
+                    panel.x + 24f * scale,
+                    panel.y + 14f * scale,
+                    panel.width - 48f * scale,
+                    34f * scale
+                ),
                 CurrentLine.Speaker,
                 speakerStyle
             );
             GUI.Label(
-                new Rect(panel.x + 6f, panel.y + 48f, panel.width - 12f, 84f),
+                new Rect(
+                    panel.x + 24f * scale,
+                    panel.y + 54f * scale,
+                    panel.width - 48f * scale,
+                    92f * scale
+                ),
                 CurrentLine.Text,
-                textStyle
+                UiTheme.Label(18)
             );
+            GUIStyle hintStyle = UiTheme.Label(12, TextAnchor.MiddleRight);
+            hintStyle.normal.textColor = UiTheme.Muted;
             GUI.Label(
-                new Rect(panel.x, panel.yMax - 32f, panel.width - 18f, 24f),
-                "E / Space 继续    Esc 关闭",
+                new Rect(
+                    panel.x + 24f * scale,
+                    panel.yMax - 36f * scale,
+                    panel.width - 48f * scale,
+                    22f * scale
+                ),
+                "E / Space  继续      Esc  关闭",
                 hintStyle
             );
         }

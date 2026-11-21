@@ -1,5 +1,6 @@
 using System.Collections;
 using System.IO;
+using Demo02.Core;
 using Demo02.Interaction;
 using Demo02.Narrative;
 using Demo02.WorldState;
@@ -309,6 +310,7 @@ namespace Demo02.UI
 
         private void TravelTo(string spawnName, string areaId, string areaName)
         {
+            GameAudio.PlayPortal();
             GameObject spawn = GameObject.Find(spawnName);
             if (spawn == null)
             {

@@ -4,6 +4,7 @@ using System.IO;
 using Demo02.Combat;
 using Demo02.Narrative;
 using Demo02.Player;
+using Demo02.UI;
 using Demo02.WorldState;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -88,15 +89,27 @@ namespace Demo02.Core
                 return;
             }
 
+            float scale = UiTheme.Scale;
+            Rect panel = new(
+                18f * scale,
+                Screen.height - 104f * scale,
+                250f * scale,
+                34f * scale
+            );
+            UiTheme.DrawRect(panel, UiTheme.Ink);
+            UiTheme.DrawRect(
+                new Rect(panel.x, panel.y, 3f * scale, panel.height),
+                UiTheme.Accent
+            );
             GUI.Label(
-                new Rect(24f, Screen.height - 112f, 300f, 30f),
+                new Rect(
+                    panel.x + 14f * scale,
+                    panel.y,
+                    panel.width - 20f * scale,
+                    panel.height
+                ),
                 statusMessage,
-                new GUIStyle(GUI.skin.box)
-                {
-                    alignment = TextAnchor.MiddleLeft,
-                    fontSize = 15,
-                    padding = new RectOffset(12, 12, 5, 5)
-                }
+                UiTheme.Label(13)
             );
         }
 
@@ -147,6 +160,7 @@ namespace Demo02.Core
                 if (announce)
                 {
                     ShowStatus("游戏已保存");
+                    GameAudio.PlayConfirm();
                 }
             }
             catch (Exception exception)

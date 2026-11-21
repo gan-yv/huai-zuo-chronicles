@@ -1,4 +1,5 @@
 using Demo02.Player;
+using Demo02.Core;
 using Demo02.UI;
 using Demo02.WorldState;
 using UnityEngine;
@@ -29,6 +30,7 @@ namespace Demo02.Interaction
 
         public string Interact(PlayerInteractor interactor)
         {
+            GameAudio.PlayPortal();
             ScreenFade fade = FindAnyObjectByType<ScreenFade>();
             if (fade != null)
             {

@@ -123,7 +123,7 @@ namespace Demo02.UI
             float width = Mathf.Min(560f * scale, Screen.width - 80f);
             Rect panel = new(
                 (Screen.width - width) * 0.5f,
-                Screen.height * 0.16f,
+                Screen.height * 0.255f,
                 width,
                 104f * scale
             );

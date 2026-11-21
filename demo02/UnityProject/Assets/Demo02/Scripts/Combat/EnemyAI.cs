@@ -112,6 +112,10 @@ namespace Demo02.Combat
 
             Combatant targetHealth = target.GetComponent<Combatant>();
             targetHealth?.TakeDamage(attackDamage);
+            if (targetHealth != null)
+            {
+                GameAudio.PlayPlayerHurt();
+            }
         }
 
         private void CancelAttackWindup()

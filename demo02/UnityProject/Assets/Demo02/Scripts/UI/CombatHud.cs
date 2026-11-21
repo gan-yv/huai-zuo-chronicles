@@ -1,4 +1,5 @@
 using Demo02.Combat;
+using Demo02.Core;
 using Demo02.Player;
 using Demo02.WorldState;
 using UnityEngine;
@@ -30,6 +31,10 @@ namespace Demo02.UI
             {
                 showHelp = !showHelp;
             }
+            if (Keyboard.current != null && Keyboard.current.f2Key.wasPressedThisFrame)
+            {
+                GameAudio.ToggleMuted();
+            }
         }
 
         private void OnGUI()
@@ -50,19 +55,27 @@ namespace Demo02.UI
             }
 
             int aliveEnemies = encounterState != null ? encounterState.AliveEnemyCount : 0;
-
-            GUIStyle style = new GUIStyle(GUI.skin.label)
-            {
-                alignment = TextAnchor.MiddleRight,
-                fontSize = 16
-            };
+            float scale = UiTheme.Scale;
 
             if (aliveEnemies > 0)
             {
+                Rect threatPanel = new(
+                    Screen.width - 176f * scale,
+                    72f * scale,
+                    152f * scale,
+                    32f * scale
+                );
+                UiTheme.DrawRect(threatPanel, UiTheme.Ink);
+                GUIStyle threatStyle = UiTheme.Label(
+                    13,
+                    TextAnchor.MiddleCenter,
+                    bold: true
+                );
+                threatStyle.normal.textColor = new Color(0.94f, 0.48f, 0.3f);
                 GUI.Label(
-                    new Rect(Screen.width - 384f, 84f, 360f, 30f),
-                    $"附近威胁：{aliveEnemies}",
-                    style
+                    threatPanel,
+                    $"威胁  {aliveEnemies}",
+                    threatStyle
                 );
             }
 
@@ -72,8 +85,14 @@ namespace Demo02.UI
                     ? "现世"
                     : "旧时";
                 if (GUI.Button(
-                    new Rect(Screen.width * 0.5f - 120f, 24f, 240f, 42f),
-                    $"当前时间层：{layerName}  （Q/点击切换）"
+                    new Rect(
+                        Screen.width * 0.5f - 132f * scale,
+                        20f * scale,
+                        264f * scale,
+                        44f * scale
+                    ),
+                    $"时间层  {layerName}  [Q]",
+                    UiTheme.Button(14)
                 ))
                 {
                     timeLayerController.ToggleLayer();
@@ -82,21 +101,31 @@ namespace Demo02.UI
 
             if (worldRuntime != null && !string.IsNullOrWhiteSpace(worldRuntime.CurrentAreaName))
             {
+                Rect areaPanel = new(
+                    18f * scale,
+                    Screen.height - 56f * scale,
+                    240f * scale,
+                    36f * scale
+                );
+                UiTheme.DrawRect(areaPanel, UiTheme.Ink);
+                UiTheme.DrawRect(
+                    new Rect(areaPanel.x, areaPanel.y, 3f * scale, areaPanel.height),
+                    UiTheme.Accent
+                );
                 GUI.Label(
-                    new Rect(24f, Screen.height - 74f, 360f, 34f),
-                    $"区域：{worldRuntime.CurrentAreaName}",
-                    new GUIStyle(GUI.skin.box)
-                    {
-                        alignment = TextAnchor.MiddleLeft,
-                        fontSize = 16,
-                        padding = new RectOffset(12, 12, 6, 6)
-                    }
+                    new Rect(
+                        areaPanel.x + 14f * scale,
+                        areaPanel.y,
+                        areaPanel.width - 20f * scale,
+                        areaPanel.height
+                    ),
+                    $"区域  {worldRuntime.CurrentAreaName}",
+                    UiTheme.Label(14)
                 );
             }
 
             DrawEnemyHealthBars();
 
-            float scale = UiTheme.Scale;
             float utilityWidth = 100f * scale;
             float utilityHeight = 30f * scale;
             float utilityY = Screen.height - utilityHeight - 12f * scale;
@@ -128,25 +157,71 @@ namespace Demo02.UI
             {
                 WorldMapController.Instance?.ToggleMap();
             }
+            if (GUI.Button(
+                new Rect(
+                    right - utilityWidth * 3f - 20f * scale,
+                    utilityY,
+                    utilityWidth,
+                    utilityHeight
+                ),
+                GameAudio.Instance != null && GameAudio.Instance.IsMuted
+                    ? "声音关 [F2]"
+                    : "声音开 [F2]",
+                UiTheme.Button(13)
+            ))
+            {
+                GameAudio.ToggleMuted();
+            }
 
             if (showHelp)
             {
-                float width = Mathf.Min(640f, Screen.width - 60f);
-                GUI.Box(
-                    new Rect((Screen.width - width) * 0.5f, Screen.height * 0.2f, width, 360f),
-                    "操作说明\n\n" +
-                    "WASD 移动    Shift 奔跑    Ctrl 闪避    Space 跳跃\n" +
-                    "鼠标左键 攻击    按住鼠标右键 旋转镜头\n" +
-                    "E 调查/对话/修复    Tab 切换角色    Q 切换时间层\n" +
-                    "M 世界地图    Esc 暂停    F5 保存    F9 读取\n" +
-                    "R 在结局或队伍倒下后重新开始\n\n" +
-                    "按 F1 关闭",
-                    new GUIStyle(GUI.skin.box)
-                    {
-                        alignment = TextAnchor.MiddleCenter,
-                        fontSize = 17,
-                        wordWrap = true
-                    }
+                float width = Mathf.Min(720f * scale, Screen.width - 60f);
+                Rect panel = new(
+                    (Screen.width - width) * 0.5f,
+                    Screen.height * 0.16f,
+                    width,
+                    394f * scale
+                );
+                UiTheme.DrawRect(panel, UiTheme.Ink);
+                UiTheme.DrawBorder(panel, UiTheme.Accent, 2f);
+                UiTheme.DrawRect(
+                    new Rect(panel.x + 24f * scale, panel.y + 24f * scale, 72f * scale, 3f),
+                    UiTheme.Accent
+                );
+                GUI.Label(
+                    new Rect(
+                        panel.x + 24f * scale,
+                        panel.y + 38f * scale,
+                        panel.width - 48f * scale,
+                        42f * scale
+                    ),
+                    "操作说明",
+                    UiTheme.Label(25, TextAnchor.MiddleLeft, bold: true)
+                );
+                GUI.Label(
+                    new Rect(
+                        panel.x + 28f * scale,
+                        panel.y + 92f * scale,
+                        panel.width - 56f * scale,
+                        236f * scale
+                    ),
+                    "WASD  移动      Shift  奔跑      Ctrl  闪避      Space  跳跃\n"
+                    + "鼠标左键  攻击      按住鼠标右键  旋转镜头\n"
+                    + "E  调查 / 对话 / 修复      Tab  切换角色      Q  切换时间层\n"
+                    + "M  世界地图      Esc  暂停      F2  静音\n"
+                    + "F5  保存      F9  读取      F1  关闭帮助\n"
+                    + "R  在结局或队伍倒下后重新开始",
+                    UiTheme.Label(16)
+                );
+                GUI.Label(
+                    new Rect(
+                        panel.x + 24f * scale,
+                        panel.yMax - 36f * scale,
+                        panel.width - 48f * scale,
+                        24f * scale
+                    ),
+                    "F1 关闭",
+                    UiTheme.Label(13, TextAnchor.MiddleRight)
                 );
             }
         }
@@ -174,8 +249,8 @@ namespace Demo02.UI
                     continue;
                 }
 
-                const float width = 72f;
-                const float height = 10f;
+                float width = 76f * UiTheme.Scale;
+                float height = 9f * UiTheme.Scale;
                 Rect background = new Rect(
                     screenPoint.x - width * 0.5f,
                     Screen.height - screenPoint.y - height,
@@ -185,23 +260,27 @@ namespace Demo02.UI
                 Rect fill = new Rect(
                     background.x + 1f,
                     background.y + 1f,
-                    (width - 2f) * Mathf.Clamp01(enemy.CurrentHealth / enemy.MaxHealth),
-                    height - 2f
+                    (width - 4f) * Mathf.Clamp01(enemy.CurrentHealth / enemy.MaxHealth),
+                    height - 4f
                 );
 
-                GUI.Box(background, string.Empty);
-                Color previousColor = GUI.color;
-                GUI.color = new Color(0.85f, 0.2f, 0.15f, 1f);
-                GUI.DrawTexture(fill, Texture2D.whiteTexture);
-                GUI.color = previousColor;
+                UiTheme.DrawRect(background, UiTheme.Ink);
+                UiTheme.DrawRect(fill, new Color(0.86f, 0.24f, 0.16f));
+                UiTheme.DrawBorder(background, new Color(1f, 1f, 1f, 0.16f));
             }
         }
 
         private static void DrawHealth(Combatant health)
         {
-            const float width = 260f;
-            const float height = 24f;
-            Rect background = new Rect(Screen.width - width - 24f, 24f, width, height);
+            float scale = UiTheme.Scale;
+            float width = 236f * scale;
+            float height = 26f * scale;
+            Rect background = new(
+                Screen.width - width - 18f * scale,
+                20f * scale,
+                width,
+                height
+            );
             Rect fill = new Rect(
                 background.x + 2f,
                 background.y + 2f,
@@ -209,17 +288,25 @@ namespace Demo02.UI
                 height - 4f
             );
 
-            GUI.Box(background, string.Empty);
-            GUI.DrawTexture(fill, Texture2D.whiteTexture);
+            float healthRatio = Mathf.Clamp01(health.CurrentHealth / health.MaxHealth);
+            Color healthColor = Color.Lerp(
+                new Color(0.78f, 0.18f, 0.14f),
+                new Color(0.38f, 0.64f, 0.3f),
+                healthRatio
+            );
+            UiTheme.DrawRect(background, UiTheme.Ink);
+            UiTheme.DrawRect(fill, healthColor);
+            UiTheme.DrawBorder(background, new Color(1f, 1f, 1f, 0.18f));
+            GUIStyle healthStyle = UiTheme.Label(
+                13,
+                TextAnchor.MiddleCenter,
+                bold: true
+            );
+            healthStyle.normal.textColor = Color.white;
             GUI.Label(
                 background,
                 $"生命  {Mathf.CeilToInt(health.CurrentHealth)} / {Mathf.CeilToInt(health.MaxHealth)}",
-                new GUIStyle(GUI.skin.label)
-                {
-                    alignment = TextAnchor.MiddleCenter,
-                    fontSize = 15,
-                    normal = { textColor = Color.black }
-                }
+                healthStyle
             );
         }
     }
