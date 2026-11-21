@@ -33,15 +33,16 @@ namespace Demo02.Editor
             if (existing != null)
             {
                 if (existing.DialogueScripts.Count == 0
-                    || existing.ContentVersion < 4)
+                    || existing.ContentVersion < 5)
                 {
-                    existing.ConfigureStoryContentForEditor(
+                    existing.ConfigureInventoryContentForEditor(
                         CreateDialogueScripts(),
-                        CreateStoryFacts()
+                        CreateStoryFacts(),
+                        CreateInventoryItems()
                     );
                     EditorUtility.SetDirty(existing);
                     AssetDatabase.SaveAssets();
-                    Debug.Log("Upgraded chapter asset to content version 4.");
+                    Debug.Log("Upgraded chapter asset to content version 5.");
                 }
                 return existing;
             }
@@ -59,7 +60,8 @@ namespace Demo02.Editor
                 CreateStageCopy(),
                 CreateConclusionCopy(),
                 CreateDialogueScripts(),
-                CreateStoryFacts()
+                CreateStoryFacts(),
+                CreateInventoryItems()
             );
             AssetDatabase.CreateAsset(definition, Chapter01AssetPath);
             AssetDatabase.SaveAssets();
@@ -289,6 +291,45 @@ namespace Demo02.Editor
                     Detail =
                         "你没有继续追问盐车细节，避免陆崇的人察觉茶肆"
                         + "也掌握了关键旁证。掌柜会记住这份克制。"
+                }
+            };
+        }
+
+        private static List<InventoryItemDefinition> CreateInventoryItems()
+        {
+            return new List<InventoryItemDefinition>
+            {
+                new()
+                {
+                    Id = "salt-token-charm",
+                    DisplayName = "盐引铜钱",
+                    Category = "信物",
+                    Description =
+                        "沈砚失踪前留在茶桌上的铜钱，边缘刻着他的名字。"
+                        + "它不能直接使用，但可能与旧时盐引有关。",
+                    MaxStack = 1
+                },
+                new()
+                {
+                    Id = "ginger-tea",
+                    DisplayName = "热姜汤",
+                    Category = "消耗品",
+                    Description =
+                        "茶肆掌柜用旧铜壶温着的姜汤。"
+                        + "饮用后恢复 25 点生命。",
+                    MaxStack = 5,
+                    Effect = InventoryItemEffect.RestoreHealth,
+                    EffectAmount = 25f
+                },
+                new()
+                {
+                    Id = "blank-ledger-page",
+                    DisplayName = "空白账页",
+                    Category = "调查用品",
+                    Description =
+                        "从旧仓账册上拆下的空白页。"
+                        + "可以在后续调查中抄录不愿留在原册里的证词。",
+                    MaxStack = 3
                 }
             };
         }

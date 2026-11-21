@@ -32,6 +32,7 @@ namespace Demo02.Core
 #endif
 
         private InvestigationState investigationState;
+        private InventoryState inventoryState;
         private PlayerPartyController party;
         private TimeLayerController timeLayerController;
         private string statusMessage;
@@ -137,6 +138,7 @@ namespace Demo02.Core
         {
             isPreviewMode = HasPreviewArgument();
             investigationState = FindAnyObjectByType<InvestigationState>();
+            inventoryState = FindAnyObjectByType<InventoryState>();
             party = FindAnyObjectByType<PlayerPartyController>();
             timeLayerController = FindAnyObjectByType<TimeLayerController>();
 
@@ -258,6 +260,14 @@ namespace Demo02.Core
                 StoryFactIds = new List<string>(
                     investigationState.ExportStoryFactIds()
                 ),
+                InventoryItems = inventoryState != null
+                    ? inventoryState.ExportItems()
+                    : new List<InventoryItemSaveData>(),
+                CollectedPickupIds = inventoryState != null
+                    ? new List<string>(
+                        inventoryState.ExportCollectedPickupIds()
+                    )
+                    : new List<string>(),
                 ChapterStage = investigationState.Stage,
                 TestimonyContradictionSolved =
                     investigationState.TestimonyContradictionSolved,
@@ -392,6 +402,8 @@ namespace Demo02.Core
                     && WorldMapController.Instance.IsOpen)
                 || (InvestigationJournalController.Instance != null
                     && InvestigationJournalController.Instance.IsOpen)
+                || (InventoryController.Instance != null
+                    && InventoryController.Instance.IsOpen)
                 || (DialogueController.Instance != null
                     && DialogueController.Instance.IsOpen)
                 || (TestimonyBoardController.Instance != null
@@ -419,6 +431,10 @@ namespace Demo02.Core
             );
             timeLayerController.SetLayer(data.TimeLayer);
             party.RestoreActiveCharacter(data.ActivePartyIndex);
+            inventoryState?.Restore(
+                data.InventoryItems,
+                data.CollectedPickupIds
+            );
 
             Combatant[] sceneCombatants = FindObjectsByType<Combatant>(FindObjectsInactive.Include);
             Dictionary<string, Combatant> byName = new();
@@ -462,6 +478,7 @@ namespace Demo02.Core
         private bool RefreshReferences()
         {
             investigationState ??= FindAnyObjectByType<InvestigationState>();
+            inventoryState ??= FindAnyObjectByType<InventoryState>();
             party ??= FindAnyObjectByType<PlayerPartyController>();
             timeLayerController ??= FindAnyObjectByType<TimeLayerController>();
             return investigationState != null
@@ -499,6 +516,9 @@ namespace Demo02.Core
                 investigationState.TestimonyContradictionSolved,
                 investigationState.ContradictionAttempts,
                 investigationState.StoryFactCount,
+                inventoryState != null
+                    ? inventoryState.BuildSignature()
+                    : string.Empty,
                 investigationState.Stance,
                 investigationState.Plan,
                 investigationState.IsRepaired,

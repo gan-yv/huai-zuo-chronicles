@@ -25,6 +25,8 @@ namespace Demo02.Core
         public List<string> TimeAnchorIds = new();
         public List<string> EchoIds = new();
         public List<string> StoryFactIds = new();
+        public List<InventoryItemSaveData> InventoryItems = new();
+        public List<string> CollectedPickupIds = new();
         public ChapterStage ChapterStage;
         public bool TestimonyContradictionSolved;
         public int ContradictionAttempts;
@@ -39,5 +41,12 @@ namespace Demo02.Core
         public string ObjectName;
         public float Health;
         public bool Active;
+    }
+
+    [Serializable]
+    public sealed class InventoryItemSaveData
+    {
+        public string ItemId;
+        public int Count;
     }
 }

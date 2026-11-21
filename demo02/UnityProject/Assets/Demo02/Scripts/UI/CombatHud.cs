@@ -56,6 +56,11 @@ namespace Demo02.UI
             {
                 return;
             }
+            if (InventoryController.Instance != null
+                && InventoryController.Instance.IsOpen)
+            {
+                return;
+            }
             if (SettingsController.Instance != null && SettingsController.Instance.IsOpen)
             {
                 return;
@@ -152,8 +157,6 @@ namespace Demo02.UI
             float utilityY = Screen.height - utilityHeight - 12f * scale;
             float right = Screen.width - 18f * scale;
 
-            GUI.enabled = investigationState != null
-                && investigationState.CanOpenTestimonyBoard;
             if (GUI.Button(
                 new Rect(
                     right - utilityWidth,
@@ -215,6 +218,21 @@ namespace Demo02.UI
                     utilityWidth,
                     utilityHeight
                 ),
+                "B 背包",
+                UiTheme.Button(13)
+            ))
+            {
+                InventoryController.Instance?.ToggleInventory();
+            }
+            GUI.enabled = investigationState != null
+                && investigationState.CanOpenTestimonyBoard;
+            if (GUI.Button(
+                new Rect(
+                    right - utilityWidth * 6f - 50f * scale,
+                    utilityY,
+                    utilityWidth,
+                    utilityHeight
+                ),
                 "T 对照",
                 UiTheme.Button(13)
             ))
@@ -224,7 +242,7 @@ namespace Demo02.UI
             GUI.enabled = true;
             if (GUI.Button(
                 new Rect(
-                    right - utilityWidth * 6f - 50f * scale,
+                    right - utilityWidth * 7f - 60f * scale,
                     utilityY,
                     utilityWidth,
                     utilityHeight
@@ -240,7 +258,7 @@ namespace Demo02.UI
             }
             if (GUI.Button(
                 new Rect(
-                    right - utilityWidth * 7f - 60f * scale,
+                    right - utilityWidth * 8f - 70f * scale,
                     utilityY,
                     utilityWidth,
                     utilityHeight
@@ -288,7 +306,8 @@ namespace Demo02.UI
                     + "鼠标左键  攻击      按住鼠标右键  旋转镜头\n"
                     + "E  调查 / 对话 / 修复      Tab  切换角色      Q  切换时间层\n"
                     + "J  调查案卷      M  世界地图      Esc  暂停      F2  静音\n"
-                    + "T  证词对照      V  修痕视界      O  设置      F5/F9  保存/读取\n"
+                    + "B  背包      T  证词对照      V  修痕视界      O  设置\n"
+                    + "F5/F9  保存/读取      "
                     + "F1  关闭帮助      R  在结局或队伍倒下后重新开始",
                     UiTheme.Label(16)
                 );

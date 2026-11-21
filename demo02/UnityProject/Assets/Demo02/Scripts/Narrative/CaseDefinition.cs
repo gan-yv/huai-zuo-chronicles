@@ -56,6 +56,24 @@ namespace Demo02.Narrative
         [TextArea(2, 5)] public string Detail;
     }
 
+    public enum InventoryItemEffect
+    {
+        None = 0,
+        RestoreHealth = 1
+    }
+
+    [Serializable]
+    public sealed class InventoryItemDefinition
+    {
+        public string Id;
+        public string DisplayName;
+        public string Category;
+        [TextArea(2, 5)] public string Description;
+        [Min(1)] public int MaxStack = 1;
+        public InventoryItemEffect Effect;
+        [Min(0f)] public float EffectAmount;
+    }
+
     [CreateAssetMenu(
         fileName = "Chapter01_Case",
         menuName = "Demo02/Content/Case Definition"
@@ -74,6 +92,7 @@ namespace Demo02.Narrative
         [SerializeField] private List<ConclusionCopyDefinition> conclusionCopy = new();
         [SerializeField] private List<DialogueScriptDefinition> dialogueScripts = new();
         [SerializeField] private List<StoryFactDefinition> storyFacts = new();
+        [SerializeField] private List<InventoryItemDefinition> inventoryItems = new();
 
         public int ContentVersion => contentVersion;
         public string CaseId => caseId;
@@ -86,6 +105,8 @@ namespace Demo02.Narrative
         public IReadOnlyList<DialogueScriptDefinition> DialogueScripts =>
             dialogueScripts;
         public IReadOnlyList<StoryFactDefinition> StoryFacts => storyFacts;
+        public IReadOnlyList<InventoryItemDefinition> InventoryItems =>
+            inventoryItems;
 
         public EvidenceDefinition FindEvidence(string evidenceId)
         {
@@ -142,6 +163,24 @@ namespace Demo02.Narrative
                 if (storyFacts[index].Id == factId)
                 {
                     return storyFacts[index];
+                }
+            }
+
+            return null;
+        }
+
+        public InventoryItemDefinition FindInventoryItem(string itemId)
+        {
+            if (string.IsNullOrWhiteSpace(itemId))
+            {
+                return null;
+            }
+
+            for (int index = 0; index < inventoryItems.Count; index++)
+            {
+                if (inventoryItems[index].Id == itemId)
+                {
+                    return inventoryItems[index];
                 }
             }
 
@@ -231,6 +270,7 @@ namespace Demo02.Narrative
             ValidateStageCopy(errors);
             ValidateConclusionCopy(errors);
             ValidateStoryFacts(errors);
+            ValidateInventoryItems(errors);
             ValidateDialogueScripts(errors);
             return errors;
         }
@@ -564,6 +604,45 @@ namespace Demo02.Narrative
             }
         }
 
+        private void ValidateInventoryItems(List<string> errors)
+        {
+            if (inventoryItems == null || inventoryItems.Count == 0)
+            {
+                errors.Add("No inventory item definitions are configured.");
+                return;
+            }
+
+            HashSet<string> ids = new();
+            for (int index = 0; index < inventoryItems.Count; index++)
+            {
+                InventoryItemDefinition item = inventoryItems[index];
+                if (item == null
+                    || string.IsNullOrWhiteSpace(item.Id)
+                    || string.IsNullOrWhiteSpace(item.DisplayName)
+                    || string.IsNullOrWhiteSpace(item.Category)
+                    || string.IsNullOrWhiteSpace(item.Description))
+                {
+                    errors.Add($"Inventory item [{index}] is incomplete.");
+                    continue;
+                }
+                if (!ids.Add(item.Id))
+                {
+                    errors.Add($"Duplicate inventory item ID: {item.Id}");
+                }
+                if (item.MaxStack < 1)
+                {
+                    errors.Add($"Inventory item '{item.Id}' has invalid stack size.");
+                }
+                if (item.Effect == InventoryItemEffect.RestoreHealth
+                    && item.EffectAmount <= 0f)
+                {
+                    errors.Add(
+                        $"Inventory item '{item.Id}' has invalid heal amount."
+                    );
+                }
+            }
+        }
+
         private void ValidateEffectFacts(
             List<string> errors,
             string dialogueId,
@@ -601,7 +680,8 @@ namespace Demo02.Narrative
             List<StageCopyDefinition> newStageCopy,
             List<ConclusionCopyDefinition> newConclusionCopy,
             List<DialogueScriptDefinition> newDialogueScripts,
-            List<StoryFactDefinition> newStoryFacts)
+            List<StoryFactDefinition> newStoryFacts,
+            List<InventoryItemDefinition> newInventoryItems)
         {
             caseId = newCaseId;
             title = newTitle;
@@ -614,7 +694,8 @@ namespace Demo02.Narrative
             conclusionCopy = newConclusionCopy;
             dialogueScripts = newDialogueScripts;
             storyFacts = newStoryFacts;
-            contentVersion = 4;
+            inventoryItems = newInventoryItems;
+            contentVersion = 5;
         }
 
         public void ConfigureStoryContentForEditor(
@@ -624,6 +705,17 @@ namespace Demo02.Narrative
             dialogueScripts = newDialogueScripts;
             storyFacts = newStoryFacts;
             contentVersion = 4;
+        }
+
+        public void ConfigureInventoryContentForEditor(
+            List<DialogueScriptDefinition> newDialogueScripts,
+            List<StoryFactDefinition> newStoryFacts,
+            List<InventoryItemDefinition> newInventoryItems)
+        {
+            dialogueScripts = newDialogueScripts;
+            storyFacts = newStoryFacts;
+            inventoryItems = newInventoryItems;
+            contentVersion = 5;
         }
 #endif
     }

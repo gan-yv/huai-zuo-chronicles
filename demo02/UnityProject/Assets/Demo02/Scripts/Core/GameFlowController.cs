@@ -49,6 +49,12 @@ namespace Demo02.Core
                 return;
             }
 
+            if (InventoryController.Instance != null
+                && InventoryController.Instance.IsOpen)
+            {
+                return;
+            }
+
             if (SettingsController.Instance != null && SettingsController.Instance.IsOpen)
             {
                 return;
@@ -62,12 +68,6 @@ namespace Demo02.Core
 
             if (SaveSlotController.Instance != null
                 && SaveSlotController.Instance.IsOpen)
-            {
-                return;
-            }
-
-            if (TestimonyBoardController.Instance != null
-                && TestimonyBoardController.Instance.IsOpen)
             {
                 return;
             }

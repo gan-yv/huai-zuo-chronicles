@@ -73,14 +73,58 @@ namespace Demo02.Editor
         {
             CaseDefinitionSeeder.ValidateOrThrow();
             VerifyDialogueContentForBatch();
+            VerifyInventoryForBatch();
             VerifyCombatDamageForBatch();
             VerifyTimeLayerForBatch();
             VerifyChapterFlowForBatch();
             VerifySaveSlotsForBatch();
             Debug.Log(
                 "All automated checks passed: dialogue, combat, time layer, "
-                + "chapter and saves."
+                + "inventory, chapter and saves."
             );
+        }
+
+        public static void VerifyInventoryForBatch()
+        {
+            CaseDefinition content = CaseDefinitionSeeder.LoadOrCreateChapter01();
+            GameObject probe = new("InventoryProbe");
+            InventoryState inventory = probe.AddComponent<InventoryState>();
+            inventory.Configure(content);
+
+            if (!inventory.AddItem("salt-token-charm", 1)
+                || inventory.GetCount("salt-token-charm") != 1
+                || !inventory.AddItem("ginger-tea", 7)
+                || inventory.GetCount("ginger-tea") != 5
+                || !inventory.MarkPickupCollected("pickup-ginger-tea")
+                || !inventory.IsPickupCollected("pickup-ginger-tea"))
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Inventory stacking or pickup state verification failed."
+                );
+            }
+
+            List<InventoryItemSaveData> snapshot = inventory.ExportItems();
+            string[] pickupIds = inventory.ExportCollectedPickupIds();
+            Object.DestroyImmediate(probe);
+
+            GameObject restoredProbe = new("InventoryRestoreProbe");
+            InventoryState restored =
+                restoredProbe.AddComponent<InventoryState>();
+            restored.Configure(content);
+            restored.Restore(snapshot, pickupIds);
+            if (restored.GetCount("salt-token-charm") != 1
+                || restored.GetCount("ginger-tea") != 5
+                || !restored.IsPickupCollected("pickup-ginger-tea"))
+            {
+                Object.DestroyImmediate(restoredProbe);
+                throw new System.InvalidOperationException(
+                    "Inventory snapshot restore verification failed."
+                );
+            }
+
+            Object.DestroyImmediate(restoredProbe);
+            Debug.Log("Inventory verification passed: stacking, pickup and restore.");
         }
 
         public static void VerifyDialogueContentForBatch()
@@ -302,7 +346,11 @@ namespace Demo02.Editor
                         || data.TimeAnchorIds.Count != 1
                         || data.EchoIds.Count != 1
                         || data.StoryFactIds.Count != 1
-                        || data.StoryFactIds[0] != "teahouse-cart-testimony")
+                        || data.StoryFactIds[0] != "teahouse-cart-testimony"
+                        || data.InventoryItems.Count != 1
+                        || data.InventoryItems[0].ItemId != "ginger-tea"
+                        || data.InventoryItems[0].Count != 2
+                        || data.CollectedPickupIds.Count != 1)
                     {
                         throw new System.InvalidOperationException(
                             $"Manual slot {slot} did not round-trip correctly."
@@ -379,6 +427,18 @@ namespace Demo02.Editor
                 StoryFactIds = new List<string>
                 {
                     "teahouse-cart-testimony"
+                },
+                InventoryItems = new List<InventoryItemSaveData>
+                {
+                    new()
+                    {
+                        ItemId = "ginger-tea",
+                        Count = 2
+                    }
+                },
+                CollectedPickupIds = new List<string>
+                {
+                    "pickup-ginger-tea"
                 }
             };
             File.WriteAllText(path, JsonUtility.ToJson(data, prettyPrint: true));
@@ -657,6 +717,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Chapter01_SettingsSystem") == null
                     || existingRoot.transform.Find("Chapter01_DataDrivenContent") == null
                     || existingRoot.transform.Find("Chapter01_StoryFacts") == null
+                    || existingRoot.transform.Find("Chapter01_InventorySystem") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -912,6 +973,27 @@ namespace Demo02.Editor
                 sealEvidence.DiscoveredText
             );
 
+            CreateInventoryPickup(
+                root.transform,
+                "Pickup_SaltToken",
+                new Vector3(-1.8f, 0.55f, -4.8f),
+                new Vector3(0.35f, 0.12f, 0.35f),
+                new Color(0.92f, 0.68f, 0.2f),
+                "pickup-salt-token",
+                "salt-token-charm",
+                1
+            );
+            CreateInventoryPickup(
+                root.transform,
+                "Pickup_BlankLedgerPage",
+                new Vector3(-4.2f, 0.6f, 4.5f),
+                new Vector3(0.7f, 0.08f, 0.9f),
+                new Color(0.82f, 0.78f, 0.62f),
+                "pickup-blank-ledger-page",
+                "blank-ledger-page",
+                2
+            );
+
             CreateMemoryEcho(
                 root.transform,
                 "Echo_SaltToken",
@@ -1061,6 +1143,8 @@ namespace Demo02.Editor
             InvestigationState investigationState =
                 gameSession.AddComponent<InvestigationState>();
             investigationState.ConfigureContent(chapterContent);
+            InventoryState inventoryState = gameSession.AddComponent<InventoryState>();
+            inventoryState.Configure(chapterContent);
             EncounterState encounterState = gameSession.AddComponent<EncounterState>();
             encounterState.Configure(enemies);
             gameSession.AddComponent<DialogueController>();
@@ -1074,6 +1158,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<SettingsController>();
             gameSession.AddComponent<SaveSlotController>();
             gameSession.AddComponent<StoryFactNotification>();
+            gameSession.AddComponent<InventoryController>();
             gameSession.AddComponent<ScreenFade>();
             gameSession.AddComponent<AreaBanner>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
@@ -1121,6 +1206,9 @@ namespace Demo02.Editor
 
             GameObject storyFactMarker = new GameObject("Chapter01_StoryFacts");
             storyFactMarker.transform.SetParent(root.transform);
+
+            GameObject inventoryMarker = new GameObject("Chapter01_InventorySystem");
+            inventoryMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
@@ -1225,6 +1313,30 @@ namespace Demo02.Editor
             }
 
             return evidence;
+        }
+
+        private static void CreateInventoryPickup(
+            Transform parent,
+            string objectName,
+            Vector3 position,
+            Vector3 scale,
+            Color tint,
+            string pickupId,
+            string itemId,
+            int amount)
+        {
+            GameObject pickup = CreateBlock(
+                parent,
+                objectName,
+                position,
+                scale,
+                tint
+            );
+            pickup.AddComponent<InventoryItemPickup>().Configure(
+                pickupId,
+                itemId,
+                amount
+            );
         }
 
         private static GameObject CreateCharacter(
@@ -2129,6 +2241,16 @@ namespace Demo02.Editor
             NpcDialogueInteractable teaDialogue =
                 teaMaster.AddComponent<NpcDialogueInteractable>();
             teaDialogue.ConfigureData("teahouse");
+            CreateInventoryPickup(
+                areaRoot,
+                "Pickup_GingerTea",
+                new Vector3(58f, 0.62f, 111.5f),
+                new Vector3(0.42f, 0.3f, 0.42f),
+                new Color(0.55f, 0.26f, 0.12f),
+                "pickup-ginger-tea",
+                "ginger-tea",
+                2
+            );
 
             BuildCaiyiStreet(root, dongguanSpawn.transform);
         }
