@@ -142,7 +142,7 @@ namespace Demo02.Core
 
             GUI.Label(
                 new Rect(0f, Screen.height * 0.21f, Screen.width, 30f * scale),
-                "A PLAYABLE GREYBOX VERTICAL SLICE",
+                "CHAPTER ONE · A PLAYABLE VERTICAL SLICE",
                 eyebrowStyle
             );
             GUI.Label(
@@ -152,7 +152,7 @@ namespace Demo02.Core
             );
             GUI.Label(
                 new Rect(0f, Screen.height * 0.34f, Screen.width, 42f * scale),
-                "Chronicles of Strange Events in Huai-Zuo · 广陵灰盒原型",
+                "Chronicles of Strange Events in Huai-Zuo · 第一章：消失的盐引",
                 subtitleStyle
             );
 

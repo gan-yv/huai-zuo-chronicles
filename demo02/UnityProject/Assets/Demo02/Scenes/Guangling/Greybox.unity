@@ -16001,7 +16001,7 @@ GameObject:
   - component: {fileID: 1447882179}
   - component: {fileID: 1447882178}
   m_Layer: 0
-  m_Name: NPC_OldStorekeeper
+  m_Name: NPC_ShenBo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16031,16 +16031,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1447882176}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82dc8f489cbc47b096bd4dbe5ec74d9e, type: 3}
+  m_Script: {fileID: 11500000, guid: 4f6c41cfbbcd42b2bdc293698a7a53dc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Demo02.Interaction.NpcDialogueInteractable
-  speakerName: "\u5B88\u4ED3\u8001\u4EBA"
-  interactionPrompt: "E  \u4E0E\u5B88\u4ED3\u8001\u4EBA\u4EA4\u8C08"
-  lines:
-  - speaker: "\u5B88\u4ED3\u8001\u4EBA"
-    text: "\u8FD9\u9053\u9662\u5899\u540E\u5934\uFF0C\u539F\u672C\u8FD8\u6709\u4E00\u6574\u6392\u65E7\u94FA\u3002\u5730\u56FE\u6CA1\u753B\uFF0C\u8D26\u4E0A\u4E5F\u6CA1\u5199\uFF0C\u53EF\u6211\u8FD8\u8BB0\u5F97\u5B83\u4EEC\u7684\u4F4D\u7F6E\u3002"
-  - speaker: "\u5B88\u4ED3\u8001\u4EBA"
-    text: "\u5E74\u8F7B\u4EBA\uFF0C\u522B\u53EA\u770B\u7EB8\u4E0A\u7559\u4E0B\u4E86\u4EC0\u4E48\u3002\u4E5F\u770B\u770B\u7EB8\u5916\u88AB\u62FF\u8D70\u4E86\u4EC0\u4E48\u3002"
+  m_EditorClassIdentifier: Assembly-CSharp::Demo02.Interaction.ShenBoInteractable
 --- !u!114 &1447882179
 MonoBehaviour:
   m_ObjectHideFlags: 0

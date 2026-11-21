@@ -17,8 +17,8 @@ namespace Demo02.Interaction
             && !investigationState.IsConclusionReached;
 
         public string Prompt => choice == ConclusionChoice.Preserve
-            ? "E  保住旧街"
-            : "E  封存旧街";
+            ? "E  恢复盐引巷与沈砚的名字"
+            : "E  封存盐引巷，维持现存记录";
 
         private void Start()
         {
@@ -56,8 +56,8 @@ namespace Demo02.Interaction
             sealOutcome?.SetActive(choice == ConclusionChoice.Seal);
 
             return choice == ConclusionChoice.Preserve
-                ? "旧街居民重新出现在城市记录中。官府必须承认这片街区。"
-                : "旧街从现存记录中消失，街尾被新的围墙封死。";
+                ? "沈砚的名字重新出现在盐仓账册上。盐引巷回到广陵地图，但陆崇背后的势力也看见了修复留下的光。"
+                : "盐引巷再次从地图上褪去。沈砚的名字没有回来，只在你手中的修复记录里保留了一行。";
         }
     }
 }

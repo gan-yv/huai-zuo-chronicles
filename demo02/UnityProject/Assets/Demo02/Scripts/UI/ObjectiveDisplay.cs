@@ -24,28 +24,26 @@ namespace Demo02.UI
             string text;
             if (investigationState.SelectedConclusion == ConclusionChoice.Preserve)
             {
-                text = "结局：旧街被保留，居民重新出现在城市记录中。按 R 重新开始";
+                text = "盐引巷重新入册，沈砚的名字回到城市记录中。按 R 重新开始";
             }
             else if (investigationState.SelectedConclusion == ConclusionChoice.Seal)
             {
-                text = "结局：旧街被封存，官府恢复了官方记录。按 R 重新开始";
-            }
-            else if (investigationState.IsRepaired)
-            {
-                text = "在街尾决定保留还是封存旧街";
-            }
-            else if (investigationState.HasAllClues
-                && !investigationState.HasAllTimeAnchors)
-            {
-                text = $"切换时间层，稳定锚点  {investigationState.StabilizedTimeAnchorCount}/{investigationState.RequiredTimeAnchorCount}";
-            }
-            else if (investigationState.HasAllClues)
-            {
-                text = "前往街尾，稳定时空接点";
+                text = "盐引巷被永久封存，沈砚只留在你的修复记录里。按 R 重新开始";
             }
             else
             {
-                text = $"调查异常线索  {investigationState.CollectedClueCount}/{investigationState.RequiredClueCount}";
+                text = investigationState.Stage switch
+                {
+                    ChapterStage.Arrival => "前往旧仓内院，询问守仓人沈伯",
+                    ChapterStage.Investigate =>
+                        $"调查盐引巷留下的记录  {investigationState.CollectedClueCount}/{investigationState.RequiredClueCount}",
+                    ChapterStage.ReviewEvidence => "把三处记录带回旧仓，让沈伯辨认笔迹",
+                    ChapterStage.StabilizeAnchors =>
+                        $"按 Q 切换时间层，稳定锚点  {investigationState.StabilizedTimeAnchorCount}/{investigationState.RequiredTimeAnchorCount}",
+                    ChapterStage.RepairRift => "前往街尾，压下被撕开的记录",
+                    ChapterStage.FinalDecision => "在街尾决定盐引巷与沈砚的命运",
+                    _ => "调查已经结束"
+                };
             }
 
             float scale = UiTheme.Scale;
@@ -75,7 +73,7 @@ namespace Demo02.UI
                     panel.width - 32f * scale,
                     20f * scale
                 ),
-                "CURRENT OBJECTIVE · 当前目标",
+                "CHAPTER 01 · 消失的盐引",
                 eyebrowStyle
             );
             GUI.Label(

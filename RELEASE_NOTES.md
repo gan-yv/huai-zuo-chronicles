@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v0.21.0
+# Huai-Zuo Chronicles v1.0.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.21.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.0.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.21.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.0.0>
 
 解压后运行：
 
@@ -25,11 +25,16 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-32F38AA00A6242DE01F0752C89F875EB6269D07F4BCD691107932E032F93D9C7
+D4DE19CA63F40A0075E1CB7E8F4F75A59F7DF783DEDF66761A10E74FC0EE4387
 ```
 
 ## 已包含
 
+- 第一章《消失的盐引》的完整剧情与玩法闭环。
+- 沈伯委托、沈砚失踪、七车私盐和陆崇除名封条组成的证据链。
+- 线索调查后必须返回沈伯处复核证据，再解锁时间层。
+- 三个时间锚点、街尾修复和保留/封存两个结局。
+- 章节阶段随存档保存，读档不会跳步。
 - 标题界面、开始、继续和退出。
 - 官署前街、旧仓内院、旧仓室内、东关街和彩衣街。
 - 世界地图与街内快速旅行。
@@ -66,6 +71,7 @@ SHA256：
 - 构建启动场景顺序：`Boot → Greybox`。
 - 标题界面、街区画面和世界地图均使用 Unity 内部截屏重新生成。
 - 最新场景生成与脚本编译通过。
+- 章节状态机自动验收通过：委托 → 线索 → 复核 → 锚点 → 修复 → 结局 → 读档。
 - 发布包逐文件与 Unity 输出比对一致。
 - 地图打开时暂停世界，关闭后恢复；`Esc` 只负责关闭地图，不叠加暂停菜单。
 - 转场期间重复互动被阻断，不会重复执行传送。

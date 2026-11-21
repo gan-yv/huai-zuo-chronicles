@@ -11,6 +11,17 @@ namespace Demo02.Narrative
         Seal
     }
 
+    public enum ChapterStage
+    {
+        Arrival,
+        Investigate,
+        ReviewEvidence,
+        StabilizeAnchors,
+        RepairRift,
+        FinalDecision,
+        Resolved
+    }
+
     public sealed class InvestigationState : MonoBehaviour
     {
         [SerializeField, Min(1)] private int requiredClueCount = 3;
@@ -20,6 +31,8 @@ namespace Demo02.Narrative
         private readonly HashSet<string> stabilizedTimeAnchorIds = new();
 
         public event Action<int, int> ClueCountChanged;
+        public event Action<ChapterStage> StageChanged;
+        public ChapterStage Stage { get; private set; } = ChapterStage.Arrival;
         public int CollectedClueCount => collectedClueIds.Count;
         public int RequiredClueCount => requiredClueCount;
         public bool HasAllClues => CollectedClueCount >= requiredClueCount;
@@ -29,28 +42,65 @@ namespace Demo02.Narrative
         public bool IsRepaired { get; private set; }
         public ConclusionChoice SelectedConclusion { get; private set; }
         public bool IsConclusionReached => SelectedConclusion != ConclusionChoice.None;
+        public bool CanInvestigateClues => Stage >= ChapterStage.Investigate;
+        public bool HasReviewedEvidence => Stage >= ChapterStage.StabilizeAnchors;
         public bool HasClue(string clueId) => collectedClueIds.Contains(clueId);
         public bool HasStabilizedAnchor(string anchorId) =>
             stabilizedTimeAnchorIds.Contains(anchorId);
 
         public bool CollectClue(string clueId)
         {
-            if (string.IsNullOrWhiteSpace(clueId) || !collectedClueIds.Add(clueId))
+            if (!CanInvestigateClues
+                || string.IsNullOrWhiteSpace(clueId)
+                || !collectedClueIds.Add(clueId))
             {
                 return false;
             }
 
             ClueCountChanged?.Invoke(CollectedClueCount, requiredClueCount);
+            if (HasAllClues)
+            {
+                SetStage(ChapterStage.ReviewEvidence);
+            }
+
+            return true;
+        }
+
+        public bool CompleteWitnessBriefing()
+        {
+            if (Stage != ChapterStage.Arrival)
+            {
+                return false;
+            }
+
+            SetStage(ChapterStage.Investigate);
+            return true;
+        }
+
+        public bool CompleteEvidenceReview()
+        {
+            if (Stage != ChapterStage.ReviewEvidence || !HasAllClues)
+            {
+                return false;
+            }
+
+            SetStage(ChapterStage.StabilizeAnchors);
             return true;
         }
 
         public bool StabilizeTimeAnchor(string anchorId)
         {
             if (string.IsNullOrWhiteSpace(anchorId)
+                || !HasReviewedEvidence
                 || !HasAllClues
                 || !stabilizedTimeAnchorIds.Add(anchorId))
             {
                 return false;
+            }
+
+            if (HasAllTimeAnchors)
+            {
+                SetStage(ChapterStage.RepairRift);
             }
 
             return true;
@@ -58,12 +108,16 @@ namespace Demo02.Narrative
 
         public bool CompleteRepair()
         {
-            if (IsRepaired || !HasAllClues)
+            if (IsRepaired
+                || Stage < ChapterStage.RepairRift
+                || !HasAllClues
+                || !HasAllTimeAnchors)
             {
                 return false;
             }
 
             IsRepaired = true;
+            SetStage(ChapterStage.FinalDecision);
             return true;
         }
 
@@ -75,6 +129,7 @@ namespace Demo02.Narrative
             }
 
             SelectedConclusion = choice;
+            SetStage(ChapterStage.Resolved);
             return true;
         }
 
@@ -85,7 +140,8 @@ namespace Demo02.Narrative
             IEnumerable<string> clueIds,
             IEnumerable<string> timeAnchorIds,
             bool repaired,
-            ConclusionChoice conclusion)
+            ConclusionChoice conclusion,
+            ChapterStage stage)
         {
             collectedClueIds.Clear();
             stabilizedTimeAnchorIds.Clear();
@@ -114,7 +170,41 @@ namespace Demo02.Narrative
 
             IsRepaired = repaired;
             SelectedConclusion = repaired ? conclusion : ConclusionChoice.None;
+            Stage = stage;
+            if (collectedClueIds.Count > 0 && Stage < ChapterStage.Investigate)
+            {
+                Stage = HasAllClues
+                    ? ChapterStage.ReviewEvidence
+                    : ChapterStage.Investigate;
+            }
+            else if (HasAllClues && Stage == ChapterStage.Investigate)
+            {
+                Stage = ChapterStage.ReviewEvidence;
+            }
+            if (repaired)
+            {
+                Stage = conclusion == ConclusionChoice.None
+                    ? ChapterStage.FinalDecision
+                    : ChapterStage.Resolved;
+            }
+            else if (stabilizedTimeAnchorIds.Count > 0)
+            {
+                Stage = ChapterStage.StabilizeAnchors;
+            }
+
             ClueCountChanged?.Invoke(CollectedClueCount, requiredClueCount);
+            StageChanged?.Invoke(Stage);
+        }
+
+        private void SetStage(ChapterStage stage)
+        {
+            if (stage <= Stage)
+            {
+                return;
+            }
+
+            Stage = stage;
+            StageChanged?.Invoke(Stage);
         }
     }
 }

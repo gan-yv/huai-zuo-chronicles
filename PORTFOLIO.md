@@ -2,11 +2,11 @@
 
 Unity 3D 城市探索与技术策划作品集项目。
 
-当前版本为可运行灰盒垂直切片，不是商业完成品。重点展示完整玩法闭环、系统拆分、存档、世界内容组织、调试和迭代过程。
+当前版本为可运行灰盒垂直切片，包含第一章《消失的盐引》的完整玩法闭环。重点展示叙事流程、系统拆分、存档、世界内容组织、调试和迭代过程。
 
 ![标题界面](demo02/docs/screenshots/title-screen.png)
 
-![广陵街区探索](demo02/docs/screenshots/world-overview-v021.png)
+![第一章探索画面](demo02/docs/screenshots/chapter01-overview.png)
 
 ![世界地图](demo02/docs/screenshots/map-screen.png)
 
@@ -18,6 +18,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ## 可验证内容
 
+- 第一章《消失的盐引》：委托、调查、证据复核、时间层、修复与双结局。
 - 第三人称移动、镜头防穿墙和角色切换。
 - 可复用的 NPC 对话与街区小故事。
 - 线索调查、任务目标与方向距离罗盘。
@@ -33,6 +34,15 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
 - 两个街道结局状态与重新开始流程。
 
+## 第一章流程
+
+1. 收到无名盐引和沈伯的口信，前往旧仓调查账房沈砚失踪。
+2. 与沈伯交谈后解锁调查，寻找盐引巷门牌、盐仓账牌和陆崇封条。
+3. 带着三处记录回到沈伯处，确认私盐账与除名命令指向同一个人。
+4. 使用 `Q` 切换时间层，稳定三处漂移锚点。
+5. 在街尾压下时缝，读取被撕毁的最后一页记录。
+6. 选择恢复盐引巷与沈砚的名字，或封存旧街、维持现存记录。
+
 ## 运行
 
 Windows 构建位于：
@@ -44,10 +54,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.21.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.0.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.21.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.0.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -91,6 +101,7 @@ R          结局或队伍倒下后重开
 - 时间层通过可见性和碰撞切换管理。
 - 灰盒场景由可重复运行的 Editor Builder 生成，降低手工维护成本。
 - 演示截图通过 Unity 内部截屏参数生成，避免窗口缩放和环境遮挡。
+- 章节阶段状态机带批量验收，防止线索、锚点、修复和结局乱序。
 
 ## 已知限制
 

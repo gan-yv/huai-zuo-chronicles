@@ -97,14 +97,14 @@ namespace Demo02.Core
                 if (investigationState != null
                     && investigationState.SelectedConclusion == ConclusionChoice.Preserve)
                 {
-                    title = "结局：旧街被保留";
-                    body = "居民重新出现在城市记录中。官府、盐商与旧街之间的冲突才刚刚开始。";
+                    title = "结局：盐引巷重新入册";
+                    body = "沈砚的名字重新出现在盐仓账册上，盐引巷回到广陵地图。陆崇背后的势力也看见了修复留下的光。";
                 }
                 else if (investigationState != null
                     && investigationState.SelectedConclusion == ConclusionChoice.Seal)
                 {
-                    title = "结局：旧街被封存";
-                    body = "官方记录重新稳定，但旧街居民从此从城市生活中消失。";
+                    title = "结局：盐引巷封存";
+                    body = "时缝平息，私盐案被永久藏进旧街。沈砚没有回来，只在你手中的修复记录里留下一行名字。";
                 }
                 else
                 {

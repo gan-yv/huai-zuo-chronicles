@@ -14,7 +14,18 @@ namespace Demo02.Interaction
         private InvestigationState investigationState;
 
         public string ClueId => clueId;
-        public string Prompt => hasBeenRead ? "E  再看一次旧街招牌" : prompt;
+        public string Prompt
+        {
+            get
+            {
+                if (investigationState != null && !investigationState.CanInvestigateClues)
+                {
+                    return "E  调查记录（先询问守仓人沈伯）";
+                }
+
+                return hasBeenRead ? "E  重新查看这条记录" : prompt;
+            }
+        }
         public bool CanInteract => true;
 
         private void Start()
@@ -31,6 +42,11 @@ namespace Demo02.Interaction
 
         public string Interact(PlayerInteractor interactor)
         {
+            if (investigationState != null && !investigationState.CanInvestigateClues)
+            {
+                return "这条记录与一名失踪的账房有关。先去旧仓内院询问沈伯。";
+            }
+
             hasBeenRead = true;
             investigationState?.CollectClue(clueId);
             return clueText;

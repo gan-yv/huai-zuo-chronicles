@@ -49,16 +49,20 @@ namespace Demo02.UI
                 return;
             }
 
-            if (!investigationState.IsRepaired)
+            switch (investigationState.Stage)
             {
-                if (!investigationState.HasAllClues)
-                {
+                case ChapterStage.Arrival:
+                    currentTarget = FindShenBo();
+                    navigationHint = "询问沈砚失踪的事";
+                    return;
+                case ChapterStage.Investigate:
                     currentTarget = FindUncollectedClue();
                     return;
-                }
-
-                if (!investigationState.HasAllTimeAnchors)
-                {
+                case ChapterStage.ReviewEvidence:
+                    currentTarget = FindShenBo();
+                    navigationHint = "让沈伯辨认三处记录";
+                    return;
+                case ChapterStage.StabilizeAnchors:
                     TimeAnchor anchor = FindUnstabilizedAnchor();
                     currentTarget = anchor != null ? anchor.transform : null;
                     if (anchor != null && timeLayerController != null)
@@ -72,16 +76,23 @@ namespace Demo02.UI
                     }
 
                     return;
-                }
-
-                GameObject repairSite = GameObject.Find("RepairSite_TimeRift");
-                currentTarget = repairSite != null ? repairSite.transform : null;
-                return;
+                case ChapterStage.RepairRift:
+                    GameObject repairSite = GameObject.Find("RepairSite_TimeRift");
+                    currentTarget = repairSite != null ? repairSite.transform : null;
+                    navigationHint = "压下被撕开的记录";
+                    return;
+                case ChapterStage.FinalDecision:
+                    GameObject choice = GameObject.Find("Choice_Preserve");
+                    currentTarget = choice != null ? choice.transform : null;
+                    navigationHint = "决定盐引巷的命运";
+                    return;
             }
+        }
 
-            GameObject choice = GameObject.Find("Choice_Preserve");
-            currentTarget = choice != null ? choice.transform : null;
-            navigationHint = "选择旧街结局";
+        private static Transform FindShenBo()
+        {
+            GameObject shenBo = GameObject.Find("NPC_ShenBo");
+            return shenBo != null ? shenBo.transform : null;
         }
 
         private Transform FindUncollectedClue()

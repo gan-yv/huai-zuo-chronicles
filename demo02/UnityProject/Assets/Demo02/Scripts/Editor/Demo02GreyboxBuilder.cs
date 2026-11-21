@@ -91,6 +91,99 @@ namespace Demo02.Editor
             Debug.Log("Time layer verification passed: Present <-> Past.");
         }
 
+        public static void VerifyChapterFlowForBatch()
+        {
+            GameObject probe = new("ChapterFlowProbe");
+            InvestigationState state = probe.AddComponent<InvestigationState>();
+
+            if (state.CanInvestigateClues
+                || state.CollectClue("chapter-test-1"))
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Clues were available before Shen Bo briefed the player."
+                );
+            }
+
+            if (!state.CompleteWitnessBriefing()
+                || state.Stage != ChapterStage.Investigate)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "The chapter did not enter the investigation stage."
+                );
+            }
+
+            if (!state.CollectClue("chapter-test-1")
+                || !state.CollectClue("chapter-test-2")
+                || !state.CollectClue("chapter-test-3")
+                || state.Stage != ChapterStage.ReviewEvidence)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Collecting three clues did not require evidence review."
+                );
+            }
+
+            if (state.StabilizeTimeAnchor("chapter-anchor-1"))
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Time anchors unlocked before the evidence review."
+                );
+            }
+
+            if (!state.CompleteEvidenceReview()
+                || state.Stage != ChapterStage.StabilizeAnchors)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Evidence review did not unlock time anchors."
+                );
+            }
+
+            if (!state.StabilizeTimeAnchor("chapter-anchor-1")
+                || !state.StabilizeTimeAnchor("chapter-anchor-2")
+                || !state.StabilizeTimeAnchor("chapter-anchor-3")
+                || state.Stage != ChapterStage.RepairRift)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Three stable anchors did not unlock the repair step."
+                );
+            }
+
+            if (!state.CompleteRepair()
+                || state.Stage != ChapterStage.FinalDecision
+                || !state.SelectConclusion(ConclusionChoice.Preserve)
+                || state.Stage != ChapterStage.Resolved)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "The chapter did not reach a resolved conclusion."
+                );
+            }
+
+            state.RestoreProgress(
+                new[] { "chapter-test-1", "chapter-test-2", "chapter-test-3" },
+                new[] { "chapter-anchor-1", "chapter-anchor-2", "chapter-anchor-3" },
+                true,
+                ConclusionChoice.Seal,
+                ChapterStage.Resolved
+            );
+            if (state.Stage != ChapterStage.Resolved
+                || state.SelectedConclusion != ConclusionChoice.Seal)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Chapter progress did not restore correctly from a save."
+                );
+            }
+
+            Object.DestroyImmediate(probe);
+            Debug.Log("Chapter verification passed: brief -> clues -> review -> anchors -> repair -> ending.");
+        }
+
         private static void BuildIfNeeded()
         {
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath) == null)
@@ -196,6 +289,8 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("DongguanStreet") == null
                     || existingRoot.transform.Find("CaiyiStreet") == null
                     || existingRoot.transform.Find("NPC_WarehouseWorker") == null
+                    || existingRoot.transform.Find("NPC_ShenBo") == null
+                    || existingRoot.transform.Find("Chapter01_StorySetup") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -344,11 +439,11 @@ namespace Demo02.Editor
                 "E  与盐仓搬运工交谈",
                 new DialogueLine(
                     "盐仓搬运工",
-                    "旧街的货昨夜还在仓库里。今早一到，账上的入库记录却全没了。"
+                    "沈砚昨夜问我，盐仓里到底少了几车盐。我还没来得及数，他就不见了。"
                 ),
                 new DialogueLine(
                     "盐仓搬运工",
-                    "我只是个搬货的。可要是整条街都能被从纸上抹掉，下一个会不会轮到我们？"
+                    "今早伙计们都说从没这个人。可墙上还挂着他的斗笠，谁都拿不下来。"
                 )
             );
 
@@ -363,8 +458,8 @@ namespace Demo02.Editor
             ClueInteractable oldStreetSign = clue.AddComponent<ClueInteractable>();
             oldStreetSign.Configure(
                 "old-street-sign",
-                "E  调查旧街招牌",
-                "招牌背面留着被刮掉的旧街名。有人不希望这条街继续存在。"
+                "E  调查旧街门牌",
+                "门牌背面刮着一层旧漆。对着光能认出三个字：盐引巷。这里曾是盐船入城后的第一处验引点。"
             );
 
             GameObject saltLedger = CreateBlock(
@@ -379,7 +474,7 @@ namespace Demo02.Editor
             ledger.Configure(
                 "salt-ledger",
                 "E  调查盐仓账牌",
-                "旧街的货物昨夜仍从盐仓运出，现存记录却写着它们从未入仓。"
+                "账牌背面残留七车盐的押运编号。复核签字是“沈砚”，日期正是暴雨封城的那一夜。"
             );
 
             GameObject officialSeal = CreateBlock(
@@ -394,7 +489,7 @@ namespace Demo02.Editor
             seal.Configure(
                 "official-seal",
                 "E  调查官府封条",
-                "封条日期早于旧街重新出现的时间。官府在事件发生前就已经知道这片街区。"
+                "封条属于转运副使陆崇，日期比盐引巷从地图消失早一天。背面还有一行小字：知情人沈砚，宜除名。"
             );
 
             GameObject repairSite = CreateBlock(
@@ -497,6 +592,9 @@ namespace Demo02.Editor
             gameSession.AddComponent<GameFlowController>();
             gameSession.AddComponent<SaveSystem>();
             gameSession.AddComponent<GameAudio>();
+
+            GameObject chapterMarker = new GameObject("Chapter01_StorySetup");
+            chapterMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
@@ -684,23 +782,11 @@ namespace Demo02.Editor
             );
 
             GameObject keeper = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            keeper.name = "NPC_OldStorekeeper";
+            keeper.name = "NPC_ShenBo";
             keeper.transform.SetParent(root);
             keeper.transform.position = new Vector3(16.5f, 1f, 8f);
             keeper.AddComponent<ColorTint>().Configure(new Color(0.76f, 0.6f, 0.32f));
-            NpcDialogueInteractable keeperDialogue = keeper.AddComponent<NpcDialogueInteractable>();
-            keeperDialogue.Configure(
-                "守仓老人",
-                "E  与守仓老人交谈",
-                new DialogueLine(
-                    "守仓老人",
-                    "这道院墙后头，原本还有一整排旧铺。地图没画，账上也没写，可我还记得它们的位置。"
-                ),
-                new DialogueLine(
-                    "守仓老人",
-                    "年轻人，别只看纸上留下了什么。也看看纸外被拿走了什么。"
-                )
-            );
+            keeper.AddComponent<ShenBoInteractable>();
 
             GameObject notice = CreateBlock(
                 root,
@@ -1014,11 +1100,11 @@ namespace Demo02.Editor
                 "E  与说书人交谈",
                 new DialogueLine(
                     "说书人",
-                    "东关街的铺子一日比一日多，可老住户却一日比一日少。你说是生意变了，还是人变了？"
+                    "二十年前有场盐仓大火，第二天整条盐引巷就从官图上没了。老辈人都说，那不是火，是有人拿纸盖住了火。"
                 ),
                 new DialogueLine(
                     "说书人",
-                    "城里的故事总要有人讲。没人讲的，久了就像从来没发生过。"
+                    "城里的故事总要有人讲。你若真找到那七页账，别让它只留在官府手里。"
                 )
             );
 
@@ -1036,11 +1122,11 @@ namespace Demo02.Editor
                 "E  与绸缎商交谈",
                 new DialogueLine(
                     "绸缎商",
-                    "这几日布料上的花色总在变。昨日的客人说，他明明买过一样的料子，账上却查不到。"
+                    "沈砚前日来扯过一尺青布，说要给父亲缝个新账袋。钱是我亲手收的，账上却找不到这笔买卖。"
                 ),
                 new DialogueLine(
                     "绸缎商",
-                    "若连买卖都能被改，东关街还算得上是谁的街？"
+                    "若连买卖都能被改，东关街还算得上是谁的街？去旧仓看看吧，他父亲一直守在那里。"
                 )
             );
 
@@ -1056,11 +1142,11 @@ namespace Demo02.Editor
                 "E  与茶肆掌柜交谈",
                 new DialogueLine(
                     "茶肆掌柜",
-                    "东关街最怕的不是客人少，是昨天来坐过的人，今天没人记得。"
+                    "昨夜打烊前，沈砚坐在靠窗那张桌，反复数七张账页。他走时把一枚盐引铜钱落在桌上。"
                 ),
                 new DialogueLine(
                     "茶肆掌柜",
-                    "茶凉了还能续，人会从纸上消失，可就续不回来了。"
+                    "今早伙计问我铜钱是哪来的。我竟一时想不起沈砚是谁。茶凉了还能续，人从纸上消失，可就续不回来了。"
                 )
             );
 
@@ -1216,11 +1302,11 @@ namespace Demo02.Editor
                 "E  与裁衣铺掌柜交谈",
                 new DialogueLine(
                     "裁衣铺掌柜",
-                    "彩衣街的衣裳讲究配色，一段布接错了，整件衣裳都不是原来的样子。"
+                    "盐引巷从前就在旧仓后面。那里的媳妇常来我这儿挑青布，说盐灰落上去也不显脏。"
                 ),
                 new DialogueLine(
                     "裁衣铺掌柜",
-                    "街和衣裳也一样。少了一段，旁人未必看得出来，住在这里的人却知道。"
+                    "街和衣裳一样。少了一段，旁人未必看得出来，住在这里的人却知道。"
                 )
             );
 
@@ -1238,7 +1324,7 @@ namespace Demo02.Editor
                 "E  与小吃摊主交谈",
                 new DialogueLine(
                     "小吃摊主",
-                    "街口那棵树我从小看到大。可前些天有人指着这里说，这条路从前根本没有树。"
+                    "以前盐船靠岸，搬运工会来我这儿买热汤。最近少了盐引巷的客人，生意都冷清了。"
                 )
             );
         }
