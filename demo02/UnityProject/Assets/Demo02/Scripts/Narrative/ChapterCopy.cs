@@ -25,6 +25,8 @@ namespace Demo02.Narrative
                 ChapterStage.Investigate =>
                     $"调查盐引巷留下的记录  {state.CollectedClueCount}/{state.RequiredClueCount}",
                 ChapterStage.ReviewEvidence => "把三处记录带回旧仓，让沈伯辨认笔迹",
+                ChapterStage.CrossExamineTestimony =>
+                    "按 T 打开证词对照，找出封条与盐车记录的时间矛盾",
                 ChapterStage.StabilizeAnchors =>
                     $"按记录顺序稳定锚点：{TimeAnchorPuzzleRules.OrderHint}  {state.StabilizedTimeAnchorCount}/{state.RequiredTimeAnchorCount}",
                 ChapterStage.RepairRift => "前往街尾，压下被撕开的记录",
@@ -48,6 +50,9 @@ namespace Demo02.Narrative
                     "沈砚带走了七页私盐账簿。门牌、账牌与官府封条必须互相印证，才能证明盐引巷曾经存在。",
                 ChapterStage.ReviewEvidence =>
                     "三处证据已经指向同一个夜晚。沈伯认得儿子的笔迹，下一步应让他确认账牌签名。",
+                ChapterStage.CrossExamineTestimony =>
+                    "沈伯说封条在初五傍晚贴上，账牌却记录七车盐直到初七夜里才入城。"
+                    + "如果两句话都成立，除名就发生在私盐入城之前。",
                 ChapterStage.StabilizeAnchors =>
                     "陆崇的封条比盐引巷消失早一天，说明除名是预谋。门牌背面的铜钉顺序是“西仓、东验、中册”，错序会重置锚点。",
                 ChapterStage.RepairRift =>

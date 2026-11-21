@@ -670,6 +670,7 @@ namespace Demo02.UI
                 ChapterStage.Arrival => "初到广陵",
                 ChapterStage.Investigate => "调查线索",
                 ChapterStage.ReviewEvidence => "审阅证据",
+                ChapterStage.CrossExamineTestimony => "证词对照",
                 ChapterStage.StabilizeAnchors => "稳定时间锚",
                 ChapterStage.RepairRift => "修复时缝",
                 ChapterStage.FinalDecision => "最终抉择",

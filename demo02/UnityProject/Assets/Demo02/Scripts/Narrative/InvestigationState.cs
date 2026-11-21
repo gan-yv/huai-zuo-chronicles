@@ -16,6 +16,7 @@ namespace Demo02.Narrative
         Arrival,
         Investigate,
         ReviewEvidence,
+        CrossExamineTestimony,
         StabilizeAnchors,
         RepairRift,
         FinalDecision,
@@ -45,6 +46,30 @@ namespace Demo02.Narrative
         WrongOrder
     }
 
+    public enum ContradictionResult
+    {
+        NotReady,
+        Incorrect,
+        Correct,
+        AlreadySolved
+    }
+
+    public static class TestimonyPuzzleRules
+    {
+        public const string StatementId = "shenbo-seal-date";
+        public const string EvidenceId = "salt-ledger";
+        public const string CorrectExplanation =
+            "初五的封条已经写明要把沈砚除名，七车盐却在初七夜里才入城。"
+            + "除名发生在私盐入城之前，说明陆崇不是查案后处置，而是提前抹掉知情人。";
+
+        public static string GetIncorrectHint(int attempts)
+        {
+            return attempts >= 2
+                ? "再比对一次时间。沈伯说的是封条何时贴上，账牌记录的是七车盐何时入城。"
+                : "这两份记录可以同时成立。寻找一份写有具体日期、另一份记录同一事件先后的内容。";
+        }
+    }
+
     public sealed class InvestigationState : MonoBehaviour
     {
         [SerializeField, Min(1)] private int requiredClueCount = 3;
@@ -67,10 +92,13 @@ namespace Demo02.Narrative
         public int RequiredTimeAnchorCount => requiredTimeAnchorCount;
         public bool HasAllTimeAnchors => StabilizedTimeAnchorCount >= requiredTimeAnchorCount;
         public int DiscoveredEchoCount => discoveredEchoIds.Count;
+        public bool TestimonyContradictionSolved { get; private set; }
+        public int ContradictionAttempts { get; private set; }
         public bool IsRepaired { get; private set; }
         public ConclusionChoice SelectedConclusion { get; private set; }
         public bool IsConclusionReached => SelectedConclusion != ConclusionChoice.None;
         public bool CanInvestigateClues => Stage >= ChapterStage.Investigate;
+        public bool CanOpenTestimonyBoard => Stage >= ChapterStage.ReviewEvidence;
         public bool HasReviewedEvidence => Stage >= ChapterStage.StabilizeAnchors;
         public bool HasClue(string clueId) => collectedClueIds.Contains(clueId);
         public bool HasStabilizedAnchor(string anchorId) =>
@@ -108,13 +136,45 @@ namespace Demo02.Narrative
 
         public bool CompleteEvidenceReview()
         {
-            if (Stage != ChapterStage.ReviewEvidence || !HasAllClues)
+            if (Stage != ChapterStage.ReviewEvidence
+                || !HasAllClues
+                || Plan == EvidencePlan.Undecided)
             {
                 return false;
             }
 
-            SetStage(ChapterStage.StabilizeAnchors);
+            SetStage(ChapterStage.CrossExamineTestimony);
             return true;
+        }
+
+        public ContradictionResult SubmitContradiction(
+            string statementId,
+            string evidenceId)
+        {
+            if (TestimonyContradictionSolved)
+            {
+                return ContradictionResult.AlreadySolved;
+            }
+
+            if (Stage != ChapterStage.CrossExamineTestimony
+                || !HasAllClues
+                || string.IsNullOrWhiteSpace(statementId)
+                || string.IsNullOrWhiteSpace(evidenceId))
+            {
+                return ContradictionResult.NotReady;
+            }
+
+            ContradictionAttempts++;
+            if (statementId != TestimonyPuzzleRules.StatementId
+                || evidenceId != TestimonyPuzzleRules.EvidenceId
+                || !HasClue(evidenceId))
+            {
+                return ContradictionResult.Incorrect;
+            }
+
+            TestimonyContradictionSolved = true;
+            SetStage(ChapterStage.StabilizeAnchors);
+            return ContradictionResult.Correct;
         }
 
         public TimeAnchorResult TryStabilizeTimeAnchor(
@@ -226,7 +286,9 @@ namespace Demo02.Narrative
             ChapterStage stage,
             IEnumerable<string> echoIds = null,
             WitnessStance stance = WitnessStance.Undecided,
-            EvidencePlan plan = EvidencePlan.Undecided)
+            EvidencePlan plan = EvidencePlan.Undecided,
+            bool testimonyContradictionSolved = false,
+            int contradictionAttempts = 0)
         {
             collectedClueIds.Clear();
             stabilizedTimeAnchorIds.Clear();
@@ -270,6 +332,9 @@ namespace Demo02.Narrative
             Stance = stance;
             Plan = plan;
             Stage = stage;
+            ContradictionAttempts = Mathf.Max(0, contradictionAttempts);
+            TestimonyContradictionSolved = testimonyContradictionSolved
+                || Stage >= ChapterStage.StabilizeAnchors;
             if (collectedClueIds.Count > 0 && Stage < ChapterStage.Investigate)
             {
                 Stage = HasAllClues
@@ -287,6 +352,11 @@ namespace Demo02.Narrative
                     : ChapterStage.Resolved;
             }
             else if (stabilizedTimeAnchorIds.Count > 0)
+            {
+                Stage = ChapterStage.StabilizeAnchors;
+            }
+            if (TestimonyContradictionSolved
+                && Stage < ChapterStage.StabilizeAnchors)
             {
                 Stage = ChapterStage.StabilizeAnchors;
             }

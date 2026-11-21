@@ -62,6 +62,10 @@ namespace Demo02.UI
                     currentTarget = FindShenBo();
                     navigationHint = "让沈伯辨认三处记录";
                     return;
+                case ChapterStage.CrossExamineTestimony:
+                    currentTarget = FindShenBo();
+                    navigationHint = "按 T 对照证词与账牌日期";
+                    return;
                 case ChapterStage.StabilizeAnchors:
                     TimeAnchor anchor = FindUnstabilizedAnchor();
                     currentTarget = anchor != null ? anchor.transform : null;
@@ -144,6 +148,8 @@ namespace Demo02.UI
                     && InvestigationJournalController.Instance.IsOpen)
                 || (SettingsController.Instance != null
                     && SettingsController.Instance.IsOpen)
+                || (TestimonyBoardController.Instance != null
+                    && TestimonyBoardController.Instance.IsOpen)
                 || (DialogueController.Instance != null
                     && DialogueController.Instance.IsOpen)
                 || currentTarget == null

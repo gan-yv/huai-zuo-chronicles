@@ -25,6 +25,7 @@ namespace Demo02.Interaction
                     ChapterStage.Arrival => "E  询问沈砚失踪的事",
                     ChapterStage.Investigate => "E  询问沈砚最后留下的记录",
                     ChapterStage.ReviewEvidence => "E  把三处记录交给沈伯辨认",
+                    ChapterStage.CrossExamineTestimony => "E  请沈伯重述封条贴上的时间",
                     ChapterStage.StabilizeAnchors => "E  询问如何稳定时间锚点",
                     ChapterStage.RepairRift => "E  询问街尾被撕开的记录",
                     ChapterStage.FinalDecision => "E  请沈伯说出他的选择",
@@ -122,6 +123,9 @@ namespace Demo02.Interaction
                 case ChapterStage.ReviewEvidence:
                     BeginEvidenceReview(dialogue);
                     break;
+                case ChapterStage.CrossExamineTestimony:
+                    BeginTestimonyPrompt(dialogue);
+                    break;
                 case ChapterStage.StabilizeAnchors:
                     BeginAnchorGuidance(dialogue);
                     break;
@@ -210,7 +214,7 @@ namespace Demo02.Interaction
                     ),
                     new DialogueLine(
                         "主角",
-                        "这些证据让时间锚点显形了。我会把那条被撕掉的记录重新钉回现在。"
+                        "等等。封条和账牌的日期对不上。把沈伯的说法与七车盐账牌放在一起，应该能看出陆崇究竟在什么时候决定抹掉阿砚。"
                     )
                 },
                 new[]
@@ -226,6 +230,25 @@ namespace Demo02.Interaction
                 () => investigationState.CompleteEvidenceReview(),
                 transform
             );
+        }
+
+        private void BeginTestimonyPrompt(DialogueController dialogue)
+        {
+            dialogue.Begin(new[]
+            {
+                new DialogueLine(
+                    "守仓人 沈伯",
+                    "封条是初五傍晚贴上的。那天阿砚还在仓里，他亲手数过门外的空盐车。"
+                ),
+                new DialogueLine(
+                    "主角",
+                    "可账牌写着七车盐初七夜才入城。封条比私盐早了两天，他们要除掉的不是已经被抓住的把柄，而是预定的知情人。"
+                ),
+                new DialogueLine(
+                    "守仓人 沈伯",
+                    "按 T，把这两句话并排放在案卷上。别只看它们各自写了什么，要看哪一句先发生。"
+                )
+            }, cameraFocus: transform);
         }
 
         private void BeginAnchorGuidance(DialogueController dialogue)

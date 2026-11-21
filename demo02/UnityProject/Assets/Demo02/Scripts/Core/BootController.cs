@@ -41,7 +41,8 @@ namespace Demo02.Core
                 || System.Array.IndexOf(arguments, "--preview-vision") >= 0
                 || System.Array.IndexOf(arguments, "--preview-choice") >= 0
                 || System.Array.IndexOf(arguments, "--preview-settings") >= 0
-                || System.Array.IndexOf(arguments, "--preview-saves") >= 0)
+                || System.Array.IndexOf(arguments, "--preview-saves") >= 0
+                || System.Array.IndexOf(arguments, "--preview-testimony") >= 0)
             {
                 StartGame(showOpening: false);
             }
@@ -203,7 +204,7 @@ namespace Demo02.Core
                     Screen.width,
                     28f * scale
                 ),
-                "WASD 移动   E 调查/对话   Tab 切换角色   J 调查案卷   M 世界地图   F1 帮助",
+                "WASD 移动   E 调查/对话   Tab 切换角色   T 证词对照   J 案卷   M 地图   F1 帮助",
                 subtitleStyle
             );
             GUI.Label(

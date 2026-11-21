@@ -21,6 +21,8 @@ namespace Demo02.UI
                     && InvestigationJournalController.Instance.IsOpen)
                 || (SettingsController.Instance != null
                     && SettingsController.Instance.IsOpen)
+                || (TestimonyBoardController.Instance != null
+                    && TestimonyBoardController.Instance.IsOpen)
                 || (DialogueController.Instance != null
                     && DialogueController.Instance.IsOpen))
             {

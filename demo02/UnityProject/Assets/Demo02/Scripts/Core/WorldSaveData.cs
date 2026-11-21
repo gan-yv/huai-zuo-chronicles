@@ -25,6 +25,8 @@ namespace Demo02.Core
         public List<string> TimeAnchorIds = new();
         public List<string> EchoIds = new();
         public ChapterStage ChapterStage;
+        public bool TestimonyContradictionSolved;
+        public int ContradictionAttempts;
         public bool IsRepaired;
         public ConclusionChoice Conclusion;
         public List<CombatantSaveData> Combatants = new();

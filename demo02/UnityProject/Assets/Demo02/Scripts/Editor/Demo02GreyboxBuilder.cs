@@ -254,7 +254,7 @@ namespace Demo02.Editor
             InvestigationState state = probe.AddComponent<InvestigationState>();
 
             if (state.CanInvestigateClues
-                || state.CollectClue("chapter-test-1"))
+                || state.CollectClue("old-street-sign"))
             {
                 Object.DestroyImmediate(probe);
                 throw new System.InvalidOperationException(
@@ -272,9 +272,9 @@ namespace Demo02.Editor
             }
             state.SetWitnessStance(WitnessStance.PersonFirst);
 
-            if (!state.CollectClue("chapter-test-1")
-                || !state.CollectClue("chapter-test-2")
-                || !state.CollectClue("chapter-test-3")
+            if (!state.CollectClue("old-street-sign")
+                || !state.CollectClue("salt-ledger")
+                || !state.CollectClue("official-seal")
                 || state.Stage != ChapterStage.ReviewEvidence)
             {
                 Object.DestroyImmediate(probe);
@@ -294,11 +294,32 @@ namespace Demo02.Editor
 
             state.SetEvidencePlan(EvidencePlan.PrivateProtection);
             if (!state.CompleteEvidenceReview()
+                || state.Stage != ChapterStage.CrossExamineTestimony
+                || state.TryStabilizeTimeAnchor("past-02", out _)
+                    != TimeAnchorResult.NotReady)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Evidence review did not open testimony cross-examination."
+                );
+            }
+            if (state.SubmitContradiction(
+                    "teahouse-salt-carts",
+                    "salt-ledger"
+                ) != ContradictionResult.Incorrect
+                || state.ContradictionAttempts != 1
+                || state.Stage != ChapterStage.CrossExamineTestimony
+                || state.SubmitContradiction(
+                    TestimonyPuzzleRules.StatementId,
+                    TestimonyPuzzleRules.EvidenceId
+                ) != ContradictionResult.Correct
+                || state.ContradictionAttempts != 2
+                || !state.TestimonyContradictionSolved
                 || state.Stage != ChapterStage.StabilizeAnchors)
             {
                 Object.DestroyImmediate(probe);
                 throw new System.InvalidOperationException(
-                    "Evidence review did not unlock time anchors."
+                    "Testimony contradiction did not validate and unlock anchors."
                 );
             }
             if (state.TryStabilizeTimeAnchor("present-01", out _)
@@ -330,19 +351,42 @@ namespace Demo02.Editor
             }
 
             state.RestoreProgress(
-                new[] { "chapter-test-1", "chapter-test-2", "chapter-test-3" },
+                new[] { "old-street-sign", "salt-ledger", "official-seal" },
+                System.Array.Empty<string>(),
+                false,
+                ConclusionChoice.None,
+                ChapterStage.StabilizeAnchors,
+                null,
+                WitnessStance.EvidenceFirst,
+                EvidencePlan.PublicRecord
+            );
+            if (state.Stage != ChapterStage.StabilizeAnchors
+                || !state.TestimonyContradictionSolved)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "An older anchor-stage save did not infer the completed deduction."
+                );
+            }
+
+            state.RestoreProgress(
+                new[] { "old-street-sign", "salt-ledger", "official-seal" },
                 new[] { "past-02", "present-01", "present-03" },
                 true,
                 ConclusionChoice.Seal,
                 ChapterStage.Resolved,
                 null,
                 WitnessStance.PersonFirst,
-                EvidencePlan.PrivateProtection
+                EvidencePlan.PrivateProtection,
+                true,
+                2
             );
             if (state.Stage != ChapterStage.Resolved
                 || state.SelectedConclusion != ConclusionChoice.Seal
                 || state.Stance != WitnessStance.PersonFirst
-                || state.Plan != EvidencePlan.PrivateProtection)
+                || state.Plan != EvidencePlan.PrivateProtection
+                || !state.TestimonyContradictionSolved
+                || state.ContradictionAttempts != 2)
             {
                 Object.DestroyImmediate(probe);
                 throw new System.InvalidOperationException(
@@ -351,7 +395,10 @@ namespace Demo02.Editor
             }
 
             Object.DestroyImmediate(probe);
-            Debug.Log("Chapter verification passed: brief -> clues -> review -> anchors -> repair -> ending.");
+            Debug.Log(
+                "Chapter verification passed: brief -> clues -> review -> "
+                + "contradiction -> anchors -> repair -> ending."
+            );
         }
 
         private static void BuildIfNeeded()
@@ -863,6 +910,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<WorldMapController>();
             gameSession.AddComponent<InvestigationJournalController>();
             gameSession.AddComponent<InvestigationVisionController>();
+            gameSession.AddComponent<TestimonyBoardController>();
             gameSession.AddComponent<SettingsController>();
             gameSession.AddComponent<SaveSlotController>();
             gameSession.AddComponent<ScreenFade>();
@@ -903,6 +951,9 @@ namespace Demo02.Editor
 
             GameObject saveSlotsMarker = new GameObject("Chapter01_MultiSlotSaves");
             saveSlotsMarker.transform.SetParent(root.transform);
+
+            GameObject testimonyMarker = new GameObject("Chapter01_TestimonyBoard");
+            testimonyMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);

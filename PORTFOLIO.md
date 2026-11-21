@@ -12,6 +12,8 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ![调查案卷](demo02/docs/screenshots/journal-screen.png)
 
+![证词对照](demo02/docs/screenshots/testimony-board.png)
+
 ![修痕视界](demo02/docs/screenshots/investigation-vision.png)
 
 ![对白选择](demo02/docs/screenshots/dialogue-choice.png)
@@ -41,6 +43,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 统一深色金色视觉体系，覆盖目标、罗盘、生命、对白和系统菜单。
 - 程序化人物轮廓与店铺屋檐、门面、布幡、灯笼组成的第一遍美术 pass。
 - `J` 调查案卷汇总目标、证据、人物关系和随剧情变化的当前推理。
+- `T` 证词对照要求组合人物说法与证据，指出封条和盐车记录的日期矛盾。
 - `V` 修痕视界高亮附近目标，并显现三处可选隐藏记忆回声。
 - 第二遍建筑打磨：坡屋顶、檐口、门窗、门阶、招牌、石板路和路缘。
 - 对白选择、调查立场、证据去向、沈伯动态反应和分支片尾文本。
@@ -74,10 +77,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.9.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.10.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.9.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.10.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -95,6 +98,7 @@ Tab        切换出场角色
 Q          切换时间层
 M          世界地图与快速传送
 J          调查案卷
+T          证词对照
 V          修痕视界
 O          游戏设置
 Esc        暂停 / 关闭地图或案卷

@@ -59,6 +59,8 @@ namespace Demo02.UI
                     && InvestigationJournalController.Instance.IsOpen)
                 || (SettingsController.Instance != null
                     && SettingsController.Instance.IsOpen)
+                || (TestimonyBoardController.Instance != null
+                    && TestimonyBoardController.Instance.IsOpen)
                 || (DialogueController.Instance != null
                     && DialogueController.Instance.IsOpen)
                 || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
@@ -114,6 +116,8 @@ namespace Demo02.UI
                 || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
                 || (InvestigationJournalController.Instance != null
                     && InvestigationJournalController.Instance.IsOpen)
+                || (TestimonyBoardController.Instance != null
+                    && TestimonyBoardController.Instance.IsOpen)
                 || (DialogueController.Instance != null && DialogueController.Instance.IsOpen))
             {
                 return;

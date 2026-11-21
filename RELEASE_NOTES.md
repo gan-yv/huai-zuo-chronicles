@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.9.0
+# Huai-Zuo Chronicles v1.10.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.9.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.10.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.9.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.10.0>
 
 解压后运行：
 
@@ -25,12 +25,15 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-486F4AB55C39A9D6D7181C9E0B48550C5BDF1CE23D356630BBFD812D04C9407A
+345D4A01B5552E5CEE1904F59202B9150BB4511752DAD91F7239580FE1FF85D9
 ```
 
 ## 已包含
 
 - 第一章《消失的盐引》的完整剧情与玩法闭环。
+- 证据复核后新增 `T` 证词对照，组合人物说法和证据指出日期矛盾。
+- 错误推理提供渐进提示，正确推理会解释陆崇为何提前除名沈砚。
+- 证词对照完成状态和尝试次数会写入多槽位存档。
 - 可随时打开的 `J` 调查案卷。
 - 证据、人物、当前推理和时间锚点进度会随章节推进更新。
 - `V` 修痕视界显示附近目标，并揭示三处可选记忆回声。
@@ -106,3 +109,5 @@ SHA256：
 - 设置界面预览与 Windows 构建验证通过。
 - 存档面板打开时世界保持暂停，`Esc` 先返回暂停菜单。
 - 自动槽、三个手动槽、覆盖确认、删除确认和最近存档选择纳入回归检查。
+- 章节流程已验证：委托 → 线索 → 复核 → 证词对照 → 锚点 → 修复 → 结局。
+- 错误组合、正确答案、旧存档推断和推理状态读档恢复均通过自动验收。

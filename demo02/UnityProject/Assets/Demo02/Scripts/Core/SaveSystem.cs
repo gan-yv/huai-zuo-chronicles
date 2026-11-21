@@ -38,6 +38,7 @@ namespace Demo02.Core
         private float statusMessageUntil;
         private string lastStateSignature;
         private float nextStateCheck;
+        private bool isPreviewMode;
 
         public static bool HasSave()
         {
@@ -134,6 +135,7 @@ namespace Demo02.Core
 
         private void Start()
         {
+            isPreviewMode = HasPreviewArgument();
             investigationState = FindAnyObjectByType<InvestigationState>();
             party = FindAnyObjectByType<PlayerPartyController>();
             timeLayerController = FindAnyObjectByType<TimeLayerController>();
@@ -153,7 +155,7 @@ namespace Demo02.Core
 
         private void Update()
         {
-            if (Keyboard.current == null)
+            if (isPreviewMode || Keyboard.current == null)
             {
                 return;
             }
@@ -254,6 +256,10 @@ namespace Demo02.Core
                 TimeAnchorIds = new List<string>(investigationState.ExportTimeAnchorIds()),
                 EchoIds = new List<string>(investigationState.ExportEchoIds()),
                 ChapterStage = investigationState.Stage,
+                TestimonyContradictionSolved =
+                    investigationState.TestimonyContradictionSolved,
+                ContradictionAttempts =
+                    investigationState.ContradictionAttempts,
                 IsRepaired = investigationState.IsRepaired,
                 Conclusion = investigationState.SelectedConclusion
             };
@@ -298,7 +304,7 @@ namespace Demo02.Core
 
         private void OnApplicationPause(bool pauseStatus)
         {
-            if (pauseStatus)
+            if (pauseStatus && !isPreviewMode)
             {
                 SaveCurrentState(announce: false, slotIndex: AutoSlot);
             }
@@ -306,7 +312,26 @@ namespace Demo02.Core
 
         private void OnApplicationQuit()
         {
-            SaveCurrentState(announce: false, slotIndex: AutoSlot);
+            if (!isPreviewMode)
+            {
+                SaveCurrentState(announce: false, slotIndex: AutoSlot);
+            }
+        }
+
+        private static bool HasPreviewArgument()
+        {
+            foreach (string argument in Environment.GetCommandLineArgs())
+            {
+                if (argument.StartsWith(
+                    "--preview-",
+                    StringComparison.Ordinal
+                ))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public static bool LoadLatestSavedGame(out WorldSaveData data)
@@ -366,6 +391,8 @@ namespace Demo02.Core
                     && InvestigationJournalController.Instance.IsOpen)
                 || (DialogueController.Instance != null
                     && DialogueController.Instance.IsOpen)
+                || (TestimonyBoardController.Instance != null
+                    && TestimonyBoardController.Instance.IsOpen)
                 || (SaveSlotController.Instance != null
                     && SaveSlotController.Instance.IsOpen)
                 || (GameFlowController.Instance != null
@@ -382,7 +409,9 @@ namespace Demo02.Core
                 data.ChapterStage,
                 data.EchoIds,
                 data.Stance,
-                data.EvidencePlan
+                data.EvidencePlan,
+                data.TestimonyContradictionSolved,
+                data.ContradictionAttempts
             );
             timeLayerController.SetLayer(data.TimeLayer);
             party.RestoreActiveCharacter(data.ActivePartyIndex);
@@ -463,6 +492,8 @@ namespace Demo02.Core
                 investigationState.StabilizedTimeAnchorCount,
                 investigationState.DiscoveredEchoCount,
                 investigationState.Stage,
+                investigationState.TestimonyContradictionSolved,
+                investigationState.ContradictionAttempts,
                 investigationState.Stance,
                 investigationState.Plan,
                 investigationState.IsRepaired,
