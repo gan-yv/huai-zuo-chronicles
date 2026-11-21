@@ -8,3 +8,11 @@
 根目录只保留仓库入口、`.gitignore`、`.gitattributes` 等全仓共享配置。各 Demo 的 Unity 工程、构建产物和文档均放在各自目录内。
 
 版本管理继续使用 Git 和 Git LFS。目录职责、分支、提交、拉取请求和素材规则见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+## 作品展示
+
+当前可玩版本是 Huai-Zuo Chronicles 的 Unity 灰盒垂直切片，包含探索、NPC 对话、区域传送、时间层、锚点修复、可选战斗、存档和结局选择。
+
+- [作品集说明](PORTFOLIO.md)
+- [当前版本发布说明](RELEASE_NOTES.md)
+- [模板使用说明](TEMPLATE.md)

@@ -39,12 +39,12 @@ namespace Demo02.Core
 
             GUI.Label(
                 new Rect(0f, Screen.height * 0.24f, Screen.width, 70f),
-                "CHRONICLES OF STRANGE EVENTS IN HUAI-ZUO",
+                "HUAI-ZUO CHRONICLES",
                 titleStyle
             );
             GUI.Label(
                 new Rect(0f, Screen.height * 0.34f, Screen.width, 40f),
-                "广陵灰盒原型",
+                "Chronicles of Strange Events in Huai-Zuo · 广陵灰盒原型",
                 subtitleStyle
             );
 
