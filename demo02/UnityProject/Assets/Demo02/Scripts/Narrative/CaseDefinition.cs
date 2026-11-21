@@ -54,6 +54,7 @@ namespace Demo02.Narrative
     )]
     public sealed class CaseDefinition : ScriptableObject
     {
+        [SerializeField] private int contentVersion;
         [SerializeField] private string caseId = "chapter-01";
         [SerializeField] private string title = "消失的盐引";
         [SerializeField] private string chapterLabel = "CHAPTER 01";
@@ -65,6 +66,7 @@ namespace Demo02.Narrative
         [SerializeField] private List<ConclusionCopyDefinition> conclusionCopy = new();
         [SerializeField] private List<DialogueScriptDefinition> dialogueScripts = new();
 
+        public int ContentVersion => contentVersion;
         public string CaseId => caseId;
         public string Title => title;
         public string ChapterLabel => chapterLabel;
@@ -449,6 +451,15 @@ namespace Demo02.Narrative
                     {
                         coveredStages.Add(condition.Stage);
                     }
+                    if (condition != null
+                        && condition.Type == DialogueConditionType.HasEvidence
+                        && FindEvidence(condition.EvidenceId) == null)
+                    {
+                        errors.Add(
+                            $"Dialogue '{script.Id}' references missing evidence "
+                            + $"condition: {condition.EvidenceId}"
+                        );
+                    }
                 }
 
                 for (int choiceIndex = 0;
@@ -497,12 +508,14 @@ namespace Demo02.Narrative
             stageCopy = newStageCopy;
             conclusionCopy = newConclusionCopy;
             dialogueScripts = newDialogueScripts;
+            contentVersion = 3;
         }
 
         public void ConfigureDialogueScriptsForEditor(
             List<DialogueScriptDefinition> newDialogueScripts)
         {
             dialogueScripts = newDialogueScripts;
+            contentVersion = 3;
         }
 #endif
     }

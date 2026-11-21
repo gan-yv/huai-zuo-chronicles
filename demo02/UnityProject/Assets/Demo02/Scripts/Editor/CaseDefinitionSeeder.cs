@@ -24,14 +24,15 @@ namespace Demo02.Editor
             );
             if (existing != null)
             {
-                if (existing.DialogueScripts.Count == 0)
+                if (existing.DialogueScripts.Count == 0
+                    || existing.ContentVersion < 3)
                 {
                     existing.ConfigureDialogueScriptsForEditor(
                         CreateDialogueScripts()
                     );
                     EditorUtility.SetDirty(existing);
                     AssetDatabase.SaveAssets();
-                    Debug.Log("Added dialogue scripts to existing chapter asset.");
+                    Debug.Log("Upgraded chapter asset to content version 3.");
                 }
                 return existing;
             }
@@ -552,6 +553,126 @@ namespace Demo02.Editor
                             + "我都会记得阿砚曾经在这里。"
                         )
                     }
+                ),
+                Script(
+                    "teahouse-epilogue-preserve-public",
+                    "E  向掌柜打听盐引旗",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve),
+                        PlanCondition(EvidencePlan.PublicRecord)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "茶肆掌柜",
+                            "今早盐引旗一升，整条街都在谈七车盐。"
+                            + "官署的人来过又走了，这回他们没法只当没听见。"
+                        ),
+                        Line(
+                            "茶肆掌柜",
+                            "沈砚那张靠窗的桌子我留着。"
+                            + "等茶客再提起他的名字，我不会再忘。"
+                        )
+                    },
+                    npcId: "teahouse"
+                ),
+                Script(
+                    "teahouse-epilogue-preserve-private",
+                    "E  向掌柜打听盐引旗",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve),
+                        PlanCondition(EvidencePlan.PrivateProtection)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "茶肆掌柜",
+                            "盐引旗升起来了，可你知道账页还在暗处。"
+                            + "我会让伙计收好茶炉，真有人来问，这里什么都没看见。"
+                        ),
+                        Line(
+                            "茶肆掌柜",
+                            "沈砚的名字回来了。只要名字还在，"
+                            + "就总有能说出口的一天。"
+                        )
+                    },
+                    npcId: "teahouse"
+                ),
+                Script(
+                    "teahouse-epilogue-seal",
+                    "E  与掌柜告别",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Seal)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "茶肆掌柜",
+                            "街口安静得像什么都没发生过。"
+                            + "只是那张靠窗的桌子，我还是不敢让别人坐。"
+                        )
+                    },
+                    npcId: "teahouse"
+                ),
+                Script(
+                    "teahouse-rumor-seal",
+                    "E  询问初七夜里的盐车",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.Investigate),
+                        StageBeforeCondition(ChapterStage.Resolved),
+                        HasEvidenceCondition("official-seal")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "茶肆掌柜",
+                            "你找到那枚封条了？初五傍晚他们封的是空仓，"
+                            + "门口连一辆盐车都没有。"
+                        ),
+                        Line(
+                            "茶肆掌柜",
+                            "初七后半夜，七辆车才从后巷过去。"
+                            + "沈砚那晚坐在这里，反复数七张账页。"
+                            + "他走时脸白得厉害。"
+                        ),
+                        Line(
+                            "茶肆掌柜",
+                            "封条比盐车早两天，这账怎么算都不对。"
+                            + "你若还能找到沈砚，替我把这壶凉茶热上。"
+                        )
+                    },
+                    npcId: "teahouse"
+                ),
+                Script(
+                    "teahouse-early",
+                    "E  与茶肆掌柜交谈",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.Arrival),
+                        StageBeforeCondition(ChapterStage.ReviewEvidence)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "茶肆掌柜",
+                            "昨夜打烊前，沈砚坐在靠窗那张桌，"
+                            + "反复数七张账页。他走时把一枚盐引铜钱落在桌上。"
+                        ),
+                        Line(
+                            "茶肆掌柜",
+                            "今早伙计问我铜钱是哪来的。"
+                            + "我竟一时想不起沈砚是谁。茶凉了还能续，"
+                            + "人从纸上消失，可就续不回来了。"
+                        )
+                    },
+                    npcId: "teahouse"
                 )
             };
         }
@@ -562,12 +683,13 @@ namespace Demo02.Editor
             DialogueConditionDefinition[] conditions,
             DialogueLine[] lines,
             DialogueChoiceDefinition[] choices = null,
-            DialogueEffectDefinition[] completionEffects = null)
+            DialogueEffectDefinition[] completionEffects = null,
+            string npcId = "shenbo")
         {
             return new DialogueScriptDefinition
             {
                 Id = id,
-                NpcId = "shenbo",
+                NpcId = npcId,
                 InteractionPrompt = prompt,
                 Conditions = new List<DialogueConditionDefinition>(conditions),
                 Lines = new List<DialogueLine>(lines),
@@ -703,6 +825,36 @@ namespace Demo02.Editor
             {
                 Type = DialogueConditionType.StageEquals,
                 Stage = stage
+            };
+        }
+
+        private static DialogueConditionDefinition StageAtLeastCondition(
+            ChapterStage stage)
+        {
+            return new DialogueConditionDefinition
+            {
+                Type = DialogueConditionType.StageAtLeast,
+                Stage = stage
+            };
+        }
+
+        private static DialogueConditionDefinition StageBeforeCondition(
+            ChapterStage stage)
+        {
+            return new DialogueConditionDefinition
+            {
+                Type = DialogueConditionType.StageBefore,
+                Stage = stage
+            };
+        }
+
+        private static DialogueConditionDefinition HasEvidenceCondition(
+            string evidenceId)
+        {
+            return new DialogueConditionDefinition
+            {
+                Type = DialogueConditionType.HasEvidence,
+                EvidenceId = evidenceId
             };
         }
 

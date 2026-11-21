@@ -129,9 +129,31 @@ namespace Demo02.Editor
                 );
             }
 
+            DialogueScriptDefinition teahouseEarly =
+                DialogueContentRuntime.Find(content, "teahouse", state);
+            if (teahouseEarly == null
+                || teahouseEarly.Id != "teahouse-early")
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "The data-configured teahouse event did not match early game."
+                );
+            }
+
             state.CollectClue("old-street-sign");
             state.CollectClue("salt-ledger");
             state.CollectClue("official-seal");
+            DialogueScriptDefinition teahouseRumor =
+                DialogueContentRuntime.Find(content, "teahouse", state);
+            if (teahouseRumor == null
+                || teahouseRumor.Id != "teahouse-rumor-seal")
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "The teahouse event did not react to the official seal."
+                );
+            }
+
             state.SetEvidencePlan(EvidencePlan.PublicRecord);
             DialogueScriptDefinition review = DialogueContentRuntime.Find(
                 content,
@@ -2077,18 +2099,7 @@ namespace Demo02.Editor
             );
             NpcDialogueInteractable teaDialogue =
                 teaMaster.AddComponent<NpcDialogueInteractable>();
-            teaDialogue.Configure(
-                "茶肆掌柜",
-                "E  与茶肆掌柜交谈",
-                new DialogueLine(
-                    "茶肆掌柜",
-                    "昨夜打烊前，沈砚坐在靠窗那张桌，反复数七张账页。他走时把一枚盐引铜钱落在桌上。"
-                ),
-                new DialogueLine(
-                    "茶肆掌柜",
-                    "今早伙计问我铜钱是哪来的。我竟一时想不起沈砚是谁。茶凉了还能续，人从纸上消失，可就续不回来了。"
-                )
-            );
+            teaDialogue.ConfigureData("teahouse");
 
             BuildCaiyiStreet(root, dongguanSpawn.transform);
         }

@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.12.0
+# Huai-Zuo Chronicles v1.13.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.12.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.13.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.12.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.13.0>
 
 解压后运行：
 
@@ -25,13 +25,15 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-C0EA5BB1EFD1C099B6F92623859A879D0F41A91FDB499E1B2CAD0170F490B997
+2EAFF6A19531BDA92BE92EEBB3632DDFFDC63EBF7641DC475CB9639E74D19B56
 ```
 
 ## 已包含
 
 - 第一章《消失的盐引》的完整剧情与玩法闭环。
 - 沈伯全部对白、提示、选择条件和剧情结果由案件资产驱动。
+- 东关街茶肆掌柜新增状态事件，会根据调查进度、证据和结局改变对白。
+- 案件资产加入内容版本与自动迁移，并固定条件枚举编号以兼容旧资产。
 - 对白支持章节、立场、证据去向和结局条件，并自动匹配对应脚本。
 - 对白选项可设置剧情状态，对白结束效果可推进章节阶段。
 - 新增 `CaseDefinition` 案件内容资产，线索、证词、目标和推理文本可直接在 Inspector 编辑。
@@ -119,3 +121,4 @@ C0EA5BB1EFD1C099B6F92623859A879D0F41A91FDB499E1B2CAD0170F490B997
 - 错误组合、正确答案、旧存档推断和推理状态读档恢复均通过自动验收。
 - 案件内容资产已在干净工程中自动生成、校验并绑定到重建场景。
 - 对白条件、立场分支、选项效果、完成效果和章节推进自动回归通过。
+- 茶肆阶段事件、封条证据触发、结局分支和资产升级自动回归通过。

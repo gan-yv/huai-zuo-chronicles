@@ -6,11 +6,14 @@ namespace Demo02.Narrative
 {
     public enum DialogueConditionType
     {
-        Always,
-        StageEquals,
-        StanceEquals,
-        EvidencePlanEquals,
-        ConclusionEquals
+        Always = 0,
+        StageEquals = 1,
+        StanceEquals = 2,
+        EvidencePlanEquals = 3,
+        ConclusionEquals = 4,
+        StageAtLeast = 5,
+        StageBefore = 6,
+        HasEvidence = 7
     }
 
     public enum DialogueEffectType
@@ -30,6 +33,7 @@ namespace Demo02.Narrative
         public WitnessStance Stance;
         public EvidencePlan EvidencePlan;
         public ConclusionChoice Conclusion;
+        public string EvidenceId;
         public bool Negate;
     }
 
@@ -219,6 +223,12 @@ namespace Demo02.Narrative
                 DialogueConditionType.Always => true,
                 DialogueConditionType.StageEquals =>
                     state.Stage == condition.Stage,
+                DialogueConditionType.StageAtLeast =>
+                    state.Stage >= condition.Stage,
+                DialogueConditionType.StageBefore =>
+                    state.Stage < condition.Stage,
+                DialogueConditionType.HasEvidence =>
+                    state.HasClue(condition.EvidenceId),
                 DialogueConditionType.StanceEquals =>
                     state.Stance == condition.Stance,
                 DialogueConditionType.EvidencePlanEquals =>
