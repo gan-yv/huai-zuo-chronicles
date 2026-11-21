@@ -12,6 +12,7 @@ namespace Demo02.Core
         private InvestigationState investigationState;
         private PlayerPartyController party;
         private bool isPaused;
+        private bool isEndingFrozen;
 
         private void Awake()
         {
@@ -31,6 +32,28 @@ namespace Demo02.Core
                 return;
             }
 
+            if (IsEnding)
+            {
+                if (!isEndingFrozen)
+                {
+                    isEndingFrozen = true;
+                    Time.timeScale = 0f;
+                }
+
+                if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+                {
+                    RestartCurrentScene();
+                }
+
+                return;
+            }
+
+            if (isEndingFrozen)
+            {
+                isEndingFrozen = false;
+                Time.timeScale = 1f;
+            }
+
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 TogglePause();
@@ -41,25 +64,6 @@ namespace Demo02.Core
             {
                 return;
             }
-
-            bool canRestart = (investigationState != null && investigationState.IsConclusionReached)
-                || (party != null && party.IsPartyDefeated);
-            if (!canRestart
-                || Keyboard.current == null
-                || !Keyboard.current.rKey.wasPressedThisFrame)
-            {
-                return;
-            }
-
-            Scene activeScene = SceneManager.GetActiveScene();
-            if (activeScene.buildIndex >= 0)
-            {
-                SceneManager.LoadScene(activeScene.buildIndex);
-            }
-            else
-            {
-                SceneManager.LoadScene(SceneNames.Guangling);
-            }
         }
 
         private void OnDisable()
@@ -69,7 +73,7 @@ namespace Demo02.Core
 
         private void OnGUI()
         {
-            if (!isPaused)
+            if (!isPaused && !IsEnding)
             {
                 return;
             }
@@ -85,28 +89,73 @@ namespace Demo02.Core
                 fontSize = 30,
                 fontStyle = FontStyle.Bold
             };
+            GUIStyle bodyStyle = new GUIStyle(GUI.skin.label)
+            {
+                alignment = TextAnchor.MiddleCenter,
+                fontSize = 18,
+                wordWrap = true
+            };
+
+            string title;
+            string body;
+            if (IsEnding)
+            {
+                if (investigationState != null
+                    && investigationState.SelectedConclusion == ConclusionChoice.Preserve)
+                {
+                    title = "结局：旧街被保留";
+                    body = "居民重新出现在城市记录中。官府、盐商与旧街之间的冲突才刚刚开始。";
+                }
+                else if (investigationState != null
+                    && investigationState.SelectedConclusion == ConclusionChoice.Seal)
+                {
+                    title = "结局：旧街被封存";
+                    body = "官方记录重新稳定，但旧街居民从此从城市生活中消失。";
+                }
+                else
+                {
+                    title = "队伍倒下";
+                    body = "当前行动失败，可以从最近检查点重新开始。";
+                }
+            }
+            else
+            {
+                title = "游戏暂停";
+                body = "世界已经停止，选择接下来的行动。";
+            }
+
             GUI.Label(
                 new Rect(0f, Screen.height * 0.25f, Screen.width, 54f),
-                "游戏暂停",
+                title,
                 titleStyle
+            );
+            GUI.Label(
+                new Rect(Screen.width * 0.2f, Screen.height * 0.34f, Screen.width * 0.6f, 64f),
+                body,
+                bodyStyle
             );
 
             const float width = 280f;
             float x = (Screen.width - width) * 0.5f;
-            float y = Screen.height * 0.4f;
-            if (GUI.Button(new Rect(x, y, width, 48f), "继续游戏"))
+            float y = Screen.height * 0.46f;
+            if (!IsEnding && GUI.Button(new Rect(x, y, width, 48f), "继续游戏"))
             {
                 TogglePause();
             }
-            if (GUI.Button(new Rect(x, y + 64f, width, 48f), "重新开始"))
+            float restartY = IsEnding ? y : y + 64f;
+            if (GUI.Button(new Rect(x, restartY, width, 48f), "重新开始"))
             {
                 RestartCurrentScene();
             }
-            if (GUI.Button(new Rect(x, y + 128f, width, 48f), "返回标题"))
+            if (GUI.Button(new Rect(x, restartY + 64f, width, 48f), "返回标题"))
             {
                 ReturnToTitle();
             }
         }
+
+        private bool IsEnding =>
+            (investigationState != null && investigationState.IsConclusionReached)
+            || (party != null && party.IsPartyDefeated);
 
         public void TogglePause()
         {

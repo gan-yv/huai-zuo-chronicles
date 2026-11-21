@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v0.17.0
+# Huai-Zuo Chronicles v0.18.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.17.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.18.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.17.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.18.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-39CD90BC36D028B990DDD2C4F8D297E92AD2CC8C8C22591FA7E57FB89AFF5EE1
+84A2447609E815E2BC07EE807C17A9E8A9ACD5517F599F13D2B023A0DD236907
 ```
 
 ## 已包含
@@ -39,6 +39,10 @@ SHA256：
 - 可选战斗、闪避和敌人攻击预警。
 - 两个结局结果。
 - 自动存档、F5 保存、F9 读取。
+- 新游戏开场旁白与目标说明。
+- 精简 HUD，常驻操作说明改为 F1 帮助。
+- 完整结局页和队伍失败页。
+- 世界地图与街内快速传送。
 
 ## 已知问题
 

@@ -484,6 +484,7 @@ namespace Demo02.Editor
             EncounterState encounterState = gameSession.AddComponent<EncounterState>();
             encounterState.Configure(enemies);
             gameSession.AddComponent<DialogueController>();
+            gameSession.AddComponent<OpeningSequence>();
             gameSession.AddComponent<ObjectiveDisplay>();
             gameSession.AddComponent<QuestNavigationHud>();
             gameSession.AddComponent<WorldMapController>();

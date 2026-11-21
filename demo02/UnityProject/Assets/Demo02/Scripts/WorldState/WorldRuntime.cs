@@ -19,6 +19,7 @@ namespace Demo02.WorldState
         public string CurrentAreaId { get; private set; }
         public string CurrentAreaName { get; private set; }
         public WorldSaveData PendingSave { get; private set; }
+        public bool ShouldShowOpening { get; private set; }
 
         private void Awake()
         {
@@ -66,6 +67,19 @@ namespace Demo02.WorldState
         {
             CurrentAreaId = areaId;
             CurrentAreaName = displayName;
+        }
+
+        public void BeginNewSession()
+        {
+            ShouldShowOpening = true;
+            PendingSave = null;
+        }
+
+        public bool ConsumeOpeningRequest()
+        {
+            bool shouldShow = ShouldShowOpening;
+            ShouldShowOpening = false;
+            return shouldShow;
         }
 
         public void QueueSaveLoad(WorldSaveData saveData)

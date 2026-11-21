@@ -85,7 +85,7 @@ namespace Demo02.Core
 
         private static void StartGame()
         {
-            WorldRuntime.Instance?.ClearPendingSave();
+            WorldRuntime.Instance?.BeginNewSession();
             WorldRuntime.Instance?.SetCurrentArea("official-street", "官署前街");
             if (WorldRuntime.Instance != null)
             {

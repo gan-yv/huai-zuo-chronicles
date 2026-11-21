@@ -2,6 +2,7 @@ using Demo02.Combat;
 using Demo02.Player;
 using Demo02.WorldState;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Demo02.UI
 {
@@ -11,6 +12,7 @@ namespace Demo02.UI
         private EncounterState encounterState;
         private TimeLayerController timeLayerController;
         private WorldRuntime worldRuntime;
+        private bool showHelp;
 
         private void Awake()
         {
@@ -20,6 +22,14 @@ namespace Demo02.UI
             worldRuntime = WorldRuntime.Instance != null
                 ? WorldRuntime.Instance
                 : FindAnyObjectByType<WorldRuntime>();
+        }
+
+        private void Update()
+        {
+            if (Keyboard.current != null && Keyboard.current.f1Key.wasPressedThisFrame)
+            {
+                showHelp = !showHelp;
+            }
         }
 
         private void OnGUI()
@@ -42,16 +52,14 @@ namespace Demo02.UI
                 fontSize = 16
             };
 
-            GUI.Label(
-                new Rect(Screen.width - 384f, 84f, 360f, 30f),
-                $"敌人：{aliveEnemies}    Tab 切换角色",
-                style
-            );
-            GUI.Label(
-                new Rect(Screen.width - 484f, Screen.height - 42f, 460f, 30f),
-                "WASD 移动 | Shift 奔跑 | Ctrl 闪避 | M 世界地图 | Q 时间层 | Tab 切换角色",
-                style
-            );
+            if (aliveEnemies > 0)
+            {
+                GUI.Label(
+                    new Rect(Screen.width - 384f, 84f, 360f, 30f),
+                    $"附近威胁：{aliveEnemies}",
+                    style
+                );
+            }
 
             if (timeLayerController != null)
             {
@@ -83,15 +91,31 @@ namespace Demo02.UI
 
             DrawEnemyHealthBars();
 
-            if (party != null && party.IsPartyDefeated)
+            if (GUI.Button(
+                new Rect(Screen.width - 116f, Screen.height - 42f, 92f, 28f),
+                "F1 操作"
+            ))
             {
+                showHelp = !showHelp;
+            }
+
+            if (showHelp)
+            {
+                float width = Mathf.Min(640f, Screen.width - 60f);
                 GUI.Box(
-                    new Rect((Screen.width - 420f) * 0.5f, Screen.height * 0.35f, 420f, 82f),
-                    "队伍倒下\n按 R 重新开始",
+                    new Rect((Screen.width - width) * 0.5f, Screen.height * 0.2f, width, 360f),
+                    "操作说明\n\n" +
+                    "WASD 移动    Shift 奔跑    Ctrl 闪避    Space 跳跃\n" +
+                    "鼠标左键 攻击    按住鼠标右键 旋转镜头\n" +
+                    "E 调查/对话/修复    Tab 切换角色    Q 切换时间层\n" +
+                    "M 世界地图    Esc 暂停    F5 保存    F9 读取\n" +
+                    "R 在结局或队伍倒下后重新开始\n\n" +
+                    "按 F1 关闭",
                     new GUIStyle(GUI.skin.box)
                     {
                         alignment = TextAnchor.MiddleCenter,
-                        fontSize = 22
+                        fontSize = 17,
+                        wordWrap = true
                     }
                 );
             }

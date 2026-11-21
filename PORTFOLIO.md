@@ -22,6 +22,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 街内传送与世界地图快速旅行。
 - 可选战斗、攻击预警和闪避无敌帧。
 - JSON 存档、自动检查点和标题界面继续游戏。
+- 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
 - 两个街道结局状态与重新开始流程。
 
 ## 运行
@@ -35,10 +36,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.17.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.18.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.17.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.18.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
