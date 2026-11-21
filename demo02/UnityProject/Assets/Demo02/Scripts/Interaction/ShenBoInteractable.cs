@@ -242,7 +242,7 @@ namespace Demo02.Interaction
                 ),
                 new DialogueLine(
                     "主角",
-                    "那是旧时层留下的影子。按 Q 在现世与旧时之间切换，找到三处漂移的时间锚点。"
+                    "那是旧时层留下的影子。门牌上写着“西仓、东验、中册”。按这个顺序稳定锚点，错序会让已经稳定的部分重新漂移。"
                 )
             }, cameraFocus: transform);
         }

@@ -114,6 +114,18 @@ namespace Demo02.UI
         private TimeAnchor FindUnstabilizedAnchor()
         {
             TimeAnchor[] anchors = FindObjectsByType<TimeAnchor>(FindObjectsInactive.Exclude);
+            string expectedId = TimeAnchorPuzzleRules.GetExpectedId(
+                investigationState.StabilizedTimeAnchorCount
+            );
+            foreach (TimeAnchor anchor in anchors)
+            {
+                if (anchor.AnchorId == expectedId
+                    && !investigationState.HasStabilizedAnchor(anchor.AnchorId))
+                {
+                    return anchor;
+                }
+            }
+
             foreach (TimeAnchor anchor in anchors)
             {
                 if (!investigationState.HasStabilizedAnchor(anchor.AnchorId))

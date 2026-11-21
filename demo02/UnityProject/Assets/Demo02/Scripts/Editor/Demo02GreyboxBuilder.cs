@@ -126,7 +126,8 @@ namespace Demo02.Editor
                 );
             }
 
-            if (state.StabilizeTimeAnchor("chapter-anchor-1"))
+            if (state.TryStabilizeTimeAnchor("past-02", out _)
+                != TimeAnchorResult.NotReady)
             {
                 Object.DestroyImmediate(probe);
                 throw new System.InvalidOperationException(
@@ -143,9 +144,15 @@ namespace Demo02.Editor
                     "Evidence review did not unlock time anchors."
                 );
             }
-            if (!state.StabilizeTimeAnchor("chapter-anchor-1")
-                || !state.StabilizeTimeAnchor("chapter-anchor-2")
-                || !state.StabilizeTimeAnchor("chapter-anchor-3")
+            if (state.TryStabilizeTimeAnchor("present-01", out _)
+                    != TimeAnchorResult.WrongOrder
+                || state.StabilizedTimeAnchorCount != 0
+                || state.TryStabilizeTimeAnchor("past-02", out _)
+                    != TimeAnchorResult.Stabilized
+                || state.TryStabilizeTimeAnchor("present-01", out _)
+                    != TimeAnchorResult.Stabilized
+                || state.TryStabilizeTimeAnchor("present-03", out _)
+                    != TimeAnchorResult.SequenceComplete
                 || state.Stage != ChapterStage.RepairRift)
             {
                 Object.DestroyImmediate(probe);
@@ -167,7 +174,7 @@ namespace Demo02.Editor
 
             state.RestoreProgress(
                 new[] { "chapter-test-1", "chapter-test-2", "chapter-test-3" },
-                new[] { "chapter-anchor-1", "chapter-anchor-2", "chapter-anchor-3" },
+                new[] { "past-02", "present-01", "present-03" },
                 true,
                 ConclusionChoice.Seal,
                 ChapterStage.Resolved,
@@ -302,6 +309,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Chapter01_ArchitecturePolish") == null
                     || existingRoot.transform.Find("Chapter01_ChoiceConsequences") == null
                     || existingRoot.transform.Find("Chapter01_ProceduralAnimation") == null
+                    || existingRoot.transform.Find("Chapter01_TimeAnchorPuzzle") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -508,7 +516,7 @@ namespace Demo02.Editor
             oldStreetSign.Configure(
                 "old-street-sign",
                 "E  调查旧街门牌",
-                "门牌背面刮着一层旧漆。对着光能认出三个字：盐引巷。这里曾是盐船入城后的第一处验引点。"
+                "门牌背面刮着一层旧漆。对着光能认出“盐引巷”，三枚铜钉下还刻着：西仓、东验、中册。"
             );
 
             GameObject saltLedger = CreateBlock(
@@ -580,21 +588,24 @@ namespace Demo02.Editor
                 "TimeAnchor_Present_01",
                 new Vector3(2.7f, 1.2f, 5f),
                 "present-01",
-                TimeLayer.Present
+                TimeLayer.Present,
+                "东验锚点"
             );
             CreateTimeAnchor(
                 root.transform,
                 "TimeAnchor_Past_02",
                 new Vector3(-2.7f, 1.2f, 14f),
                 "past-02",
-                TimeLayer.Past
+                TimeLayer.Past,
+                "西仓锚点"
             );
             CreateTimeAnchor(
                 root.transform,
                 "TimeAnchor_Present_03",
                 new Vector3(0f, 1.2f, 22f),
                 "present-03",
-                TimeLayer.Present
+                TimeLayer.Present,
+                "中册锚点"
             );
 
             List<Combatant> enemies = new()
@@ -723,6 +734,9 @@ namespace Demo02.Editor
 
             GameObject animationMarker = new GameObject("Chapter01_ProceduralAnimation");
             animationMarker.transform.SetParent(root.transform);
+
+            GameObject puzzleMarker = new GameObject("Chapter01_TimeAnchorPuzzle");
+            puzzleMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
@@ -1959,7 +1973,8 @@ namespace Demo02.Editor
             string name,
             Vector3 position,
             string anchorId,
-            TimeLayer layer)
+            TimeLayer layer,
+            string displayName)
         {
             GameObject anchor = CreateBlock(
                 parent,
@@ -1971,7 +1986,7 @@ namespace Demo02.Editor
                     : new Color(0.78f, 0.32f, 0.92f)
             );
             anchor.AddComponent<TimeLayerVisibility>().Configure(layer);
-            anchor.AddComponent<TimeAnchor>().Configure(anchorId);
+            anchor.AddComponent<TimeAnchor>().Configure(anchorId, displayName);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Demo02.Narrative
                     $"调查盐引巷留下的记录  {state.CollectedClueCount}/{state.RequiredClueCount}",
                 ChapterStage.ReviewEvidence => "把三处记录带回旧仓，让沈伯辨认笔迹",
                 ChapterStage.StabilizeAnchors =>
-                    $"按 Q 切换时间层，稳定锚点  {state.StabilizedTimeAnchorCount}/{state.RequiredTimeAnchorCount}",
+                    $"按记录顺序稳定锚点：{TimeAnchorPuzzleRules.OrderHint}  {state.StabilizedTimeAnchorCount}/{state.RequiredTimeAnchorCount}",
                 ChapterStage.RepairRift => "前往街尾，压下被撕开的记录",
                 ChapterStage.FinalDecision => "在街尾决定盐引巷与沈砚的命运",
                 _ => "调查已经结束"
@@ -49,7 +49,7 @@ namespace Demo02.Narrative
                 ChapterStage.ReviewEvidence =>
                     "三处证据已经指向同一个夜晚。沈伯认得儿子的笔迹，下一步应让他确认账牌签名。",
                 ChapterStage.StabilizeAnchors =>
-                    "陆崇的封条比盐引巷消失早一天，说明除名是预谋。旧时层的三处锚点记录了那一夜。",
+                    "陆崇的封条比盐引巷消失早一天，说明除名是预谋。门牌背面的铜钉顺序是“西仓、东验、中册”，错序会重置锚点。",
                 ChapterStage.RepairRift =>
                     "完整证据链已经形成。街尾时缝是盐引巷被撕掉的缺口，压下它才能读取最后一页。",
                 ChapterStage.FinalDecision =>

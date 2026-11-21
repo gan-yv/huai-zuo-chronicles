@@ -36,6 +36,15 @@ namespace Demo02.Narrative
         PrivateProtection
     }
 
+    public enum TimeAnchorResult
+    {
+        Stabilized,
+        SequenceComplete,
+        AlreadyStable,
+        NotReady,
+        WrongOrder
+    }
+
     public sealed class InvestigationState : MonoBehaviour
     {
         [SerializeField, Min(1)] private int requiredClueCount = 3;
@@ -46,6 +55,7 @@ namespace Demo02.Narrative
         private readonly HashSet<string> discoveredEchoIds = new();
 
         public event Action<int, int> ClueCountChanged;
+        public event Action<int, int> AnchorCountChanged;
         public event Action<ChapterStage> StageChanged;
         public ChapterStage Stage { get; private set; } = ChapterStage.Arrival;
         public WitnessStance Stance { get; private set; } = WitnessStance.Undecided;
@@ -107,22 +117,47 @@ namespace Demo02.Narrative
             return true;
         }
 
-        public bool StabilizeTimeAnchor(string anchorId)
+        public TimeAnchorResult TryStabilizeTimeAnchor(
+            string anchorId,
+            out string expectedAnchorId)
         {
+            expectedAnchorId = TimeAnchorPuzzleRules.GetExpectedId(
+                StabilizedTimeAnchorCount
+            );
             if (string.IsNullOrWhiteSpace(anchorId)
                 || !HasReviewedEvidence
-                || !HasAllClues
-                || !stabilizedTimeAnchorIds.Add(anchorId))
+                || !HasAllClues)
             {
-                return false;
+                return TimeAnchorResult.NotReady;
             }
 
+            if (HasStabilizedAnchor(anchorId))
+            {
+                return TimeAnchorResult.AlreadyStable;
+            }
+
+            if (anchorId != expectedAnchorId)
+            {
+                stabilizedTimeAnchorIds.Clear();
+                AnchorCountChanged?.Invoke(
+                    StabilizedTimeAnchorCount,
+                    requiredTimeAnchorCount
+                );
+                return TimeAnchorResult.WrongOrder;
+            }
+
+            stabilizedTimeAnchorIds.Add(anchorId);
+            AnchorCountChanged?.Invoke(
+                StabilizedTimeAnchorCount,
+                requiredTimeAnchorCount
+            );
             if (HasAllTimeAnchors)
             {
                 SetStage(ChapterStage.RepairRift);
+                return TimeAnchorResult.SequenceComplete;
             }
 
-            return true;
+            return TimeAnchorResult.Stabilized;
         }
 
         public bool CompleteRepair()
@@ -257,6 +292,10 @@ namespace Demo02.Narrative
             }
 
             ClueCountChanged?.Invoke(CollectedClueCount, requiredClueCount);
+            AnchorCountChanged?.Invoke(
+                StabilizedTimeAnchorCount,
+                requiredTimeAnchorCount
+            );
             StageChanged?.Invoke(Stage);
         }
 
