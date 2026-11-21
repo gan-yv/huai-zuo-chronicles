@@ -230,29 +230,66 @@ namespace Demo02.Editor
             GameObject root = new GameObject(RootName);
             SceneManager.MoveGameObjectToScene(root, scene);
 
-            GameObject ground = CreateBlock(root.transform, "Ground", new Vector3(0f, -0.5f, 5f), new Vector3(16f, 1f, 54f));
+            GameObject ground = CreateBlock(
+                root.transform,
+                "Ground",
+                new Vector3(0f, -0.5f, 5f),
+                new Vector3(16f, 1f, 54f),
+                new Color(0.55f, 0.52f, 0.46f)
+            );
             ground.isStatic = true;
 
             float[] buildingZPositions = { -14f, -4f, 6f, 16f, 26f };
             foreach (float z in buildingZPositions)
             {
-                GameObject left = CreateBlock(root.transform, $"LeftBuilding_{z:0}", new Vector3(-7f, 3f, z), new Vector3(6f, 6f, 8f));
-                GameObject right = CreateBlock(root.transform, $"RightBuilding_{z:0}", new Vector3(7f, 3f, z), new Vector3(6f, 6f, 8f));
+                GameObject left = CreateBlock(
+                    root.transform,
+                    $"LeftBuilding_{z:0}",
+                    new Vector3(-7f, 3f, z),
+                    new Vector3(6f, 6f, 8f),
+                    new Color(0.23f, 0.28f, 0.34f)
+                );
+                GameObject right = CreateBlock(
+                    root.transform,
+                    $"RightBuilding_{z:0}",
+                    new Vector3(7f, 3f, z),
+                    new Vector3(6f, 6f, 8f),
+                    new Color(0.3f, 0.27f, 0.32f)
+                );
                 left.isStatic = true;
                 right.isStatic = true;
             }
 
-            GameObject endWall = CreateBlock(root.transform, "EndWall", new Vector3(0f, 2f, 33f), new Vector3(14f, 4f, 2f));
+            GameObject endWall = CreateBlock(
+                root.transform,
+                "EndWall",
+                new Vector3(0f, 2f, 33f),
+                new Vector3(14f, 4f, 2f),
+                new Color(0.36f, 0.3f, 0.28f)
+            );
             endWall.isStatic = true;
 
-            CreateBlock(root.transform, "Crate_A", new Vector3(2.5f, 0.75f, -2f), new Vector3(1.5f, 1.5f, 1.5f));
-            CreateBlock(root.transform, "Crate_B", new Vector3(-2.5f, 1f, 14f), new Vector3(2f, 2f, 2f));
+            CreateBlock(
+                root.transform,
+                "Crate_A",
+                new Vector3(2.5f, 0.75f, -2f),
+                new Vector3(1.5f, 1.5f, 1.5f),
+                new Color(0.45f, 0.3f, 0.17f)
+            );
+            CreateBlock(
+                root.transform,
+                "Crate_B",
+                new Vector3(-2.5f, 1f, 14f),
+                new Vector3(2f, 2f, 2f),
+                new Color(0.45f, 0.3f, 0.17f)
+            );
 
             GameObject player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
             player.name = "PlayerPlaceholder";
             player.transform.SetParent(root.transform);
             player.transform.position = new Vector3(0f, 1f, -10f);
             Object.DestroyImmediate(player.GetComponent<CapsuleCollider>());
+            player.AddComponent<ColorTint>().Configure(new Color(0.25f, 0.55f, 0.9f));
             player.AddComponent<CharacterController>();
             player.AddComponent<ThirdPersonController>();
             player.AddComponent<PlayerInteractor>();
@@ -272,6 +309,7 @@ namespace Demo02.Editor
             partner.transform.SetParent(root.transform);
             partner.transform.position = new Vector3(-1.6f, 1f, -11.5f);
             Object.DestroyImmediate(partner.GetComponent<CapsuleCollider>());
+            partner.AddComponent<ColorTint>().Configure(new Color(0.3f, 0.75f, 0.55f));
             partner.AddComponent<CharacterController>();
             ThirdPersonController partnerController = partner.AddComponent<ThirdPersonController>();
             partnerController.enabled = false;
@@ -285,6 +323,7 @@ namespace Demo02.Editor
             worker.name = "NPC_WarehouseWorker";
             worker.transform.SetParent(root.transform);
             worker.transform.position = new Vector3(-4.7f, 1f, 1f);
+            worker.AddComponent<ColorTint>().Configure(new Color(0.85f, 0.5f, 0.18f));
             NpcDialogueInteractable workerDialogue = worker.AddComponent<NpcDialogueInteractable>();
             workerDialogue.Configure(
                 "盐仓搬运工",
@@ -303,7 +342,8 @@ namespace Demo02.Editor
                 root.transform,
                 "Clue_OldStreetSign",
                 new Vector3(2.7f, 1.2f, -6f),
-                new Vector3(2.2f, 1.8f, 0.25f)
+                new Vector3(2.2f, 1.8f, 0.25f),
+                new Color(0.95f, 0.72f, 0.25f)
             );
             clue.transform.rotation = Quaternion.Euler(0f, -20f, 0f);
             ClueInteractable oldStreetSign = clue.AddComponent<ClueInteractable>();
@@ -317,7 +357,8 @@ namespace Demo02.Editor
                 root.transform,
                 "Clue_SaltLedger",
                 new Vector3(-2.7f, 1.1f, 2f),
-                new Vector3(1.6f, 1.1f, 0.25f)
+                new Vector3(1.6f, 1.1f, 0.25f),
+                new Color(0.82f, 0.56f, 0.25f)
             );
             saltLedger.transform.rotation = Quaternion.Euler(0f, 20f, 0f);
             ClueInteractable ledger = saltLedger.AddComponent<ClueInteractable>();
@@ -331,7 +372,8 @@ namespace Demo02.Editor
                 root.transform,
                 "Clue_OfficialSeal",
                 new Vector3(2.7f, 1.2f, 18f),
-                new Vector3(1.4f, 1.8f, 0.25f)
+                new Vector3(1.4f, 1.8f, 0.25f),
+                new Color(0.82f, 0.28f, 0.2f)
             );
             officialSeal.transform.rotation = Quaternion.Euler(0f, -20f, 0f);
             ClueInteractable seal = officialSeal.AddComponent<ClueInteractable>();
@@ -345,7 +387,8 @@ namespace Demo02.Editor
                 root.transform,
                 "RepairSite_TimeRift",
                 new Vector3(0f, 1.5f, 29f),
-                new Vector3(2f, 3f, 0.6f)
+                new Vector3(2f, 3f, 0.6f),
+                new Color(0.58f, 0.22f, 0.82f)
             );
             repairSite.AddComponent<RepairSite>();
 
@@ -381,7 +424,8 @@ namespace Demo02.Editor
                 root.transform,
                 "Outcome_OldStreetPreserved",
                 new Vector3(0f, 0.15f, 30.5f),
-                new Vector3(9f, 0.3f, 1.4f)
+                new Vector3(9f, 0.3f, 1.4f),
+                new Color(0.28f, 0.7f, 0.42f)
             );
             preserveOutcome.SetActive(false);
 
@@ -389,7 +433,8 @@ namespace Demo02.Editor
                 root.transform,
                 "Outcome_OldStreetSealed",
                 new Vector3(0f, 2f, 31f),
-                new Vector3(14f, 4f, 0.5f)
+                new Vector3(14f, 4f, 0.5f),
+                new Color(0.6f, 0.18f, 0.18f)
             );
             sealOutcome.SetActive(false);
 
@@ -397,7 +442,8 @@ namespace Demo02.Editor
                 root.transform,
                 "Choice_Preserve",
                 new Vector3(-3f, 1.1f, 26f),
-                new Vector3(1.3f, 2.2f, 0.3f)
+                new Vector3(1.3f, 2.2f, 0.3f),
+                new Color(0.86f, 0.72f, 0.3f)
             );
             preserveChoice.AddComponent<EndingChoiceInteractable>().Configure(
                 ConclusionChoice.Preserve,
@@ -409,7 +455,8 @@ namespace Demo02.Editor
                 root.transform,
                 "Choice_Seal",
                 new Vector3(3f, 1.1f, 26f),
-                new Vector3(1.3f, 2.2f, 0.3f)
+                new Vector3(1.3f, 2.2f, 0.3f),
+                new Color(0.55f, 0.58f, 0.62f)
             );
             sealChoice.AddComponent<EndingChoiceInteractable>().Configure(
                 ConclusionChoice.Seal,
@@ -478,19 +525,35 @@ namespace Demo02.Editor
             }
         }
 
-        private static GameObject CreateBlock(Transform parent, string name, Vector3 position, Vector3 scale)
+        private static GameObject CreateBlock(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Vector3 scale,
+            Color? tint = null)
         {
             GameObject block = GameObject.CreatePrimitive(PrimitiveType.Cube);
             block.name = name;
             block.transform.SetParent(parent);
             block.transform.position = position;
             block.transform.localScale = scale;
+            if (tint.HasValue)
+            {
+                block.AddComponent<ColorTint>().Configure(tint.Value);
+            }
+
             return block;
         }
 
         private static Combatant CreateEnemy(Transform parent, string name, Vector3 position)
         {
-            GameObject enemy = CreateBlock(parent, name, position, new Vector3(0.9f, 1.8f, 0.9f));
+            GameObject enemy = CreateBlock(
+                parent,
+                name,
+                position,
+                new Vector3(0.9f, 1.8f, 0.9f),
+                new Color(0.68f, 0.16f, 0.16f)
+            );
             Object.DestroyImmediate(enemy.GetComponent<BoxCollider>());
             enemy.AddComponent<CharacterController>();
             Combatant combatant = enemy.AddComponent<Combatant>();
@@ -533,7 +596,10 @@ namespace Demo02.Editor
                 parent,
                 name,
                 position,
-                new Vector3(1.1f, 2.4f, 0.35f)
+                new Vector3(1.1f, 2.4f, 0.35f),
+                layer == TimeLayer.Present
+                    ? new Color(0.2f, 0.78f, 0.88f)
+                    : new Color(0.78f, 0.32f, 0.92f)
             );
             anchor.AddComponent<TimeLayerVisibility>().Configure(layer);
             anchor.AddComponent<TimeAnchor>().Configure(anchorId);

@@ -19,9 +19,11 @@ namespace Demo02.Player
         [SerializeField, Min(0f)] private float mouseSensitivity = 0.12f;
         [SerializeField] private float minPitch = -20f;
         [SerializeField] private float maxPitch = 65f;
+        [SerializeField, Min(0f)] private float cameraCollisionRadius = 0.2f;
 
         private CharacterController motor;
         private Transform cameraTransform;
+        private readonly RaycastHit[] cameraHits = new RaycastHit[12];
         private float cameraYaw;
         private float cameraPitch = 18f;
         private float verticalVelocity;
@@ -158,8 +160,33 @@ namespace Demo02.Player
             Vector3 focusPoint = transform.position + Vector3.up * cameraHeight;
             Quaternion orbitRotation = Quaternion.Euler(cameraPitch, cameraYaw, 0f);
             Vector3 offset = orbitRotation * new Vector3(0f, 0f, -cameraDistance);
+            Vector3 direction = offset.normalized;
+            float resolvedDistance = cameraDistance;
+            int hitCount = Physics.SphereCastNonAlloc(
+                focusPoint,
+                cameraCollisionRadius,
+                direction,
+                cameraHits,
+                cameraDistance,
+                ~0,
+                QueryTriggerInteraction.Ignore
+            );
 
-            cameraTransform.position = focusPoint + offset;
+            for (int index = 0; index < hitCount; index++)
+            {
+                Collider hitCollider = cameraHits[index].collider;
+                if (hitCollider == null || hitCollider.transform.IsChildOf(transform))
+                {
+                    continue;
+                }
+
+                resolvedDistance = Mathf.Min(
+                    resolvedDistance,
+                    Mathf.Max(0.5f, cameraHits[index].distance - 0.15f)
+                );
+            }
+
+            cameraTransform.position = focusPoint + direction * resolvedDistance;
             cameraTransform.LookAt(focusPoint + Vector3.up * 0.2f, Vector3.up);
         }
     }
