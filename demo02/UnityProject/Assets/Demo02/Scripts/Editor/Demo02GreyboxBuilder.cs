@@ -191,6 +191,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("TimeAnchor_Present_01") == null
                     || existingRoot.transform.Find("Area_OfficialStreet") == null
                     || existingRoot.transform.Find("Area_WarehouseCourtyard") == null
+                    || existingRoot.transform.Find("Area_WarehouseInterior") == null
                     || existingRoot.transform.Find("NPC_WarehouseWorker") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
@@ -625,13 +626,7 @@ namespace Demo02.Editor
                 new Vector3(2f, 4f, 20f),
                 new Color(0.3f, 0.27f, 0.25f)
             );
-            CreateBlock(
-                root,
-                "Warehouse_OldStorehouse",
-                new Vector3(23f, 2.5f, 9f),
-                new Vector3(10f, 5f, 7f),
-                new Color(0.28f, 0.34f, 0.36f)
-            );
+            BuildWarehouseInterior(root);
             CreateBlock(
                 root,
                 "Courtyard_Crate_A",
@@ -650,8 +645,8 @@ namespace Demo02.Editor
             CreateWorldArea(
                 root,
                 "Area_WarehouseCourtyard",
-                new Vector3(18f, 1f, 6f),
-                new Vector3(22f, 3f, 18f),
+                new Vector3(12f, 1f, 6f),
+                new Vector3(10f, 3f, 18f),
                 "warehouse-courtyard",
                 "旧仓内院"
             );
@@ -690,6 +685,113 @@ namespace Demo02.Editor
                 new DialogueLine(
                     "旧仓告示",
                     "“仓中货物，只记其来处，不记其去处。”告示右下角还有一行被刮掉的小字。"
+                )
+            );
+        }
+
+        private static void BuildWarehouseInterior(Transform root)
+        {
+            Color wallColor = new(0.28f, 0.34f, 0.36f);
+            Color woodColor = new(0.45f, 0.3f, 0.18f);
+
+            CreateBlock(
+                root,
+                "Warehouse_Floor",
+                new Vector3(23f, 0.03f, 9f),
+                new Vector3(10f, 0.12f, 7f),
+                new Color(0.38f, 0.31f, 0.23f)
+            );
+            CreateBlock(
+                root,
+                "Warehouse_NorthWall",
+                new Vector3(23f, 2.5f, 12.5f),
+                new Vector3(10f, 5f, 0.4f),
+                wallColor
+            );
+            CreateBlock(
+                root,
+                "Warehouse_SouthWall",
+                new Vector3(23f, 2.5f, 5.5f),
+                new Vector3(10f, 5f, 0.4f),
+                wallColor
+            );
+            CreateBlock(
+                root,
+                "Warehouse_EastWall",
+                new Vector3(28f, 2.5f, 9f),
+                new Vector3(0.4f, 5f, 7f),
+                wallColor
+            );
+            CreateBlock(
+                root,
+                "Warehouse_WestWall_North",
+                new Vector3(18f, 2.5f, 11.5f),
+                new Vector3(0.4f, 5f, 2.4f),
+                wallColor
+            );
+            CreateBlock(
+                root,
+                "Warehouse_WestWall_South",
+                new Vector3(18f, 2.5f, 6.2f),
+                new Vector3(0.4f, 5f, 1.6f),
+                wallColor
+            );
+            CreateBlock(
+                root,
+                "Warehouse_DoorBeam",
+                new Vector3(18f, 4.4f, 8.8f),
+                new Vector3(0.5f, 0.7f, 3f),
+                woodColor
+            );
+            CreateBlock(
+                root,
+                "Warehouse_Shelf_A",
+                new Vector3(25.5f, 1.3f, 10.8f),
+                new Vector3(3.5f, 2.6f, 0.8f),
+                woodColor
+            );
+            CreateBlock(
+                root,
+                "Warehouse_Shelf_B",
+                new Vector3(21f, 1.1f, 7f),
+                new Vector3(2.8f, 2.2f, 0.8f),
+                woodColor
+            );
+            CreateBlock(
+                root,
+                "Warehouse_Table",
+                new Vector3(23f, 0.6f, 9f),
+                new Vector3(2.4f, 0.8f, 1.4f),
+                new Color(0.5f, 0.34f, 0.2f)
+            );
+
+            CreateWorldArea(
+                root,
+                "Area_WarehouseInterior",
+                new Vector3(23f, 1f, 9f),
+                new Vector3(8f, 3f, 5.5f),
+                "warehouse-interior",
+                "旧仓室内"
+            );
+
+            GameObject ledger = CreateBlock(
+                root,
+                "Warehouse_MissingLedger",
+                new Vector3(23f, 1.12f, 9f),
+                new Vector3(1.3f, 0.16f, 0.8f),
+                new Color(0.92f, 0.7f, 0.24f)
+            );
+            NpcDialogueInteractable ledgerDialogue = ledger.AddComponent<NpcDialogueInteractable>();
+            ledgerDialogue.Configure(
+                "缺页账簿",
+                "E  调查缺页账簿",
+                new DialogueLine(
+                    "缺页账簿",
+                    "账簿中间少了整整七页。残留的装订线上，还能看出被人匆忙撕走的痕迹。"
+                ),
+                new DialogueLine(
+                    "主角",
+                    "这些页不是自然损坏。有人先改写了这里，再让整条旧街从记录里消失。"
                 )
             );
         }
