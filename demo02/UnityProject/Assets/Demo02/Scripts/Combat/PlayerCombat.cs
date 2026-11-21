@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Demo02.UI;
 
 namespace Demo02.Combat
 {
@@ -25,6 +26,12 @@ namespace Demo02.Combat
 
         private void Update()
         {
+            if (Time.timeScale <= 0f
+                || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
+            {
+                return;
+            }
+
             Mouse mouse = Mouse.current;
             if (mouse == null
                 || !mouse.leftButton.isPressed

@@ -488,6 +488,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<ObjectiveDisplay>();
             gameSession.AddComponent<QuestNavigationHud>();
             gameSession.AddComponent<WorldMapController>();
+            gameSession.AddComponent<ScreenFade>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
             party.Configure(player.transform, partner.transform);
             gameSession.AddComponent<CombatHud>();

@@ -1,5 +1,6 @@
 using Demo02.Narrative;
 using Demo02.Player;
+using Demo02.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -28,6 +29,11 @@ namespace Demo02.Core
         private void Update()
         {
             if (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+            {
+                return;
+            }
+
+            if (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
             {
                 return;
             }

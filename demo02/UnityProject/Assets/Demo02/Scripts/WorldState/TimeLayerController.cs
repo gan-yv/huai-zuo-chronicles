@@ -19,7 +19,9 @@ namespace Demo02.WorldState
 
         private void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame)
+            if (Time.timeScale > 0f
+                && Keyboard.current != null
+                && Keyboard.current.qKey.wasPressedThisFrame)
             {
                 ToggleLayer();
             }

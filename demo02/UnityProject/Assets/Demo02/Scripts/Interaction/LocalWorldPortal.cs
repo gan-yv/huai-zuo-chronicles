@@ -1,4 +1,5 @@
 using Demo02.Player;
+using Demo02.UI;
 using Demo02.WorldState;
 using UnityEngine;
 
@@ -28,12 +29,26 @@ namespace Demo02.Interaction
 
         public string Interact(PlayerInteractor interactor)
         {
-            return TeleportParty(
-                destination,
-                destinationAreaId,
-                destinationAreaName,
-                out string message
-            )
+            ScreenFade fade = FindAnyObjectByType<ScreenFade>();
+            if (fade != null)
+            {
+                if (!fade.PlayTransition(() =>
+                {
+                    TeleportParty(
+                        destination,
+                        destinationAreaId,
+                        destinationAreaName,
+                        out _
+                    );
+                }))
+                {
+                    return $"正在前往{destinationAreaName}。";
+                }
+
+                return $"正在前往{destinationAreaName}。";
+            }
+
+            return TeleportParty(destination, destinationAreaId, destinationAreaName, out string message)
                 ? message
                 : "无法找到可用的街区入口。";
         }

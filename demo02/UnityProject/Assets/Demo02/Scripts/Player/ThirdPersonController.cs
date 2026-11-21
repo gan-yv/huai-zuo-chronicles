@@ -59,6 +59,11 @@ namespace Demo02.Player
 
         private void Update()
         {
+            if (Time.timeScale <= 0f)
+            {
+                return;
+            }
+
             UpdateCameraInput();
             UpdateMovement();
         }

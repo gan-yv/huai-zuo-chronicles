@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Demo02.Narrative;
+using Demo02.UI;
 
 namespace Demo02.Interaction
 {
@@ -14,9 +15,19 @@ namespace Demo02.Interaction
         private IInteractable currentInteractable;
         private string statusMessage;
         private float statusMessageUntil;
+        private Transform highlightedTransform;
+        private Quaternion highlightedBaseRotation;
 
         private void Update()
         {
+            if (Time.timeScale <= 0f
+                || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
+            {
+                currentInteractable = null;
+                RestoreHighlight();
+                return;
+            }
+
             if (DialogueController.Instance != null
                 && (DialogueController.Instance.IsOpen
                     || DialogueController.Instance.LastClosedFrame == Time.frameCount))
@@ -26,6 +37,7 @@ namespace Demo02.Interaction
             }
 
             currentInteractable = FindClosestInteractable();
+            UpdateInteractionHighlight();
 
             bool interactPressed = Keyboard.current != null
                 && Keyboard.current.eKey.wasPressedThisFrame;
@@ -41,7 +53,8 @@ namespace Demo02.Interaction
 
         private void OnGUI()
         {
-            if (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+            if ((DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+                || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
             {
                 return;
             }
@@ -88,6 +101,42 @@ namespace Demo02.Interaction
             }
 
             return closest;
+        }
+
+        private void UpdateInteractionHighlight()
+        {
+            Transform nextTransform = (currentInteractable as Component)?.transform;
+            if (nextTransform != highlightedTransform)
+            {
+                RestoreHighlight();
+                highlightedTransform = nextTransform;
+                if (highlightedTransform != null)
+                {
+                    highlightedBaseRotation = highlightedTransform.localRotation;
+                }
+            }
+
+            if (highlightedTransform != null)
+            {
+                float angle = Mathf.Sin(Time.unscaledTime * 4f) * 3f;
+                highlightedTransform.localRotation =
+                    highlightedBaseRotation * Quaternion.Euler(0f, angle, 0f);
+            }
+        }
+
+        private void RestoreHighlight()
+        {
+            if (highlightedTransform != null)
+            {
+                highlightedTransform.localRotation = highlightedBaseRotation;
+            }
+
+            highlightedTransform = null;
+        }
+
+        private void OnDisable()
+        {
+            RestoreHighlight();
         }
 
         private static void DrawCenteredLabel(string text, float y, int fontSize)

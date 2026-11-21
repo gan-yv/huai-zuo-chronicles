@@ -56,7 +56,9 @@ namespace Demo02.Player
 
         private void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
+            if (Time.timeScale > 0f
+                && Keyboard.current != null
+                && Keyboard.current.tabKey.wasPressedThisFrame)
             {
                 SwitchCharacter();
             }

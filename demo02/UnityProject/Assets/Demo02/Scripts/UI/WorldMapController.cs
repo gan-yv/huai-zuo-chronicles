@@ -10,15 +10,53 @@ namespace Demo02.UI
         private bool isOpen;
         private float previousTimeScale = 1f;
         private string statusMessage;
+        private ScreenFade screenFade;
+
+        public static WorldMapController Instance { get; private set; }
+        public bool IsOpen => isOpen;
+
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+        }
+
+        private void Start()
+        {
+            screenFade = FindAnyObjectByType<ScreenFade>();
+        }
 
         private void Update()
         {
-            if (Keyboard.current == null || !Keyboard.current.mKey.wasPressedThisFrame)
+            if (Keyboard.current == null)
+            {
+                return;
+            }
+
+            if (isOpen && Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                ToggleMap();
+                return;
+            }
+
+            if (!Keyboard.current.mKey.wasPressedThisFrame)
             {
                 return;
             }
 
             if (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+            {
+                return;
+            }
+
+            if (!isOpen
+                && (Time.timeScale <= 0f
+                    || (screenFade != null && screenFade.IsTransitioning)))
             {
                 return;
             }
@@ -31,6 +69,14 @@ namespace Demo02.UI
             if (isOpen)
             {
                 Time.timeScale = previousTimeScale;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
             }
         }
 
@@ -77,7 +123,7 @@ namespace Demo02.UI
 
             if (GUI.Button(
                 new Rect(x, y + 232f, buttonWidth, 48f),
-                "关闭地图  [M]"
+                "关闭地图  [M / Esc]"
             ))
             {
                 ToggleMap();
@@ -106,16 +152,30 @@ namespace Demo02.UI
                 return;
             }
 
-            if (LocalWorldPortal.TeleportParty(
+            ToggleMap();
+            if (screenFade != null)
+            {
+                if (!screenFade.PlayTransition(() =>
+                {
+                    LocalWorldPortal.TeleportParty(
+                        spawn.transform,
+                        areaId,
+                        areaName,
+                        out _
+                    );
+                }))
+                {
+                    statusMessage = "当前正在转场，请稍候。";
+                }
+
+                return;
+            }
+
+            if (!LocalWorldPortal.TeleportParty(
                 spawn.transform,
                 areaId,
                 areaName,
                 out string message))
-            {
-                statusMessage = message;
-                ToggleMap();
-            }
-            else
             {
                 statusMessage = "当前没有可传送的角色。";
             }
@@ -123,12 +183,19 @@ namespace Demo02.UI
 
         private void ToggleMap()
         {
+            if (!isOpen && Time.timeScale <= 0f)
+            {
+                return;
+            }
+
             isOpen = !isOpen;
             statusMessage = string.Empty;
             if (isOpen)
             {
                 previousTimeScale = Time.timeScale;
                 Time.timeScale = 0f;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
             else
             {

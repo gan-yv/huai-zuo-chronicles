@@ -78,7 +78,7 @@ namespace Demo02.Core
 
             GUI.Label(
                 new Rect(0f, Screen.height - 60f, Screen.width, 30f),
-                "当前版本：Demo02 v0.6 灰盒开发版",
+                $"当前版本：v{Application.version} · 灰盒开发版",
                 subtitleStyle
             );
         }

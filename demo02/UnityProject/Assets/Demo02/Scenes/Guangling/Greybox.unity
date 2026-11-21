@@ -3036,6 +3036,7 @@ GameObject:
   - component: {fileID: 282816255}
   - component: {fileID: 282816254}
   - component: {fileID: 282816253}
+  - component: {fileID: 282816264}
   m_Layer: 0
   m_Name: GameSession
   m_TagString: Untagged
@@ -3122,6 +3123,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f95fa654fbd4024871e43b1e3eafc96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Demo02.UI.WorldMapController
+--- !u!114 &282816264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 282816251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71fbcaf6a4d54c92a4245890d0c752f5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::Demo02.UI.ScreenFade
+  fadeOutDuration: 0.2
+  blackHoldDuration: 0.08
+  fadeInDuration: 0.25
 --- !u!114 &282816258
 MonoBehaviour:
   m_ObjectHideFlags: 0

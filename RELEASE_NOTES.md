@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v0.18.0
+# Huai-Zuo Chronicles v0.19.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.18.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.19.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.18.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.19.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-84A2447609E815E2BC07EE807C17A9E8A9ACD5517F599F13D2B023A0DD236907
+E27ABF7657945EB65F2DCA7F523C4EBBE7E27DF7906BC1793286E9C807B0EBD0
 ```
 
 ## 已包含
@@ -33,6 +33,8 @@ SHA256：
 - 标题界面、开始、继续和退出。
 - 官署前街、旧仓内院、旧仓室内、东关街和彩衣街。
 - 世界地图与街内快速旅行。
+- 街区传送与地图传送的淡出、黑场、淡入过渡。
+- 近距离可交互目标的轻微转动提示。
 - NPC 对话和街区小故事。
 - 线索调查、任务罗盘和时间层。
 - 三个时间锚点和街尾修复。
@@ -42,7 +44,6 @@ SHA256：
 - 新游戏开场旁白与目标说明。
 - 精简 HUD，常驻操作说明改为 F1 帮助。
 - 完整结局页和队伍失败页。
-- 世界地图与街内快速传送。
 
 ## 已知问题
 
@@ -59,3 +60,6 @@ SHA256：
 - 构建启动场景顺序：`Boot → Greybox`。
 - 标题界面截图已验证。
 - 最新场景生成与脚本编译通过。
+- 发布包逐文件与 Unity 输出比对一致。
+- 地图打开时暂停世界，关闭后恢复；`Esc` 只负责关闭地图，不叠加暂停菜单。
+- 转场期间重复互动被阻断，不会重复执行传送。
