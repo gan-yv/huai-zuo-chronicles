@@ -90,17 +90,57 @@ namespace Demo02.Editor
             GameObject probe = new("InventoryProbe");
             InventoryState inventory = probe.AddComponent<InventoryState>();
             inventory.Configure(content);
+            InvestigationState state = probe.AddComponent<InvestigationState>();
+            state.ConfigureContent(content);
+            Combatant health = probe.AddComponent<Combatant>();
+            health.Configure(CombatTeam.Player, 100f);
 
             if (!inventory.AddItem("salt-token-charm", 1)
                 || inventory.GetCount("salt-token-charm") != 1
                 || !inventory.AddItem("ginger-tea", 7)
                 || inventory.GetCount("ginger-tea") != 5
+                || !inventory.AddItem("blank-ledger-page", 1)
                 || !inventory.MarkPickupCollected("pickup-ginger-tea")
                 || !inventory.IsPickupCollected("pickup-ginger-tea"))
             {
                 Object.DestroyImmediate(probe);
                 throw new System.InvalidOperationException(
                     "Inventory stacking or pickup state verification failed."
+                );
+            }
+
+            state.SetFact("teahouse-cart-testimony");
+            if (!inventory.TryUseItem(
+                    "blank-ledger-page",
+                    null,
+                    state,
+                    out _
+                )
+                || !state.HasFact("teahouse-written-record")
+                || inventory.GetCount("blank-ledger-page") != 0
+                || !inventory.TryUseItem(
+                    "salt-token-charm",
+                    null,
+                    state,
+                    out _
+                )
+                || !state.HasFact("salt-token-identified")
+                || inventory.GetCount("salt-token-charm") != 1)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Inventory story-item effects verification failed."
+                );
+            }
+
+            health.TakeDamage(40f);
+            if (!inventory.TryUseItem("ginger-tea", health, state, out _)
+                || !Mathf.Approximately(health.CurrentHealth, 85f)
+                || inventory.GetCount("ginger-tea") != 4)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Inventory healing item verification failed."
                 );
             }
 
@@ -114,7 +154,7 @@ namespace Demo02.Editor
             restored.Configure(content);
             restored.Restore(snapshot, pickupIds);
             if (restored.GetCount("salt-token-charm") != 1
-                || restored.GetCount("ginger-tea") != 5
+                || restored.GetCount("ginger-tea") != 4
                 || !restored.IsPickupCollected("pickup-ginger-tea"))
             {
                 Object.DestroyImmediate(restoredProbe);
@@ -124,7 +164,10 @@ namespace Demo02.Editor
             }
 
             Object.DestroyImmediate(restoredProbe);
-            Debug.Log("Inventory verification passed: stacking, pickup and restore.");
+            Debug.Log(
+                "Inventory verification passed: stacking, story use, "
+                + "healing, pickup and restore."
+            );
         }
 
         public static void VerifyDialogueContentForBatch()

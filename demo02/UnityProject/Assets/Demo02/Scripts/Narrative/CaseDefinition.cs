@@ -59,7 +59,8 @@ namespace Demo02.Narrative
     public enum InventoryItemEffect
     {
         None = 0,
-        RestoreHealth = 1
+        RestoreHealth = 1,
+        GrantStoryFact = 2
     }
 
     [Serializable]
@@ -72,6 +73,11 @@ namespace Demo02.Narrative
         [Min(1)] public int MaxStack = 1;
         public InventoryItemEffect Effect;
         [Min(0f)] public float EffectAmount;
+        public string UseLabel;
+        [TextArea(2, 5)] public string UseResultText;
+        public string RequiredStoryFactId;
+        public string ResultStoryFactId;
+        public bool ConsumeOnUse = true;
     }
 
     [CreateAssetMenu(
@@ -640,6 +646,23 @@ namespace Demo02.Narrative
                         $"Inventory item '{item.Id}' has invalid heal amount."
                     );
                 }
+                if (item.Effect == InventoryItemEffect.GrantStoryFact
+                    && (string.IsNullOrWhiteSpace(item.UseLabel)
+                        || string.IsNullOrWhiteSpace(item.UseResultText)
+                        || FindStoryFact(item.ResultStoryFactId) == null))
+                {
+                    errors.Add(
+                        $"Inventory item '{item.Id}' has invalid story effect."
+                    );
+                }
+                if (!string.IsNullOrWhiteSpace(item.RequiredStoryFactId)
+                    && FindStoryFact(item.RequiredStoryFactId) == null)
+                {
+                    errors.Add(
+                        $"Inventory item '{item.Id}' requires missing fact "
+                        + $"'{item.RequiredStoryFactId}'."
+                    );
+                }
             }
         }
 
@@ -695,7 +718,7 @@ namespace Demo02.Narrative
             dialogueScripts = newDialogueScripts;
             storyFacts = newStoryFacts;
             inventoryItems = newInventoryItems;
-            contentVersion = 5;
+            contentVersion = 6;
         }
 
         public void ConfigureStoryContentForEditor(
@@ -715,7 +738,7 @@ namespace Demo02.Narrative
             dialogueScripts = newDialogueScripts;
             storyFacts = newStoryFacts;
             inventoryItems = newInventoryItems;
-            contentVersion = 5;
+            contentVersion = 6;
         }
 #endif
     }

@@ -1,6 +1,6 @@
-# Huai-Zuo Chronicles v1.16.0
+# Huai-Zuo Chronicles v1.17.0
 
-发布日期：2026-11-21  
+发布日期：2026-11-22
 平台：Windows x64  
 类型：Unity 灰盒垂直切片
 
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.16.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.17.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.16.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.17.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-1C1F46D7EF5D90DBD87ABB2E0E05F69C6CAF0D71BB3A675E0AC0409DF9125DE0
+C81D45AD67992AA0574BC07D752BA71EF77822F14255290CFC3845BF79E61B49
 ```
 
 ## 已包含
@@ -40,6 +40,8 @@ SHA256：
 - 新增 `B` 背包系统，支持场景拾取、堆叠、详情查看和消耗品使用。
 - 热姜汤可恢复 25 点生命；盐引铜钱和空白账页作为剧情物品保留。
 - 背包库存与已拾取物体状态会写入自动存档和三个手动槽位。
+- 背包新增分类筛选，消耗品和剧情物品可使用。
+- 盐引铜钱可辨认暗纹；空白账页可在获得茶肆旁证后抄录证词。
 - 案件资产加入内容版本与自动迁移，并固定条件枚举编号以兼容旧资产。
 - 对白支持章节、立场、证据去向和结局条件，并自动匹配对应脚本。
 - 对白选项可设置剧情状态，对白结束效果可推进章节阶段。
@@ -132,3 +134,4 @@ SHA256：
 - 剧情事实、茶肆选择和剧情事实存档恢复自动回归通过。
 - 案件内容作者工具与支线事实提示已完成干净工程编译验证。
 - 背包堆叠、拾取、快照恢复、HUD 入口和完整回归自动验证通过。
+- 剧情物品前置条件、事实写入、物品消耗和治疗效果自动验证通过。

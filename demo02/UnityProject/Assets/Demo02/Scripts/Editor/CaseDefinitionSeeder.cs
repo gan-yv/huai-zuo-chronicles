@@ -33,7 +33,7 @@ namespace Demo02.Editor
             if (existing != null)
             {
                 if (existing.DialogueScripts.Count == 0
-                    || existing.ContentVersion < 5)
+                    || existing.ContentVersion < 6)
                 {
                     existing.ConfigureInventoryContentForEditor(
                         CreateDialogueScripts(),
@@ -42,7 +42,7 @@ namespace Demo02.Editor
                     );
                     EditorUtility.SetDirty(existing);
                     AssetDatabase.SaveAssets();
-                    Debug.Log("Upgraded chapter asset to content version 5.");
+                    Debug.Log("Upgraded chapter asset to content version 6.");
                 }
                 return existing;
             }
@@ -291,6 +291,22 @@ namespace Demo02.Editor
                     Detail =
                         "你没有继续追问盐车细节，避免陆崇的人察觉茶肆"
                         + "也掌握了关键旁证。掌柜会记住这份克制。"
+                },
+                new()
+                {
+                    Id = "salt-token-identified",
+                    Title = "盐引铜钱暗纹",
+                    Detail =
+                        "铜钱边缘的暗纹与盐引旧印吻合，"
+                        + "说明它不仅是信物，也可能是一枚旧时验引凭证。"
+                },
+                new()
+                {
+                    Id = "teahouse-written-record",
+                    Title = "茶肆旁证抄录",
+                    Detail =
+                        "你把茶肆掌柜关于初五空仓和初七盐车的说法"
+                        + "抄在空白账页上，形成一份可随时复查的旁证记录。"
                 }
             };
         }
@@ -307,7 +323,14 @@ namespace Demo02.Editor
                     Description =
                         "沈砚失踪前留在茶桌上的铜钱，边缘刻着他的名字。"
                         + "它不能直接使用，但可能与旧时盐引有关。",
-                    MaxStack = 1
+                    MaxStack = 1,
+                    Effect = InventoryItemEffect.GrantStoryFact,
+                    UseLabel = "辨认铜钱上的刻字",
+                    UseResultText =
+                        "铜钱边缘的暗纹与盐引旧印吻合。"
+                        + "这枚铜钱与旧时盐引制度有关。",
+                    ResultStoryFactId = "salt-token-identified",
+                    ConsumeOnUse = false
                 },
                 new()
                 {
@@ -319,7 +342,10 @@ namespace Demo02.Editor
                         + "饮用后恢复 25 点生命。",
                     MaxStack = 5,
                     Effect = InventoryItemEffect.RestoreHealth,
-                    EffectAmount = 25f
+                    EffectAmount = 25f,
+                    UseLabel = "饮用",
+                    UseResultText = "姜汤驱散了旧仓的寒意。",
+                    ConsumeOnUse = true
                 },
                 new()
                 {
@@ -329,7 +355,15 @@ namespace Demo02.Editor
                     Description =
                         "从旧仓账册上拆下的空白页。"
                         + "可以在后续调查中抄录不愿留在原册里的证词。",
-                    MaxStack = 3
+                    MaxStack = 3,
+                    Effect = InventoryItemEffect.GrantStoryFact,
+                    UseLabel = "抄录茶肆盐车旁证",
+                    UseResultText =
+                        "你把茶肆掌柜的证词抄到空白账页上，"
+                        + "这份记录已经进入支线旁证。",
+                    RequiredStoryFactId = "teahouse-cart-testimony",
+                    ResultStoryFactId = "teahouse-written-record",
+                    ConsumeOnUse = true
                 }
             };
         }

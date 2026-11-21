@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7a824fa490c4e68b47aa81ab533c610, type: 3}
   m_Name: Chapter01_Case
   m_EditorClassIdentifier: Assembly-CSharp::Demo02.Narrative.CaseDefinition
-  contentVersion: 5
+  contentVersion: 6
   caseId: chapter-01
   title: "\u6D88\u5931\u7684\u76D0\u5F15"
   chapterLabel: CHAPTER 01
@@ -913,14 +913,25 @@ MonoBehaviour:
   - Id: teahouse-keeper-protected
     Title: "\u8336\u8086\u638C\u67DC\u4FDD\u6301\u6C89\u9ED8"
     Detail: "\u4F60\u6CA1\u6709\u7EE7\u7EED\u8FFD\u95EE\u76D0\u8F66\u7EC6\u8282\uFF0C\u907F\u514D\u9646\u5D07\u7684\u4EBA\u5BDF\u89C9\u8336\u8086\u4E5F\u638C\u63E1\u4E86\u5173\u952E\u65C1\u8BC1\u3002\u638C\u67DC\u4F1A\u8BB0\u4F4F\u8FD9\u4EFD\u514B\u5236\u3002"
+  - Id: salt-token-identified
+    Title: "\u76D0\u5F15\u94DC\u94B1\u6697\u7EB9"
+    Detail: "\u94DC\u94B1\u8FB9\u7F18\u7684\u6697\u7EB9\u4E0E\u76D0\u5F15\u65E7\u5370\u543B\u5408\uFF0C\u8BF4\u660E\u5B83\u4E0D\u4EC5\u662F\u4FE1\u7269\uFF0C\u4E5F\u53EF\u80FD\u662F\u4E00\u679A\u65E7\u65F6\u9A8C\u5F15\u51ED\u8BC1\u3002"
+  - Id: teahouse-written-record
+    Title: "\u8336\u8086\u65C1\u8BC1\u6284\u5F55"
+    Detail: "\u4F60\u628A\u8336\u8086\u638C\u67DC\u5173\u4E8E\u521D\u4E94\u7A7A\u4ED3\u548C\u521D\u4E03\u76D0\u8F66\u7684\u8BF4\u6CD5\u6284\u5728\u7A7A\u767D\u8D26\u9875\u4E0A\uFF0C\u5F62\u6210\u4E00\u4EFD\u53EF\u968F\u65F6\u590D\u67E5\u7684\u65C1\u8BC1\u8BB0\u5F55\u3002"
   inventoryItems:
   - Id: salt-token-charm
     DisplayName: "\u76D0\u5F15\u94DC\u94B1"
     Category: "\u4FE1\u7269"
     Description: "\u6C88\u781A\u5931\u8E2A\u524D\u7559\u5728\u8336\u684C\u4E0A\u7684\u94DC\u94B1\uFF0C\u8FB9\u7F18\u523B\u7740\u4ED6\u7684\u540D\u5B57\u3002\u5B83\u4E0D\u80FD\u76F4\u63A5\u4F7F\u7528\uFF0C\u4F46\u53EF\u80FD\u4E0E\u65E7\u65F6\u76D0\u5F15\u6709\u5173\u3002"
     MaxStack: 1
-    Effect: 0
+    Effect: 2
     EffectAmount: 0
+    UseLabel: "\u8FA8\u8BA4\u94DC\u94B1\u4E0A\u7684\u523B\u5B57"
+    UseResultText: "\u94DC\u94B1\u8FB9\u7F18\u7684\u6697\u7EB9\u4E0E\u76D0\u5F15\u65E7\u5370\u543B\u5408\u3002\u8FD9\u679A\u94DC\u94B1\u4E0E\u65E7\u65F6\u76D0\u5F15\u5236\u5EA6\u6709\u5173\u3002"
+    RequiredStoryFactId:
+    ResultStoryFactId: salt-token-identified
+    ConsumeOnUse: 0
   - Id: ginger-tea
     DisplayName: "\u70ED\u59DC\u6C64"
     Category: "\u6D88\u8017\u54C1"
@@ -929,10 +940,20 @@ MonoBehaviour:
     MaxStack: 5
     Effect: 1
     EffectAmount: 25
+    UseLabel: "\u996E\u7528"
+    UseResultText: "\u59DC\u6C64\u9A71\u6563\u4E86\u65E7\u4ED3\u7684\u5BD2\u610F\u3002"
+    RequiredStoryFactId:
+    ResultStoryFactId:
+    ConsumeOnUse: 1
   - Id: blank-ledger-page
     DisplayName: "\u7A7A\u767D\u8D26\u9875"
     Category: "\u8C03\u67E5\u7528\u54C1"
     Description: "\u4ECE\u65E7\u4ED3\u8D26\u518C\u4E0A\u62C6\u4E0B\u7684\u7A7A\u767D\u9875\u3002\u53EF\u4EE5\u5728\u540E\u7EED\u8C03\u67E5\u4E2D\u6284\u5F55\u4E0D\u613F\u7559\u5728\u539F\u518C\u91CC\u7684\u8BC1\u8BCD\u3002"
     MaxStack: 3
-    Effect: 0
+    Effect: 2
     EffectAmount: 0
+    UseLabel: "\u6284\u5F55\u8336\u8086\u76D0\u8F66\u65C1\u8BC1"
+    UseResultText: "\u4F60\u628A\u8336\u8086\u638C\u67DC\u7684\u8BC1\u8BCD\u6284\u5230\u7A7A\u767D\u8D26\u9875\u4E0A\uFF0C\u8FD9\u4EFD\u8BB0\u5F55\u5DF2\u7ECF\u8FDB\u5165\u652F\u7EBF\u65C1\u8BC1\u3002"
+    RequiredStoryFactId: teahouse-cart-testimony
+    ResultStoryFactId: teahouse-written-record
+    ConsumeOnUse: 1

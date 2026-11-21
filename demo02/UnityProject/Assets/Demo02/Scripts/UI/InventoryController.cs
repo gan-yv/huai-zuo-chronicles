@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Demo02.Combat;
 using Demo02.Core;
@@ -13,11 +14,13 @@ namespace Demo02.UI
     public sealed class InventoryController : MonoBehaviour
     {
         private InventoryState inventoryState;
+        private InvestigationState investigationState;
         private CaseDefinition caseContent;
         private PlayerPartyController party;
         private bool isOpen;
         private float previousTimeScale = 1f;
         private string selectedItemId;
+        private string selectedCategory = "全部";
         private string statusMessage;
         private float statusUntil;
 
@@ -41,9 +44,9 @@ namespace Demo02.UI
                 ? InventoryState.Instance
                 : FindAnyObjectByType<InventoryState>();
             party = FindAnyObjectByType<PlayerPartyController>();
-            InvestigationState investigation =
+            investigationState =
                 FindAnyObjectByType<InvestigationState>();
-            caseContent = investigation?.CaseContent;
+            caseContent = investigationState?.CaseContent;
 
             if (Array.IndexOf(
                 Environment.GetCommandLineArgs(),
@@ -258,13 +261,42 @@ namespace Demo02.UI
                 UiTheme.Label(15, TextAnchor.MiddleLeft, bold: true)
             );
 
-            float top = list.y + 32f * scale;
+            List<string> categories = BuildCategories();
+            float tabGap = 5f * scale;
+            float tabWidth = categories.Count > 0
+                ? (list.width - tabGap * (categories.Count - 1))
+                    / categories.Count
+                : list.width;
+            for (int categoryIndex = 0;
+                categoryIndex < categories.Count;
+                categoryIndex++)
+            {
+                string category = categories[categoryIndex];
+                if (GUI.Button(
+                    new Rect(
+                        list.x + categoryIndex * (tabWidth + tabGap),
+                        list.y + 27f * scale,
+                        tabWidth,
+                        25f * scale
+                    ),
+                    category,
+                    UiTheme.Button(10)
+                ))
+                {
+                    selectedCategory = category;
+                    EnsureSelection();
+                    GameAudio.PlayInteraction();
+                }
+            }
+
+            float top = list.y + 62f * scale;
             int visibleCount = 0;
             for (int index = 0; index < caseContent.InventoryItems.Count; index++)
             {
                 InventoryItemDefinition item =
                     caseContent.InventoryItems[index];
-                if (inventoryState.GetCount(item.Id) <= 0)
+                if (inventoryState.GetCount(item.Id) <= 0
+                    || !MatchesCategory(item))
                 {
                     continue;
                 }
@@ -416,9 +448,30 @@ namespace Demo02.UI
             );
 
             string useLabel = item.Effect == InventoryItemEffect.RestoreHealth
-                ? $"使用  ·  恢复 {Mathf.RoundToInt(item.EffectAmount)} 生命"
-                : "剧情物品 · 暂不可使用";
-            GUI.enabled = item.Effect == InventoryItemEffect.RestoreHealth;
+                ? $"{FirstNonEmpty(item.UseLabel, "使用")}  ·  "
+                    + $"恢复 {Mathf.RoundToInt(item.EffectAmount)} 生命"
+                : item.Effect == InventoryItemEffect.GrantStoryFact
+                    ? FirstNonEmpty(item.UseLabel, "使用剧情物品")
+                    : "剧情物品 · 暂不可使用";
+
+            bool canUse = item.Effect != InventoryItemEffect.None;
+            if (item.Effect == InventoryItemEffect.GrantStoryFact)
+            {
+                canUse = !investigationState.HasFact(item.ResultStoryFactId)
+                    && (string.IsNullOrWhiteSpace(item.RequiredStoryFactId)
+                        || investigationState.HasFact(
+                            item.RequiredStoryFactId
+                        ));
+            }
+            if (item.Effect == InventoryItemEffect.RestoreHealth)
+            {
+                Combatant active = GetActiveCombatant();
+                canUse = active != null
+                    && active.IsAlive
+                    && active.CurrentHealth < active.MaxHealth;
+            }
+
+            GUI.enabled = canUse;
             if (GUI.Button(
                 new Rect(
                     detail.x + 20f * scale,
@@ -437,35 +490,27 @@ namespace Demo02.UI
 
         private void UseItem(InventoryItemDefinition item)
         {
+            if (inventoryState.TryUseItem(
+                item.Id,
+                GetActiveCombatant(),
+                investigationState,
+                out string message
+            ))
+            {
+                ShowStatus(message);
+                GameAudio.PlayConfirm();
+                EnsureSelection();
+            }
+            else
+            {
+                ShowStatus(message);
+            }
+        }
+
+        private Combatant GetActiveCombatant()
+        {
             Transform character = party != null ? party.ActiveCharacter : null;
-            Combatant health = character != null
-                ? character.GetComponent<Combatant>()
-                : null;
-            if (health == null || !health.IsAlive)
-            {
-                ShowStatus("当前没有可使用物品的角色。");
-                return;
-            }
-            if (health.CurrentHealth >= health.MaxHealth)
-            {
-                ShowStatus("生命值已满，不需要使用。");
-                return;
-            }
-
-            if (!inventoryState.RemoveItem(item.Id, 1))
-            {
-                ShowStatus("物品数量不足。");
-                return;
-            }
-
-            health.RestoreHealth(
-                Mathf.Min(
-                    health.MaxHealth,
-                    health.CurrentHealth + item.EffectAmount
-                )
-            );
-            ShowStatus($"使用 {item.DisplayName}，恢复了生命。");
-            GameAudio.PlayConfirm();
+            return character != null ? character.GetComponent<Combatant>() : null;
         }
 
         private void EnsureSelection()
@@ -474,8 +519,11 @@ namespace Demo02.UI
             {
                 return;
             }
-            if (!string.IsNullOrWhiteSpace(selectedItemId)
-                && inventoryState.GetCount(selectedItemId) > 0)
+            InventoryItemDefinition selected =
+                caseContent.FindInventoryItem(selectedItemId);
+            if (selected != null
+                && inventoryState.GetCount(selectedItemId) > 0
+                && MatchesCategory(selected))
             {
                 return;
             }
@@ -486,10 +534,40 @@ namespace Demo02.UI
                 InventoryItemDefinition item = caseContent.InventoryItems[index];
                 if (inventoryState.GetCount(item.Id) > 0)
                 {
+                    if (!MatchesCategory(item))
+                    {
+                        continue;
+                    }
                     selectedItemId = item.Id;
                     return;
                 }
             }
+        }
+
+        private List<string> BuildCategories()
+        {
+            List<string> categories = new() { "全部" };
+            for (int index = 0; index < caseContent.InventoryItems.Count; index++)
+            {
+                string category = caseContent.InventoryItems[index].Category;
+                if (!string.IsNullOrWhiteSpace(category)
+                    && !categories.Contains(category))
+                {
+                    categories.Add(category);
+                }
+            }
+            return categories;
+        }
+
+        private bool MatchesCategory(InventoryItemDefinition item)
+        {
+            return selectedCategory == "全部"
+                || item.Category == selectedCategory;
+        }
+
+        private static string FirstNonEmpty(string value, string fallback)
+        {
+            return string.IsNullOrWhiteSpace(value) ? fallback : value;
         }
 
         private void ShowStatus(string message)

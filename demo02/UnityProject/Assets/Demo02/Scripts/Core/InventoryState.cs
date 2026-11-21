@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Demo02.Combat;
 using Demo02.Narrative;
 using UnityEngine;
 
@@ -101,6 +102,83 @@ namespace Demo02.Core
         {
             return !string.IsNullOrWhiteSpace(pickupId)
                 && collectedPickupIds.Contains(pickupId);
+        }
+
+        public bool TryUseItem(
+            string itemId,
+            Combatant target,
+            InvestigationState investigation,
+            out string message)
+        {
+            InventoryItemDefinition item = caseContent?.FindInventoryItem(itemId);
+            if (item == null || GetCount(itemId) <= 0)
+            {
+                message = "物品数量不足。";
+                return false;
+            }
+
+            switch (item.Effect)
+            {
+                case InventoryItemEffect.RestoreHealth:
+                    if (target == null || !target.IsAlive)
+                    {
+                        message = "当前没有可使用物品的角色。";
+                        return false;
+                    }
+                    if (target.CurrentHealth >= target.MaxHealth)
+                    {
+                        message = "生命值已满，不需要使用。";
+                        return false;
+                    }
+
+                    target.RestoreHealth(
+                        Mathf.Min(
+                            target.MaxHealth,
+                            target.CurrentHealth + item.EffectAmount
+                        )
+                    );
+                    if (item.ConsumeOnUse)
+                    {
+                        RemoveItem(itemId, 1);
+                    }
+                    message = string.IsNullOrWhiteSpace(item.UseResultText)
+                        ? $"使用 {item.DisplayName}，恢复了生命。"
+                        : item.UseResultText;
+                    return true;
+
+                case InventoryItemEffect.GrantStoryFact:
+                    if (investigation == null
+                        || string.IsNullOrWhiteSpace(item.ResultStoryFactId))
+                    {
+                        message = "暂时无法记录这件事。";
+                        return false;
+                    }
+                    if (investigation.HasFact(item.ResultStoryFactId))
+                    {
+                        message = "这项记录已经存在。";
+                        return false;
+                    }
+                    if (!string.IsNullOrWhiteSpace(item.RequiredStoryFactId)
+                        && !investigation.HasFact(item.RequiredStoryFactId))
+                    {
+                        message = "你还没有获得足够的旁证来完成这项记录。";
+                        return false;
+                    }
+
+                    investigation.SetFact(item.ResultStoryFactId);
+                    if (item.ConsumeOnUse)
+                    {
+                        RemoveItem(itemId, 1);
+                    }
+                    message = string.IsNullOrWhiteSpace(item.UseResultText)
+                        ? item.DisplayName + "已被使用。"
+                        : item.UseResultText;
+                    return true;
+
+                default:
+                    message = "这件物品不能直接使用。";
+                    return false;
+            }
         }
 
         public List<InventoryItemSaveData> ExportItems()
