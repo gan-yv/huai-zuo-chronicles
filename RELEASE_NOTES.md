@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.1.0
+# Huai-Zuo Chronicles v1.2.0
 
 发布日期：2026-11-21  
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.1.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.2.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.1.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.2.0>
 
 解压后运行：
 
@@ -25,12 +25,14 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-8E396554EAF74B0FEBD33FB7F0C67EB8F2E47F363EE0B021E90E974B6FE44A11
+3C319DFE7574964C6E3DED0E35E81FDF91D0E788212835635FAB7E2CE0341F9F
 ```
 
 ## 已包含
 
 - 第一章《消失的盐引》的完整剧情与玩法闭环。
+- 可随时打开的 `J` 调查案卷。
+- 证据、人物、当前推理和时间锚点进度会随章节推进更新。
 - 程序化人物轮廓和三层店铺立面组成的第一遍美术 pass。
 - 屋檐、门面、立柱、布幡与灯笼覆盖官署前街、东关街和彩衣街。
 - 沈伯委托、沈砚失踪、七车私盐和陆崇除名封条组成的证据链。

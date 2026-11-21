@@ -613,6 +613,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<ObjectiveDisplay>();
             gameSession.AddComponent<QuestNavigationHud>();
             gameSession.AddComponent<WorldMapController>();
+            gameSession.AddComponent<InvestigationJournalController>();
             gameSession.AddComponent<ScreenFade>();
             gameSession.AddComponent<AreaBanner>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();

@@ -101,6 +101,8 @@ namespace Demo02.UI
         {
             if (string.IsNullOrWhiteSpace(shownAreaName)
                 || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
+                || (InvestigationJournalController.Instance != null
+                    && InvestigationJournalController.Instance.IsOpen)
                 || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
             {
                 return;

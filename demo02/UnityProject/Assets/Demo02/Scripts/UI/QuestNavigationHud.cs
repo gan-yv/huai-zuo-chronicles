@@ -128,6 +128,8 @@ namespace Demo02.UI
         private void OnGUI()
         {
             if ((WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
+                || (InvestigationJournalController.Instance != null
+                    && InvestigationJournalController.Instance.IsOpen)
                 || currentTarget == null
                 || party == null
                 || party.ActiveCharacter == null)

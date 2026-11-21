@@ -43,6 +43,11 @@ namespace Demo02.UI
             {
                 return;
             }
+            if (InvestigationJournalController.Instance != null
+                && InvestigationJournalController.Instance.IsOpen)
+            {
+                return;
+            }
 
             Transform activeCharacter = party != null ? party.ActiveCharacter : null;
             Combatant activeHealth = activeCharacter != null
@@ -172,6 +177,19 @@ namespace Demo02.UI
             {
                 GameAudio.ToggleMuted();
             }
+            if (GUI.Button(
+                new Rect(
+                    right - utilityWidth * 4f - 30f * scale,
+                    utilityY,
+                    utilityWidth,
+                    utilityHeight
+                ),
+                "J 案卷",
+                UiTheme.Button(13)
+            ))
+            {
+                InvestigationJournalController.Instance?.ToggleJournal();
+            }
 
             if (showHelp)
             {
@@ -208,7 +226,7 @@ namespace Demo02.UI
                     "WASD  移动      Shift  奔跑      Ctrl  闪避      Space  跳跃\n"
                     + "鼠标左键  攻击      按住鼠标右键  旋转镜头\n"
                     + "E  调查 / 对话 / 修复      Tab  切换角色      Q  切换时间层\n"
-                    + "M  世界地图      Esc  暂停      F2  静音\n"
+                    + "J  调查案卷      M  世界地图      Esc  暂停      F2  静音\n"
                     + "F5  保存      F9  读取      F1  关闭帮助\n"
                     + "R  在结局或队伍倒下后重新开始",
                     UiTheme.Label(16)

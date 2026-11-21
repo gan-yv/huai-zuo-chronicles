@@ -16,34 +16,17 @@ namespace Demo02.UI
         private void OnGUI()
         {
             if (investigationState == null
-                || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen))
+                || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
+                || (InvestigationJournalController.Instance != null
+                    && InvestigationJournalController.Instance.IsOpen))
             {
                 return;
             }
 
-            string text;
-            if (investigationState.SelectedConclusion == ConclusionChoice.Preserve)
+            string text = ChapterCopy.GetObjective(investigationState);
+            if (investigationState.IsConclusionReached)
             {
-                text = "盐引巷重新入册，沈砚的名字回到城市记录中。按 R 重新开始";
-            }
-            else if (investigationState.SelectedConclusion == ConclusionChoice.Seal)
-            {
-                text = "盐引巷被永久封存，沈砚只留在你的修复记录里。按 R 重新开始";
-            }
-            else
-            {
-                text = investigationState.Stage switch
-                {
-                    ChapterStage.Arrival => "前往旧仓内院，询问守仓人沈伯",
-                    ChapterStage.Investigate =>
-                        $"调查盐引巷留下的记录  {investigationState.CollectedClueCount}/{investigationState.RequiredClueCount}",
-                    ChapterStage.ReviewEvidence => "把三处记录带回旧仓，让沈伯辨认笔迹",
-                    ChapterStage.StabilizeAnchors =>
-                        $"按 Q 切换时间层，稳定锚点  {investigationState.StabilizedTimeAnchorCount}/{investigationState.RequiredTimeAnchorCount}",
-                    ChapterStage.RepairRift => "前往街尾，压下被撕开的记录",
-                    ChapterStage.FinalDecision => "在街尾决定盐引巷与沈砚的命运",
-                    _ => "调查已经结束"
-                };
+                text += "。按 R 重新开始";
             }
 
             float scale = UiTheme.Scale;

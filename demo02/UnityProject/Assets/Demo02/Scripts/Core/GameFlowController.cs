@@ -38,6 +38,12 @@ namespace Demo02.Core
                 return;
             }
 
+            if (InvestigationJournalController.Instance != null
+                && InvestigationJournalController.Instance.IsOpen)
+            {
+                return;
+            }
+
             if (IsEnding)
             {
                 if (!isEndingFrozen)
