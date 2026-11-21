@@ -1,3 +1,4 @@
+using Demo02.Player;
 using Demo02.Narrative;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,15 +9,18 @@ namespace Demo02.Core
     public sealed class GameFlowController : MonoBehaviour
     {
         private InvestigationState investigationState;
+        private PlayerPartyController party;
 
         private void Awake()
         {
             investigationState = FindAnyObjectByType<InvestigationState>();
+            party = FindAnyObjectByType<PlayerPartyController>();
         }
 
         private void Update()
         {
-            bool canRestart = investigationState != null && investigationState.IsConclusionReached;
+            bool canRestart = (investigationState != null && investigationState.IsConclusionReached)
+                || (party != null && party.IsPartyDefeated);
             if (!canRestart
                 || Keyboard.current == null
                 || !Keyboard.current.rKey.wasPressedThisFrame)

@@ -13,6 +13,24 @@ namespace Demo02.Player
 
         public Transform ActiveCharacter =>
             characters.Length > activeIndex ? characters[activeIndex] : null;
+        public bool IsPartyDefeated
+        {
+            get
+            {
+                for (int index = 0; index < characters.Length; index++)
+                {
+                    Combatant health = characters[index] != null
+                        ? characters[index].GetComponent<Combatant>()
+                        : null;
+                    if (health != null && health.IsAlive)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
 
         public void Configure(Transform first, Transform second)
         {
@@ -22,7 +40,7 @@ namespace Demo02.Player
 
         private void Start()
         {
-            SetActiveCharacter(activeIndex);
+            SetActiveCharacter(activeIndex, moveToActivePosition: false);
         }
 
         private void Update()
@@ -48,7 +66,7 @@ namespace Demo02.Player
 
             if (otherHealth != null && otherHealth.IsAlive)
             {
-                SetActiveCharacter(otherIndex);
+                SetActiveCharacter(otherIndex, moveToActivePosition: true);
             }
         }
 
@@ -63,16 +81,24 @@ namespace Demo02.Player
             Combatant targetHealth = characters[targetIndex].GetComponent<Combatant>();
             if (targetHealth != null && targetHealth.IsAlive)
             {
-                SetActiveCharacter(targetIndex);
+                SetActiveCharacter(targetIndex, moveToActivePosition: true);
             }
         }
 
-        private void SetActiveCharacter(int index)
+        private void SetActiveCharacter(int index, bool moveToActivePosition)
         {
             if (characters == null || characters.Length == 0)
             {
                 return;
             }
+
+            Transform previousCharacter = ActiveCharacter;
+            Vector3 previousPosition = previousCharacter != null
+                ? previousCharacter.position
+                : Vector3.zero;
+            Quaternion previousRotation = previousCharacter != null
+                ? previousCharacter.rotation
+                : Quaternion.identity;
 
             activeIndex = Mathf.Clamp(index, 0, characters.Length - 1);
             for (int current = 0; current < characters.Length; current++)
@@ -87,7 +113,24 @@ namespace Demo02.Player
                 SetEnabled<ThirdPersonController>(character, isActive);
                 SetEnabled<PlayerCombat>(character, isActive);
                 SetEnabled<PlayerInteractor>(character, isActive);
-                SetEnabled<CompanionFollower>(character, !isActive);
+
+                CharacterController controller = character.GetComponent<CharacterController>();
+                if (controller != null)
+                {
+                    controller.enabled = false;
+                    if (isActive && moveToActivePosition)
+                    {
+                        character.SetPositionAndRotation(previousPosition, previousRotation);
+                    }
+
+                    controller.enabled = isActive;
+                }
+
+                Renderer[] renderers = character.GetComponentsInChildren<Renderer>(includeInactive: true);
+                foreach (Renderer renderer in renderers)
+                {
+                    renderer.enabled = isActive;
+                }
             }
         }
 

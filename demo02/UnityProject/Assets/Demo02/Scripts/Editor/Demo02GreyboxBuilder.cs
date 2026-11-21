@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Demo02.Combat;
 using Demo02.Core;
@@ -146,7 +147,6 @@ namespace Demo02.Editor
             PlayerInteractor partnerInteractor = partner.AddComponent<PlayerInteractor>();
             partnerInteractor.enabled = false;
             partner.AddComponent<Combatant>().Configure(CombatTeam.Player, 100f);
-            partner.AddComponent<CompanionFollower>().Configure(player.transform);
 
             GameObject clue = CreateBlock(
                 root.transform,
@@ -198,8 +198,11 @@ namespace Demo02.Editor
             );
             repairSite.AddComponent<RepairSite>();
 
-            CreateEnemy(root.transform, "Enemy_Patrol_01", new Vector3(-1.2f, 0.9f, 12f));
-            CreateEnemy(root.transform, "Enemy_Patrol_02", new Vector3(1.4f, 0.9f, 24f));
+            List<Combatant> enemies = new()
+            {
+                CreateEnemy(root.transform, "Enemy_Patrol_01", new Vector3(-1.2f, 0.9f, 12f)),
+                CreateEnemy(root.transform, "Enemy_Patrol_02", new Vector3(1.4f, 0.9f, 24f))
+            };
 
             GameObject preserveOutcome = CreateBlock(
                 root.transform,
@@ -244,6 +247,8 @@ namespace Demo02.Editor
             GameObject gameSession = new GameObject("GameSession");
             gameSession.transform.SetParent(root.transform);
             gameSession.AddComponent<InvestigationState>();
+            EncounterState encounterState = gameSession.AddComponent<EncounterState>();
+            encounterState.Configure(enemies);
             gameSession.AddComponent<ObjectiveDisplay>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
             party.Configure(player.transform, partner.transform);
@@ -281,13 +286,15 @@ namespace Demo02.Editor
             return block;
         }
 
-        private static void CreateEnemy(Transform parent, string name, Vector3 position)
+        private static Combatant CreateEnemy(Transform parent, string name, Vector3 position)
         {
             GameObject enemy = CreateBlock(parent, name, position, new Vector3(0.9f, 1.8f, 0.9f));
             Object.DestroyImmediate(enemy.GetComponent<BoxCollider>());
             enemy.AddComponent<CharacterController>();
-            enemy.AddComponent<Combatant>().Configure(CombatTeam.Enemy, 60f);
+            Combatant combatant = enemy.AddComponent<Combatant>();
+            combatant.Configure(CombatTeam.Enemy, 60f);
             enemy.AddComponent<EnemyAI>();
+            return combatant;
         }
     }
 }

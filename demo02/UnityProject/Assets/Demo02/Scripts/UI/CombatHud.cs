@@ -7,10 +7,12 @@ namespace Demo02.UI
     public sealed class CombatHud : MonoBehaviour
     {
         private PlayerPartyController party;
+        private EncounterState encounterState;
 
         private void Awake()
         {
             party = FindAnyObjectByType<PlayerPartyController>();
+            encounterState = FindAnyObjectByType<EncounterState>();
         }
 
         private void OnGUI()
@@ -25,15 +27,7 @@ namespace Demo02.UI
                 DrawHealth(activeHealth);
             }
 
-            Combatant[] combatants = FindObjectsByType<Combatant>(FindObjectsInactive.Exclude);
-            int aliveEnemies = 0;
-            foreach (Combatant combatant in combatants)
-            {
-                if (combatant.Team == CombatTeam.Enemy && combatant.IsAlive)
-                {
-                    aliveEnemies++;
-                }
-            }
+            int aliveEnemies = encounterState != null ? encounterState.AliveEnemyCount : 0;
 
             GUIStyle style = new GUIStyle(GUI.skin.label)
             {
@@ -51,6 +45,19 @@ namespace Demo02.UI
                 "WASD 移动  |  Shift 奔跑  |  Space 跳跃  |  左键攻击  |  右键镜头",
                 style
             );
+
+            if (party != null && party.IsPartyDefeated)
+            {
+                GUI.Box(
+                    new Rect((Screen.width - 420f) * 0.5f, Screen.height * 0.35f, 420f, 82f),
+                    "队伍倒下\n按 R 重新开始",
+                    new GUIStyle(GUI.skin.box)
+                    {
+                        alignment = TextAnchor.MiddleCenter,
+                        fontSize = 22
+                    }
+                );
+            }
         }
 
         private static void DrawHealth(Combatant health)
