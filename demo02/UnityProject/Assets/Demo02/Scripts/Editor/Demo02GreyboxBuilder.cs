@@ -190,6 +190,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("PlayerPlaceholder/MeleeArc") == null
                     || existingRoot.transform.Find("TimeAnchor_Present_01") == null
                     || existingRoot.transform.Find("Area_OfficialStreet") == null
+                    || existingRoot.transform.Find("Area_WarehouseCourtyard") == null
                     || existingRoot.transform.Find("NPC_WarehouseWorker") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
@@ -249,15 +250,22 @@ namespace Demo02.Editor
                     new Vector3(6f, 6f, 8f),
                     new Color(0.23f, 0.28f, 0.34f)
                 );
-                GameObject right = CreateBlock(
-                    root.transform,
-                    $"RightBuilding_{z:0}",
-                    new Vector3(7f, 3f, z),
-                    new Vector3(6f, 6f, 8f),
-                    new Color(0.3f, 0.27f, 0.32f)
-                );
+                GameObject right = null;
+                if (!Mathf.Approximately(z, 6f))
+                {
+                    right = CreateBlock(
+                        root.transform,
+                        $"RightBuilding_{z:0}",
+                        new Vector3(7f, 3f, z),
+                        new Vector3(6f, 6f, 8f),
+                        new Color(0.3f, 0.27f, 0.32f)
+                    );
+                }
                 left.isStatic = true;
-                right.isStatic = true;
+                if (right != null)
+                {
+                    right.isStatic = true;
+                }
             }
 
             GameObject endWall = CreateBlock(
@@ -276,6 +284,8 @@ namespace Demo02.Editor
                 new Vector3(1.5f, 1.5f, 1.5f),
                 new Color(0.45f, 0.3f, 0.17f)
             );
+
+            BuildWarehouseCourtyard(root.transform);
             CreateBlock(
                 root.transform,
                 "Crate_B",
@@ -583,6 +593,105 @@ namespace Demo02.Editor
             body.useGravity = false;
 
             area.AddComponent<WorldArea>().Configure(areaId, displayName);
+        }
+
+        private static void BuildWarehouseCourtyard(Transform root)
+        {
+            CreateBlock(
+                root,
+                "CourtyardGround",
+                new Vector3(18f, -0.55f, 6f),
+                new Vector3(24f, 1f, 20f),
+                new Color(0.48f, 0.44f, 0.36f)
+            );
+            CreateBlock(
+                root,
+                "Courtyard_NorthWall",
+                new Vector3(18f, 2f, -4f),
+                new Vector3(24f, 4f, 2f),
+                new Color(0.24f, 0.28f, 0.3f)
+            );
+            CreateBlock(
+                root,
+                "Courtyard_SouthWall",
+                new Vector3(18f, 2f, 16f),
+                new Vector3(24f, 4f, 2f),
+                new Color(0.24f, 0.28f, 0.3f)
+            );
+            CreateBlock(
+                root,
+                "Courtyard_EndWall",
+                new Vector3(30f, 2f, 6f),
+                new Vector3(2f, 4f, 20f),
+                new Color(0.3f, 0.27f, 0.25f)
+            );
+            CreateBlock(
+                root,
+                "Warehouse_OldStorehouse",
+                new Vector3(23f, 2.5f, 9f),
+                new Vector3(10f, 5f, 7f),
+                new Color(0.28f, 0.34f, 0.36f)
+            );
+            CreateBlock(
+                root,
+                "Courtyard_Crate_A",
+                new Vector3(12f, 0.75f, 2f),
+                new Vector3(1.5f, 1.5f, 1.5f),
+                new Color(0.5f, 0.32f, 0.17f)
+            );
+            CreateBlock(
+                root,
+                "Courtyard_Crate_B",
+                new Vector3(14f, 1f, 10f),
+                new Vector3(2f, 2f, 2f),
+                new Color(0.5f, 0.32f, 0.17f)
+            );
+
+            CreateWorldArea(
+                root,
+                "Area_WarehouseCourtyard",
+                new Vector3(18f, 1f, 6f),
+                new Vector3(22f, 3f, 18f),
+                "warehouse-courtyard",
+                "旧仓内院"
+            );
+
+            GameObject keeper = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            keeper.name = "NPC_OldStorekeeper";
+            keeper.transform.SetParent(root);
+            keeper.transform.position = new Vector3(16.5f, 1f, 8f);
+            keeper.AddComponent<ColorTint>().Configure(new Color(0.76f, 0.6f, 0.32f));
+            NpcDialogueInteractable keeperDialogue = keeper.AddComponent<NpcDialogueInteractable>();
+            keeperDialogue.Configure(
+                "守仓老人",
+                "E  与守仓老人交谈",
+                new DialogueLine(
+                    "守仓老人",
+                    "这道院墙后头，原本还有一整排旧铺。地图没画，账上也没写，可我还记得它们的位置。"
+                ),
+                new DialogueLine(
+                    "守仓老人",
+                    "年轻人，别只看纸上留下了什么。也看看纸外被拿走了什么。"
+                )
+            );
+
+            GameObject notice = CreateBlock(
+                root,
+                "Courtyard_NoticeBoard",
+                new Vector3(8.8f, 1.25f, 11f),
+                new Vector3(1.8f, 2.2f, 0.25f),
+                new Color(0.9f, 0.7f, 0.3f)
+            );
+            notice.transform.rotation = Quaternion.Euler(0f, -90f, 0f);
+            NpcDialogueInteractable noticeDialogue = notice.AddComponent<NpcDialogueInteractable>();
+            noticeDialogue.Configure(
+                "旧仓告示",
+                "E  查看旧仓告示",
+                new DialogueLine(
+                    "旧仓告示",
+                    "“仓中货物，只记其来处，不记其去处。”告示右下角还有一行被刮掉的小字。"
+                )
+            );
         }
 
         private static void CreateTimeAnchor(
