@@ -1,5 +1,6 @@
 using Demo02.Combat;
 using Demo02.Player;
+using Demo02.WorldState;
 using UnityEngine;
 
 namespace Demo02.UI
@@ -8,11 +9,13 @@ namespace Demo02.UI
     {
         private PlayerPartyController party;
         private EncounterState encounterState;
+        private TimeLayerController timeLayerController;
 
         private void Awake()
         {
             party = FindAnyObjectByType<PlayerPartyController>();
             encounterState = FindAnyObjectByType<EncounterState>();
+            timeLayerController = FindAnyObjectByType<TimeLayerController>();
         }
 
         private void OnGUI()
@@ -42,9 +45,25 @@ namespace Demo02.UI
             );
             GUI.Label(
                 new Rect(Screen.width - 484f, Screen.height - 42f, 460f, 30f),
-                "WASD 移动  |  Shift 奔跑  |  Space 跳跃  |  左键攻击  |  右键镜头",
+                "WASD 移动  |  Shift 奔跑  |  Space 跳跃  |  左键攻击  |  右键镜头  |  Q 切换时间层",
                 style
             );
+
+            if (timeLayerController != null)
+            {
+                string layerName = timeLayerController.CurrentLayer == TimeLayer.Present
+                    ? "现世"
+                    : "旧时";
+                GUI.Box(
+                    new Rect(Screen.width * 0.5f - 110f, 24f, 220f, 42f),
+                    $"当前时间层：{layerName}",
+                    new GUIStyle(GUI.skin.box)
+                    {
+                        alignment = TextAnchor.MiddleCenter,
+                        fontSize = 17
+                    }
+                );
+            }
 
             DrawEnemyHealthBars();
 

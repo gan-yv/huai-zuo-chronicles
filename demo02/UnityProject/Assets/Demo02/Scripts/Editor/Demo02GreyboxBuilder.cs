@@ -6,6 +6,7 @@ using Demo02.Interaction;
 using Demo02.Narrative;
 using Demo02.Player;
 using Demo02.UI;
+using Demo02.WorldState;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -100,6 +101,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Enemy_Patrol_01") == null
                     || existingRoot.transform.Find("Choice_Preserve") == null
                     || existingRoot.transform.Find("PlayerPlaceholder/MeleeArc") == null
+                    || existingRoot.transform.Find("TimeAnchor_Present_01") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -233,6 +235,28 @@ namespace Demo02.Editor
             );
             repairSite.AddComponent<RepairSite>();
 
+            CreateTimeAnchor(
+                root.transform,
+                "TimeAnchor_Present_01",
+                new Vector3(2.7f, 1.2f, 5f),
+                "present-01",
+                TimeLayer.Present
+            );
+            CreateTimeAnchor(
+                root.transform,
+                "TimeAnchor_Past_02",
+                new Vector3(-2.7f, 1.2f, 14f),
+                "past-02",
+                TimeLayer.Past
+            );
+            CreateTimeAnchor(
+                root.transform,
+                "TimeAnchor_Present_03",
+                new Vector3(0f, 1.2f, 22f),
+                "present-03",
+                TimeLayer.Present
+            );
+
             List<Combatant> enemies = new()
             {
                 CreateEnemy(root.transform, "Enemy_Patrol_01", new Vector3(-1.2f, 0.9f, 12f)),
@@ -281,6 +305,7 @@ namespace Demo02.Editor
 
             GameObject gameSession = new GameObject("GameSession");
             gameSession.transform.SetParent(root.transform);
+            gameSession.AddComponent<TimeLayerController>();
             gameSession.AddComponent<InvestigationState>();
             EncounterState encounterState = gameSession.AddComponent<EncounterState>();
             encounterState.Configure(enemies);
@@ -330,6 +355,23 @@ namespace Demo02.Editor
             combatant.Configure(CombatTeam.Enemy, 60f);
             enemy.AddComponent<EnemyAI>();
             return combatant;
+        }
+
+        private static void CreateTimeAnchor(
+            Transform parent,
+            string name,
+            Vector3 position,
+            string anchorId,
+            TimeLayer layer)
+        {
+            GameObject anchor = CreateBlock(
+                parent,
+                name,
+                position,
+                new Vector3(1.1f, 2.4f, 0.35f)
+            );
+            anchor.AddComponent<TimeLayerVisibility>().Configure(layer);
+            anchor.AddComponent<TimeAnchor>().Configure(anchorId);
         }
     }
 }

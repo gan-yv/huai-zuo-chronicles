@@ -23,6 +23,11 @@ namespace Demo02.Interaction
                     return $"E  清除附近巡逻队  ({encounterState.AliveEnemyCount}/{encounterState.TotalEnemyCount})";
                 }
 
+                if (investigationState != null && !investigationState.HasAllTimeAnchors)
+                {
+                    return $"E  检查时空接点（锚点 {investigationState.StabilizedTimeAnchorCount}/{investigationState.RequiredTimeAnchorCount}）";
+                }
+
                 return investigationState != null && investigationState.HasAllClues
                     ? "E  稳定时空接点"
                     : "E  检查时空接点";
@@ -52,6 +57,13 @@ namespace Demo02.Interaction
             if (encounterState != null && !encounterState.IsCleared)
             {
                 return "巡逻队仍在附近，修复工具无法稳定暴露的接点。";
+            }
+
+            if (!investigationState.HasAllTimeAnchors)
+            {
+                int remaining = investigationState.RequiredTimeAnchorCount
+                    - investigationState.StabilizedTimeAnchorCount;
+                return $"仍有 {remaining} 个时间锚点漂移。切换时间层完成校正。";
             }
 
             if (!investigationState.CompleteRepair())

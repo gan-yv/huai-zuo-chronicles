@@ -42,6 +42,11 @@ namespace Demo02.UI
             {
                 text = $"目标：击退巡逻队  {encounterState.AliveEnemyCount}/{encounterState.TotalEnemyCount}";
             }
+            else if (investigationState.HasAllClues
+                && !investigationState.HasAllTimeAnchors)
+            {
+                text = $"目标：切换时间层，稳定锚点  {investigationState.StabilizedTimeAnchorCount}/{investigationState.RequiredTimeAnchorCount}";
+            }
             else if (investigationState.HasAllClues)
             {
                 text = "目标：前往街尾，稳定时空接点";
