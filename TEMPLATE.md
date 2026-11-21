@@ -3,7 +3,7 @@
 当前稳定模板：
 
 - Git 分支：`template/world-rpg-base`
-- 版本标签：`template-world-rpg-v1`
+- 版本标签：`template-world-rpg-v1.1`
 - 来源版本：`demo02-world-navigation-v0.13`
 
 ## 已包含
@@ -35,6 +35,7 @@
 2. 将新项目分支重命名为 `main`。
 3. 移除模板仓库的远程地址。
 4. `-Minimal` 会删除 `demo01/` 和 Demo02 的早期归档。
+5. `-Minimal` 会生成新项目入口 README，并创建一条干净的初始化提交。
 
 如果已有新 GitHub 仓库，可以同时传入：
 
