@@ -51,6 +51,7 @@ secrets/
 *.local
 
 # Local test builds. Keep the directory documentation, ignore generated files.
+/demo02/UnityBatchTemp/
 /demo01/UnityProject/Build/
 /demo02/UnityProject/Build/
 /demo01/Builds/*
