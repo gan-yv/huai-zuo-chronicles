@@ -13,16 +13,18 @@ namespace Demo02.Narrative
         ConclusionEquals = 4,
         StageAtLeast = 5,
         StageBefore = 6,
-        HasEvidence = 7
+        HasEvidence = 7,
+        HasFact = 8
     }
 
     public enum DialogueEffectType
     {
-        None,
-        SetWitnessStance,
-        SetEvidencePlan,
-        CompleteWitnessBriefing,
-        CompleteEvidenceReview
+        None = 0,
+        SetWitnessStance = 1,
+        SetEvidencePlan = 2,
+        CompleteWitnessBriefing = 3,
+        CompleteEvidenceReview = 4,
+        SetFact = 5
     }
 
     [Serializable]
@@ -34,6 +36,7 @@ namespace Demo02.Narrative
         public EvidencePlan EvidencePlan;
         public ConclusionChoice Conclusion;
         public string EvidenceId;
+        public string StoryFactId;
         public bool Negate;
     }
 
@@ -43,6 +46,7 @@ namespace Demo02.Narrative
         public DialogueEffectType Type;
         public WitnessStance Stance;
         public EvidencePlan EvidencePlan;
+        public string StoryFactId;
     }
 
     [Serializable]
@@ -210,6 +214,9 @@ namespace Demo02.Narrative
                     case DialogueEffectType.CompleteEvidenceReview:
                         state.CompleteEvidenceReview();
                         break;
+                    case DialogueEffectType.SetFact:
+                        state.SetFact(effect.StoryFactId);
+                        break;
                 }
             }
         }
@@ -229,6 +236,8 @@ namespace Demo02.Narrative
                     state.Stage < condition.Stage,
                 DialogueConditionType.HasEvidence =>
                     state.HasClue(condition.EvidenceId),
+                DialogueConditionType.HasFact =>
+                    state.HasFact(condition.StoryFactId),
                 DialogueConditionType.StanceEquals =>
                     state.Stance == condition.Stance,
                 DialogueConditionType.EvidencePlanEquals =>

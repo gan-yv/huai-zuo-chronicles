@@ -24,6 +24,7 @@ namespace Demo02.Core
         public List<string> ClueIds = new();
         public List<string> TimeAnchorIds = new();
         public List<string> EchoIds = new();
+        public List<string> StoryFactIds = new();
         public ChapterStage ChapterStage;
         public bool TestimonyContradictionSolved;
         public int ContradictionAttempts;

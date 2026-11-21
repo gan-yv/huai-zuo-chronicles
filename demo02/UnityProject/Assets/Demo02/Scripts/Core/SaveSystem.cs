@@ -255,6 +255,9 @@ namespace Demo02.Core
                 ClueIds = new List<string>(investigationState.ExportClueIds()),
                 TimeAnchorIds = new List<string>(investigationState.ExportTimeAnchorIds()),
                 EchoIds = new List<string>(investigationState.ExportEchoIds()),
+                StoryFactIds = new List<string>(
+                    investigationState.ExportStoryFactIds()
+                ),
                 ChapterStage = investigationState.Stage,
                 TestimonyContradictionSolved =
                     investigationState.TestimonyContradictionSolved,
@@ -411,7 +414,8 @@ namespace Demo02.Core
                 data.Stance,
                 data.EvidencePlan,
                 data.TestimonyContradictionSolved,
-                data.ContradictionAttempts
+                data.ContradictionAttempts,
+                data.StoryFactIds
             );
             timeLayerController.SetLayer(data.TimeLayer);
             party.RestoreActiveCharacter(data.ActivePartyIndex);
@@ -494,6 +498,7 @@ namespace Demo02.Core
                 investigationState.Stage,
                 investigationState.TestimonyContradictionSolved,
                 investigationState.ContradictionAttempts,
+                investigationState.StoryFactCount,
                 investigationState.Stance,
                 investigationState.Plan,
                 investigationState.IsRepaired,

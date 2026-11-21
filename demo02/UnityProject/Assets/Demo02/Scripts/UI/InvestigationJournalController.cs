@@ -434,11 +434,38 @@ namespace Demo02.UI
                     + $"\n\n时间锚点：{investigationState.StabilizedTimeAnchorCount}"
                     + $"/{investigationState.RequiredTimeAnchorCount}"
                     + $"\n残留回声：{investigationState.DiscoveredEchoCount}/3"
+                    + GetStoryFactSummary(investigationState.CaseContent)
                     + $"\n调查立场：{ChapterCopy.GetStanceLabel(investigationState)}"
                     + $"\n证据去向：{ChapterCopy.GetPlanLabel(investigationState)}"
                     + "\n按 V 开启修痕视界，寻找隐藏回声。",
                 UiTheme.Label(12, TextAnchor.UpperLeft)
             );
+        }
+
+        private string GetStoryFactSummary(CaseDefinition content)
+        {
+            if (content == null)
+            {
+                return string.Empty;
+            }
+
+            string facts = string.Empty;
+            for (int index = 0; index < content.StoryFacts.Count; index++)
+            {
+                StoryFactDefinition fact = content.StoryFacts[index];
+                if (!investigationState.HasFact(fact.Id))
+                {
+                    continue;
+                }
+
+                facts += string.IsNullOrWhiteSpace(facts)
+                    ? fact.Title
+                    : $"、{fact.Title}";
+            }
+
+            return string.IsNullOrWhiteSpace(facts)
+                ? "\n支线旁证：尚未发现"
+                : $"\n支线旁证：{facts}";
         }
 
         private static string GetArgumentValue(string prefix)

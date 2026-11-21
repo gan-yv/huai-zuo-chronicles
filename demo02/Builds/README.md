@@ -11,7 +11,7 @@ WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包：
 
 ```text
-Releases/HuaiZuoChronicles_Windows_x64_v1.13.0.zip
+Releases/HuaiZuoChronicles_Windows_x64_v1.14.0.zip
 ```
 
 建议命名：

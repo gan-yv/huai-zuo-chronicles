@@ -25,14 +25,15 @@ namespace Demo02.Editor
             if (existing != null)
             {
                 if (existing.DialogueScripts.Count == 0
-                    || existing.ContentVersion < 3)
+                    || existing.ContentVersion < 4)
                 {
-                    existing.ConfigureDialogueScriptsForEditor(
-                        CreateDialogueScripts()
+                    existing.ConfigureStoryContentForEditor(
+                        CreateDialogueScripts(),
+                        CreateStoryFacts()
                     );
                     EditorUtility.SetDirty(existing);
                     AssetDatabase.SaveAssets();
-                    Debug.Log("Upgraded chapter asset to content version 3.");
+                    Debug.Log("Upgraded chapter asset to content version 4.");
                 }
                 return existing;
             }
@@ -49,7 +50,8 @@ namespace Demo02.Editor
                 CreateContradiction(),
                 CreateStageCopy(),
                 CreateConclusionCopy(),
-                CreateDialogueScripts()
+                CreateDialogueScripts(),
+                CreateStoryFacts()
             );
             AssetDatabase.CreateAsset(definition, Chapter01AssetPath);
             AssetDatabase.SaveAssets();
@@ -260,6 +262,29 @@ namespace Demo02.Editor
             };
         }
 
+        private static List<StoryFactDefinition> CreateStoryFacts()
+        {
+            return new List<StoryFactDefinition>
+            {
+                new()
+                {
+                    Id = "teahouse-cart-testimony",
+                    Title = "茶肆盐车旁证",
+                    Detail =
+                        "茶肆掌柜确认，初五封仓时门外没有盐车，"
+                        + "七辆车直到初七后半夜才从后巷经过。"
+                },
+                new()
+                {
+                    Id = "teahouse-keeper-protected",
+                    Title = "茶肆掌柜保持沉默",
+                    Detail =
+                        "你没有继续追问盐车细节，避免陆崇的人察觉茶肆"
+                        + "也掌握了关键旁证。掌柜会记住这份克制。"
+                }
+            };
+        }
+
         private static List<DialogueScriptDefinition> CreateDialogueScripts()
         {
             return new List<DialogueScriptDefinition>
@@ -405,6 +430,60 @@ namespace Demo02.Editor
                     new[]
                     {
                         Effect(DialogueEffectType.CompleteEvidenceReview)
+                    }
+                ),
+                Script(
+                    "shenbo-cross-examine-teahouse",
+                    "E  把茶肆旁证告诉沈伯",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.CrossExamineTestimony),
+                        HasFactCondition("teahouse-cart-testimony")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "守仓人 沈伯",
+                            "茶肆掌柜也看见了？初五封仓时门外没有车，"
+                            + "初七后半夜那七辆车才从后巷过去……"
+                        ),
+                        Line(
+                            "主角",
+                            "两处证词对上了。封条先写好，盐车后入城。"
+                            + "现在只需要让沈伯的说法和账牌并排出现。"
+                        ),
+                        Line(
+                            "守仓人 沈伯",
+                            "按 T。别让那两个人只是各自说了一段话，"
+                            + "要让他们在时间上互相撞破。"
+                        )
+                    }
+                ),
+                Script(
+                    "shenbo-cross-examine-protected",
+                    "E  请沈伯重述封条贴上的时间",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.CrossExamineTestimony),
+                        HasFactCondition("teahouse-keeper-protected")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "守仓人 沈伯",
+                            "茶肆那边你没继续追问？做得对。"
+                            + "陆崇的人已经在街口打听谁还记得沈砚。"
+                        ),
+                        Line(
+                            "主角",
+                            "掌柜知道的已经够多了。现在把你说的封条日期"
+                            + "和账牌上的入城日期放在一起。"
+                        ),
+                        Line(
+                            "守仓人 沈伯",
+                            "初五傍晚贴的封条，初七后半夜才到的盐车。"
+                            + "按 T，让他们并排撞一次。"
+                        )
                     }
                 ),
                 Script(
@@ -621,13 +700,63 @@ namespace Demo02.Editor
                     npcId: "teahouse"
                 ),
                 Script(
+                    "teahouse-after-cart-testimony",
+                    "E  与掌柜核对盐车旁证",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.Investigate),
+                        StageBeforeCondition(ChapterStage.Resolved),
+                        HasFactCondition("teahouse-cart-testimony")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "茶肆掌柜",
+                            "我把能记住的都说了：初五封仓时没有车，"
+                            + "初七后半夜七辆车从后巷过去。"
+                        ),
+                        Line(
+                            "茶肆掌柜",
+                            "沈砚坐在那张桌旁数账页，数到第七张时手一直在抖。"
+                            + "要是这些能给沈伯一个交代，你就去说。"
+                        )
+                    },
+                    npcId: "teahouse"
+                ),
+                Script(
+                    "teahouse-after-protected",
+                    "E  与掌柜交换一个眼神",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.Investigate),
+                        StageBeforeCondition(ChapterStage.Resolved),
+                        HasFactCondition("teahouse-keeper-protected")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "茶肆掌柜",
+                            "你没继续问，是对的。"
+                            + "今天已经有两拨人来问过盐车，我不想让伙计记住他们的脸。"
+                        ),
+                        Line(
+                            "茶肆掌柜",
+                            "该说的话我记在心里。等陆崇的人不再盯着这里，"
+                            + "你再来听。"
+                        )
+                    },
+                    npcId: "teahouse"
+                ),
+                Script(
                     "teahouse-rumor-seal",
                     "E  询问初七夜里的盐车",
                     new[]
                     {
                         StageAtLeastCondition(ChapterStage.Investigate),
                         StageBeforeCondition(ChapterStage.Resolved),
-                        HasEvidenceCondition("official-seal")
+                        HasEvidenceCondition("official-seal"),
+                        LacksFactCondition("teahouse-cart-testimony"),
+                        LacksFactCondition("teahouse-keeper-protected")
                     },
                     new[]
                     {
@@ -646,6 +775,17 @@ namespace Demo02.Editor
                             "茶肆掌柜",
                             "封条比盐车早两天，这账怎么算都不对。"
                             + "你若还能找到沈砚，替我把这壶凉茶热上。"
+                        )
+                    },
+                    new[]
+                    {
+                        Choice(
+                            "请掌柜细说那七辆车经过的经过。",
+                            SetFactEffect("teahouse-cart-testimony")
+                        ),
+                        Choice(
+                            "到此为止，别让茶肆卷进陆崇的视线。",
+                            SetFactEffect("teahouse-keeper-protected")
                         )
                     },
                     npcId: "teahouse"
@@ -818,6 +958,15 @@ namespace Demo02.Editor
             };
         }
 
+        private static DialogueEffectDefinition SetFactEffect(string factId)
+        {
+            return new DialogueEffectDefinition
+            {
+                Type = DialogueEffectType.SetFact,
+                StoryFactId = factId
+            };
+        }
+
         private static DialogueConditionDefinition StageCondition(
             ChapterStage stage)
         {
@@ -855,6 +1004,25 @@ namespace Demo02.Editor
             {
                 Type = DialogueConditionType.HasEvidence,
                 EvidenceId = evidenceId
+            };
+        }
+
+        private static DialogueConditionDefinition HasFactCondition(string factId)
+        {
+            return new DialogueConditionDefinition
+            {
+                Type = DialogueConditionType.HasFact,
+                StoryFactId = factId
+            };
+        }
+
+        private static DialogueConditionDefinition LacksFactCondition(string factId)
+        {
+            return new DialogueConditionDefinition
+            {
+                Type = DialogueConditionType.HasFact,
+                StoryFactId = factId,
+                Negate = true
             };
         }
 

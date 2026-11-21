@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7a824fa490c4e68b47aa81ab533c610, type: 3}
   m_Name: Chapter01_Case
   m_EditorClassIdentifier: Assembly-CSharp::Demo02.Narrative.CaseDefinition
-  contentVersion: 3
+  contentVersion: 4
   caseId: chapter-01
   title: "\u6D88\u5931\u7684\u76D0\u5F15"
   chapterLabel: CHAPTER 01
@@ -93,6 +93,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -110,16 +111,19 @@ MonoBehaviour:
       - Type: 1
         Stance: 1
         EvidencePlan: 0
+        StoryFactId:
     - Text: "\u5982\u679C\u6C88\u781A\u8FD8\u6D3B\u7740\uFF0C\u6211\u4F1A\u5148\u628A\u4ED6\u5E26\u56DE\u6765\u3002"
       Conditions: []
       Effects:
       - Type: 1
         Stance: 2
         EvidencePlan: 0
+        StoryFactId:
     CompletionEffects:
     - Type: 3
       Stance: 0
       EvidencePlan: 0
+      StoryFactId:
     ShowChoicesImmediately: 0
   - Id: shenbo-investigate-person
     NpcId: shenbo
@@ -131,6 +135,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 2
       Stage: 0
@@ -138,6 +143,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -157,6 +163,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 2
       Stage: 0
@@ -164,6 +171,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -183,6 +191,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -200,16 +209,80 @@ MonoBehaviour:
       - Type: 2
         Stance: 0
         EvidencePlan: 1
+        StoryFactId:
     - Text: "\u5148\u85CF\u4F4F\u8BC1\u636E\uFF0C\u4FDD\u62A4\u6C88\u4F2F\u548C\u5269\u4F59\u8BC1\u4EBA\u3002"
       Conditions: []
       Effects:
       - Type: 2
         Stance: 0
         EvidencePlan: 2
+        StoryFactId:
     CompletionEffects:
     - Type: 4
       Stance: 0
       EvidencePlan: 0
+      StoryFactId:
+    ShowChoicesImmediately: 0
+  - Id: shenbo-cross-examine-teahouse
+    NpcId: shenbo
+    InteractionPrompt: "E  \u628A\u8336\u8086\u65C1\u8BC1\u544A\u8BC9\u6C88\u4F2F"
+    Conditions:
+    - Type: 1
+      Stage: 3
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId:
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId: teahouse-cart-testimony
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u8336\u8086\u638C\u67DC\u4E5F\u770B\u89C1\u4E86\uFF1F\u521D\u4E94\u5C01\u4ED3\u65F6\u95E8\u5916\u6CA1\u6709\u8F66\uFF0C\u521D\u4E03\u540E\u534A\u591C\u90A3\u4E03\u8F86\u8F66\u624D\u4ECE\u540E\u5DF7\u8FC7\u53BB\u2026\u2026"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u4E24\u5904\u8BC1\u8BCD\u5BF9\u4E0A\u4E86\u3002\u5C01\u6761\u5148\u5199\u597D\uFF0C\u76D0\u8F66\u540E\u5165\u57CE\u3002\u73B0\u5728\u53EA\u9700\u8981\u8BA9\u6C88\u4F2F\u7684\u8BF4\u6CD5\u548C\u8D26\u724C\u5E76\u6392\u51FA\u73B0\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6309 T\u3002\u522B\u8BA9\u90A3\u4E24\u4E2A\u4EBA\u53EA\u662F\u5404\u81EA\u8BF4\u4E86\u4E00\u6BB5\u8BDD\uFF0C\u8981\u8BA9\u4ED6\u4EEC\u5728\u65F6\u95F4\u4E0A\u4E92\u76F8\u649E\u7834\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-cross-examine-protected
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BF7\u6C88\u4F2F\u91CD\u8FF0\u5C01\u6761\u8D34\u4E0A\u7684\u65F6\u95F4"
+    Conditions:
+    - Type: 1
+      Stage: 3
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId:
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId: teahouse-keeper-protected
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u8336\u8086\u90A3\u8FB9\u4F60\u6CA1\u7EE7\u7EED\u8FFD\u95EE\uFF1F\u505A\u5F97\u5BF9\u3002\u9646\u5D07\u7684\u4EBA\u5DF2\u7ECF\u5728\u8857\u53E3\u6253\u542C\u8C01\u8FD8\u8BB0\u5F97\u6C88\u781A\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u638C\u67DC\u77E5\u9053\u7684\u5DF2\u7ECF\u591F\u591A\u4E86\u3002\u73B0\u5728\u628A\u4F60\u8BF4\u7684\u5C01\u6761\u65E5\u671F\u548C\u8D26\u724C\u4E0A\u7684\u5165\u57CE\u65E5\u671F\u653E\u5728\u4E00\u8D77\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u521D\u4E94\u508D\u665A\u8D34\u7684\u5C01\u6761\uFF0C\u521D\u4E03\u540E\u534A\u591C\u624D\u5230\u7684\u76D0\u8F66\u3002\u6309
+        T\uFF0C\u8BA9\u4ED6\u4EEC\u5E76\u6392\u649E\u4E00\u6B21\u3002"
+    Choices: []
+    CompletionEffects: []
     ShowChoicesImmediately: 0
   - Id: shenbo-cross-examine
     NpcId: shenbo
@@ -221,6 +294,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -242,6 +316,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 2
       Stage: 0
@@ -249,6 +324,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -270,6 +346,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 2
       Stage: 0
@@ -277,6 +354,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -298,6 +376,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 3
       Stage: 0
@@ -305,6 +384,7 @@ MonoBehaviour:
       EvidencePlan: 2
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -326,6 +406,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 3
       Stage: 0
@@ -333,6 +414,7 @@ MonoBehaviour:
       EvidencePlan: 1
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -354,6 +436,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 2
       Stage: 0
@@ -361,6 +444,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -382,6 +466,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 2
       Stage: 0
@@ -389,6 +474,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -410,6 +496,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 4
       Stage: 0
@@ -417,6 +504,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 1
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 3
       Stage: 0
@@ -424,6 +512,7 @@ MonoBehaviour:
       EvidencePlan: 1
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -441,6 +530,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 4
       Stage: 0
@@ -448,6 +538,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 1
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 3
       Stage: 0
@@ -455,6 +546,7 @@ MonoBehaviour:
       EvidencePlan: 2
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -472,6 +564,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 4
       Stage: 0
@@ -479,6 +572,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 2
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 2
       Stage: 0
@@ -486,6 +580,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -503,6 +598,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 4
       Stage: 0
@@ -510,6 +606,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 2
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 2
       Stage: 0
@@ -517,6 +614,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -534,6 +632,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
@@ -551,6 +650,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 4
       Stage: 0
@@ -558,6 +658,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 1
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 3
       Stage: 0
@@ -565,6 +666,7 @@ MonoBehaviour:
       EvidencePlan: 1
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u8336\u8086\u638C\u67DC"
@@ -584,6 +686,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 4
       Stage: 0
@@ -591,6 +694,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 1
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 3
       Stage: 0
@@ -598,6 +702,7 @@ MonoBehaviour:
       EvidencePlan: 2
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u8336\u8086\u638C\u67DC"
@@ -617,6 +722,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 4
       Stage: 0
@@ -624,10 +730,83 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 2
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u8336\u8086\u638C\u67DC"
       text: "\u8857\u53E3\u5B89\u9759\u5F97\u50CF\u4EC0\u4E48\u90FD\u6CA1\u53D1\u751F\u8FC7\u3002\u53EA\u662F\u90A3\u5F20\u9760\u7A97\u7684\u684C\u5B50\uFF0C\u6211\u8FD8\u662F\u4E0D\u6562\u8BA9\u522B\u4EBA\u5750\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: teahouse-after-cart-testimony
+    NpcId: teahouse
+    InteractionPrompt: "E  \u4E0E\u638C\u67DC\u6838\u5BF9\u76D0\u8F66\u65C1\u8BC1"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId:
+      Negate: 0
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId:
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId: teahouse-cart-testimony
+      Negate: 0
+    Lines:
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u6211\u628A\u80FD\u8BB0\u4F4F\u7684\u90FD\u8BF4\u4E86\uFF1A\u521D\u4E94\u5C01\u4ED3\u65F6\u6CA1\u6709\u8F66\uFF0C\u521D\u4E03\u540E\u534A\u591C\u4E03\u8F86\u8F66\u4ECE\u540E\u5DF7\u8FC7\u53BB\u3002"
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u6C88\u781A\u5750\u5728\u90A3\u5F20\u684C\u65C1\u6570\u8D26\u9875\uFF0C\u6570\u5230\u7B2C\u4E03\u5F20\u65F6\u624B\u4E00\u76F4\u5728\u6296\u3002\u8981\u662F\u8FD9\u4E9B\u80FD\u7ED9\u6C88\u4F2F\u4E00\u4E2A\u4EA4\u4EE3\uFF0C\u4F60\u5C31\u53BB\u8BF4\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: teahouse-after-protected
+    NpcId: teahouse
+    InteractionPrompt: "E  \u4E0E\u638C\u67DC\u4EA4\u6362\u4E00\u4E2A\u773C\u795E"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId:
+      Negate: 0
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId:
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId: teahouse-keeper-protected
+      Negate: 0
+    Lines:
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u4F60\u6CA1\u7EE7\u7EED\u95EE\uFF0C\u662F\u5BF9\u7684\u3002\u4ECA\u5929\u5DF2\u7ECF\u6709\u4E24\u62E8\u4EBA\u6765\u95EE\u8FC7\u76D0\u8F66\uFF0C\u6211\u4E0D\u60F3\u8BA9\u4F19\u8BA1\u8BB0\u4F4F\u4ED6\u4EEC\u7684\u8138\u3002"
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u8BE5\u8BF4\u7684\u8BDD\u6211\u8BB0\u5728\u5FC3\u91CC\u3002\u7B49\u9646\u5D07\u7684\u4EBA\u4E0D\u518D\u76EF\u7740\u8FD9\u91CC\uFF0C\u4F60\u518D\u6765\u542C\u3002"
     Choices: []
     CompletionEffects: []
     ShowChoicesImmediately: 0
@@ -641,6 +820,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 6
       Stage: 7
@@ -648,6 +828,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 7
       Stage: 0
@@ -655,7 +836,24 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId: official-seal
+      StoryFactId:
       Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId: teahouse-cart-testimony
+      Negate: 1
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId:
+      StoryFactId: teahouse-keeper-protected
+      Negate: 1
     Lines:
     - speaker: "\u8336\u8086\u638C\u67DC"
       text: "\u4F60\u627E\u5230\u90A3\u679A\u5C01\u6761\u4E86\uFF1F\u521D\u4E94\u508D\u665A\u4ED6\u4EEC\u5C01\u7684\u662F\u7A7A\u4ED3\uFF0C\u95E8\u53E3\u8FDE\u4E00\u8F86\u76D0\u8F66\u90FD\u6CA1\u6709\u3002"
@@ -663,7 +861,21 @@ MonoBehaviour:
       text: "\u521D\u4E03\u540E\u534A\u591C\uFF0C\u4E03\u8F86\u8F66\u624D\u4ECE\u540E\u5DF7\u8FC7\u53BB\u3002\u6C88\u781A\u90A3\u665A\u5750\u5728\u8FD9\u91CC\uFF0C\u53CD\u590D\u6570\u4E03\u5F20\u8D26\u9875\u3002\u4ED6\u8D70\u65F6\u8138\u767D\u5F97\u5389\u5BB3\u3002"
     - speaker: "\u8336\u8086\u638C\u67DC"
       text: "\u5C01\u6761\u6BD4\u76D0\u8F66\u65E9\u4E24\u5929\uFF0C\u8FD9\u8D26\u600E\u4E48\u7B97\u90FD\u4E0D\u5BF9\u3002\u4F60\u82E5\u8FD8\u80FD\u627E\u5230\u6C88\u781A\uFF0C\u66FF\u6211\u628A\u8FD9\u58F6\u51C9\u8336\u70ED\u4E0A\u3002"
-    Choices: []
+    Choices:
+    - Text: "\u8BF7\u638C\u67DC\u7EC6\u8BF4\u90A3\u4E03\u8F86\u8F66\u7ECF\u8FC7\u7684\u7ECF\u8FC7\u3002"
+      Conditions: []
+      Effects:
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: teahouse-cart-testimony
+    - Text: "\u5230\u6B64\u4E3A\u6B62\uFF0C\u522B\u8BA9\u8336\u8086\u5377\u8FDB\u9646\u5D07\u7684\u89C6\u7EBF\u3002"
+      Conditions: []
+      Effects:
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: teahouse-keeper-protected
     CompletionEffects: []
     ShowChoicesImmediately: 0
   - Id: teahouse-early
@@ -676,6 +888,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     - Type: 6
       Stage: 2
@@ -683,6 +896,7 @@ MonoBehaviour:
       EvidencePlan: 0
       Conclusion: 0
       EvidenceId:
+      StoryFactId:
       Negate: 0
     Lines:
     - speaker: "\u8336\u8086\u638C\u67DC"
@@ -692,3 +906,10 @@ MonoBehaviour:
     Choices: []
     CompletionEffects: []
     ShowChoicesImmediately: 0
+  storyFacts:
+  - Id: teahouse-cart-testimony
+    Title: "\u8336\u8086\u76D0\u8F66\u65C1\u8BC1"
+    Detail: "\u8336\u8086\u638C\u67DC\u786E\u8BA4\uFF0C\u521D\u4E94\u5C01\u4ED3\u65F6\u95E8\u5916\u6CA1\u6709\u76D0\u8F66\uFF0C\u4E03\u8F86\u8F66\u76F4\u5230\u521D\u4E03\u540E\u534A\u591C\u624D\u4ECE\u540E\u5DF7\u7ECF\u8FC7\u3002"
+  - Id: teahouse-keeper-protected
+    Title: "\u8336\u8086\u638C\u67DC\u4FDD\u6301\u6C89\u9ED8"
+    Detail: "\u4F60\u6CA1\u6709\u7EE7\u7EED\u8FFD\u95EE\u76D0\u8F66\u7EC6\u8282\uFF0C\u907F\u514D\u9646\u5D07\u7684\u4EBA\u5BDF\u89C9\u8336\u8086\u4E5F\u638C\u63E1\u4E86\u5173\u952E\u65C1\u8BC1\u3002\u638C\u67DC\u4F1A\u8BB0\u4F4F\u8FD9\u4EFD\u514B\u5236\u3002"

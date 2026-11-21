@@ -63,6 +63,7 @@ namespace Demo02.Narrative
         private readonly HashSet<string> collectedClueIds = new();
         private readonly HashSet<string> stabilizedTimeAnchorIds = new();
         private readonly HashSet<string> discoveredEchoIds = new();
+        private readonly HashSet<string> storyFactIds = new();
 
         public event Action<int, int> ClueCountChanged;
         public event Action<int, int> AnchorCountChanged;
@@ -78,6 +79,7 @@ namespace Demo02.Narrative
         public int RequiredTimeAnchorCount => requiredTimeAnchorCount;
         public bool HasAllTimeAnchors => StabilizedTimeAnchorCount >= requiredTimeAnchorCount;
         public int DiscoveredEchoCount => discoveredEchoIds.Count;
+        public int StoryFactCount => storyFactIds.Count;
         public bool TestimonyContradictionSolved { get; private set; }
         public int ContradictionAttempts { get; private set; }
         public bool IsRepaired { get; private set; }
@@ -91,6 +93,8 @@ namespace Demo02.Narrative
         public bool HasStabilizedAnchor(string anchorId) =>
             stabilizedTimeAnchorIds.Contains(anchorId);
         public bool HasEcho(string echoId) => discoveredEchoIds.Contains(echoId);
+        public bool HasFact(string factId) =>
+            !string.IsNullOrWhiteSpace(factId) && storyFactIds.Contains(factId);
 
         public bool CollectClue(string clueId)
         {
@@ -246,6 +250,11 @@ namespace Demo02.Narrative
             return !string.IsNullOrWhiteSpace(echoId) && discoveredEchoIds.Add(echoId);
         }
 
+        public bool SetFact(string factId)
+        {
+            return !string.IsNullOrWhiteSpace(factId) && storyFactIds.Add(factId);
+        }
+
         public bool SetWitnessStance(WitnessStance stance)
         {
             if (Stance != WitnessStance.Undecided || stance == WitnessStance.Undecided)
@@ -271,6 +280,8 @@ namespace Demo02.Narrative
         public string[] ExportClueIds() => new List<string>(collectedClueIds).ToArray();
         public string[] ExportTimeAnchorIds() => new List<string>(stabilizedTimeAnchorIds).ToArray();
         public string[] ExportEchoIds() => new List<string>(discoveredEchoIds).ToArray();
+        public string[] ExportStoryFactIds() =>
+            new List<string>(storyFactIds).ToArray();
 
         public void RestoreProgress(
             IEnumerable<string> clueIds,
@@ -282,11 +293,13 @@ namespace Demo02.Narrative
             WitnessStance stance = WitnessStance.Undecided,
             EvidencePlan plan = EvidencePlan.Undecided,
             bool testimonyContradictionSolved = false,
-            int contradictionAttempts = 0)
+            int contradictionAttempts = 0,
+            IEnumerable<string> storyFactIds = null)
         {
             collectedClueIds.Clear();
             stabilizedTimeAnchorIds.Clear();
             discoveredEchoIds.Clear();
+            this.storyFactIds.Clear();
 
             if (clueIds != null)
             {
@@ -317,6 +330,17 @@ namespace Demo02.Narrative
                     if (!string.IsNullOrWhiteSpace(echoId))
                     {
                         discoveredEchoIds.Add(echoId);
+                    }
+                }
+            }
+
+            if (storyFactIds != null)
+            {
+                foreach (string factId in storyFactIds)
+                {
+                    if (!string.IsNullOrWhiteSpace(factId))
+                    {
+                        this.storyFactIds.Add(factId);
                     }
                 }
             }

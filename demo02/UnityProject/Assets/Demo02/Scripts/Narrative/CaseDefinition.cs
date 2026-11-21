@@ -48,6 +48,14 @@ namespace Demo02.Narrative
         [TextArea(3, 8)] public string Reasoning;
     }
 
+    [Serializable]
+    public sealed class StoryFactDefinition
+    {
+        public string Id;
+        public string Title;
+        [TextArea(2, 5)] public string Detail;
+    }
+
     [CreateAssetMenu(
         fileName = "Chapter01_Case",
         menuName = "Demo02/Content/Case Definition"
@@ -65,6 +73,7 @@ namespace Demo02.Narrative
         [SerializeField] private List<StageCopyDefinition> stageCopy = new();
         [SerializeField] private List<ConclusionCopyDefinition> conclusionCopy = new();
         [SerializeField] private List<DialogueScriptDefinition> dialogueScripts = new();
+        [SerializeField] private List<StoryFactDefinition> storyFacts = new();
 
         public int ContentVersion => contentVersion;
         public string CaseId => caseId;
@@ -76,6 +85,7 @@ namespace Demo02.Narrative
         public ContradictionDefinition Contradiction => contradiction;
         public IReadOnlyList<DialogueScriptDefinition> DialogueScripts =>
             dialogueScripts;
+        public IReadOnlyList<StoryFactDefinition> StoryFacts => storyFacts;
 
         public EvidenceDefinition FindEvidence(string evidenceId)
         {
@@ -118,6 +128,24 @@ namespace Demo02.Narrative
             InvestigationState state)
         {
             return DialogueContentRuntime.Find(this, npcId, state);
+        }
+
+        public StoryFactDefinition FindStoryFact(string factId)
+        {
+            if (string.IsNullOrWhiteSpace(factId))
+            {
+                return null;
+            }
+
+            for (int index = 0; index < storyFacts.Count; index++)
+            {
+                if (storyFacts[index].Id == factId)
+                {
+                    return storyFacts[index];
+                }
+            }
+
+            return null;
         }
 
         public string GetObjective(ChapterStage stage)
@@ -202,6 +230,7 @@ namespace Demo02.Narrative
             ValidateContradiction(errors);
             ValidateStageCopy(errors);
             ValidateConclusionCopy(errors);
+            ValidateStoryFacts(errors);
             ValidateDialogueScripts(errors);
             return errors;
         }
@@ -460,6 +489,15 @@ namespace Demo02.Narrative
                             + $"condition: {condition.EvidenceId}"
                         );
                     }
+                    if (condition != null
+                        && condition.Type == DialogueConditionType.HasFact
+                        && FindStoryFact(condition.StoryFactId) == null)
+                    {
+                        errors.Add(
+                            $"Dialogue '{script.Id}' references missing story fact "
+                            + $"condition: {condition.StoryFactId}"
+                        );
+                    }
                 }
 
                 for (int choiceIndex = 0;
@@ -473,7 +511,21 @@ namespace Demo02.Narrative
                             $"Dialogue '{script.Id}' choice {choiceIndex} has no text."
                         );
                     }
+                    else
+                    {
+                        ValidateEffectFacts(
+                            errors,
+                            script.Id,
+                            choice.Effects
+                        );
+                    }
                 }
+
+                ValidateEffectFacts(
+                    errors,
+                    script.Id,
+                    script.CompletionEffects
+                );
             }
 
             foreach (ChapterStage stage in Enum.GetValues(typeof(ChapterStage)))
@@ -481,6 +533,58 @@ namespace Demo02.Narrative
                 if (!coveredStages.Contains(stage))
                 {
                     errors.Add($"No dialogue script covers stage: {stage}");
+                }
+            }
+        }
+
+        private void ValidateStoryFacts(List<string> errors)
+        {
+            if (storyFacts == null)
+            {
+                errors.Add("No story fact list is configured.");
+                return;
+            }
+
+            HashSet<string> ids = new();
+            for (int index = 0; index < storyFacts.Count; index++)
+            {
+                StoryFactDefinition fact = storyFacts[index];
+                if (fact == null
+                    || string.IsNullOrWhiteSpace(fact.Id)
+                    || string.IsNullOrWhiteSpace(fact.Title)
+                    || string.IsNullOrWhiteSpace(fact.Detail))
+                {
+                    errors.Add($"Story fact [{index}] is incomplete.");
+                    continue;
+                }
+                if (!ids.Add(fact.Id))
+                {
+                    errors.Add($"Duplicate story fact ID: {fact.Id}");
+                }
+            }
+        }
+
+        private void ValidateEffectFacts(
+            List<string> errors,
+            string dialogueId,
+            List<DialogueEffectDefinition> effects)
+        {
+            if (effects == null)
+            {
+                return;
+            }
+
+            for (int index = 0; index < effects.Count; index++)
+            {
+                DialogueEffectDefinition effect = effects[index];
+                if (effect != null
+                    && effect.Type == DialogueEffectType.SetFact
+                    && FindStoryFact(effect.StoryFactId) == null)
+                {
+                    errors.Add(
+                        $"Dialogue '{dialogueId}' references missing story fact "
+                        + $"effect: {effect.StoryFactId}"
+                    );
                 }
             }
         }
@@ -496,7 +600,8 @@ namespace Demo02.Narrative
             ContradictionDefinition newContradiction,
             List<StageCopyDefinition> newStageCopy,
             List<ConclusionCopyDefinition> newConclusionCopy,
-            List<DialogueScriptDefinition> newDialogueScripts)
+            List<DialogueScriptDefinition> newDialogueScripts,
+            List<StoryFactDefinition> newStoryFacts)
         {
             caseId = newCaseId;
             title = newTitle;
@@ -508,14 +613,17 @@ namespace Demo02.Narrative
             stageCopy = newStageCopy;
             conclusionCopy = newConclusionCopy;
             dialogueScripts = newDialogueScripts;
-            contentVersion = 3;
+            storyFacts = newStoryFacts;
+            contentVersion = 4;
         }
 
-        public void ConfigureDialogueScriptsForEditor(
-            List<DialogueScriptDefinition> newDialogueScripts)
+        public void ConfigureStoryContentForEditor(
+            List<DialogueScriptDefinition> newDialogueScripts,
+            List<StoryFactDefinition> newStoryFacts)
         {
             dialogueScripts = newDialogueScripts;
-            contentVersion = 3;
+            storyFacts = newStoryFacts;
+            contentVersion = 4;
         }
 #endif
     }

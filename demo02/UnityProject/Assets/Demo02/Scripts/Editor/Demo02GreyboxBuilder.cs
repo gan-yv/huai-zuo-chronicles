@@ -154,6 +154,22 @@ namespace Demo02.Editor
                 );
             }
 
+            DialogueContentRuntime.ApplyEffects(
+                teahouseRumor.Choices[0].Effects,
+                state
+            );
+            DialogueScriptDefinition teahouseAfterChoice =
+                DialogueContentRuntime.Find(content, "teahouse", state);
+            if (!state.HasFact("teahouse-cart-testimony")
+                || teahouseAfterChoice == null
+                || teahouseAfterChoice.Id != "teahouse-after-cart-testimony")
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "The teahouse choice did not persist its story fact."
+                );
+            }
+
             state.SetEvidencePlan(EvidencePlan.PublicRecord);
             DialogueScriptDefinition review = DialogueContentRuntime.Find(
                 content,
@@ -179,7 +195,7 @@ namespace Demo02.Editor
             );
             if (state.Stage != ChapterStage.CrossExamineTestimony
                 || crossExamine == null
-                || crossExamine.Id != "shenbo-cross-examine")
+                || crossExamine.Id != "shenbo-cross-examine-teahouse")
             {
                 Object.DestroyImmediate(probe);
                 throw new System.InvalidOperationException(
@@ -284,7 +300,9 @@ namespace Demo02.Editor
                         || data.SceneName != SceneNames.Guangling
                         || data.ClueIds.Count != 2
                         || data.TimeAnchorIds.Count != 1
-                        || data.EchoIds.Count != 1)
+                        || data.EchoIds.Count != 1
+                        || data.StoryFactIds.Count != 1
+                        || data.StoryFactIds[0] != "teahouse-cart-testimony")
                     {
                         throw new System.InvalidOperationException(
                             $"Manual slot {slot} did not round-trip correctly."
@@ -357,7 +375,11 @@ namespace Demo02.Editor
                     "clue-ledger"
                 },
                 TimeAnchorIds = new List<string> { "past-02" },
-                EchoIds = new List<string> { "echo-coin" }
+                EchoIds = new List<string> { "echo-coin" },
+                StoryFactIds = new List<string>
+                {
+                    "teahouse-cart-testimony"
+                }
             };
             File.WriteAllText(path, JsonUtility.ToJson(data, prettyPrint: true));
         }
@@ -495,14 +517,16 @@ namespace Demo02.Editor
                 WitnessStance.PersonFirst,
                 EvidencePlan.PrivateProtection,
                 true,
-                2
+                2,
+                new[] { "teahouse-cart-testimony" }
             );
             if (state.Stage != ChapterStage.Resolved
                 || state.SelectedConclusion != ConclusionChoice.Seal
                 || state.Stance != WitnessStance.PersonFirst
                 || state.Plan != EvidencePlan.PrivateProtection
                 || !state.TestimonyContradictionSolved
-                || state.ContradictionAttempts != 2)
+                || state.ContradictionAttempts != 2
+                || !state.HasFact("teahouse-cart-testimony"))
             {
                 Object.DestroyImmediate(probe);
                 throw new System.InvalidOperationException(
