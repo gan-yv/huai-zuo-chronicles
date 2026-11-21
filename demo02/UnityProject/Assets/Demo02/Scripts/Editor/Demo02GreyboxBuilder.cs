@@ -808,12 +808,16 @@ namespace Demo02.Editor
             CreateBlock(
                 areaRoot,
                 "Dongguan_Ground",
-                new Vector3(60f, -0.55f, 5f),
-                new Vector3(20f, 1f, 62f),
+                new Vector3(60f, -0.55f, 58f),
+                new Vector3(20f, 1f, 160f),
                 new Color(0.52f, 0.48f, 0.4f)
             );
 
-            float[] shopPositions = { -22f, -12f, -2f, 8f, 18f, 28f };
+            float[] shopPositions =
+            {
+                -12f, 0f, 12f, 24f, 36f, 48f,
+                60f, 72f, 84f, 96f, 108f, 120f
+            };
             for (int index = 0; index < shopPositions.Length; index++)
             {
                 float z = shopPositions[index];
@@ -843,57 +847,100 @@ namespace Demo02.Editor
             CreateBlock(
                 areaRoot,
                 "Dongguan_EndWall",
-                new Vector3(60f, 2f, 35f),
+                new Vector3(60f, 2f, 135f),
                 new Vector3(18f, 4f, 2f),
                 new Color(0.36f, 0.27f, 0.22f)
             );
             CreateBlock(
                 areaRoot,
                 "Dongguan_Arch_Left",
-                new Vector3(56.5f, 2f, -18f),
+                new Vector3(56.5f, 2f, -20f),
                 new Vector3(0.8f, 4f, 0.8f),
                 new Color(0.5f, 0.32f, 0.18f)
             );
             CreateBlock(
                 areaRoot,
                 "Dongguan_Arch_Right",
-                new Vector3(63.5f, 2f, -18f),
+                new Vector3(63.5f, 2f, -20f),
                 new Vector3(0.8f, 4f, 0.8f),
                 new Color(0.5f, 0.32f, 0.18f)
             );
             CreateBlock(
                 areaRoot,
                 "Dongguan_Arch_Beam",
-                new Vector3(60f, 4.1f, -18f),
+                new Vector3(60f, 4.1f, -20f),
                 new Vector3(7.8f, 0.8f, 0.8f),
                 new Color(0.62f, 0.42f, 0.2f)
             );
 
             CreateBlock(
                 areaRoot,
+                "Dongguan_MidArch_Left",
+                new Vector3(56.5f, 2f, 58f),
+                new Vector3(0.7f, 4f, 0.7f),
+                new Color(0.62f, 0.4f, 0.2f)
+            );
+            CreateBlock(
+                areaRoot,
+                "Dongguan_MidArch_Right",
+                new Vector3(63.5f, 2f, 58f),
+                new Vector3(0.7f, 4f, 0.7f),
+                new Color(0.62f, 0.4f, 0.2f)
+            );
+            CreateBlock(
+                areaRoot,
+                "Dongguan_MidArch_Beam",
+                new Vector3(60f, 4f, 58f),
+                new Vector3(7.8f, 0.7f, 0.7f),
+                new Color(0.72f, 0.5f, 0.24f)
+            );
+            CreateBlock(
+                areaRoot,
+                "Dongguan_Well",
+                new Vector3(56.9f, 0.55f, 59f),
+                new Vector3(1.8f, 1.1f, 1.8f),
+                new Color(0.34f, 0.4f, 0.42f)
+            );
+
+            CreateBlock(
+                areaRoot,
                 "Dongguan_Stall_A",
-                new Vector3(57f, 0.7f, 3f),
+                new Vector3(57f, 0.7f, 8f),
                 new Vector3(3f, 1.4f, 2f),
                 new Color(0.7f, 0.35f, 0.22f)
             );
             CreateBlock(
                 areaRoot,
                 "Dongguan_Stall_B",
-                new Vector3(63f, 0.7f, 14f),
+                new Vector3(63f, 0.7f, 38f),
                 new Vector3(3f, 1.4f, 2f),
                 new Color(0.25f, 0.5f, 0.48f)
+            );
+            CreateBlock(
+                areaRoot,
+                "Dongguan_Stall_C",
+                new Vector3(57f, 0.7f, 84f),
+                new Vector3(3f, 1.4f, 2f),
+                new Color(0.4f, 0.54f, 0.3f)
+            );
+            CreateBlock(
+                areaRoot,
+                "Dongguan_Stall_D",
+                new Vector3(63f, 0.7f, 112f),
+                new Vector3(3f, 1.4f, 2f),
+                new Color(0.66f, 0.38f, 0.18f)
             );
 
             GameObject dongguanSpawn = new("DongguanSpawn");
             dongguanSpawn.transform.SetParent(areaRoot);
-            dongguanSpawn.transform.position = new Vector3(60f, 0f, -14f);
+            dongguanSpawn.transform.position = new Vector3(60f, 0f, -16f);
             dongguanSpawn.AddComponent<WorldSpawnPoint>().Configure("dongguan_start");
 
             CreateWorldArea(
                 areaRoot,
                 "Area_DongguanStreet",
-                new Vector3(60f, 1f, 5f),
-                new Vector3(10f, 3f, 54f),
+                new Vector3(60f, 1f, 56f),
+                new Vector3(10f, 3f, 154f),
                 "dongguan-street",
                 "东关街"
             );
@@ -950,7 +997,7 @@ namespace Demo02.Editor
             GameObject clothMerchant = CreateBlock(
                 areaRoot,
                 "NPC_ClothMerchant",
-                new Vector3(63.5f, 1f, 10f),
+                new Vector3(63.5f, 1f, 64f),
                 new Vector3(1.1f, 2f, 1.1f),
                 new Color(0.55f, 0.28f, 0.38f)
             );
@@ -966,6 +1013,26 @@ namespace Demo02.Editor
                 new DialogueLine(
                     "绸缎商",
                     "若连买卖都能被改，东关街还算得上是谁的街？"
+                )
+            );
+
+            GameObject teaMaster = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            teaMaster.name = "NPC_TeaMaster";
+            teaMaster.transform.SetParent(areaRoot);
+            teaMaster.transform.position = new Vector3(56.5f, 1f, 112f);
+            teaMaster.AddComponent<ColorTint>().Configure(new Color(0.35f, 0.62f, 0.35f));
+            NpcDialogueInteractable teaDialogue =
+                teaMaster.AddComponent<NpcDialogueInteractable>();
+            teaDialogue.Configure(
+                "茶肆掌柜",
+                "E  与茶肆掌柜交谈",
+                new DialogueLine(
+                    "茶肆掌柜",
+                    "东关街最怕的不是客人少，是昨天来坐过的人，今天没人记得。"
+                ),
+                new DialogueLine(
+                    "茶肆掌柜",
+                    "茶凉了还能续，人会从纸上消失，可就续不回来了。"
                 )
             );
         }
