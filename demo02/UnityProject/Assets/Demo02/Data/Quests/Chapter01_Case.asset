@@ -62,7 +62,8 @@ MonoBehaviour:
     Objective: "\u6309 T \u6253\u5F00\u8BC1\u8BCD\u5BF9\u7167\uFF0C\u627E\u51FA\u5C01\u6761\u4E0E\u76D0\u8F66\u8BB0\u5F55\u7684\u65F6\u95F4\u77DB\u76FE"
     Reasoning: "\u6C88\u4F2F\u8BF4\u5C01\u6761\u5728\u521D\u4E94\u508D\u665A\u8D34\u4E0A\uFF0C\u8D26\u724C\u5374\u8BB0\u5F55\u4E03\u8F66\u76D0\u76F4\u5230\u521D\u4E03\u591C\u91CC\u624D\u5165\u57CE\u3002\u5982\u679C\u4E24\u53E5\u8BDD\u90FD\u6210\u7ACB\uFF0C\u9664\u540D\u5C31\u53D1\u751F\u5728\u79C1\u76D0\u5165\u57CE\u4E4B\u524D\u3002"
   - Stage: 4
-    Objective: "\u6309\u8BB0\u5F55\u987A\u5E8F\u7A33\u5B9A\u951A\u70B9\uFF1A{0} / {1}/{2}"
+    Objective: "\u6309\u8BB0\u5F55\u987A\u5E8F\u7A33\u5B9A\u951A\u70B9\uFF1A{0} /
+      {1}/{2}"
     Reasoning: "\u9646\u5D07\u7684\u5C01\u6761\u6BD4\u76D0\u5F15\u5DF7\u6D88\u5931\u65E9\u4E00\u5929\uFF0C\u8BF4\u660E\u9664\u540D\u662F\u9884\u8C0B\u3002\u95E8\u724C\u80CC\u9762\u7684\u94DC\u9489\u987A\u5E8F\u662F\u201C\u897F\u4ED3\u3001\u4E1C\u9A8C\u3001\u4E2D\u518C\u201D\uFF0C\u9519\u5E8F\u4F1A\u91CD\u7F6E\u951A\u70B9\u3002"
   - Stage: 5
     Objective: "\u524D\u5F80\u8857\u5C3E\uFF0C\u538B\u4E0B\u88AB\u6495\u5F00\u7684\u8BB0\u5F55"
@@ -80,3 +81,430 @@ MonoBehaviour:
   - Conclusion: 2
     Objective: "\u76D0\u5F15\u5DF7\u88AB\u6C38\u4E45\u5C01\u5B58\uFF0C\u6C88\u781A\u53EA\u7559\u5728\u4F60\u7684\u4FEE\u590D\u8BB0\u5F55\u91CC"
     Reasoning: "\u76D0\u5F15\u5DF7\u88AB\u5C01\u5B58\uFF0C\u57CE\u5E02\u8BB0\u5F55\u6062\u590D\u7A33\u5B9A\u3002\u6C88\u781A\u4ECD\u53EA\u5B58\u5728\u4E8E\u4F60\u7684\u79C1\u4EBA\u4FEE\u590D\u8BB0\u5F55\u4E2D\u3002"
+  dialogueScripts:
+  - Id: shenbo-arrival
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u6C88\u781A\u5931\u8E2A\u7684\u4E8B"
+    Conditions:
+    - Type: 1
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u4E5F\u662F\u4E3A\u90A3\u6761\u4E0D\u5B58\u5728\u7684\u8857\u6765\u7684\uFF1F\u4ECA\u65E9\u6211\u53BB\u5B98\u7F72\u62A5\u5B98\uFF0C\u4ED6\u4EEC\u8BF4\u6211\u4ECE\u6765\u6CA1\u6709\u513F\u5B50\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u5B98\u7F72\u6536\u5230\u4E00\u6279\u76D0\u5F15\uFF0C\u4EA4\u8D27\u5730\u70B9\u5199\u7740\u2018\u76D0\u5F15\u5DF7\u2019\u3002\u6211\u5728\u5E7F\u9675\u5730\u56FE\u4E0A\u627E\u4E0D\u5230\u8FD9\u4E2A\u540D\u5B57\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u76D0\u5F15\u5DF7\u5C31\u662F\u8FD9\u6761\u65E7\u8857\u4ECE\u524D\u7684\u540D\u5B57\u3002\u6211\u513F\u5B50\u6C88\u781A\u5B88\u7740\u76D0\u4ED3\u8D26\u3002\u6628\u591C\u4ED6\u5E26\u8D70\u4E86\u4E03\u9875\u8D26\u7C3F\uFF0C\u518D\u6CA1\u56DE\u6765\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u5E26\u6211\u53BB\u770B\u4ED6\u6700\u540E\u7559\u4E0B\u7684\u4E1C\u897F\u3002\u65E7\u8857\u62DB\u724C\u3001\u76D0\u4ED3\u8D26\u724C\u3001\u5B98\u5E9C\u5C01\u6761\u2014\u2014\u4E09\u5904\u8BB0\u5F55\u82E5\u6307\u5411\u540C\u4E00\u4E2A\u4EBA\uFF0C\u5C31\u80FD\u628A\u4ED6\u627E\u56DE\u6765\u3002"
+    Choices:
+    - Text: "\u6211\u6309\u8BB0\u5F55\u529E\u4E8B\u3002\u8BC1\u636E\u9F50\u4E86\uFF0C\u624D\u6709\u8D44\u683C\u8C08\u6551\u4EBA\u3002"
+      Conditions: []
+      Effects:
+      - Type: 1
+        Stance: 1
+        EvidencePlan: 0
+    - Text: "\u5982\u679C\u6C88\u781A\u8FD8\u6D3B\u7740\uFF0C\u6211\u4F1A\u5148\u628A\u4ED6\u5E26\u56DE\u6765\u3002"
+      Conditions: []
+      Effects:
+      - Type: 1
+        Stance: 2
+        EvidencePlan: 0
+    CompletionEffects:
+    - Type: 3
+      Stance: 0
+      EvidencePlan: 0
+    ShowChoicesImmediately: 0
+  - Id: shenbo-investigate-person
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u6C88\u781A\u6700\u540E\u7559\u4E0B\u7684\u8BB0\u5F55"
+    Conditions:
+    - Type: 1
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 2
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u80AF\u5148\u60F3\u7740\u963F\u781A\uFF0C\u6211\u5C31\u628A\u77E5\u9053\u7684\u90FD\u544A\u8BC9\u4F60\u3002\u540E\u5899\u4E0A\u7684\u65E7\u6F06\u3001\u8D26\u53F0\u7684\u80CC\u9762\uFF0C\u8FD8\u6709\u5B98\u7F72\u90A3\u679A\u5C01\u6761\uFF0C\u90FD\u522B\u6F0F\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6C88\u781A\u4E0D\u4F1A\u65E0\u7F18\u65E0\u6545\u5E26\u8D70\u8D26\u9875\u3002\u53BB\u627E\u65E7\u8857\u62DB\u724C\u3001\u76D0\u4ED3\u8D26\u724C\u548C\u5B98\u5E9C\u5C01\u6761\u3002\u4E09\u5F20\u7EB8\u653E\u5728\u4E00\u8D77\uFF0C\u624D\u6709\u4EBA\u80AF\u4FE1\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-investigate-evidence
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u6C88\u781A\u6700\u540E\u7559\u4E0B\u7684\u8BB0\u5F55"
+    Conditions:
+    - Type: 1
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 1
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u8BF4\u5F97\u5BF9\uFF0C\u5148\u8BA9\u4E09\u5F20\u7EB8\u5F7C\u6B64\u5370\u8BC1\u3002\u5B98\u7F72\u4E0D\u4F1A\u4FE1\u4E00\u4E2A\u7236\u4EB2\u7684\u8BDD\uFF0C\u4F46\u4F1A\u6015\u4E00\u4EFD\u5B8C\u6574\u7684\u8D26\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6C88\u781A\u4E0D\u4F1A\u65E0\u7F18\u65E0\u6545\u5E26\u8D70\u8D26\u9875\u3002\u53BB\u627E\u65E7\u8857\u62DB\u724C\u3001\u76D0\u4ED3\u8D26\u724C\u548C\u5B98\u5E9C\u5C01\u6761\u3002\u4E09\u5F20\u7EB8\u653E\u5728\u4E00\u8D77\uFF0C\u624D\u6709\u4EBA\u80AF\u4FE1\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-evidence-review
+    NpcId: shenbo
+    InteractionPrompt: "E  \u628A\u4E09\u5904\u8BB0\u5F55\u4EA4\u7ED9\u6C88\u4F2F\u8FA8\u8BA4"
+    Conditions:
+    - Type: 1
+      Stage: 2
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u8FD9\u4E09\u7B14\u2026\u2026\u90FD\u662F\u963F\u781A\u7684\u5B57\u3002\u4E03\u8F66\u76D0\u4ECE\u76D0\u5F15\u5DF7\u5165\u57CE\uFF0C\u590D\u6838\u7B7E\u5B57\u4E5F\u662F\u4ED6\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u5C01\u6761\u662F\u8F6C\u8FD0\u526F\u4F7F\u9646\u5D07\u7684\uFF0C\u65E5\u671F\u5374\u5728\u65E7\u8857\u6D88\u5931\u524D\u4E00\u5929\u3002\u4ED6\u4E0D\u662F\u4E8B\u540E\u63A9\u76D6\uFF0C\u800C\u662F\u63D0\u524D\u5199\u597D\u4E86\u7ED3\u5C40\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6240\u4EE5\u963F\u781A\u4E0D\u662F\u9003\u4E86\u3002\u662F\u6709\u4EBA\u628A\u79C1\u76D0\u7684\u8D26\u3001\u76D0\u5F15\u5DF7\uFF0C\u8FD8\u6709\u77E5\u60C5\u7684\u963F\u781A\u4E00\u8D77\u4ECE\u7EB8\u4E0A\u62B9\u6389\u4E86\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u7B49\u7B49\u3002\u5C01\u6761\u548C\u8D26\u724C\u7684\u65E5\u671F\u5BF9\u4E0D\u4E0A\u3002\u628A\u6C88\u4F2F\u7684\u8BF4\u6CD5\u4E0E\u4E03\u8F66\u76D0\u8D26\u724C\u653E\u5728\u4E00\u8D77\uFF0C\u5E94\u8BE5\u80FD\u770B\u51FA\u9646\u5D07\u7A76\u7ADF\u5728\u4EC0\u4E48\u65F6\u5019\u51B3\u5B9A\u62B9\u6389\u963F\u781A\u3002"
+    Choices:
+    - Text: "\u628A\u590D\u5236\u8BB0\u5F55\u9001\u5165\u5B98\u7F72\uFF0C\u8BA9\u6240\u6709\u4EBA\u90FD\u770B\u89C1\u3002"
+      Conditions: []
+      Effects:
+      - Type: 2
+        Stance: 0
+        EvidencePlan: 1
+    - Text: "\u5148\u85CF\u4F4F\u8BC1\u636E\uFF0C\u4FDD\u62A4\u6C88\u4F2F\u548C\u5269\u4F59\u8BC1\u4EBA\u3002"
+      Conditions: []
+      Effects:
+      - Type: 2
+        Stance: 0
+        EvidencePlan: 2
+    CompletionEffects:
+    - Type: 4
+      Stance: 0
+      EvidencePlan: 0
+    ShowChoicesImmediately: 0
+  - Id: shenbo-cross-examine
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BF7\u6C88\u4F2F\u91CD\u8FF0\u5C01\u6761\u8D34\u4E0A\u7684\u65F6\u95F4"
+    Conditions:
+    - Type: 1
+      Stage: 3
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u5C01\u6761\u662F\u521D\u4E94\u508D\u665A\u8D34\u4E0A\u7684\u3002\u90A3\u5929\u963F\u781A\u8FD8\u5728\u4ED3\u91CC\uFF0C\u4ED6\u4EB2\u624B\u6570\u8FC7\u95E8\u5916\u7684\u7A7A\u76D0\u8F66\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u53EF\u8D26\u724C\u5199\u7740\u4E03\u8F66\u76D0\u521D\u4E03\u591C\u624D\u5165\u57CE\u3002\u5C01\u6761\u6BD4\u79C1\u76D0\u65E9\u4E86\u4E24\u5929\uFF0C\u4ED6\u4EEC\u8981\u9664\u6389\u7684\u4E0D\u662F\u5DF2\u7ECF\u88AB\u6293\u4F4F\u7684\u628A\u67C4\uFF0C\u800C\u662F\u9884\u5B9A\u7684\u77E5\u60C5\u4EBA\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6309 T\uFF0C\u628A\u8FD9\u4E24\u53E5\u8BDD\u5E76\u6392\u653E\u5728\u6848\u5377\u4E0A\u3002\u522B\u53EA\u770B\u5B83\u4EEC\u5404\u81EA\u5199\u4E86\u4EC0\u4E48\uFF0C\u8981\u770B\u54EA\u4E00\u53E5\u5148\u53D1\u751F\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-anchor-person
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u5982\u4F55\u7A33\u5B9A\u65F6\u95F4\u951A\u70B9"
+    Conditions:
+    - Type: 1
+      Stage: 4
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 2
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u963F\u781A\u82E5\u8FD8\u542C\u5F97\u89C1\uFF0C\u4ED6\u4F1A\u8BB0\u5F97\u4F60\u521A\u624D\u7684\u8BDD\u3002\u53BB\u628A\u90A3\u4E9B\u95E8\u4E00\u6247\u6247\u627E\u51FA\u6765\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u963F\u781A\u5C0F\u65F6\u5019\u8BF4\uFF0C\u76D0\u4ED3\u7684\u706B\u5149\u7167\u5230\u65E7\u5899\u4E0A\uFF0C\u4F1A\u591A\u51FA\u4E00\u6392\u672C\u4E0D\u5B58\u5728\u7684\u95E8\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u90A3\u662F\u65E7\u65F6\u5C42\u7559\u4E0B\u7684\u5F71\u5B50\u3002\u95E8\u724C\u4E0A\u5199\u7740\u201C\u897F\u4ED3\u3001\u4E1C\u9A8C\u3001\u4E2D\u518C\u201D\u3002\u6309\u8FD9\u4E2A\u987A\u5E8F\u7A33\u5B9A\u951A\u70B9\uFF0C\u9519\u5E8F\u4F1A\u8BA9\u5DF2\u7ECF\u7A33\u5B9A\u7684\u90E8\u5206\u91CD\u65B0\u6F02\u79FB\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-anchor-evidence
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u5982\u4F55\u7A33\u5B9A\u65F6\u95F4\u951A\u70B9"
+    Conditions:
+    - Type: 1
+      Stage: 4
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 1
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u5148\u628A\u65E7\u65F6\u7684\u8DEF\u9489\u4F4F\u3002\u53EA\u6709\u4EB2\u773C\u770B\u89C1\u90A3\u4E00\u591C\uFF0C\u4F60\u624D\u77E5\u9053\u8FD9\u6848\u5B50\u7A76\u7ADF\u88AB\u8C01\u5199\u4E0B\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u963F\u781A\u5C0F\u65F6\u5019\u8BF4\uFF0C\u76D0\u4ED3\u7684\u706B\u5149\u7167\u5230\u65E7\u5899\u4E0A\uFF0C\u4F1A\u591A\u51FA\u4E00\u6392\u672C\u4E0D\u5B58\u5728\u7684\u95E8\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u90A3\u662F\u65E7\u65F6\u5C42\u7559\u4E0B\u7684\u5F71\u5B50\u3002\u95E8\u724C\u4E0A\u5199\u7740\u201C\u897F\u4ED3\u3001\u4E1C\u9A8C\u3001\u4E2D\u518C\u201D\u3002\u6309\u8FD9\u4E2A\u987A\u5E8F\u7A33\u5B9A\u951A\u70B9\uFF0C\u9519\u5E8F\u4F1A\u8BA9\u5DF2\u7ECF\u7A33\u5B9A\u7684\u90E8\u5206\u91CD\u65B0\u6F02\u79FB\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-repair-private
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u8857\u5C3E\u88AB\u6495\u5F00\u7684\u8BB0\u5F55"
+    Conditions:
+    - Type: 1
+      Stage: 5
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 3
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 2
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u6CA1\u628A\u8D26\u9875\u7ACB\u523B\u4EA4\u51FA\u53BB\uFF0C\u9646\u5D07\u7684\u4EBA\u5C31\u8FD8\u4E0D\u77E5\u9053\u6211\u4EEC\u5DF2\u7ECF\u8D70\u5230\u54EA\u4E00\u6B65\u3002\u5C0F\u5FC3\u4E9B\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u951A\u70B9\u5B89\u9759\u4E0B\u6765\u4E86\u3002\u53EF\u8857\u5C3E\u90A3\u5757\u5730\u65B9\u2026\u2026\u50CF\u88AB\u4EBA\u4ECE\u7EB8\u4E0A\u786C\u751F\u751F\u6495\u5F00\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u6C88\u781A\u7684\u540D\u5B57\u8FD8\u5728\u88C2\u7F1D\u53E6\u4E00\u4FA7\u3002\u538B\u4E0B\u65F6\u7F1D\uFF0C\u6211\u5C31\u80FD\u770B\u89C1\u6700\u540E\u90A3\u4E00\u9875\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-repair-public
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u8857\u5C3E\u88AB\u6495\u5F00\u7684\u8BB0\u5F55"
+    Conditions:
+    - Type: 1
+      Stage: 5
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 3
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 1
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u5B98\u7F72\u90A3\u8FB9\u8FDF\u65E9\u4F1A\u542C\u89C1\u98CE\u58F0\u3002\u4F60\u65E2\u7136\u9009\u62E9\u4E86\u516C\u5F00\uFF0C\u5C31\u4E0D\u80FD\u53EA\u62FF\u5230\u4E00\u534A\u771F\u76F8\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u951A\u70B9\u5B89\u9759\u4E0B\u6765\u4E86\u3002\u53EF\u8857\u5C3E\u90A3\u5757\u5730\u65B9\u2026\u2026\u50CF\u88AB\u4EBA\u4ECE\u7EB8\u4E0A\u786C\u751F\u751F\u6495\u5F00\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u6C88\u781A\u7684\u540D\u5B57\u8FD8\u5728\u88C2\u7F1D\u53E6\u4E00\u4FA7\u3002\u538B\u4E0B\u65F6\u7F1D\uFF0C\u6211\u5C31\u80FD\u770B\u89C1\u6700\u540E\u90A3\u4E00\u9875\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-final-person
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BF7\u6C88\u4F2F\u8BF4\u51FA\u4ED6\u7684\u9009\u62E9"
+    Conditions:
+    - Type: 1
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 2
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u4ECE\u4E00\u5F00\u59CB\u5C31\u8BF4\u4F1A\u5148\u6551\u963F\u781A\u3002\u73B0\u5728\u8F6E\u5230\u4F60\u51B3\u5B9A\uFF0C\u662F\u8BA9\u4ED6\u56DE\u6765\uFF0C\u8FD8\u662F\u8BA9\u6574\u6761\u8857\u7EE7\u7EED\u5B89\u9759\u4E0B\u53BB\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6211\u5DF2\u7ECF\u5F88\u591A\u5E74\u6CA1\u542C\u89C1\u6709\u4EBA\u53EB\u963F\u781A\u4E86\u3002\u4F60\u82E5\u6062\u590D\u76D0\u5F15\u5DF7\uFF0C\u9646\u5D07\u7684\u4EBA\u4F1A\u77E5\u9053\uFF1B\u4F60\u82E5\u5C01\u5B58\u8FD9\u91CC\uFF0C\u963F\u781A\u4E5F\u8BB8\u518D\u4E5F\u56DE\u4E0D\u6765\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u8BB0\u5F55\u4E0D\u4F1A\u66FF\u6211\u4EEC\u9009\u3002\u8981\u4FDD\u4F4F\u4E00\u4E2A\u4EBA\u3001\u4E00\u6761\u8857\uFF0C\u603B\u5F97\u6709\u4EBA\u627F\u62C5\u5B83\u91CD\u65B0\u51FA\u73B0\u540E\u7684\u4EE3\u4EF7\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-final-evidence
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BF7\u6C88\u4F2F\u8BF4\u51FA\u4ED6\u7684\u9009\u62E9"
+    Conditions:
+    - Type: 1
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 1
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u8BF4\u8FC7\u8BB0\u5F55\u8981\u5148\u8BF4\u8BDD\u3002\u73B0\u5728\u8BB0\u5F55\u5DF2\u7ECF\u8BF4\u5B8C\u4E86\uFF0C\u5269\u4E0B\u7684\u4E0D\u662F\u8BC1\u636E\uFF0C\u662F\u4EBA\u7684\u9009\u62E9\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6211\u5DF2\u7ECF\u5F88\u591A\u5E74\u6CA1\u542C\u89C1\u6709\u4EBA\u53EB\u963F\u781A\u4E86\u3002\u4F60\u82E5\u6062\u590D\u76D0\u5F15\u5DF7\uFF0C\u9646\u5D07\u7684\u4EBA\u4F1A\u77E5\u9053\uFF1B\u4F60\u82E5\u5C01\u5B58\u8FD9\u91CC\uFF0C\u963F\u781A\u4E5F\u8BB8\u518D\u4E5F\u56DE\u4E0D\u6765\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u8BB0\u5F55\u4E0D\u4F1A\u66FF\u6211\u4EEC\u9009\u3002\u8981\u4FDD\u4F4F\u4E00\u4E2A\u4EBA\u3001\u4E00\u6761\u8857\uFF0C\u603B\u5F97\u6709\u4EBA\u627F\u62C5\u5B83\u91CD\u65B0\u51FA\u73B0\u540E\u7684\u4EE3\u4EF7\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-epilogue-preserve-public
+    NpcId: shenbo
+    InteractionPrompt: "E  \u4E0E\u6C88\u4F2F\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      Negate: 0
+    - Type: 3
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 1
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u95E8\u53E3\u7684\u76D0\u5F15\u65D7\u5347\u8D77\u6765\u4E86\u3002\u4F60\u628A\u8D26\u9875\u9001\u8FDB\u5B98\u7F72\uFF0C\u8FD9\u56DE\u6574\u6761\u8857\u90FD\u542C\u5F97\u89C1\u963F\u781A\u7684\u7B97\u76D8\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-epilogue-preserve-private
+    NpcId: shenbo
+    InteractionPrompt: "E  \u4E0E\u6C88\u4F2F\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      Negate: 0
+    - Type: 3
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 2
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u95E8\u53E3\u7684\u76D0\u5F15\u65D7\u5347\u8D77\u6765\u4E86\u3002\u8D26\u9875\u4ECD\u85CF\u5728\u6697\u5904\uFF0C\u4F46\u81F3\u5C11\u963F\u781A\u7684\u540D\u5B57\u56DE\u5230\u4E86\u8857\u4E0A\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-epilogue-seal-person
+    NpcId: shenbo
+    InteractionPrompt: "E  \u4E0E\u6C88\u4F2F\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 2
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u8857\u53E3\u53C8\u7A7A\u4E86\u3002\u6211\u77E5\u9053\u4F60\u5DF2\u7ECF\u5C3D\u529B\uFF0C\u53EF\u963F\u781A\u8FD8\u662F\u6CA1\u80FD\u56DE\u6765\u3002\u81F3\u5C11\u522B\u5FD8\u8BB0\u4ED6\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-epilogue-seal-evidence
+    NpcId: shenbo
+    InteractionPrompt: "E  \u4E0E\u6C88\u4F2F\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 1
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u8857\u53E3\u53C8\u7A7A\u4E86\u3002\u8BB0\u5F55\u7A33\u5B9A\u4E86\uFF0C\u963F\u781A\u5374\u4ECD\u4E0D\u5728\u518C\u3002\u6216\u8BB8\u8FD9\u5C31\u662F\u53EA\u76F8\u4FE1\u7EB8\u5F20\u7684\u4EE3\u4EF7\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-epilogue-fallback
+    NpcId: shenbo
+    InteractionPrompt: "E  \u4E0E\u6C88\u4F2F\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u76D0\u5F15\u5DF7\u53C8\u5B89\u9759\u4E0B\u6765\u4E86\u3002\u65E0\u8BBA\u8BB0\u5F55\u600E\u4E48\u5199\uFF0C\u6211\u90FD\u4F1A\u8BB0\u5F97\u963F\u781A\u66FE\u7ECF\u5728\u8FD9\u91CC\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0

@@ -333,7 +333,7 @@ namespace Demo02.Narrative
                     22f * scale
                 ),
                 isChoosing
-                    ? "1 / 2  选择调查立场"
+                    ? "使用 1 / 2 或鼠标选择"
                     : choices.Length > 0
                         ? "E / Space  继续     对话结束后需要选择"
                         : "E / Space  继续      Esc  关闭",

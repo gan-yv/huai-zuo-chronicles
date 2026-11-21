@@ -24,6 +24,15 @@ namespace Demo02.Editor
             );
             if (existing != null)
             {
+                if (existing.DialogueScripts.Count == 0)
+                {
+                    existing.ConfigureDialogueScriptsForEditor(
+                        CreateDialogueScripts()
+                    );
+                    EditorUtility.SetDirty(existing);
+                    AssetDatabase.SaveAssets();
+                    Debug.Log("Added dialogue scripts to existing chapter asset.");
+                }
                 return existing;
             }
 
@@ -38,7 +47,8 @@ namespace Demo02.Editor
                 CreateTestimonies(),
                 CreateContradiction(),
                 CreateStageCopy(),
-                CreateConclusionCopy()
+                CreateConclusionCopy(),
+                CreateDialogueScripts()
             );
             AssetDatabase.CreateAsset(definition, Chapter01AssetPath);
             AssetDatabase.SaveAssets();
@@ -246,6 +256,483 @@ namespace Demo02.Editor
                         "盐引巷被封存，城市记录恢复稳定。"
                         + "沈砚仍只存在于你的私人修复记录中。"
                 }
+            };
+        }
+
+        private static List<DialogueScriptDefinition> CreateDialogueScripts()
+        {
+            return new List<DialogueScriptDefinition>
+            {
+                Script(
+                    "shenbo-arrival",
+                    "E  询问沈砚失踪的事",
+                    new[] { StageCondition(ChapterStage.Arrival) },
+                    new[]
+                    {
+                        Line(
+                            "守仓人 沈伯",
+                            "你也是为那条不存在的街来的？今早我去官署报官，"
+                            + "他们说我从来没有儿子。"
+                        ),
+                        Line(
+                            "主角",
+                            "官署收到一批盐引，交货地点写着‘盐引巷’。"
+                            + "我在广陵地图上找不到这个名字。"
+                        ),
+                        Line(
+                            "守仓人 沈伯",
+                            "盐引巷就是这条旧街从前的名字。我儿子沈砚守着盐仓账。"
+                            + "昨夜他带走了七页账簿，再没回来。"
+                        ),
+                        Line(
+                            "主角",
+                            "带我去看他最后留下的东西。旧街招牌、盐仓账牌、"
+                            + "官府封条——三处记录若指向同一个人，就能把他找回来。"
+                        )
+                    },
+                    new[]
+                    {
+                        Choice(
+                            "我按记录办事。证据齐了，才有资格谈救人。",
+                            Effect(
+                                DialogueEffectType.SetWitnessStance,
+                                WitnessStance.EvidenceFirst
+                            )
+                        ),
+                        Choice(
+                            "如果沈砚还活着，我会先把他带回来。",
+                            Effect(
+                                DialogueEffectType.SetWitnessStance,
+                                WitnessStance.PersonFirst
+                            )
+                        )
+                    },
+                    new[]
+                    {
+                        Effect(DialogueEffectType.CompleteWitnessBriefing)
+                    }
+                ),
+                Script(
+                    "shenbo-investigate-person",
+                    "E  询问沈砚最后留下的记录",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Investigate),
+                        StanceCondition(WitnessStance.PersonFirst)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "守仓人 沈伯",
+                            "你肯先想着阿砚，我就把知道的都告诉你。"
+                            + "后墙上的旧漆、账台的背面，还有官署那枚封条，都别漏。"
+                        ),
+                        Line(
+                            "守仓人 沈伯",
+                            "沈砚不会无缘无故带走账页。去找旧街招牌、盐仓账牌"
+                            + "和官府封条。三张纸放在一起，才有人肯信。"
+                        )
+                    }
+                ),
+                Script(
+                    "shenbo-investigate-evidence",
+                    "E  询问沈砚最后留下的记录",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Investigate),
+                        StanceCondition(WitnessStance.EvidenceFirst)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "守仓人 沈伯",
+                            "你说得对，先让三张纸彼此印证。"
+                            + "官署不会信一个父亲的话，但会怕一份完整的账。"
+                        ),
+                        Line(
+                            "守仓人 沈伯",
+                            "沈砚不会无缘无故带走账页。去找旧街招牌、盐仓账牌"
+                            + "和官府封条。三张纸放在一起，才有人肯信。"
+                        )
+                    }
+                ),
+                Script(
+                    "shenbo-evidence-review",
+                    "E  把三处记录交给沈伯辨认",
+                    new[] { StageCondition(ChapterStage.ReviewEvidence) },
+                    new[]
+                    {
+                        Line(
+                            "守仓人 沈伯",
+                            "这三笔……都是阿砚的字。"
+                            + "七车盐从盐引巷入城，复核签字也是他。"
+                        ),
+                        Line(
+                            "主角",
+                            "封条是转运副使陆崇的，日期却在旧街消失前一天。"
+                            + "他不是事后掩盖，而是提前写好了结局。"
+                        ),
+                        Line(
+                            "守仓人 沈伯",
+                            "所以阿砚不是逃了。是有人把私盐的账、盐引巷，"
+                            + "还有知情的阿砚一起从纸上抹掉了。"
+                        ),
+                        Line(
+                            "主角",
+                            "等等。封条和账牌的日期对不上。把沈伯的说法"
+                            + "与七车盐账牌放在一起，应该能看出陆崇"
+                            + "究竟在什么时候决定抹掉阿砚。"
+                        )
+                    },
+                    new[]
+                    {
+                        Choice(
+                            "把复制记录送入官署，让所有人都看见。",
+                            Effect(
+                                DialogueEffectType.SetEvidencePlan,
+                                evidencePlan: EvidencePlan.PublicRecord
+                            )
+                        ),
+                        Choice(
+                            "先藏住证据，保护沈伯和剩余证人。",
+                            Effect(
+                                DialogueEffectType.SetEvidencePlan,
+                                evidencePlan: EvidencePlan.PrivateProtection
+                            )
+                        )
+                    },
+                    new[]
+                    {
+                        Effect(DialogueEffectType.CompleteEvidenceReview)
+                    }
+                ),
+                Script(
+                    "shenbo-cross-examine",
+                    "E  请沈伯重述封条贴上的时间",
+                    new[] { StageCondition(ChapterStage.CrossExamineTestimony) },
+                    new[]
+                    {
+                        Line(
+                            "守仓人 沈伯",
+                            "封条是初五傍晚贴上的。那天阿砚还在仓里，"
+                            + "他亲手数过门外的空盐车。"
+                        ),
+                        Line(
+                            "主角",
+                            "可账牌写着七车盐初七夜才入城。"
+                            + "封条比私盐早了两天，他们要除掉的不是"
+                            + "已经被抓住的把柄，而是预定的知情人。"
+                        ),
+                        Line(
+                            "守仓人 沈伯",
+                            "按 T，把这两句话并排放在案卷上。"
+                            + "别只看它们各自写了什么，要看哪一句先发生。"
+                        )
+                    }
+                ),
+                Script(
+                    "shenbo-anchor-person",
+                    "E  询问如何稳定时间锚点",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.StabilizeAnchors),
+                        StanceCondition(WitnessStance.PersonFirst)
+                    },
+                    AnchorGuidance(
+                        "阿砚若还听得见，他会记得你刚才的话。"
+                        + "去把那些门一扇扇找出来。"
+                    )
+                ),
+                Script(
+                    "shenbo-anchor-evidence",
+                    "E  询问如何稳定时间锚点",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.StabilizeAnchors),
+                        StanceCondition(WitnessStance.EvidenceFirst)
+                    },
+                    AnchorGuidance(
+                        "先把旧时的路钉住。只有亲眼看见那一夜，"
+                        + "你才知道这案子究竟被谁写下。"
+                    )
+                ),
+                Script(
+                    "shenbo-repair-private",
+                    "E  询问街尾被撕开的记录",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.RepairRift),
+                        PlanCondition(EvidencePlan.PrivateProtection)
+                    },
+                    RepairGuidance(
+                        "你没把账页立刻交出去，"
+                        + "陆崇的人就还不知道我们已经走到哪一步。小心些。"
+                    )
+                ),
+                Script(
+                    "shenbo-repair-public",
+                    "E  询问街尾被撕开的记录",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.RepairRift),
+                        PlanCondition(EvidencePlan.PublicRecord)
+                    },
+                    RepairGuidance(
+                        "官署那边迟早会听见风声。"
+                        + "你既然选择了公开，就不能只拿到一半真相。"
+                    )
+                ),
+                Script(
+                    "shenbo-final-person",
+                    "E  请沈伯说出他的选择",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.FinalDecision),
+                        StanceCondition(WitnessStance.PersonFirst)
+                    },
+                    FinalGuidance(
+                        "你从一开始就说会先救阿砚。现在轮到你决定，"
+                        + "是让他回来，还是让整条街继续安静下去。"
+                    )
+                ),
+                Script(
+                    "shenbo-final-evidence",
+                    "E  请沈伯说出他的选择",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.FinalDecision),
+                        StanceCondition(WitnessStance.EvidenceFirst)
+                    },
+                    FinalGuidance(
+                        "你说过记录要先说话。现在记录已经说完了，"
+                        + "剩下的不是证据，是人的选择。"
+                    )
+                ),
+                EpilogueScript(
+                    "shenbo-epilogue-preserve-public",
+                    ConclusionChoice.Preserve,
+                    EvidencePlan.PublicRecord,
+                    WitnessStance.Undecided,
+                    "门口的盐引旗升起来了。你把账页送进官署，"
+                    + "这回整条街都听得见阿砚的算盘。"
+                ),
+                EpilogueScript(
+                    "shenbo-epilogue-preserve-private",
+                    ConclusionChoice.Preserve,
+                    EvidencePlan.PrivateProtection,
+                    WitnessStance.Undecided,
+                    "门口的盐引旗升起来了。账页仍藏在暗处，"
+                    + "但至少阿砚的名字回到了街上。"
+                ),
+                EpilogueScript(
+                    "shenbo-epilogue-seal-person",
+                    ConclusionChoice.Seal,
+                    EvidencePlan.Undecided,
+                    WitnessStance.PersonFirst,
+                    "街口又空了。我知道你已经尽力，可阿砚还是没能回来。"
+                    + "至少别忘记他。"
+                ),
+                EpilogueScript(
+                    "shenbo-epilogue-seal-evidence",
+                    ConclusionChoice.Seal,
+                    EvidencePlan.Undecided,
+                    WitnessStance.EvidenceFirst,
+                    "街口又空了。记录稳定了，阿砚却仍不在册。"
+                    + "或许这就是只相信纸张的代价。"
+                ),
+                Script(
+                    "shenbo-epilogue-fallback",
+                    "E  与沈伯告别",
+                    new[] { StageCondition(ChapterStage.Resolved) },
+                    new[]
+                    {
+                        Line(
+                            "守仓人 沈伯",
+                            "盐引巷又安静下来了。无论记录怎么写，"
+                            + "我都会记得阿砚曾经在这里。"
+                        )
+                    }
+                )
+            };
+        }
+
+        private static DialogueScriptDefinition Script(
+            string id,
+            string prompt,
+            DialogueConditionDefinition[] conditions,
+            DialogueLine[] lines,
+            DialogueChoiceDefinition[] choices = null,
+            DialogueEffectDefinition[] completionEffects = null)
+        {
+            return new DialogueScriptDefinition
+            {
+                Id = id,
+                NpcId = "shenbo",
+                InteractionPrompt = prompt,
+                Conditions = new List<DialogueConditionDefinition>(conditions),
+                Lines = new List<DialogueLine>(lines),
+                Choices = choices == null
+                    ? new List<DialogueChoiceDefinition>()
+                    : new List<DialogueChoiceDefinition>(choices),
+                CompletionEffects = completionEffects == null
+                    ? new List<DialogueEffectDefinition>()
+                    : new List<DialogueEffectDefinition>(completionEffects)
+            };
+        }
+
+        private static DialogueLine[] AnchorGuidance(string response)
+        {
+            return new[]
+            {
+                Line("守仓人 沈伯", response),
+                Line(
+                    "守仓人 沈伯",
+                    "阿砚小时候说，盐仓的火光照到旧墙上，"
+                    + "会多出一排本不存在的门。"
+                ),
+                Line(
+                    "主角",
+                    "那是旧时层留下的影子。门牌上写着“西仓、东验、中册”。"
+                    + "按这个顺序稳定锚点，错序会让已经稳定的部分重新漂移。"
+                )
+            };
+        }
+
+        private static DialogueLine[] RepairGuidance(string response)
+        {
+            return new[]
+            {
+                Line("守仓人 沈伯", response),
+                Line(
+                    "守仓人 沈伯",
+                    "锚点安静下来了。可街尾那块地方……"
+                    + "像被人从纸上硬生生撕开。"
+                ),
+                Line(
+                    "主角",
+                    "沈砚的名字还在裂缝另一侧。"
+                    + "压下时缝，我就能看见最后那一页。"
+                )
+            };
+        }
+
+        private static DialogueLine[] FinalGuidance(string response)
+        {
+            return new[]
+            {
+                Line("守仓人 沈伯", response),
+                Line(
+                    "守仓人 沈伯",
+                    "我已经很多年没听见有人叫阿砚了。"
+                    + "你若恢复盐引巷，陆崇的人会知道；"
+                    + "你若封存这里，阿砚也许再也回不来。"
+                ),
+                Line(
+                    "主角",
+                    "记录不会替我们选。要保住一个人、一条街，"
+                    + "总得有人承担它重新出现后的代价。"
+                )
+            };
+        }
+
+        private static DialogueScriptDefinition EpilogueScript(
+            string id,
+            ConclusionChoice conclusion,
+            EvidencePlan plan,
+            WitnessStance stance,
+            string response)
+        {
+            List<DialogueConditionDefinition> conditions = new()
+            {
+                StageCondition(ChapterStage.Resolved),
+                ConclusionCondition(conclusion)
+            };
+            if (plan != EvidencePlan.Undecided)
+            {
+                conditions.Add(PlanCondition(plan));
+            }
+            if (stance != WitnessStance.Undecided)
+            {
+                conditions.Add(StanceCondition(stance));
+            }
+
+            return Script(
+                id,
+                "E  与沈伯告别",
+                conditions.ToArray(),
+                new[]
+                {
+                    Line("守仓人 沈伯", response)
+                }
+            );
+        }
+
+        private static DialogueLine Line(string speaker, string text)
+        {
+            return new DialogueLine(speaker, text);
+        }
+
+        private static DialogueChoiceDefinition Choice(
+            string text,
+            DialogueEffectDefinition effect)
+        {
+            return new DialogueChoiceDefinition
+            {
+                Text = text,
+                Effects = new List<DialogueEffectDefinition> { effect }
+            };
+        }
+
+        private static DialogueEffectDefinition Effect(
+            DialogueEffectType type,
+            WitnessStance stance = WitnessStance.Undecided,
+            EvidencePlan evidencePlan = EvidencePlan.Undecided)
+        {
+            return new DialogueEffectDefinition
+            {
+                Type = type,
+                Stance = stance,
+                EvidencePlan = evidencePlan
+            };
+        }
+
+        private static DialogueConditionDefinition StageCondition(
+            ChapterStage stage)
+        {
+            return new DialogueConditionDefinition
+            {
+                Type = DialogueConditionType.StageEquals,
+                Stage = stage
+            };
+        }
+
+        private static DialogueConditionDefinition StanceCondition(
+            WitnessStance stance)
+        {
+            return new DialogueConditionDefinition
+            {
+                Type = DialogueConditionType.StanceEquals,
+                Stance = stance
+            };
+        }
+
+        private static DialogueConditionDefinition PlanCondition(
+            EvidencePlan plan)
+        {
+            return new DialogueConditionDefinition
+            {
+                Type = DialogueConditionType.EvidencePlanEquals,
+                EvidencePlan = plan
+            };
+        }
+
+        private static DialogueConditionDefinition ConclusionCondition(
+            ConclusionChoice conclusion)
+        {
+            return new DialogueConditionDefinition
+            {
+                Type = DialogueConditionType.ConclusionEquals,
+                Conclusion = conclusion
             };
         }
     }

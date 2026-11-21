@@ -72,12 +72,103 @@ namespace Demo02.Editor
         public static void VerifyAllForBatch()
         {
             CaseDefinitionSeeder.ValidateOrThrow();
+            VerifyDialogueContentForBatch();
             VerifyCombatDamageForBatch();
             VerifyTimeLayerForBatch();
             VerifyChapterFlowForBatch();
             VerifySaveSlotsForBatch();
             Debug.Log(
-                "All automated checks passed: combat, time layer, chapter and saves."
+                "All automated checks passed: dialogue, combat, time layer, "
+                + "chapter and saves."
+            );
+        }
+
+        public static void VerifyDialogueContentForBatch()
+        {
+            CaseDefinition content = CaseDefinitionSeeder.LoadOrCreateChapter01();
+            GameObject probe = new("DialogueContentProbe");
+            InvestigationState state = probe.AddComponent<InvestigationState>();
+            state.ConfigureContent(content);
+
+            DialogueScriptDefinition arrival = DialogueContentRuntime.Find(
+                content,
+                "shenbo",
+                state
+            );
+            if (arrival == null
+                || arrival.Id != "shenbo-arrival"
+                || arrival.Choices.Count != 2)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Arrival dialogue did not resolve from recorded data."
+                );
+            }
+
+            DialogueContentRuntime.ApplyEffects(
+                arrival.Choices[0].Effects,
+                state
+            );
+            DialogueContentRuntime.ApplyEffects(
+                arrival.CompletionEffects,
+                state
+            );
+            DialogueScriptDefinition reminder = DialogueContentRuntime.Find(
+                content,
+                "shenbo",
+                state
+            );
+            if (state.Stage != ChapterStage.Investigate
+                || state.Stance != WitnessStance.EvidenceFirst
+                || reminder == null
+                || reminder.Id != "shenbo-investigate-evidence")
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Dialogue effects did not select the stance-specific reminder."
+                );
+            }
+
+            state.CollectClue("old-street-sign");
+            state.CollectClue("salt-ledger");
+            state.CollectClue("official-seal");
+            state.SetEvidencePlan(EvidencePlan.PublicRecord);
+            DialogueScriptDefinition review = DialogueContentRuntime.Find(
+                content,
+                "shenbo",
+                state
+            );
+            if (review == null || review.Choices.Count != 2)
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Evidence review dialogue did not resolve from data."
+                );
+            }
+
+            DialogueContentRuntime.ApplyEffects(
+                review.CompletionEffects,
+                state
+            );
+            DialogueScriptDefinition crossExamine = DialogueContentRuntime.Find(
+                content,
+                "shenbo",
+                state
+            );
+            if (state.Stage != ChapterStage.CrossExamineTestimony
+                || crossExamine == null
+                || crossExamine.Id != "shenbo-cross-examine")
+            {
+                Object.DestroyImmediate(probe);
+                throw new System.InvalidOperationException(
+                    "Dialogue completion effects did not advance the chapter."
+                );
+            }
+
+            Object.DestroyImmediate(probe);
+            Debug.Log(
+                "Dialogue data verification passed: conditions, choices, "
+                + "effects and stage-specific scripts."
             );
         }
 

@@ -63,6 +63,7 @@ namespace Demo02.Narrative
         [SerializeField] private ContradictionDefinition contradiction = new();
         [SerializeField] private List<StageCopyDefinition> stageCopy = new();
         [SerializeField] private List<ConclusionCopyDefinition> conclusionCopy = new();
+        [SerializeField] private List<DialogueScriptDefinition> dialogueScripts = new();
 
         public string CaseId => caseId;
         public string Title => title;
@@ -71,6 +72,8 @@ namespace Demo02.Narrative
         public IReadOnlyList<EvidenceDefinition> Evidence => evidence;
         public IReadOnlyList<TestimonyDefinition> Testimonies => testimonies;
         public ContradictionDefinition Contradiction => contradiction;
+        public IReadOnlyList<DialogueScriptDefinition> DialogueScripts =>
+            dialogueScripts;
 
         public EvidenceDefinition FindEvidence(string evidenceId)
         {
@@ -106,6 +109,13 @@ namespace Demo02.Narrative
             }
 
             return null;
+        }
+
+        public DialogueScriptDefinition FindDialogueScript(
+            string npcId,
+            InvestigationState state)
+        {
+            return DialogueContentRuntime.Find(this, npcId, state);
         }
 
         public string GetObjective(ChapterStage stage)
@@ -190,6 +200,7 @@ namespace Demo02.Narrative
             ValidateContradiction(errors);
             ValidateStageCopy(errors);
             ValidateConclusionCopy(errors);
+            ValidateDialogueScripts(errors);
             return errors;
         }
 
@@ -381,6 +392,88 @@ namespace Demo02.Narrative
             }
         }
 
+        private void ValidateDialogueScripts(List<string> errors)
+        {
+            if (dialogueScripts == null || dialogueScripts.Count == 0)
+            {
+                errors.Add("No dialogue scripts are configured.");
+                return;
+            }
+
+            HashSet<string> ids = new();
+            HashSet<ChapterStage> coveredStages = new();
+            for (int index = 0; index < dialogueScripts.Count; index++)
+            {
+                DialogueScriptDefinition script = dialogueScripts[index];
+                string label = $"Dialogue [{index}]";
+                if (script == null
+                    || string.IsNullOrWhiteSpace(script.Id)
+                    || string.IsNullOrWhiteSpace(script.NpcId)
+                    || string.IsNullOrWhiteSpace(script.InteractionPrompt))
+                {
+                    errors.Add($"{label} is missing ID, NPC ID or prompt.");
+                    continue;
+                }
+                if (!ids.Add(script.Id))
+                {
+                    errors.Add($"Duplicate dialogue script ID: {script.Id}");
+                }
+                if (script.Lines == null || script.Lines.Count == 0)
+                {
+                    errors.Add($"Dialogue '{script.Id}' has no lines.");
+                }
+                else
+                {
+                    for (int line = 0; line < script.Lines.Count; line++)
+                    {
+                        DialogueLine dialogueLine = script.Lines[line];
+                        if (dialogueLine == null
+                            || string.IsNullOrWhiteSpace(dialogueLine.Speaker)
+                            || string.IsNullOrWhiteSpace(dialogueLine.Text))
+                        {
+                            errors.Add(
+                                $"Dialogue '{script.Id}' line {line} is incomplete."
+                            );
+                        }
+                    }
+                }
+
+                for (int conditionIndex = 0;
+                    conditionIndex < script.Conditions.Count;
+                    conditionIndex++)
+                {
+                    DialogueConditionDefinition condition =
+                        script.Conditions[conditionIndex];
+                    if (condition != null
+                        && condition.Type == DialogueConditionType.StageEquals)
+                    {
+                        coveredStages.Add(condition.Stage);
+                    }
+                }
+
+                for (int choiceIndex = 0;
+                    choiceIndex < script.Choices.Count;
+                    choiceIndex++)
+                {
+                    DialogueChoiceDefinition choice = script.Choices[choiceIndex];
+                    if (choice == null || string.IsNullOrWhiteSpace(choice.Text))
+                    {
+                        errors.Add(
+                            $"Dialogue '{script.Id}' choice {choiceIndex} has no text."
+                        );
+                    }
+                }
+            }
+
+            foreach (ChapterStage stage in Enum.GetValues(typeof(ChapterStage)))
+            {
+                if (!coveredStages.Contains(stage))
+                {
+                    errors.Add($"No dialogue script covers stage: {stage}");
+                }
+            }
+        }
+
 #if UNITY_EDITOR
         public void ConfigureForEditor(
             string newCaseId,
@@ -391,7 +484,8 @@ namespace Demo02.Narrative
             List<TestimonyDefinition> newTestimonies,
             ContradictionDefinition newContradiction,
             List<StageCopyDefinition> newStageCopy,
-            List<ConclusionCopyDefinition> newConclusionCopy)
+            List<ConclusionCopyDefinition> newConclusionCopy,
+            List<DialogueScriptDefinition> newDialogueScripts)
         {
             caseId = newCaseId;
             title = newTitle;
@@ -402,6 +496,13 @@ namespace Demo02.Narrative
             contradiction = newContradiction;
             stageCopy = newStageCopy;
             conclusionCopy = newConclusionCopy;
+            dialogueScripts = newDialogueScripts;
+        }
+
+        public void ConfigureDialogueScriptsForEditor(
+            List<DialogueScriptDefinition> newDialogueScripts)
+        {
+            dialogueScripts = newDialogueScripts;
         }
 #endif
     }
