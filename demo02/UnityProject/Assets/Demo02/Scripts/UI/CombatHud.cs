@@ -49,7 +49,7 @@ namespace Demo02.UI
             );
             GUI.Label(
                 new Rect(Screen.width - 484f, Screen.height - 42f, 460f, 30f),
-                "WASD 移动  |  Shift 奔跑  |  Space 跳跃  |  Ctrl 闪避  |  左键攻击  |  右键镜头  |  Q 时间层",
+                "WASD 移动 | Shift 奔跑 | Ctrl 闪避 | M 世界地图 | Q 时间层 | Tab 切换角色",
                 style
             );
 

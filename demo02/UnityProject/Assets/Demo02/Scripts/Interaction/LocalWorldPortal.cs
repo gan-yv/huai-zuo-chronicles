@@ -28,11 +28,28 @@ namespace Demo02.Interaction
 
         public string Interact(PlayerInteractor interactor)
         {
+            return TeleportParty(
+                destination,
+                destinationAreaId,
+                destinationAreaName,
+                out string message
+            )
+                ? message
+                : "无法找到可用的街区入口。";
+        }
+
+        public static bool TeleportParty(
+            Transform target,
+            string areaId,
+            string areaName,
+            out string message)
+        {
+            message = string.Empty;
             PlayerPartyController party = FindAnyObjectByType<PlayerPartyController>();
             Transform activeCharacter = party != null ? party.ActiveCharacter : null;
-            if (activeCharacter == null || destination == null)
+            if (activeCharacter == null || target == null)
             {
-                return "无法找到可用的街区入口。";
+                return false;
             }
 
             CharacterController controller = activeCharacter.GetComponent<CharacterController>();
@@ -42,8 +59,8 @@ namespace Demo02.Interaction
             }
 
             activeCharacter.SetPositionAndRotation(
-                destination.position + Vector3.up,
-                destination.rotation
+                target.position + Vector3.up,
+                target.rotation
             );
 
             if (controller != null)
@@ -51,11 +68,9 @@ namespace Demo02.Interaction
                 controller.enabled = true;
             }
 
-            WorldRuntime.Instance?.SetCurrentArea(
-                destinationAreaId,
-                destinationAreaName
-            );
-            return $"抵达{destinationAreaName}。";
+            WorldRuntime.Instance?.SetCurrentArea(areaId, areaName);
+            message = $"抵达{areaName}。";
+            return true;
         }
     }
 }
