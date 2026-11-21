@@ -2,8 +2,6 @@
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
-[Bb]uild/
-[Bb]uilds/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
 [Mm]emoryCaptures/
@@ -13,6 +11,7 @@
 # Unity generated files
 *.csproj
 *.sln
+*.slnx
 *.suo
 *.user
 *.userprefs
@@ -51,7 +50,12 @@ secrets/
 *.secret
 *.local
 
-# Local test builds
+# Local test builds. Keep the directory documentation, ignore generated files.
+/demo01/UnityProject/Build/
+/demo02/UnityProject/Build/
+/demo01/Builds/*
+/demo02/Builds/*
+!/demo02/Builds/README.md
 Dist/
 Release/
 BuildOutput/

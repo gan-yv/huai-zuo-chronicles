@@ -1,5 +1,7 @@
 # 首次搭建手册（2026-11-18 晚）
 
+> 已归档：本文记录旧 2D 工程搭建，不用于当前 Demo02。
+
 ## 1. 本次只做什么
 
 本次目标：
@@ -69,7 +71,7 @@ git status
 - `README.md`
 - `.gitignore`
 - `.gitattributes`
-- `docs/` 下的设计文档
+- `demo01/docs/archive/legacy_spring_river/` 下的设计文档
 
 不应看到：
 
@@ -190,7 +192,7 @@ git switch -c feature/unity-skeleton
 2. 在 Unity Hub 中使用 Unity 6000.5.7f1 创建 2D 工程，目录为：
 
 ```text
-D:\GPTCODEX\CODEX\yangzhougame\UnityProject
+D:\GPTCODEX\CODEX\yangzhougame\demo01\UnityProject
 ```
 
 3. 打开工程一次，让 Unity 生成基础目录。
@@ -210,7 +212,7 @@ D:\GPTCODEX\CODEX\yangzhougame\UnityProject
 6. 提交：
 
 ```powershell
-git add UnityProject/Assets UnityProject/Packages UnityProject/ProjectSettings
+git add demo01/UnityProject/Assets demo01/UnityProject/Packages demo01/UnityProject/ProjectSettings
 git status
 git commit -m "chore: initialize Unity project"
 ```
