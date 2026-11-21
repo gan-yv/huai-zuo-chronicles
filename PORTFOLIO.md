@@ -38,7 +38,9 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.17.zip
 ```
 
-构建目录默认不进入 Git，正式提交后会作为 GitHub Release 附件发布。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.17.0)。
+
+构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
 ## 操作
 

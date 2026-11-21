@@ -12,6 +12,10 @@
 demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v0.17.zip
 ```
 
+GitHub 下载：
+
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v0.17.0>
+
 解压后运行：
 
 ```text
