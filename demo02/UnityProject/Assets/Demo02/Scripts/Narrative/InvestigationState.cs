@@ -29,6 +29,7 @@ namespace Demo02.Narrative
 
         private readonly HashSet<string> collectedClueIds = new();
         private readonly HashSet<string> stabilizedTimeAnchorIds = new();
+        private readonly HashSet<string> discoveredEchoIds = new();
 
         public event Action<int, int> ClueCountChanged;
         public event Action<ChapterStage> StageChanged;
@@ -39,6 +40,7 @@ namespace Demo02.Narrative
         public int StabilizedTimeAnchorCount => stabilizedTimeAnchorIds.Count;
         public int RequiredTimeAnchorCount => requiredTimeAnchorCount;
         public bool HasAllTimeAnchors => StabilizedTimeAnchorCount >= requiredTimeAnchorCount;
+        public int DiscoveredEchoCount => discoveredEchoIds.Count;
         public bool IsRepaired { get; private set; }
         public ConclusionChoice SelectedConclusion { get; private set; }
         public bool IsConclusionReached => SelectedConclusion != ConclusionChoice.None;
@@ -47,6 +49,7 @@ namespace Demo02.Narrative
         public bool HasClue(string clueId) => collectedClueIds.Contains(clueId);
         public bool HasStabilizedAnchor(string anchorId) =>
             stabilizedTimeAnchorIds.Contains(anchorId);
+        public bool HasEcho(string echoId) => discoveredEchoIds.Contains(echoId);
 
         public bool CollectClue(string clueId)
         {
@@ -133,18 +136,26 @@ namespace Demo02.Narrative
             return true;
         }
 
+        public bool DiscoverEcho(string echoId)
+        {
+            return !string.IsNullOrWhiteSpace(echoId) && discoveredEchoIds.Add(echoId);
+        }
+
         public string[] ExportClueIds() => new List<string>(collectedClueIds).ToArray();
         public string[] ExportTimeAnchorIds() => new List<string>(stabilizedTimeAnchorIds).ToArray();
+        public string[] ExportEchoIds() => new List<string>(discoveredEchoIds).ToArray();
 
         public void RestoreProgress(
             IEnumerable<string> clueIds,
             IEnumerable<string> timeAnchorIds,
             bool repaired,
             ConclusionChoice conclusion,
-            ChapterStage stage)
+            ChapterStage stage,
+            IEnumerable<string> echoIds = null)
         {
             collectedClueIds.Clear();
             stabilizedTimeAnchorIds.Clear();
+            discoveredEchoIds.Clear();
 
             if (clueIds != null)
             {
@@ -164,6 +175,17 @@ namespace Demo02.Narrative
                     if (!string.IsNullOrWhiteSpace(anchorId))
                     {
                         stabilizedTimeAnchorIds.Add(anchorId);
+                    }
+                }
+            }
+
+            if (echoIds != null)
+            {
+                foreach (string echoId in echoIds)
+                {
+                    if (!string.IsNullOrWhiteSpace(echoId))
+                    {
+                        discoveredEchoIds.Add(echoId);
                     }
                 }
             }

@@ -190,6 +190,22 @@ namespace Demo02.UI
             {
                 InvestigationJournalController.Instance?.ToggleJournal();
             }
+            if (GUI.Button(
+                new Rect(
+                    right - utilityWidth * 5f - 40f * scale,
+                    utilityY,
+                    utilityWidth,
+                    utilityHeight
+                ),
+                InvestigationVisionController.Instance != null
+                    && InvestigationVisionController.Instance.IsActive
+                    ? "V 关视界"
+                    : "V 视界",
+                UiTheme.Button(13)
+            ))
+            {
+                InvestigationVisionController.Instance?.ToggleVision();
+            }
 
             if (showHelp)
             {
@@ -227,7 +243,7 @@ namespace Demo02.UI
                     + "鼠标左键  攻击      按住鼠标右键  旋转镜头\n"
                     + "E  调查 / 对话 / 修复      Tab  切换角色      Q  切换时间层\n"
                     + "J  调查案卷      M  世界地图      Esc  暂停      F2  静音\n"
-                    + "F5  保存      F9  读取      F1  关闭帮助\n"
+                    + "V  修痕视界      F5  保存      F9  读取      F1  关闭帮助\n"
                     + "R  在结局或队伍倒下后重新开始",
                     UiTheme.Label(16)
                 );

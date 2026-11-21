@@ -103,6 +103,8 @@ namespace Demo02.UI
                 || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
                 || (InvestigationJournalController.Instance != null
                     && InvestigationJournalController.Instance.IsOpen)
+                || (InvestigationVisionController.Instance != null
+                    && InvestigationVisionController.Instance.IsActive)
                 || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
             {
                 return;

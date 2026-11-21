@@ -20,6 +20,7 @@ namespace Demo02.Core
         public string AreaName;
         public List<string> ClueIds = new();
         public List<string> TimeAnchorIds = new();
+        public List<string> EchoIds = new();
         public ChapterStage ChapterStage;
         public bool IsRepaired;
         public ConclusionChoice Conclusion;

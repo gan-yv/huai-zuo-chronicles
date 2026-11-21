@@ -435,7 +435,9 @@ namespace Demo02.UI
                 ),
                 ChapterCopy.GetReasoning(investigationState)
                     + $"\n\n时间锚点：{investigationState.StabilizedTimeAnchorCount}"
-                    + $"/{investigationState.RequiredTimeAnchorCount}",
+                    + $"/{investigationState.RequiredTimeAnchorCount}"
+                    + $"\n残留回声：{investigationState.DiscoveredEchoCount}/3"
+                    + "\n按 V 开启修痕视界，寻找隐藏回声。",
                 UiTheme.Label(12, TextAnchor.UpperLeft)
             );
         }

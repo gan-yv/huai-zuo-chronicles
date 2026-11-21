@@ -292,6 +292,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("NPC_ShenBo") == null
                     || existingRoot.transform.Find("Chapter01_StorySetup") == null
                     || existingRoot.transform.Find("Chapter01_ArtPass") == null
+                    || existingRoot.transform.Find("Chapter01_VisionSystem") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -521,6 +522,31 @@ namespace Demo02.Editor
                 "封条属于转运副使陆崇，日期比盐引巷从地图消失早一天。背面还有一行小字：知情人沈砚，宜除名。"
             );
 
+            CreateMemoryEcho(
+                root.transform,
+                "Echo_SaltToken",
+                new Vector3(3.8f, 0.55f, -2.5f),
+                "salt-token",
+                "盐引铜钱",
+                "铜钱边缘刻着沈砚的名字。茶肆掌柜说，这是沈砚失踪前留在桌上的最后一件事物。"
+            );
+            CreateMemoryEcho(
+                root.transform,
+                "Echo_FireAsh",
+                new Vector3(13.8f, 0.55f, 12f),
+                "warehouse-ash",
+                "烧焦的账角",
+                "灰烬里残留着二十年前的盐仓火印。那场火没有被记录，却一直留在旧仓的墙里。"
+            );
+            CreateMemoryEcho(
+                root.transform,
+                "Echo_SevenPages",
+                new Vector3(0f, 0.62f, 25f),
+                "seven-pages",
+                "被撕走的七页",
+                "七道纸影从街尾一直延伸到时缝。沈砚没有逃跑，他把账页藏进了每个人都能看见、却没人肯相信的地方。"
+            );
+
             GameObject repairSite = CreateBlock(
                 root.transform,
                 "RepairSite_TimeRift",
@@ -614,6 +640,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<QuestNavigationHud>();
             gameSession.AddComponent<WorldMapController>();
             gameSession.AddComponent<InvestigationJournalController>();
+            gameSession.AddComponent<InvestigationVisionController>();
             gameSession.AddComponent<ScreenFade>();
             gameSession.AddComponent<AreaBanner>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
@@ -628,6 +655,9 @@ namespace Demo02.Editor
 
             GameObject artMarker = new GameObject("Chapter01_ArtPass");
             artMarker.transform.SetParent(root.transform);
+
+            GameObject visionMarker = new GameObject("Chapter01_VisionSystem");
+            visionMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
@@ -939,6 +969,27 @@ namespace Demo02.Editor
             Object.DestroyImmediate(part.GetComponent<Collider>());
             part.AddComponent<ColorTint>().Configure(tint);
             return part;
+        }
+
+        private static void CreateMemoryEcho(
+            Transform parent,
+            string name,
+            Vector3 position,
+            string echoId,
+            string title,
+            string text)
+        {
+            GameObject echo = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            echo.name = name;
+            echo.transform.SetParent(parent);
+            echo.transform.position = position;
+            echo.transform.localScale = new Vector3(0.34f, 0.34f, 0.34f);
+            echo.AddComponent<ColorTint>().Configure(new Color(0.98f, 0.76f, 0.3f));
+
+            SphereCollider trigger = echo.GetComponent<SphereCollider>();
+            trigger.isTrigger = true;
+            trigger.radius = 1.35f;
+            echo.AddComponent<MemoryEchoInteractable>().Configure(echoId, title, text);
         }
 
         private static Combatant CreateEnemy(Transform parent, string name, Vector3 position)
