@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 namespace Demo02.Core
 {
+    [DefaultExecutionOrder(-50)]
     public sealed class GameFlowController : MonoBehaviour
     {
         private InvestigationState investigationState;
@@ -25,6 +26,11 @@ namespace Demo02.Core
 
         private void Update()
         {
+            if (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+            {
+                return;
+            }
+
             if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 TogglePause();

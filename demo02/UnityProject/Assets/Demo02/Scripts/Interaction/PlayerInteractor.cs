@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Demo02.Narrative;
 
 namespace Demo02.Interaction
 {
@@ -16,6 +17,14 @@ namespace Demo02.Interaction
 
         private void Update()
         {
+            if (DialogueController.Instance != null
+                && (DialogueController.Instance.IsOpen
+                    || DialogueController.Instance.LastClosedFrame == Time.frameCount))
+            {
+                currentInteractable = null;
+                return;
+            }
+
             currentInteractable = FindClosestInteractable();
 
             bool interactPressed = Keyboard.current != null
@@ -32,6 +41,11 @@ namespace Demo02.Interaction
 
         private void OnGUI()
         {
+            if (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+            {
+                return;
+            }
+
             if (currentInteractable != null && currentInteractable.CanInteract)
             {
                 DrawCenteredLabel(currentInteractable.Prompt, Screen.height - 96f, 24);

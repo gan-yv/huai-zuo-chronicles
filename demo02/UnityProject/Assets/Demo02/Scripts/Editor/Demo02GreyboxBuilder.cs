@@ -190,6 +190,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("PlayerPlaceholder/MeleeArc") == null
                     || existingRoot.transform.Find("TimeAnchor_Present_01") == null
                     || existingRoot.transform.Find("Area_OfficialStreet") == null
+                    || existingRoot.transform.Find("NPC_WarehouseWorker") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -279,6 +280,24 @@ namespace Demo02.Editor
             PlayerInteractor partnerInteractor = partner.AddComponent<PlayerInteractor>();
             partnerInteractor.enabled = false;
             partner.AddComponent<Combatant>().Configure(CombatTeam.Player, 100f);
+
+            GameObject worker = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            worker.name = "NPC_WarehouseWorker";
+            worker.transform.SetParent(root.transform);
+            worker.transform.position = new Vector3(-4.7f, 1f, 1f);
+            NpcDialogueInteractable workerDialogue = worker.AddComponent<NpcDialogueInteractable>();
+            workerDialogue.Configure(
+                "盐仓搬运工",
+                "E  与盐仓搬运工交谈",
+                new DialogueLine(
+                    "盐仓搬运工",
+                    "旧街的货昨夜还在仓库里。今早一到，账上的入库记录却全没了。"
+                ),
+                new DialogueLine(
+                    "盐仓搬运工",
+                    "我只是个搬货的。可要是整条街都能被从纸上抹掉，下一个会不会轮到我们？"
+                )
+            );
 
             GameObject clue = CreateBlock(
                 root.transform,
@@ -404,6 +423,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<InvestigationState>();
             EncounterState encounterState = gameSession.AddComponent<EncounterState>();
             encounterState.Configure(enemies);
+            gameSession.AddComponent<DialogueController>();
             gameSession.AddComponent<ObjectiveDisplay>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
             party.Configure(player.transform, partner.transform);
