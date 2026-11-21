@@ -17,6 +17,7 @@ namespace Demo02.Editor
     public static class Demo02GreyboxBuilder
     {
         private const string ScenePath = "Assets/Demo02/Scenes/Guangling/Greybox.unity";
+        private const string BootScenePath = "Assets/Demo02/Scenes/Boot/Boot.unity";
         private const string RootName = "Greybox";
 
         [InitializeOnLoadMethod]
@@ -29,11 +30,15 @@ namespace Demo02.Editor
         public static void RebuildFromMenu()
         {
             BuildScene(forceRebuild: true);
+            BuildBootScene();
+            ConfigureBuildSettings();
         }
 
         public static void RebuildForBatch()
         {
             BuildScene(forceRebuild: true);
+            BuildBootScene();
+            ConfigureBuildSettings();
         }
 
         public static void VerifyCombatDamageForBatch()
@@ -94,6 +99,65 @@ namespace Demo02.Editor
             }
 
             BuildScene(forceRebuild: false);
+            BuildBootScene();
+            ConfigureBuildSettings();
+        }
+
+        private static void BuildBootScene()
+        {
+            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(BootScenePath) != null
+                || EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                return;
+            }
+
+            Scene previousActiveScene = SceneManager.GetActiveScene();
+            bool hasUnsavedStartupScene = string.IsNullOrWhiteSpace(previousActiveScene.path);
+            Scene bootScene = EditorSceneManager.NewScene(
+                NewSceneSetup.DefaultGameObjects,
+                hasUnsavedStartupScene ? NewSceneMode.Single : NewSceneMode.Additive
+            );
+            SceneManager.SetActiveScene(bootScene);
+
+            GameObject bootRoot = new GameObject("Boot");
+            SceneManager.MoveGameObjectToScene(bootRoot, bootScene);
+            bootRoot.AddComponent<BootController>();
+
+            GameObject worldRuntimeObject = new GameObject("WorldRuntime");
+            SceneManager.MoveGameObjectToScene(worldRuntimeObject, bootScene);
+            worldRuntimeObject.AddComponent<WorldRuntime>();
+
+            EditorSceneManager.SaveScene(bootScene, BootScenePath);
+            if (!hasUnsavedStartupScene)
+            {
+                EditorSceneManager.CloseScene(bootScene, removeScene: true);
+            }
+
+            if (!hasUnsavedStartupScene
+                && previousActiveScene.IsValid()
+                && previousActiveScene.isLoaded)
+            {
+                SceneManager.SetActiveScene(previousActiveScene);
+            }
+
+            Debug.Log("Demo02 boot scene generated.");
+        }
+
+        private static void ConfigureBuildSettings()
+        {
+            SceneAsset bootScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(BootScenePath);
+            SceneAsset greyboxScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
+            if (bootScene == null || greyboxScene == null)
+            {
+                Debug.LogWarning("World scenes are not ready for Build Settings yet.");
+                return;
+            }
+
+            EditorBuildSettings.scenes = new[]
+            {
+                new EditorBuildSettingsScene(BootScenePath, true),
+                new EditorBuildSettingsScene(ScenePath, true)
+            };
         }
 
         private static void BuildScene(bool forceRebuild)
@@ -350,11 +414,6 @@ namespace Demo02.Editor
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
             WorldRuntime worldRuntime = worldRuntimeObject.AddComponent<WorldRuntime>();
             worldRuntime.SetCurrentArea("official-street", "官署前街");
-
-            EditorBuildSettings.scenes = new[]
-            {
-                new EditorBuildSettingsScene(ScenePath, true)
-            };
 
             GameObject spawn = new GameObject("PlayerSpawn");
             spawn.transform.SetParent(root.transform);
