@@ -8,7 +8,7 @@ namespace Demo02.Interaction
 {
     public sealed class PlayerInteractor : MonoBehaviour
     {
-        [SerializeField, Min(0.5f)] private float interactionRadius = 2.5f;
+        [SerializeField, Min(0.5f)] private float interactionRadius = 2.8f;
         [SerializeField] private LayerMask interactionMask = ~0;
         [SerializeField, Min(0f)] private float messageDuration = 5f;
 
@@ -63,12 +63,24 @@ namespace Demo02.Interaction
 
             if (currentInteractable != null && currentInteractable.CanInteract)
             {
-                DrawCenteredLabel(currentInteractable.Prompt, Screen.height - 96f, 24);
+                float scale = UiTheme.Scale;
+                DrawCenteredLabel(
+                    currentInteractable.Prompt,
+                    Screen.height - 104f * scale,
+                    15,
+                    true
+                );
             }
 
             if (!string.IsNullOrWhiteSpace(statusMessage) && Time.time < statusMessageUntil)
             {
-                DrawCenteredLabel(statusMessage, Screen.height - 152f, 18);
+                float scale = UiTheme.Scale;
+                DrawCenteredLabel(
+                    statusMessage,
+                    Screen.height - 158f * scale,
+                    12,
+                    false
+                );
             }
         }
 
@@ -141,19 +153,54 @@ namespace Demo02.Interaction
             RestoreHighlight();
         }
 
-        private static void DrawCenteredLabel(string text, float y, int fontSize)
+        private static void DrawCenteredLabel(
+            string text,
+            float y,
+            int fontSize,
+            bool isPrompt)
         {
-            GUIStyle style = new GUIStyle(GUI.skin.box)
-            {
-                alignment = TextAnchor.MiddleCenter,
-                fontSize = fontSize,
-                wordWrap = true,
-                padding = new RectOffset(16, 16, 8, 8)
-            };
-
-            const float width = 460f;
-            Rect rect = new Rect((Screen.width - width) * 0.5f, y, width, 54f);
-            GUI.Box(rect, text, style);
+            float scale = UiTheme.Scale;
+            float width = Mathf.Min(
+                (isPrompt ? 520f : 470f) * scale,
+                Screen.width - 40f
+            );
+            float height = (isPrompt ? 44f : 38f) * scale;
+            Rect rect = new(
+                (Screen.width - width) * 0.5f,
+                y,
+                width,
+                height
+            );
+            UiTheme.DrawRect(
+                rect,
+                isPrompt
+                    ? new Color(0.025f, 0.033f, 0.045f, 0.97f)
+                    : new Color(0.06f, 0.055f, 0.04f, 0.96f)
+            );
+            UiTheme.DrawBorder(
+                rect,
+                isPrompt
+                    ? new Color(1f, 1f, 1f, 0.14f)
+                    : new Color(0.88f, 0.7f, 0.38f, 0.35f)
+            );
+            UiTheme.DrawRect(
+                new Rect(
+                    rect.x,
+                    rect.y,
+                    3f * scale,
+                    rect.height
+                ),
+                isPrompt ? UiTheme.Accent : new Color(0.72f, 0.58f, 0.3f)
+            );
+            GUI.Label(
+                rect,
+                text,
+                UiTheme.Label(
+                    fontSize,
+                    TextAnchor.MiddleCenter,
+                    bold: isPrompt
+                )
+            );
         }
     }
 }

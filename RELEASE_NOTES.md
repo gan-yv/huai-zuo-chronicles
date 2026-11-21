@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.18.0
+# Huai-Zuo Chronicles v1.19.0
 
 发布日期：2026-11-22
 平台：Windows x64  
@@ -9,12 +9,12 @@
 发布包：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.18.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.19.0.zip
 ```
 
 GitHub 下载：
 
-<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.18.0>
+<https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.19.0>
 
 解压后运行：
 
@@ -25,7 +25,7 @@ HuaiZuoChronicles.exe
 SHA256：
 
 ```text
-19868027E15C3BEE4B0A574BCBF605EFC7D1B8C3BC5321FC50E2EEDAB8E0182D
+02C77A1B85BCFE477286627FA55069A977B2D73AF695E27F6CDD50B4653B9298
 ```
 
 ## 已包含
@@ -44,6 +44,9 @@ SHA256：
 - 盐引铜钱可辨认暗纹；空白账页可在获得茶肆旁证后抄录证词。
 - 找到官府封条后，HUD 和调查案卷会自动提示茶肆盐车旁证。
 - 茶肆选择完成后自动切换到空白账页抄录目标，完成后自动消失。
+- 新增上下文教学，只在对应阶段提示移动、调查、案卷、证词和时间层操作。
+- 主线与可选目标同时显示独立方向和距离。
+- 调整交互半径、移动启停缓冲和镜头碰撞回弹，减少操作僵硬感。
 - 案件资产加入内容版本与自动迁移，并固定条件枚举编号以兼容旧资产。
 - 对白支持章节、立场、证据去向和结局条件，并自动匹配对应脚本。
 - 对白选项可设置剧情状态，对白结束效果可推进章节阶段。
@@ -138,3 +141,4 @@ SHA256：
 - 背包堆叠、拾取、快照恢复、HUD 入口和完整回归自动验证通过。
 - 剧情物品前置条件、事实写入、物品消耗和治疗效果自动验证通过。
 - 可选目标激活、切换、完成和茶肆分支自动验证通过。
+- 开场教学、双罗盘、交互提示和完整章节回归通过。

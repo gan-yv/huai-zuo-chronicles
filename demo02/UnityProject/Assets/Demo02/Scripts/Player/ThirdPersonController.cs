@@ -8,11 +8,13 @@ namespace Demo02.Player
     public sealed class ThirdPersonController : MonoBehaviour
     {
         [Header("Movement")]
-        [SerializeField, Min(0f)] private float walkSpeed = 4f;
-        [SerializeField, Min(0f)] private float runSpeed = 7f;
+        [SerializeField, Min(0f)] private float walkSpeed = 4.3f;
+        [SerializeField, Min(0f)] private float runSpeed = 7.2f;
+        [SerializeField, Min(0f)] private float acceleration = 18f;
+        [SerializeField, Min(0f)] private float deceleration = 26f;
         [SerializeField, Min(0f)] private float jumpHeight = 1.2f;
         [SerializeField] private float gravity = -24f;
-        [SerializeField, Min(0f)] private float rotationSpeed = 12f;
+        [SerializeField, Min(0f)] private float rotationSpeed = 14f;
 
         [Header("Dodge")]
         [SerializeField, Min(0f)] private float dodgeSpeed = 9f;
@@ -20,12 +22,13 @@ namespace Demo02.Player
         [SerializeField, Min(0f)] private float dodgeCooldown = 0.65f;
 
         [Header("Camera")]
-        [SerializeField, Min(1f)] private float cameraDistance = 6f;
-        [SerializeField, Min(0f)] private float cameraHeight = 1.5f;
+        [SerializeField, Min(1f)] private float cameraDistance = 5.3f;
+        [SerializeField, Min(0f)] private float cameraHeight = 1.45f;
         [SerializeField, Min(0f)] private float mouseSensitivity = 0.12f;
         [SerializeField] private float minPitch = -20f;
         [SerializeField] private float maxPitch = 65f;
         [SerializeField, Min(0f)] private float cameraCollisionRadius = 0.2f;
+        [SerializeField, Min(1f)] private float cameraReturnSpeed = 12f;
 
         private CharacterController motor;
         private Transform cameraTransform;
@@ -36,6 +39,8 @@ namespace Demo02.Player
         private float dodgeRemaining;
         private float nextDodgeTime;
         private Vector3 dodgeDirection;
+        private Vector3 planarVelocity;
+        private float smoothedCameraDistance;
 
         public bool IsInvulnerable => dodgeRemaining > 0f;
 
@@ -51,6 +56,7 @@ namespace Demo02.Player
             {
                 cameraTransform = sceneCamera.transform;
                 cameraYaw = transform.eulerAngles.y;
+                smoothedCameraDistance = cameraDistance;
             }
             else
             {
@@ -154,7 +160,16 @@ namespace Demo02.Player
                 return;
             }
 
-            Vector3 velocity = moveDirection * speed + Vector3.up * verticalVelocity;
+            Vector3 targetVelocity = moveDirection * speed;
+            float velocityChangeRate = moveDirection.sqrMagnitude > 0.001f
+                ? acceleration
+                : deceleration;
+            planarVelocity = Vector3.MoveTowards(
+                planarVelocity,
+                targetVelocity,
+                velocityChangeRate * Time.deltaTime
+            );
+            Vector3 velocity = planarVelocity + Vector3.up * verticalVelocity;
             motor.Move(velocity * Time.deltaTime);
         }
 
@@ -228,7 +243,21 @@ namespace Demo02.Player
                 );
             }
 
-            cameraTransform.position = focusPoint + direction * resolvedDistance;
+            if (resolvedDistance < smoothedCameraDistance)
+            {
+                smoothedCameraDistance = resolvedDistance;
+            }
+            else
+            {
+                smoothedCameraDistance = Mathf.Lerp(
+                    smoothedCameraDistance,
+                    resolvedDistance,
+                    1f - Mathf.Exp(-cameraReturnSpeed * Time.deltaTime)
+                );
+            }
+
+            cameraTransform.position =
+                focusPoint + direction * smoothedCameraDistance;
             cameraTransform.LookAt(focusPoint + Vector3.up * 0.2f, Vector3.up);
         }
     }

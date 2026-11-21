@@ -33,7 +33,7 @@ namespace Demo02.Editor
             if (existing != null)
             {
                 if (existing.DialogueScripts.Count == 0
-                    || existing.ContentVersion < 7)
+                    || existing.ContentVersion < 8)
                 {
                     existing.ConfigureOptionalContentForEditor(
                         CreateDialogueScripts(),
@@ -43,7 +43,7 @@ namespace Demo02.Editor
                     );
                     EditorUtility.SetDirty(existing);
                     AssetDatabase.SaveAssets();
-                    Debug.Log("Upgraded chapter asset to content version 7.");
+                    Debug.Log("Upgraded chapter asset to content version 8.");
                 }
                 return existing;
             }
@@ -388,7 +388,7 @@ namespace Demo02.Editor
                     Description =
                         "封条日期与账牌记录对不上。去东关街找茶肆掌柜，"
                         + "问问初七夜里是否有盐车经过。",
-                    TrackerHint = "可选 · 东关街茶肆",
+                    TrackerHint = "东关街茶肆",
                     TargetObjectName = "NPC_TeaMaster",
                     ActivationConditions = new List<DialogueConditionDefinition>
                     {
@@ -408,7 +408,7 @@ namespace Demo02.Editor
                     Description =
                         "你已听到茶肆掌柜关于盐车时间的证词。"
                         + "打开背包，用空白账页抄录这段旁证。",
-                    TrackerHint = "可选 · 打开背包 [B]",
+                    TrackerHint = "打开背包 [B]",
                     TargetObjectName = string.Empty,
                     ActivationConditions = new List<DialogueConditionDefinition>
                     {

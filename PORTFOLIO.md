@@ -20,6 +20,8 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ![可选目标](demo02/docs/screenshots/optional-objective.png)
 
+![开场上下文教学](demo02/docs/screenshots/opening-guidance.png)
+
 ![修痕视界](demo02/docs/screenshots/investigation-vision.png)
 
 ![对白选择](demo02/docs/screenshots/dialogue-choice.png)
@@ -65,6 +67,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - `B` 背包支持数据驱动物品、堆叠、场景拾取、消耗品使用和存档。
 - 背包支持分类筛选，盐引铜钱与空白账页可通过使用产生持久剧情记录。
 - 可选目标会根据证据与剧情事实自动激活、切换和完成，并在 HUD 与案卷中提示。
+- 开场采用上下文教学，并为主线和可选目标提供双罗盘导航。
 - 可选战斗、攻击预警和闪避无敌帧。
 - 版本化 JSON 存档、自动检查点、三槽位管理和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -90,10 +93,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.18.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.19.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.18.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.19.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 
@@ -152,6 +155,7 @@ R          结局或队伍倒下后重开
 - 背包物品、堆叠和消耗效果由案件资产配置，拾取状态与库存随存档保存。
 - 关键物品可消费或保留，并通过剧情事实影响案卷和后续内容。
 - 可选目标支持配置条件、追踪提示、目标对象和自动完成。
+- 上下文教学按阶段渐进提示，交互和拾取反馈使用统一主题 UI。
 - 时间层通过可见性和碰撞切换管理。
 - 灰盒场景由可重复运行的 Editor Builder 生成，降低手工维护成本。
 - 演示截图通过 Unity 内部截屏参数生成，避免窗口缩放和环境遮挡。

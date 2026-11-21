@@ -14,6 +14,8 @@ namespace Demo02.UI
         private TimeLayerController timeLayerController;
         private Transform currentTarget;
         private string navigationHint = string.Empty;
+        private Transform optionalTarget;
+        private string optionalHint = string.Empty;
         private float nextRefreshTime;
 
         private void Start()
@@ -38,6 +40,8 @@ namespace Demo02.UI
         {
             currentTarget = null;
             navigationHint = string.Empty;
+            optionalTarget = null;
+            optionalHint = string.Empty;
 
             if (investigationState == null || party == null || party.ActiveCharacter == null)
             {
@@ -47,6 +51,23 @@ namespace Demo02.UI
             if (investigationState.SelectedConclusion != ConclusionChoice.None)
             {
                 return;
+            }
+
+            OptionalObjectiveDefinition optional =
+                OptionalObjectiveRuntime.FindActive(
+                    investigationState.CaseContent,
+                    investigationState
+                );
+            if (optional != null
+                && !string.IsNullOrWhiteSpace(optional.TargetObjectName))
+            {
+                GameObject targetObject = GameObject.Find(
+                    optional.TargetObjectName
+                );
+                optionalTarget = targetObject != null
+                    ? targetObject.transform
+                    : null;
+                optionalHint = optional.TrackerHint;
             }
 
             switch (investigationState.Stage)
@@ -154,50 +175,97 @@ namespace Demo02.UI
                     && TestimonyBoardController.Instance.IsOpen)
                 || (DialogueController.Instance != null
                     && DialogueController.Instance.IsOpen)
-                || currentTarget == null
                 || party == null
                 || party.ActiveCharacter == null)
             {
                 return;
             }
 
+            if (currentTarget == null && optionalTarget == null)
+            {
+                return;
+            }
+
+            float scale = UiTheme.Scale;
+            float width = 430f * scale;
+            float y = 84f * scale;
+            if (currentTarget != null)
+            {
+                DrawNavigationPanel(
+                    currentTarget,
+                    navigationHint,
+                    false,
+                    new Rect(
+                        (Screen.width - width) * 0.5f,
+                        y,
+                        width,
+                        46f * scale
+                    )
+                );
+                y += 52f * scale;
+            }
+            if (optionalTarget != null
+                && optionalTarget != currentTarget)
+            {
+                DrawNavigationPanel(
+                    optionalTarget,
+                    optionalHint,
+                    true,
+                    new Rect(
+                        (Screen.width - width) * 0.5f,
+                        y,
+                        width,
+                        42f * scale
+                    )
+                );
+            }
+        }
+
+        private void DrawNavigationPanel(
+            Transform target,
+            string hint,
+            bool optional,
+            Rect panel)
+        {
             Camera currentCamera = Camera.main;
-            Vector3 offset = currentTarget.position - party.ActiveCharacter.position;
+            Vector3 offset = target.position - party.ActiveCharacter.position;
             offset.y = 0f;
             float distance = offset.magnitude;
-
             string direction = string.Empty;
             if (currentCamera != null && distance > 0.1f)
             {
                 Vector3 flatForward = currentCamera.transform.forward;
                 flatForward.y = 0f;
-                float angle = Vector3.SignedAngle(flatForward, offset.normalized, Vector3.up);
+                float angle = Vector3.SignedAngle(
+                    flatForward,
+                    offset.normalized,
+                    Vector3.up
+                );
                 direction = GetDirectionLabel(angle);
             }
 
-            string text = $"{direction}  {distance:0.#}m";
-            if (!string.IsNullOrWhiteSpace(navigationHint))
+            string text = optional
+                ? $"可选 · {direction}  {distance:0.#}m"
+                : $"{direction}  {distance:0.#}m";
+            if (!string.IsNullOrWhiteSpace(hint))
             {
-                text += $"    {navigationHint}";
+                text += $"    {hint}";
             }
 
-            float scale = UiTheme.Scale;
-            float width = 430f * scale;
-            Rect panel = new(
-                (Screen.width - width) * 0.5f,
-                84f * scale,
-                width,
-                48f * scale
-            );
             UiTheme.DrawRect(panel, UiTheme.Panel);
             UiTheme.DrawRect(
                 new Rect(panel.x, panel.y, panel.width, 2f),
-                UiTheme.Accent
+                optional ? new Color(0.72f, 0.58f, 0.3f) : UiTheme.Accent
             );
             UiTheme.DrawBorder(panel, new Color(1f, 1f, 1f, 0.12f));
-
-            GUIStyle style = UiTheme.Label(15, TextAnchor.MiddleCenter, bold: true);
-            style.normal.textColor = new Color(0.92f, 0.82f, 0.62f);
+            GUIStyle style = UiTheme.Label(
+                optional ? 12 : 15,
+                TextAnchor.MiddleCenter,
+                bold: true
+            );
+            style.normal.textColor = optional
+                ? new Color(0.82f, 0.7f, 0.45f)
+                : new Color(0.92f, 0.82f, 0.62f);
             GUI.Label(panel, text, style);
         }
 

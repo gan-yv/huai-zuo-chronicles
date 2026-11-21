@@ -786,6 +786,7 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Chapter01_DataDrivenContent") == null
                     || existingRoot.transform.Find("Chapter01_StoryFacts") == null
                     || existingRoot.transform.Find("Chapter01_InventorySystem") == null
+                    || existingRoot.transform.Find("Chapter01_OnboardingGuidance") == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -1227,6 +1228,7 @@ namespace Demo02.Editor
             gameSession.AddComponent<SaveSlotController>();
             gameSession.AddComponent<StoryFactNotification>();
             gameSession.AddComponent<InventoryController>();
+            gameSession.AddComponent<ContextHintController>();
             gameSession.AddComponent<ScreenFade>();
             gameSession.AddComponent<AreaBanner>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
@@ -1277,6 +1279,9 @@ namespace Demo02.Editor
 
             GameObject inventoryMarker = new GameObject("Chapter01_InventorySystem");
             inventoryMarker.transform.SetParent(root.transform);
+
+            GameObject onboardingMarker = new GameObject("Chapter01_OnboardingGuidance");
+            onboardingMarker.transform.SetParent(root.transform);
 
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
