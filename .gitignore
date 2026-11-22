@@ -55,6 +55,7 @@ secrets/
 /demo02/UnityReleaseTemp/
 /demo01/UnityProject/Build/
 /demo02/UnityProject/Build/
+/demo02/UnityProject/Builds/
 /demo01/Builds/*
 /demo02/Builds/*
 !/demo02/Builds/README.md

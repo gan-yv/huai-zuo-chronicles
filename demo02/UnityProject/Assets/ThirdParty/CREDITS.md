@@ -10,6 +10,11 @@ is retained for provenance and good practice.
   https://kenney.nl/assets/blocky-characters, CC0 1.0. Six animated Humanoid
   characters were imported unchanged; project materials, controller and
   prefabs are stored under `Assets/Demo02/Art/Characters/Blocky`.
+- **Animated Characters Protagonists** by Kenney,
+  https://kenney.nl/assets/animated-characters-protagonists, CC0 1.0. One
+  model, four skins, and idle/run/jump animations are used for the default
+  character visuals. Project materials and prefabs are stored under
+  `Assets/Demo02/Art/Characters/Stylized`.
 - **Grey Plaster 02** by Rob Tuytel, https://polyhaven.com/a/grey_plaster_02,
   CC0 1.0. Imported as a 2K PBR material; Unity mask data is generated from
   the supplied ARM map.

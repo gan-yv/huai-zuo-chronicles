@@ -17,6 +17,8 @@ namespace Demo02.Player
             Animator.StringToHash("PickUp");
         private static readonly int DieParameter =
             Animator.StringToHash("Die");
+        private static readonly int JumpParameter =
+            Animator.StringToHash("Jump");
 
         [SerializeField, Min(0.1f)] private float fullSpeed = 7.2f;
 
@@ -28,7 +30,9 @@ namespace Demo02.Player
         private bool hasInteract;
         private bool hasPickUp;
         private bool hasDie;
+        private bool hasJump;
         private bool deathPlayed;
+        private float nextJumpTime;
 
         private void Awake()
         {
@@ -59,6 +63,11 @@ namespace Demo02.Player
             }
 
             Vector3 delta = transform.position - lastPosition;
+            if (delta.y > 0.04f && Time.time >= nextJumpTime)
+            {
+                nextJumpTime = Time.time + 0.5f;
+                Trigger(JumpParameter, hasJump);
+            }
             delta.y = 0f;
             lastPosition = transform.position;
             if (delta.sqrMagnitude > 9f)
@@ -122,6 +131,9 @@ namespace Demo02.Player
                         break;
                     case "Die":
                         hasDie = true;
+                        break;
+                    case "Jump":
+                        hasJump = true;
                         break;
                 }
             }

@@ -31,7 +31,7 @@ namespace Demo02.Editor
         [MenuItem("Demo02/Rebuild Greybox Scene")]
         public static void RebuildFromMenu()
         {
-            BlockyCharacterSetup.BuildAll();
+            StylizedCharacterSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -39,7 +39,7 @@ namespace Demo02.Editor
 
         public static void RebuildForBatch()
         {
-            BlockyCharacterSetup.BuildAll();
+            StylizedCharacterSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -80,7 +80,7 @@ namespace Demo02.Editor
             VerifyTimeLayerForBatch();
             VerifyChapterFlowForBatch();
             VerifySaveSlotsForBatch();
-            BlockyCharacterSetup.ValidateForBatch();
+            StylizedCharacterSetup.ValidateForBatch();
             Debug.Log(
                 "All automated checks passed: dialogue, combat, time layer, "
                 + "inventory, chapter and saves."
@@ -1562,12 +1562,17 @@ namespace Demo02.Editor
             string name)
         {
             string prefabPath =
-                BlockyCharacterSetup.ResolveCharacterPrefab(name);
+                StylizedCharacterSetup.ResolveCharacterPrefab(name);
             GameObject prefab =
                 AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
             if (prefab == null)
             {
-                return false;
+                prefabPath = BlockyCharacterSetup.ResolveCharacterPrefab(name);
+                prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+                if (prefab == null)
+                {
+                    return false;
+                }
             }
 
             GameObject visual =
@@ -1887,8 +1892,14 @@ namespace Demo02.Editor
 
             GameObject blockyPrefab =
                 AssetDatabase.LoadAssetAtPath<GameObject>(
+                    StylizedCharacterSetup.EnemyPrefabPath
+                );
+            if (blockyPrefab == null)
+            {
+                blockyPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                     BlockyCharacterSetup.EnemyPrefabPath
                 );
+            }
             if (blockyPrefab != null)
             {
                 GameObject visual =

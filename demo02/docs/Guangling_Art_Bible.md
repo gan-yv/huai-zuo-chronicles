@@ -212,21 +212,22 @@ Assets/Demo02/Art/
 
 ## 13. 现成动画角色接入
 
-手工角色代理仅作为早期剪影测试。当前可玩灰盒改用 Kenney Blocky
-Characters 的现成 Generic 动画角色：
+手工角色代理仅作为早期剪影测试。当前默认角色改用 Kenney Animated
+Characters Protagonists 的风格化人物，Blocky Characters 保留为动画调试
+和资源缺失时的回退方案：
 
-![Kenney Blocky 角色接入](screenshots/blocky-character-showcase.png)
+![Kenney 风格化现成角色](screenshots/stylized-character-showcase.png)
 
-- 角色使用共享 `AC_BlockyCharacter.controller`。
-- 动画参数包括 `Speed`、`Attack`、`Interact`、`PickUp` 和 `Die`。
-- 主角、伙伴、NPC 和敌人使用不同角色与贴图变体。
+- 角色使用共享 `AC_StylizedCharacter.controller`。
+- 动画参数包括 `Speed` 和 `Jump`，并带待机、奔跑和跳跃动作。
+- 主角、伙伴、NPC 和敌人使用四套现成皮肤与轻微色相变化。
 - 外观作为子视觉挂到原有玩法根节点，不替换移动、碰撞、战斗和存档。
-- 原程序化身体继续保留为资源缺失时的回退方案。
+- Blocky 角色和原程序化身体继续保留为回退方案。
 
 输出位置：
 
-- `Assets/Demo02/Art/Characters/Blocky/Prefabs/`
-- `Assets/Demo02/Art/Characters/Blocky/Materials/`
-- `Assets/Demo02/Art/Characters/Blocky/AC_BlockyCharacter.controller`
-- `Assets/Demo02/Scenes/Tests/BlockyCharacterShowcase.unity`
+- `Assets/Demo02/Art/Characters/Stylized/Prefabs/`
+- `Assets/Demo02/Art/Characters/Stylized/Materials/`
+- `Assets/Demo02/Art/Characters/Stylized/AC_StylizedCharacter.controller`
+- `Assets/Demo02/Scenes/Tests/StylizedCharacterShowcase.unity`
 
