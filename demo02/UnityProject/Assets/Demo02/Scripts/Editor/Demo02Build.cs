@@ -11,7 +11,7 @@ namespace Demo02.Editor
     {
         private const string ProductName = "Huai-Zuo Chronicles";
         private const string Version = "1.21.0";
-        private const string OutputDirectory = "Builds/WindowsDemo";
+        private const string OutputDirectory = "../Builds/WindowsDemo";
         private const string ExecutableName = "HuaiZuoChronicles.exe";
 
         [MenuItem("Demo02/Build Windows Demo")]
@@ -38,8 +38,12 @@ namespace Demo02.Editor
                 throw new InvalidOperationException("Could not switch to Windows x64 build target.");
             }
 
-            Directory.CreateDirectory(OutputDirectory);
-            string executablePath = Path.Combine(OutputDirectory, ExecutableName);
+            string outputDirectory = Path.GetFullPath(OutputDirectory);
+            Directory.CreateDirectory(outputDirectory);
+            string executablePath = Path.Combine(
+                outputDirectory,
+                ExecutableName
+            );
 
             BuildPlayerOptions options = new()
             {
@@ -63,14 +67,14 @@ namespace Demo02.Editor
                 $"Scenes: {string.Join(", ", scenes)}";
 
             File.WriteAllText(
-                Path.Combine(OutputDirectory, "BuildInfo.txt"),
+                Path.Combine(outputDirectory, "BuildInfo.txt"),
                 reportText
             );
 
             if (summary.result != BuildResult.Succeeded)
             {
                 throw new InvalidOperationException(
-                    $"Windows build failed: {summary.result}. See {OutputDirectory}/BuildInfo.txt"
+                    $"Windows build failed: {summary.result}. See {outputDirectory}/BuildInfo.txt"
                 );
             }
 

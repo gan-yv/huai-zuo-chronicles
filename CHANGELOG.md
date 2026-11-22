@@ -24,6 +24,7 @@
 - 新增共享 Generic Animator Controller，包含待机、行走、冲刺、攻击、交互、拾取和死亡。
 - 可玩灰盒中的主角、伙伴、NPC 与敌人改用现成动画外观，保留原玩法根节点。
 - 新增现成角色展示场景、材质、动画参数和预制体自动验收。
+- 修复 Windows 构建输出到错误的 `UnityProject/Builds` 目录，统一写回 `demo02/Builds/WindowsDemo`。
 - 新增 Unity 内部资源验收，检查模型、URP Shader、贴图通道、材质和预制体引用。
 - 新增第三方素材校验脚本，阻止压缩包进入 Unity、检查来源文件和路径。
 
