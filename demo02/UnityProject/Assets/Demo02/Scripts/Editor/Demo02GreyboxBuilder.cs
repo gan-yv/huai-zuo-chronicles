@@ -31,6 +31,7 @@ namespace Demo02.Editor
         [MenuItem("Demo02/Rebuild Greybox Scene")]
         public static void RebuildFromMenu()
         {
+            BlockyCharacterSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -38,6 +39,7 @@ namespace Demo02.Editor
 
         public static void RebuildForBatch()
         {
+            BlockyCharacterSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -78,6 +80,7 @@ namespace Demo02.Editor
             VerifyTimeLayerForBatch();
             VerifyChapterFlowForBatch();
             VerifySaveSlotsForBatch();
+            BlockyCharacterSetup.ValidateForBatch();
             Debug.Log(
                 "All automated checks passed: dialogue, combat, time layer, "
                 + "inventory, chapter and saves."
@@ -1429,6 +1432,15 @@ namespace Demo02.Editor
             character.transform.SetParent(parent);
             character.transform.position = position;
 
+            if (TryAttachBlockyCharacter(character, name))
+            {
+                if (addNpcCollider)
+                {
+                    ConfigureNpcCollider(character);
+                }
+                return character;
+            }
+
             Color skin = new(0.82f, 0.66f, 0.52f);
             Color hair = new(0.13f, 0.09f, 0.075f);
             Color trousers = Color.Lerp(outfit, Color.black, 0.38f);
@@ -1537,16 +1549,43 @@ namespace Demo02.Editor
 
             if (addNpcCollider)
             {
-                CapsuleCollider collider = character.AddComponent<CapsuleCollider>();
-                collider.center = Vector3.zero;
-                collider.height = 2f;
-                collider.radius = 0.48f;
-                character.AddComponent<NpcFacingController>();
+                ConfigureNpcCollider(character);
             }
 
             character.AddComponent<ProceduralCharacterAnimator>().Configure(addNpcCollider);
 
             return character;
+        }
+
+        private static bool TryAttachBlockyCharacter(
+            GameObject character,
+            string name)
+        {
+            string prefabPath =
+                BlockyCharacterSetup.ResolveCharacterPrefab(name);
+            GameObject prefab =
+                AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (prefab == null)
+            {
+                return false;
+            }
+
+            GameObject visual =
+                (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+            visual.name = "BlockyVisual";
+            visual.transform.SetParent(character.transform, false);
+            visual.transform.localPosition = new Vector3(0f, -1f, 0f);
+            visual.transform.localRotation = Quaternion.identity;
+            return true;
+        }
+
+        private static void ConfigureNpcCollider(GameObject character)
+        {
+            CapsuleCollider collider = character.AddComponent<CapsuleCollider>();
+            collider.center = Vector3.zero;
+            collider.height = 2f;
+            collider.radius = 0.48f;
+            character.AddComponent<NpcFacingController>();
         }
 
         private static GameObject CreateAvatarPart(
@@ -1835,14 +1874,34 @@ namespace Demo02.Editor
 
         private static Combatant CreateEnemy(Transform parent, string name, Vector3 position)
         {
-            GameObject enemy = CreateBlock(
-                parent,
-                name,
-                position,
-                new Vector3(0.9f, 1.8f, 0.9f),
+            GameObject enemy = new(name);
+            enemy.transform.SetParent(parent);
+            enemy.transform.position = position;
+
+            GameObject blockVisual =
+                GameObject.CreatePrimitive(PrimitiveType.Cube);
+            blockVisual.name = "GreyboxVisual";
+            blockVisual.transform.SetParent(enemy.transform, false);
+            blockVisual.transform.localScale = new Vector3(0.9f, 1.8f, 0.9f);
+            Object.DestroyImmediate(blockVisual.GetComponent<BoxCollider>());
+
+            GameObject blockyPrefab =
+                AssetDatabase.LoadAssetAtPath<GameObject>(
+                    BlockyCharacterSetup.EnemyPrefabPath
+                );
+            if (blockyPrefab != null)
+            {
+                GameObject visual =
+                    (GameObject)PrefabUtility.InstantiatePrefab(blockyPrefab);
+                visual.name = "BlockyVisual";
+                visual.transform.SetParent(enemy.transform, false);
+                visual.transform.localPosition = new Vector3(0f, -0.9f, 0f);
+                blockVisual.GetComponent<MeshRenderer>().enabled = false;
+            }
+
+            enemy.AddComponent<ColorTint>().Configure(
                 new Color(0.68f, 0.16f, 0.16f)
             );
-            Object.DestroyImmediate(enemy.GetComponent<BoxCollider>());
             enemy.AddComponent<CharacterController>();
             Combatant combatant = enemy.AddComponent<Combatant>();
             combatant.Configure(CombatTeam.Enemy, 60f);

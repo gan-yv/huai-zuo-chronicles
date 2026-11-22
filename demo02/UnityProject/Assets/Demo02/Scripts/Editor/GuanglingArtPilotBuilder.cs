@@ -25,7 +25,7 @@ namespace Demo02.Editor
         public static void BuildPilot()
         {
             ThirdPartyArtSetup.Setup();
-            GuanglingCharacterArtBuilder.BuildCharacters();
+            BlockyCharacterSetup.BuildAll();
             EnsureFolder(MaterialRoot);
             EnsureFolder(MeshRoot);
 
@@ -905,21 +905,21 @@ namespace Demo02.Editor
 
             CreateCharacterInstance(
                 characters.transform,
-                "ART_Hero_Pilot",
+                "VIS_Blocky_Hero",
                 "Hero",
                 new Vector3(0f, 0f, -15f),
                 Quaternion.identity
             );
             CreateCharacterInstance(
                 characters.transform,
-                "ART_Guide_Pilot",
+                "VIS_Blocky_Guide",
                 "Guide",
                 new Vector3(4.25f, 0f, -5.5f),
                 Quaternion.Euler(0f, -90f, 0f)
             );
             CreateCharacterInstance(
                 characters.transform,
-                "ART_Official_Pilot",
+                "VIS_Blocky_Official",
                 "Official",
                 new Vector3(-4.35f, 0f, 5.2f),
                 Quaternion.Euler(0f, 90f, 0f)
@@ -935,7 +935,7 @@ namespace Demo02.Editor
         )
         {
             string path =
-                $"Assets/Demo02/Art/Characters/Pilot/{prefabName}.prefab";
+                $"Assets/Demo02/Art/Characters/Blocky/Prefabs/{prefabName}.prefab";
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             if (prefab == null)
             {

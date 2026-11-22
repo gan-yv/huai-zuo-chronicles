@@ -43,6 +43,8 @@ if (-not (Test-Path $creditsPath)) {
 $runtimeMetadata = @(
     "demo02/UnityProject/Assets/ThirdParty/Kenney/FantasyTownKit/SOURCE.md",
     "demo02/UnityProject/Assets/ThirdParty/Kenney/FantasyTownKit/LICENSE.md",
+    "demo02/UnityProject/Assets/ThirdParty/Kenney/BlockyCharacters/SOURCE.md",
+    "demo02/UnityProject/Assets/ThirdParty/Kenney/BlockyCharacters/LICENSE.md",
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/LICENSE.md",
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/grey_plaster_02/SOURCE.md",
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/old_planks_02/SOURCE.md",
