@@ -39,6 +39,7 @@ Medieval Village MegaKit 中现成的模块拼装，不手工制作建筑模型�
 | 1.25 路灯、摊位比例与街景合批 | 364.8 | 244.9 |
 | 1.26 Idle、Walk、Sprint 步态 | 364.0 | 202.8 |
 | 1.27 Kenney 现成音效 | 402.6 | 233.0 |
+| 1.28 NPC 对话说话待机 | 312.0 | 159.7 |
 
 基准文件位于 `docs/benchmarks/`。帧率数据来自窗口正常显示并持续渲染
 12 秒的构建，不采用最小化窗口或关闭渲染得到的无效结果。
@@ -73,6 +74,8 @@ Medieval Village MegaKit 中现成的模块拼装，不手工制作建筑模型�
 - 按住 Shift 冲刺使用 `Sprint_Loop`。
 - 控制器按速度在 Idle、Walk、Run 之间过渡，攻击、受击和交互结束后
   会回到当前移动状态。
+- 开启对话时，NPC 进入 Quaternius `Idle_Talking_Loop` 说话待机；对话结束
+  后自动回到 Idle。
 
 ![Quaternius 移动动作](screenshots/quaternius-locomotion-showcase.png)
 

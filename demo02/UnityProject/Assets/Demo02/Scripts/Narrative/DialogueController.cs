@@ -18,6 +18,7 @@ namespace Demo02.Narrative
         private DialogueChoice[] choices = new DialogueChoice[0];
         private bool isChoosing;
         private Transform focusTarget;
+        private ReadyMadeCharacterAnimator speakerAnimator;
         private Camera dialogueCamera;
         private float originalFieldOfView = 60f;
         private bool hasCameraState;
@@ -64,6 +65,9 @@ namespace Demo02.Narrative
             currentLineIndex = 0;
             onCompleted = completed;
             focusTarget = cameraFocus;
+            speakerAnimator =
+                cameraFocus?.GetComponentInChildren<ReadyMadeCharacterAnimator>();
+            speakerAnimator?.SetTalking(true);
             previousTimeScale = Time.timeScale;
             Time.timeScale = 0f;
             IsOpen = true;
@@ -176,6 +180,8 @@ namespace Demo02.Narrative
             choices = new DialogueChoice[0];
             onChoiceSelected = null;
             focusTarget = null;
+            speakerAnimator?.SetTalking(false);
+            speakerAnimator = null;
             RestoreCamera();
             Action callback = onCompleted;
             onCompleted = null;
@@ -226,6 +232,8 @@ namespace Demo02.Narrative
 
         private void OnDisable()
         {
+            speakerAnimator?.SetTalking(false);
+            speakerAnimator = null;
             Time.timeScale = 1f;
             RestoreCamera();
         }

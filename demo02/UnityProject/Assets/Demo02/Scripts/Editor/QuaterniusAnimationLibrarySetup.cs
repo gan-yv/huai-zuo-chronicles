@@ -43,6 +43,9 @@ namespace Demo02.Editor
             new("Sprint_Loop", "AC_Quaternius_Run")
         };
 
+        private static readonly ClipSpec TalkSpec =
+            new("Idle_Talking_Loop", "Talking", "AC_Quaternius_Talk");
+
         private static readonly BoneMapping[] BoneMappings =
         {
             new("DEF-hips", "Hips"),
@@ -196,7 +199,21 @@ namespace Demo02.Editor
                     );
                 }
 
-                ConfigureController(baked, locomotion);
+                AnimationClip talkClip = BakeClip(
+                    source,
+                    targetAnimator,
+                    context,
+                    sourceClips.First(clip =>
+                        string.Equals(
+                            clip.name,
+                            TalkSpec.SourceClip,
+                            StringComparison.Ordinal
+                        )
+                    ),
+                    TalkSpec.TargetClip,
+                    loop: true
+                );
+                ConfigureController(baked, locomotion, talkClip);
             }
             finally
             {
@@ -209,7 +226,7 @@ namespace Demo02.Editor
             Debug.Log(
                 $"Quaternius character animation set ready: " +
                 $"{ClipSpecs.Length} actions and {LocomotionSpecs.Length} " +
-                "locomotion clips."
+                "locomotion clips plus dialogue."
             );
         }
 
@@ -232,7 +249,8 @@ namespace Demo02.Editor
                          "Hit",
                          "Interact",
                          "PickUp",
-                         "Die"
+                         "Die",
+                         "Talking"
                      })
             {
                 if (!controller.parameters.Any(item => item.name == parameter))
@@ -330,6 +348,23 @@ namespace Demo02.Editor
                             $"Locomotion state '{stateName}' is invalid."
                         );
                     }
+                }
+
+                AnimationClip talkClip =
+                    AssetDatabase.LoadAssetAtPath<AnimationClip>(
+                        ClipPath(TalkSpec.TargetClip)
+                    );
+                AnimatorState talkState = stateMachine.states
+                    .Select(item => item.state)
+                    .FirstOrDefault(item => item.name == "Talk");
+                if (talkClip == null ||
+                    talkClip.wrapMode != WrapMode.Loop ||
+                    talkState == null ||
+                    talkState.motion != talkClip)
+                {
+                    throw new InvalidOperationException(
+                        "Dialogue talking state is invalid."
+                    );
                 }
             }
             finally
@@ -703,7 +738,8 @@ namespace Demo02.Editor
 
         private static void ConfigureController(
             Dictionary<string, AnimationClip> clips,
-            Dictionary<string, AnimationClip> locomotion)
+            Dictionary<string, AnimationClip> locomotion,
+            AnimationClip talkClip)
         {
             AnimatorController controller =
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
@@ -727,6 +763,12 @@ namespace Demo02.Editor
                 stateMachine,
                 idle,
                 locomotion
+            );
+            ConfigureTalking(
+                controller,
+                stateMachine,
+                idle,
+                talkClip
             );
 
             foreach ((string trigger, AnimationClip clip) in clips)
@@ -853,6 +895,64 @@ namespace Demo02.Editor
             );
 
             EnsureParameter(controller, "Speed");
+        }
+
+        private static void ConfigureTalking(
+            AnimatorController controller,
+            AnimatorStateMachine stateMachine,
+            AnimatorState idle,
+            AnimationClip talkClip)
+        {
+            if (!controller.parameters.Any(
+                    item => item.name == "Talking"
+                ))
+            {
+                controller.AddParameter(
+                    "Talking",
+                    AnimatorControllerParameterType.Bool
+                );
+            }
+            AnimatorState talk = FindOrAddState(stateMachine, "Talk");
+            talk.motion = talkClip;
+            talk.speed = 1f;
+
+            bool hasEntry = stateMachine.anyStateTransitions.Any(
+                transition =>
+                    transition.destinationState == talk &&
+                    transition.conditions.Any(
+                        condition =>
+                            condition.parameter == "Talking" &&
+                            condition.mode == AnimatorConditionMode.If
+                    )
+            );
+            if (!hasEntry)
+            {
+                AnimatorStateTransition enter =
+                    stateMachine.AddAnyStateTransition(talk);
+                enter.hasExitTime = false;
+                enter.duration = 0.12f;
+                enter.canTransitionToSelf = false;
+                enter.AddCondition(
+                    AnimatorConditionMode.If,
+                    0f,
+                    "Talking"
+                );
+            }
+
+            bool hasExit = talk.transitions.Any(
+                transition => transition.destinationState == idle
+            );
+            if (!hasExit)
+            {
+                AnimatorStateTransition exit = talk.AddTransition(idle);
+                exit.hasExitTime = false;
+                exit.duration = 0.14f;
+                exit.AddCondition(
+                    AnimatorConditionMode.IfNot,
+                    0f,
+                    "Talking"
+                );
+            }
         }
 
         private static AnimatorState FindOrAddState(

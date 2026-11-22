@@ -21,6 +21,8 @@ namespace Demo02.Player
             Animator.StringToHash("Die");
         private static readonly int JumpParameter =
             Animator.StringToHash("Jump");
+        private static readonly int TalkingParameter =
+            Animator.StringToHash("Talking");
 
         [SerializeField, Min(0.1f)] private float fullSpeed = 7.2f;
 
@@ -34,6 +36,7 @@ namespace Demo02.Player
         private bool hasHit;
         private bool hasDie;
         private bool hasJump;
+        private bool hasTalking;
         private bool deathPlayed;
         private float nextJumpTime;
         private float previousHealth;
@@ -49,6 +52,10 @@ namespace Demo02.Player
             CacheComponents();
             lastPosition = transform.position;
             deathPlayed = false;
+            if (animator != null && hasTalking)
+            {
+                animator.SetBool(TalkingParameter, false);
+            }
             if (combatant != null)
             {
                 combatant.HealthChanged -= OnHealthChanged;
@@ -65,6 +72,10 @@ namespace Demo02.Player
                 combatant.HealthChanged -= OnHealthChanged;
             }
             subscribedToHealth = false;
+            if (animator != null && hasTalking)
+            {
+                animator.SetBool(TalkingParameter, false);
+            }
         }
 
         private void Update()
@@ -141,6 +152,14 @@ namespace Demo02.Player
             Trigger(DieParameter, hasDie);
         }
 
+        public void SetTalking(bool talking)
+        {
+            if (hasTalking && animator != null)
+            {
+                animator.SetBool(TalkingParameter, talking);
+            }
+        }
+
         private void CacheComponents()
         {
             animator ??= GetComponentInChildren<Animator>(true);
@@ -174,6 +193,9 @@ namespace Demo02.Player
                         break;
                     case "Jump":
                         hasJump = true;
+                        break;
+                    case "Talking":
+                        hasTalking = true;
                         break;
                 }
             }

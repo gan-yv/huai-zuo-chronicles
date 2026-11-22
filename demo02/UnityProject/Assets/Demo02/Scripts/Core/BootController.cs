@@ -226,7 +226,7 @@ namespace Demo02.Core
                     Screen.width,
                     30f * scale
                 ),
-                $"当前版本：v{Application.version} · 灰盒开发版",
+                $"当前版本：v{Application.version} · 可玩垂直切片",
                 subtitleStyle
             );
         }
