@@ -34,6 +34,7 @@ namespace Demo02.Editor
             StylizedCharacterSetup.BuildAll();
             QuaterniusAnimationLibrarySetup.BuildAll();
             QuaterniusEnvironmentSetup.BuildAll();
+            ReadyMadeStreetDressingSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -44,6 +45,7 @@ namespace Demo02.Editor
             StylizedCharacterSetup.BuildAll();
             QuaterniusAnimationLibrarySetup.BuildAll();
             QuaterniusEnvironmentSetup.BuildAll();
+            ReadyMadeStreetDressingSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -87,6 +89,7 @@ namespace Demo02.Editor
             StylizedCharacterSetup.ValidateForBatch();
             QuaterniusAnimationLibrarySetup.ValidateForBatch();
             QuaterniusEnvironmentSetup.ValidateForBatch();
+            ReadyMadeStreetDressingSetup.ValidateForBatch();
             Debug.Log(
                 "All automated checks passed: dialogue, combat, time layer, "
                 + "inventory, chapter and saves."
@@ -827,6 +830,9 @@ namespace Demo02.Editor
                     );
                 }
                 QuaterniusEnvironmentSetup.ApplyToGreybox(
+                    generatedRoot.transform
+                );
+                ReadyMadeStreetDressingSetup.ApplyToGreybox(
                     generatedRoot.transform
                 );
                 EditorSceneManager.MarkSceneDirty(greyboxScene);

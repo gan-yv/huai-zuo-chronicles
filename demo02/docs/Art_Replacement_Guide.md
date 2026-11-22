@@ -35,6 +35,7 @@ Medieval Village MegaKit 中现成的模块拼装，不手工制作建筑模型�
 | 1.21 原灰盒回滚版 | 192.6 | 99.5 |
 | 1.22 Quaternius 主场景 | 376.3 | 164.7 |
 | 1.23 Quaternius 环境与动作 | 375.6 | 200.6 |
+| 1.24 现成街景与道具 | 375.3 | 207.2 |
 
 基准文件位于 `docs/benchmarks/`。帧率数据来自窗口正常显示并持续渲染
 12 秒的构建，不采用最小化窗口或关闭渲染得到的无效结果。
@@ -61,6 +62,19 @@ Medieval Village MegaKit 中现成的模块拼装，不手工制作建筑模型�
 重定向脚本位于
 `Assets/Demo02/Scripts/Editor/QuaterniusAnimationLibrarySetup.cs`，输出片段位于
 `Assets/Demo02/Art/Characters/Stylized/Animations/`。
+
+## 现成街景与道具
+
+剩余灰盒街景同样只使用现成素材，没有新建模型或绘制贴图：
+
+- Quaternius 木箱、木瓦雨棚、门板告示牌、门框标记和墙体模块。
+- Kenney 市场摊位、高树、灯笼，统一使用现有 Fantasy Town 图集材质。
+- 院落和仓库灰盒墙通过重复 Quaternius 2 米墙段组合成纹理连续的墙体。
+- 拾取物、线索、时层锚点仍保留原脚本、碰撞和隐藏逻辑，视觉节点挂在原
+  玩法对象下，因此拾取或切换时不会留下悬空模型。
+
+场景重建入口仍是 `Demo02/Rebuild Greybox Scene`。新增工具位于
+`Assets/Demo02/Scripts/Editor/ReadyMadeStreetDressingSetup.cs`。
 
 ## 早期第三方样板
 

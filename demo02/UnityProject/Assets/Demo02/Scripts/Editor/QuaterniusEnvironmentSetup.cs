@@ -74,6 +74,60 @@ namespace Demo02.Editor
             );
         }
 
+        public static void AuditVisibleGreyboxForBatch()
+        {
+            Scene scene = EditorSceneManager.OpenScene(
+                "Assets/Demo02/Scenes/Guangling/Greybox.unity",
+                OpenSceneMode.Single
+            );
+            GameObject root = scene
+                .GetRootGameObjects()
+                .FirstOrDefault(item => item.name == "Greybox");
+            if (root == null)
+            {
+                throw new InvalidOperationException(
+                    "Greybox root was not found for visual audit."
+                );
+            }
+
+            string[] ignoredPrefixes =
+            {
+                "QuaterniusBuildings_",
+                "QuaterniusFillLight",
+                "OfficialStreetPaving_Quaternius",
+                "DongguanPaving_Quaternius",
+                "CaiyiPaving_Quaternius"
+            };
+            MeshRenderer[] renderers =
+                root.GetComponentsInChildren<MeshRenderer>(true);
+            foreach (MeshRenderer renderer in renderers
+                         .Where(item => item.enabled)
+                         .OrderBy(item => item.transform.position.z)
+                         .ThenBy(item => item.transform.position.x))
+            {
+                if (ignoredPrefixes.Any(prefix =>
+                        renderer.name.StartsWith(
+                            prefix,
+                            StringComparison.Ordinal
+                        )))
+                {
+                    continue;
+                }
+
+                Transform area = renderer.transform;
+                while (area.parent != null && area.parent != root.transform)
+                {
+                    area = area.parent;
+                }
+                Bounds bounds = renderer.bounds;
+                Debug.Log(
+                    $"GREYBOX_VISUAL area={area.name} name={renderer.name} " +
+                    $"position={renderer.transform.position} " +
+                    $"size={bounds.size} material={renderer.sharedMaterial?.name}"
+                );
+            }
+        }
+
         private static void CaptureScene(
             string scenePath,
             string screenshotPath)
@@ -476,6 +530,7 @@ namespace Demo02.Editor
             RenderSettings.fogColor = new Color(0.59f, 0.64f, 0.64f);
             ApplyPavingMaterials(greyboxRoot);
             EnsureFillLight(greyboxRoot);
+            ApplyWallRuns(greyboxRoot);
         }
 
         private static string GetAreaGroup(string buildingName)
@@ -766,6 +821,110 @@ namespace Demo02.Editor
             UnityEngine.Object.DestroyImmediate(curb.GetComponent<BoxCollider>());
         }
 
+        private static void ApplyWallRuns(Transform greyboxRoot)
+        {
+            string[] wallNames =
+            {
+                "Courtyard_NorthWall",
+                "Courtyard_SouthWall",
+                "Courtyard_EndWall",
+                "Warehouse_SouthWall",
+                "Warehouse_EastWall",
+                "Warehouse_NorthWall",
+                "Warehouse_WestWall_South",
+                "Warehouse_WestWall_North",
+                "EndWall",
+                "Dongguan_EndWall",
+                "Caiyi_EndWall"
+            };
+            Transform[] transforms =
+                greyboxRoot.GetComponentsInChildren<Transform>(true);
+            foreach (string wallName in wallNames)
+            {
+                Transform target = transforms.FirstOrDefault(
+                    item => item.name == wallName
+                );
+                MeshRenderer targetRenderer =
+                    target != null ? target.GetComponent<MeshRenderer>() : null;
+                if (targetRenderer == null ||
+                    target.parent.Find(wallName + "_QuaterniusRun") != null)
+                {
+                    continue;
+                }
+
+                Bounds desired = targetRenderer.bounds;
+                bool runsAlongZ = desired.size.z > desired.size.x;
+                float length = runsAlongZ ? desired.size.z : desired.size.x;
+                float height = desired.size.y;
+                int segmentCount = Mathf.Max(1, Mathf.CeilToInt(length / 2f));
+                float segmentWidth = length / segmentCount;
+                string moduleName = wallName.StartsWith(
+                    "Warehouse_",
+                    StringComparison.Ordinal
+                )
+                    ? "Wall_UnevenBrick_Straight"
+                    : "Wall_Plaster_Straight";
+
+                GameObject assembly = new($"{wallName}_Assembly");
+                activeAssembly = assembly;
+                try
+                {
+                    assembly.transform.position = desired.center;
+                    assembly.transform.rotation =
+                        target.rotation *
+                        (runsAlongZ
+                            ? Quaternion.Euler(0f, 90f, 0f)
+                            : Quaternion.identity);
+                    Vector3 segmentScale = new(
+                        segmentWidth / 2f,
+                        height / 3.12f,
+                        1f
+                    );
+                    for (int index = 0; index < segmentCount; index++)
+                    {
+                        float x = -length * 0.5f +
+                            segmentWidth * (index + 0.5f);
+                        AddModule(
+                            moduleName,
+                            new Vector3(x, -height * 0.5f, 0f),
+                            Quaternion.identity,
+                            segmentScale
+                        );
+                        AddModule(
+                            "Wall_BottomCover",
+                            new Vector3(x, -height * 0.5f + 0.08f, 0f),
+                            Quaternion.identity,
+                            new Vector3(segmentWidth / 2f, 1f, 1f)
+                        );
+                    }
+
+                    Mesh mesh = CombineAssembly(
+                        assembly.transform,
+                        $"{MeshRoot}/SM_Quaternius_WallRun_{wallName}.asset"
+                    );
+                    GameObject visual = new($"{wallName}_QuaterniusRun");
+                    visual.transform.SetParent(target.parent, false);
+                    visual.transform.position = assembly.transform.position;
+                    visual.transform.rotation = assembly.transform.rotation;
+                    visual.AddComponent<MeshFilter>().sharedMesh = mesh;
+                    MeshRenderer renderer =
+                        visual.AddComponent<MeshRenderer>();
+                    renderer.sharedMaterials = GetCombinedMaterials(
+                        assembly.transform
+                    );
+                    renderer.shadowCastingMode = ShadowCastingMode.On;
+                    renderer.receiveShadows = true;
+                    visual.isStatic = true;
+                    targetRenderer.enabled = false;
+                }
+                finally
+                {
+                    activeAssembly = null;
+                    UnityEngine.Object.DestroyImmediate(assembly);
+                }
+            }
+        }
+
         private static void EnsureFillLight(Transform greyboxRoot)
         {
             if (greyboxRoot.Find("QuaterniusFillLight") != null)
@@ -805,6 +964,26 @@ namespace Demo02.Editor
             CreateHousePrefab(
                 HouseNames[2],
                 _ => BuildTimberHouse()
+            );
+            CreateModulePrefab(
+                "ART_Quaternius_Prop_Crate",
+                "Prop_Crate"
+            );
+            CreateModulePrefab(
+                "ART_Quaternius_RoofAwning",
+                "Roof_Wooden_2x1"
+            );
+            CreateModulePrefab(
+                "ART_Quaternius_GateArch",
+                "Wall_Arch"
+            );
+            CreateModulePrefab(
+                "ART_Quaternius_WoodSign",
+                "Door_1_Flat"
+            );
+            CreateModulePrefab(
+                "ART_Quaternius_Frame",
+                "DoorFrame_Flat_Brick"
             );
 
             AssetDatabase.SaveAssets();
@@ -1099,6 +1278,49 @@ namespace Demo02.Editor
                         $"Quaternius prefab ready: {prefabPath}, " +
                         $"{mesh.vertexCount:N0} vertices, " +
                         $"{mesh.subMeshCount} batched material groups."
+                    );
+                }
+                finally
+                {
+                    UnityEngine.Object.DestroyImmediate(prefabRoot);
+                }
+            }
+            finally
+            {
+                activeAssembly = null;
+                UnityEngine.Object.DestroyImmediate(assembly);
+            }
+        }
+
+        private static void CreateModulePrefab(
+            string prefabName,
+            string moduleName)
+        {
+            GameObject assembly = new($"{prefabName}_Assembly");
+            activeAssembly = assembly;
+            try
+            {
+                AddModule(moduleName, Vector3.zero);
+                Mesh mesh = CombineAssembly(
+                    assembly.transform,
+                    $"{MeshRoot}/SM_{prefabName}.asset"
+                );
+                GameObject prefabRoot = new(prefabName);
+                try
+                {
+                    GameObject shell = new("Shell");
+                    shell.transform.SetParent(prefabRoot.transform, false);
+                    MeshFilter filter = shell.AddComponent<MeshFilter>();
+                    MeshRenderer renderer = shell.AddComponent<MeshRenderer>();
+                    filter.sharedMesh = mesh;
+                    renderer.sharedMaterials = GetCombinedMaterials(
+                        assembly.transform
+                    );
+                    renderer.shadowCastingMode = ShadowCastingMode.On;
+                    renderer.receiveShadows = true;
+                    PrefabUtility.SaveAsPrefabAsset(
+                        prefabRoot,
+                        $"{PrefabRoot}/{prefabName}.prefab"
                     );
                 }
                 finally
