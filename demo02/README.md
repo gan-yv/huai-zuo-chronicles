@@ -18,7 +18,7 @@
 - 官署前街 48 米美术试点、灰瓦坡顶、木构立面和完整主镜头已经生成。
 - 主角、途印伙伴和官差的角色比例与剪影代理已经进入美术试点街。
 - Kenney Animated Characters Protagonists 的风格化现成角色已接入可玩灰盒和美术试点。
-- Kenney City Kit Commercial 的 12 个现成建筑已替换官署前街、东关街和彩衣街的方块建筑。
+- Kenney Fantasy Town 的现成木构和坡顶建筑已替换官署前街、东关街和彩衣街的方块建筑。
 
 ## 工程目录
 

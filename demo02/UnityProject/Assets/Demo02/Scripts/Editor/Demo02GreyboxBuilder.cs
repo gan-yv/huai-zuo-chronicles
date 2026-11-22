@@ -32,7 +32,7 @@ namespace Demo02.Editor
         public static void RebuildFromMenu()
         {
             StylizedCharacterSetup.BuildAll();
-            CityKitEnvironmentSetup.BuildAll();
+            FantasyTownEnvironmentSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -41,7 +41,7 @@ namespace Demo02.Editor
         public static void RebuildForBatch()
         {
             StylizedCharacterSetup.BuildAll();
-            CityKitEnvironmentSetup.BuildAll();
+            FantasyTownEnvironmentSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -83,7 +83,7 @@ namespace Demo02.Editor
             VerifyChapterFlowForBatch();
             VerifySaveSlotsForBatch();
             StylizedCharacterSetup.ValidateForBatch();
-            CityKitEnvironmentSetup.ValidateForBatch();
+            FantasyTownEnvironmentSetup.ValidateForBatch();
             Debug.Log(
                 "All automated checks passed: dialogue, combat, time layer, "
                 + "inventory, chapter and saves."
@@ -1330,7 +1330,7 @@ namespace Demo02.Editor
             );
 
             BuildDongguanStreet(root.transform, spawn.transform);
-            CityKitEnvironmentSetup.ApplyToGreybox(root.transform);
+            FantasyTownEnvironmentSetup.ApplyToGreybox(root.transform);
 
             Camera sceneCamera = scene
                 .GetRootGameObjects()

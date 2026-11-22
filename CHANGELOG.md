@@ -28,9 +28,10 @@
 - 新增一个风格化人物模型、四套皮肤以及待机、奔跑和跳跃动画。
 - 新增共享 `AC_StylizedCharacter.controller`，并将角色骨骼路径纳入自动验收。
 - 可玩主角、伙伴、NPC 和敌人改用新的风格化人物，Blocky 保留为回退。
-- 新增 Kenney City Kit Commercial 的 12 个 CC0 现成建筑模型。
-- 官署前街、东关街和彩衣街的方块建筑外观改为现成楼体，保留原碰撞和玩法引用。
-- 新增城市建筑自动缩放、放置、材质和街道占位验收。
+- 新增 Kenney Fantasy Town Kit 的仿古建筑壳体，使用现成木构、墙面和坡顶模块。
+- 官署前街、东关街和彩衣街的方块建筑外观改为仿古建筑，保留原碰撞和玩法引用。
+- 新增仿古建筑批量替换、轻微冷暖色调变化和结构验收。
+- Kenney City Kit Commercial 保留为少量近代都市元素的备选资源。
 - 本地构建输出目录加入忽略规则，避免旧构建目录再次造成误开。
 - 修复 Windows 构建输出到错误的 `UnityProject/Builds` 目录，统一写回 `demo02/Builds/WindowsDemo`。
 - 新增 Unity 内部资源验收，检查模型、URP Shader、贴图通道、材质和预制体引用。

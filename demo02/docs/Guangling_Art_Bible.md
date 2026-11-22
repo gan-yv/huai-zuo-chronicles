@@ -231,18 +231,18 @@ Characters Protagonists 的风格化人物，Blocky Characters 保留为动画�
 - `Assets/Demo02/Art/Characters/Stylized/AC_StylizedCharacter.controller`
 - `Assets/Demo02/Scenes/Tests/StylizedCharacterShowcase.unity`
 
-## 14. 现成城市建筑替换
+## 14. 仿古建筑替换
 
-![正式可玩灰盒中的 City Kit 建筑](screenshots/current-game-citykit.png)
+![正式可玩灰盒中的仿古建筑](screenshots/current-game-fantasy-town.png)
 
-场景建筑已从程序化方块替换为 Kenney City Kit Commercial 的 12 个完整
-建筑模型。替换规则：
+场景建筑已从程序化方块替换为 Kenney Fantasy Town Kit 的现成木构、
+墙面和屋顶模块。City Kit 保留为少量近代都市元素的备选资源。替换规则：
 
 - 原建筑对象、BoxCollider 和玩法引用保持不动。
 - 只隐藏旧方块和旧立面细节的 Renderer。
-- 新建筑作为独立视觉对象放在原位置。
-- 建筑视觉统一限制在约 5 米高、5 米宽、7 米深，避免遮挡街道。
-- 所有建筑共享同一套图集材质。
+- 新建筑作为独立视觉对象放在原位置，并增加侧墙与后墙形成完整壳体。
+- 建筑轮廓以坡顶、木构、浅墙和灯笼为主。
+- 使用轻微冷暖色差区分相邻店铺。
 - 角色、碰撞和道路宽度继续沿用现有玩法数据。
 
 该替换已应用到官署前街、东关街和彩衣街的灰盒建筑。

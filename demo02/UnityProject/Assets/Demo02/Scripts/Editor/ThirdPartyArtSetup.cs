@@ -987,6 +987,8 @@ namespace Demo02.Editor
             roof.transform.SetParent(visuals.transform, false);
             GameObject trim = new("Trim");
             trim.transform.SetParent(visuals.transform, false);
+            GameObject walls = new("Walls");
+            walls.transform.SetParent(visuals.transform, false);
 
             AddReplacementModel(
                 facade.transform,
@@ -1004,6 +1006,35 @@ namespace Demo02.Editor
                 new Vector3(4f, 3f, 4f),
                 kenneyMaterial
             );
+
+            for (int floor = 0; floor < 2; floor++)
+            {
+                for (int side = -1; side <= 1; side += 2)
+                {
+                    AddReplacementModel(
+                        walls.transform,
+                        "wall-wood-window-small.fbx",
+                        $"BackWall_{floor}_{side}",
+                        new Vector3(-3.1f, floor * 3f, side * 2f),
+                        new Vector3(4f, 3f, 4f),
+                        kenneyMaterial,
+                        Quaternion.Euler(0f, 180f, 0f)
+                    );
+
+                    foreach (float x in new[] { -1.7f, 1.7f })
+                    {
+                        AddReplacementModel(
+                            walls.transform,
+                            "wall-wood-window-small.fbx",
+                            $"SideWall_{floor}_{side}_{x:0.0}",
+                            new Vector3(x, floor * 3f, side * 4f),
+                            new Vector3(4f, 3f, 3.4f),
+                            kenneyMaterial,
+                            Quaternion.Euler(0f, 90f, 0f)
+                        );
+                    }
+                }
+            }
             AddReplacementModel(
                 facade.transform,
                 "wall-wood-window-shutters.fbx",
@@ -1083,7 +1114,8 @@ namespace Demo02.Editor
             string name,
             Vector3 position,
             Vector3 scale,
-            Material material
+            Material material,
+            Quaternion? rotation = null
         )
         {
             string modelPath = $"{FantasyTownRoot}/Models/{modelFile}";
@@ -1097,6 +1129,8 @@ namespace Demo02.Editor
                 (GameObject)PrefabUtility.InstantiatePrefab(model);
             instance.name = name;
             instance.transform.localScale = scale;
+            instance.transform.localRotation =
+                rotation ?? Quaternion.identity;
             Vector3 pivotOffset = GetPivotOffset(instance);
             instance.transform.SetParent(parent, false);
             instance.transform.localPosition = position + pivotOffset;
