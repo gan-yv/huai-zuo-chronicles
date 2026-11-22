@@ -1,5 +1,6 @@
 using System.Collections;
 using System.IO;
+using Demo02.Core;
 using Demo02.Narrative;
 using Demo02.WorldState;
 using UnityEngine;
@@ -100,6 +101,8 @@ namespace Demo02.UI
         private void OnGUI()
         {
             if (string.IsNullOrWhiteSpace(shownAreaName)
+                || (GameFlowController.Instance != null
+                    && GameFlowController.Instance.IsGameEnding)
                 || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
                 || (InvestigationJournalController.Instance != null
                     && InvestigationJournalController.Instance.IsOpen)

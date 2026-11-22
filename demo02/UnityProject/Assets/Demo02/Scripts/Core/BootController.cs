@@ -53,7 +53,8 @@ namespace Demo02.Core
                 || System.Array.IndexOf(arguments, "--preview-testimony") >= 0
                 || System.Array.IndexOf(arguments, "--preview-fact") >= 0
                 || System.Array.IndexOf(arguments, "--preview-inventory") >= 0
-                || System.Array.IndexOf(arguments, "--preview-optional") >= 0)
+                || System.Array.IndexOf(arguments, "--preview-optional") >= 0
+                || System.Array.IndexOf(arguments, "--preview-ending") >= 0)
             {
                 StartGame(showOpening: false);
             }

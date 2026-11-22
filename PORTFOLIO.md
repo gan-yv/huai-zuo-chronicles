@@ -22,6 +22,8 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ![开场上下文教学](demo02/docs/screenshots/opening-guidance.png)
 
+![结案记录](demo02/docs/screenshots/ending-report.png)
+
 ![修痕视界](demo02/docs/screenshots/investigation-vision.png)
 
 ![对白选择](demo02/docs/screenshots/dialogue-choice.png)
@@ -69,6 +71,7 @@ Unity 3D 城市探索与技术策划作品集项目。
 - 可选目标会根据证据与剧情事实自动激活、切换和完成，并在 HUD 与案卷中提示。
 - 开场采用上下文教学，并为主线和可选目标提供双罗盘导航。
 - 运行时可打开 `F3` 性能面板，并通过命令行生成可复查的性能基准报告。
+- 结局页提供结案记录，汇总用时、调查完成度、支线结果和关键选择。
 - 可选战斗、攻击预警和闪避无敌帧。
 - 版本化 JSON 存档、自动检查点、三槽位管理和标题界面继续游戏。
 - 新游戏开场叙事、精简 HUD、F1 操作帮助和完整结局页面。
@@ -94,10 +97,10 @@ demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
 发布压缩包位于：
 
 ```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.20.0.zip
+demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.21.0.zip
 ```
 
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.20.0)。
+[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.21.0)。
 
 构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
 

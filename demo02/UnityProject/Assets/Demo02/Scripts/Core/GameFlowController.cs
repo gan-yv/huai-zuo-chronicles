@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using System.IO;
 using Demo02.Narrative;
 using Demo02.Player;
 using Demo02.UI;
@@ -16,8 +19,11 @@ namespace Demo02.Core
         private PlayerPartyController party;
         private bool isPaused;
         private bool isEndingFrozen;
+        private float sessionStartedAt;
+        private float capturedPlayTime;
 
         public bool IsPaused => isPaused;
+        public bool IsGameEnding => IsEnding;
 
         private void Awake()
         {
@@ -29,6 +35,20 @@ namespace Demo02.Core
         private void Start()
         {
             Time.timeScale = 1f;
+            sessionStartedAt = Time.unscaledTime;
+
+            if (Array.IndexOf(
+                Environment.GetCommandLineArgs(),
+                "--preview-ending"
+            ) >= 0)
+            {
+                PrepareEndingPreview();
+                string path = GetArgumentValue("--capture-ending=");
+                if (!string.IsNullOrWhiteSpace(path))
+                {
+                    StartCoroutine(CaptureEnding(path));
+                }
+            }
         }
 
         private void Update()
@@ -78,6 +98,7 @@ namespace Demo02.Core
                 {
                     isEndingFrozen = true;
                     Time.timeScale = 0f;
+                    capturedPlayTime = Time.unscaledTime - sessionStartedAt;
                 }
 
                 if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
@@ -195,7 +216,12 @@ namespace Demo02.Core
 
             float width = 300f * scale;
             float x = (Screen.width - width) * 0.5f;
-            float y = Screen.height * 0.48f;
+            if (IsEnding)
+            {
+                DrawEndingSummary(scale);
+            }
+
+            float y = Screen.height * (IsEnding ? 0.69f : 0.48f);
             float buttonHeight = 48f * scale;
             if (!IsEnding && GUI.Button(
                 new Rect(x, y, width, buttonHeight),
@@ -231,6 +257,170 @@ namespace Demo02.Core
             {
                 ReturnToTitle();
             }
+        }
+
+        private void DrawEndingSummary(float scale)
+        {
+            if (investigationState == null)
+            {
+                return;
+            }
+
+            string[] lines = BuildSummaryLines();
+            float width = Mathf.Min(Screen.width - 100f, 760f * scale);
+            float height = 118f * scale;
+            Rect panel = new(
+                (Screen.width - width) * 0.5f,
+                Screen.height * 0.43f,
+                width,
+                height
+            );
+            UiTheme.DrawRect(panel, new Color(0.045f, 0.05f, 0.06f, 0.98f));
+            UiTheme.DrawBorder(panel, new Color(0.88f, 0.7f, 0.38f, 0.34f));
+            UiTheme.DrawRect(
+                new Rect(panel.x, panel.y, 3f * scale, panel.height),
+                UiTheme.Accent
+            );
+
+            GUIStyle eyebrow = UiTheme.Label(10, TextAnchor.MiddleLeft, bold: true);
+            eyebrow.normal.textColor = UiTheme.Accent;
+            GUI.Label(
+                new Rect(
+                    panel.x + 18f * scale,
+                    panel.y + 8f * scale,
+                    panel.width - 36f * scale,
+                    18f * scale
+                ),
+                "CASE FILE · 结案记录",
+                eyebrow
+            );
+            float lineHeight = 18f * scale;
+            for (int index = 0; index < lines.Length; index++)
+            {
+                GUI.Label(
+                    new Rect(
+                        panel.x + 18f * scale,
+                        panel.y + (29f + index * 18f) * scale,
+                        panel.width - 36f * scale,
+                        lineHeight
+                    ),
+                    lines[index],
+                    UiTheme.Label(11)
+                );
+            }
+        }
+
+        private string[] BuildSummaryLines()
+        {
+            int minutes = Mathf.FloorToInt(capturedPlayTime / 60f);
+            int seconds = Mathf.FloorToInt(capturedPlayTime % 60f);
+            int completedOptional = 0;
+            CaseDefinition content = investigationState.CaseContent;
+            if (content != null)
+            {
+                for (int index = 0; index < content.OptionalObjectives.Count; index++)
+                {
+                    if (OptionalObjectiveRuntime.IsCompleted(
+                        content.OptionalObjectives[index],
+                        investigationState
+                    ))
+                    {
+                        completedOptional++;
+                    }
+                }
+            }
+
+            string teaStatus;
+            if (investigationState.HasFact("teahouse-keeper-protected"))
+            {
+                teaStatus = "已保护茶肆";
+            }
+            else if (investigationState.HasFact("teahouse-written-record"))
+            {
+                teaStatus = "已追问并抄录旁证";
+            }
+            else if (investigationState.HasFact("teahouse-cart-testimony"))
+            {
+                teaStatus = "已追问但未抄录";
+            }
+            else
+            {
+                teaStatus = "未调查茶肆旁证";
+            }
+
+            return new[]
+            {
+                $"本次用时  {minutes:00}:{seconds:00}",
+                $"线索 {investigationState.CollectedClueCount}/"
+                    + $"{investigationState.RequiredClueCount}    "
+                    + $"时间锚 {investigationState.StabilizedTimeAnchorCount}/"
+                    + $"{investigationState.RequiredTimeAnchorCount}    "
+                    + $"回声 {investigationState.DiscoveredEchoCount}/3",
+                $"可选目标  {completedOptional}/{content?.OptionalObjectives.Count ?? 0}    "
+                    + teaStatus,
+                $"调查立场  {ChapterCopy.GetStanceLabel(investigationState)}    "
+                    + $"证据去向  {ChapterCopy.GetPlanLabel(investigationState)}"
+            };
+        }
+
+        private void PrepareEndingPreview()
+        {
+            if (investigationState == null)
+            {
+                return;
+            }
+
+            investigationState.CompleteWitnessBriefing();
+            investigationState.SetWitnessStance(WitnessStance.PersonFirst);
+            CaseDefinition content = investigationState.CaseContent;
+            if (content == null)
+            {
+                return;
+            }
+            for (int index = 0; index < content.Evidence.Count; index++)
+            {
+                investigationState.CollectClue(content.Evidence[index].Id);
+            }
+            investigationState.SetEvidencePlan(EvidencePlan.PublicRecord);
+            investigationState.CompleteEvidenceReview();
+            investigationState.SubmitContradiction(
+                content.Contradiction.StatementId,
+                content.Contradiction.EvidenceId
+            );
+            investigationState.TryStabilizeTimeAnchor("past-02", out _);
+            investigationState.TryStabilizeTimeAnchor("present-01", out _);
+            investigationState.TryStabilizeTimeAnchor("present-03", out _);
+            investigationState.CompleteRepair();
+            investigationState.SelectConclusion(ConclusionChoice.Preserve);
+            investigationState.SetFact("teahouse-cart-testimony");
+            investigationState.SetFact("teahouse-event-completed");
+            investigationState.SetFact("teahouse-written-record");
+        }
+
+        private IEnumerator CaptureEnding(string path)
+        {
+            yield return new WaitForSecondsRealtime(0.8f);
+            yield return new WaitForEndOfFrame();
+            string directory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrWhiteSpace(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            ScreenCapture.CaptureScreenshot(path);
+            Debug.Log($"Ending preview captured to {path}");
+        }
+
+        private static string GetArgumentValue(string prefix)
+        {
+            foreach (string argument in Environment.GetCommandLineArgs())
+            {
+                if (argument.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    return argument.Substring(prefix.Length);
+                }
+            }
+
+            return string.Empty;
         }
 
         private bool IsEnding =>

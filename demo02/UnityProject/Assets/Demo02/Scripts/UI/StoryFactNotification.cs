@@ -85,7 +85,9 @@ namespace Demo02.UI
                 || (SaveSlotController.Instance != null
                     && SaveSlotController.Instance.IsOpen)
                 || (SettingsController.Instance != null
-                    && SettingsController.Instance.IsOpen))
+                    && SettingsController.Instance.IsOpen)
+                || (GameFlowController.Instance != null
+                    && GameFlowController.Instance.IsGameEnding))
             {
                 return;
             }

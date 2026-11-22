@@ -15,5 +15,5 @@
 
 - [作品集说明](PORTFOLIO.md)
 - [当前版本发布说明](RELEASE_NOTES.md)
-- [Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.20.0)
+- [Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.21.0)
 - [模板使用说明](TEMPLATE.md)

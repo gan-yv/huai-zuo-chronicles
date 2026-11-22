@@ -42,6 +42,12 @@ namespace Demo02.UI
 
         private void OnGUI()
         {
+            if (GameFlowController.Instance != null
+                && GameFlowController.Instance.IsGameEnding)
+            {
+                return;
+            }
+
             if (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
             {
                 return;

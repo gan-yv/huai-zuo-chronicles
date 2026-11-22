@@ -249,7 +249,9 @@ namespace Demo02.UI
                 || (TestimonyBoardController.Instance != null
                     && TestimonyBoardController.Instance.IsOpen)
                 || (SaveSlotController.Instance != null
-                    && SaveSlotController.Instance.IsOpen);
+                    && SaveSlotController.Instance.IsOpen)
+                || (GameFlowController.Instance != null
+                    && GameFlowController.Instance.IsGameEnding);
         }
     }
 }

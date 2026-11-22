@@ -55,7 +55,9 @@ namespace Demo02.Interaction
 
         private void OnGUI()
         {
-            if ((DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+            if ((GameFlowController.Instance != null
+                    && GameFlowController.Instance.IsGameEnding)
+                || (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
                 || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
             {
                 return;
