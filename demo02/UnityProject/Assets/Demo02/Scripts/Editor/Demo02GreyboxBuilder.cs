@@ -32,6 +32,7 @@ namespace Demo02.Editor
         public static void RebuildFromMenu()
         {
             StylizedCharacterSetup.BuildAll();
+            QuaterniusEnvironmentSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -40,6 +41,7 @@ namespace Demo02.Editor
         public static void RebuildForBatch()
         {
             StylizedCharacterSetup.BuildAll();
+            QuaterniusEnvironmentSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -81,6 +83,7 @@ namespace Demo02.Editor
             VerifyChapterFlowForBatch();
             VerifySaveSlotsForBatch();
             StylizedCharacterSetup.ValidateForBatch();
+            QuaterniusEnvironmentSetup.ValidateForBatch();
             Debug.Log(
                 "All automated checks passed: dialogue, combat, time layer, "
                 + "inventory, chapter and saves."
@@ -811,6 +814,18 @@ namespace Demo02.Editor
                 CaseDefinition chapterContent =
                     CaseDefinitionSeeder.LoadOrCreateChapter01();
                 BuildGeometry(greyboxScene, chapterContent);
+                GameObject generatedRoot = greyboxScene
+                    .GetRootGameObjects()
+                    .FirstOrDefault(root => root.name == RootName);
+                if (generatedRoot == null)
+                {
+                    throw new System.InvalidOperationException(
+                        "Greybox geometry root was not generated."
+                    );
+                }
+                QuaterniusEnvironmentSetup.ApplyToGreybox(
+                    generatedRoot.transform
+                );
                 EditorSceneManager.MarkSceneDirty(greyboxScene);
                 EditorSceneManager.SaveScene(greyboxScene);
                 Debug.Log("Demo02 greybox scene generated.");

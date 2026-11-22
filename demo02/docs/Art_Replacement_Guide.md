@@ -1,6 +1,46 @@
 # 游戏美术替换指南
 
-本文对应当前首批公开素材。素材只用于建立可运行的替换样板，不代表广陵最终美术方向。
+本文记录当前可运行的公开素材替换流程。正式默认环境使用 Quaternius
+Medieval Village MegaKit 中现成的模块拼装，不手工制作建筑模型。
+
+## 当前默认：Quaternius 中世纪村庄
+
+- 来源：https://quaternius.com/packs/medievalvillage.html
+- CC0 发行镜像：https://github.com/J-Ponzo/gltf-medieval-village-megakit
+- 许可证：CC0 1.0，允许个人、商用、修改和再分发。
+- 导入范围：31 个墙、门、窗、百叶窗、屋顶、老虎窗、挑檐和街道道具模块。
+- 组合结果：三套 6×8 米建筑外壳，分别为灰泥、砖石和木构立面。
+- 兼容策略：原建筑的碰撞体、交互、任务与场景 ID 保持不变，只替换视觉。
+
+![Quaternius 主街](screenshots/quaternius-main-street.png)
+
+![Quaternius 独立样板](screenshots/quaternius-village-pilot.png)
+
+重现完整环境：
+
+1. 在 Unity 中打开 `Demo02 > Art > Quaternius > Rebuild Environment Kit`。
+2. 执行 `Demo02/Rebuild Greybox Scene`，将三套外壳接入全部街区。
+3. 打开 `Assets/Demo02/Scenes/Tests/QuaterniusVillagePilot.unity` 检查独立样板。
+4. 执行 `Demo02 > Art > Quaternius > Capture Main Street Screenshot` 生成对比图。
+5. 执行 `Demo02 > Build Windows Demo` 生成可运行版本。
+
+性能处理不是简单降低画质。每个建筑先按材质合并；接入街区时，再按
+`OfficialStreet`、`DongguanStreet`、`CaiyiStreet` 三个区域合并为三个
+静态网格，每组最多 9 个材质批次，避免几十栋建筑各自提交材质。
+
+同一 1280×720 Windows 实机基准：
+
+| 版本 | 平均 FPS | 1% 低帧 FPS |
+|---|---:|---:|
+| 1.21 原灰盒回滚版 | 192.6 | 99.5 |
+| 1.22 Quaternius 主场景 | 376.3 | 164.7 |
+
+基准文件位于 `docs/benchmarks/`。帧率数据来自窗口正常显示并持续渲染
+12 秒的构建，不采用最小化窗口或关闭渲染得到的无效结果。
+
+## 早期第三方样板
+
+以下 Kenney 与 Poly Haven 流程继续保留，作为材质和替换结构的参考。
 
 ## 已准备内容
 

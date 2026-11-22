@@ -59,6 +59,7 @@ secrets/
 /demo01/Builds/*
 /demo02/Builds/*
 !/demo02/Builds/README.md
+/demo02/docs/*.log
 Dist/
 Release/
 BuildOutput/

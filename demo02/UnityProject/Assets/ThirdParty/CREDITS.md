@@ -19,6 +19,12 @@ is retained for provenance and good practice.
   https://kenney.nl/assets/city-kit-commercial, CC0 1.0. Twelve complete
   buildings are normalized for the existing street footprints. Project
   materials and prefabs are stored under `Assets/Demo02/Art/Environment/CityKit`.
+- **Medieval Village MegaKit** by Quaternius,
+  https://quaternius.com/packs/medievalvillage.html, CC0 1.0. Selected wall,
+  roof, corner, balcony, overhang, door, and prop modules are imported from
+  the standard free glTF distribution. The playable streets use three
+  ready-made shell variants, with each street baked into a small set of
+  material batches for runtime performance.
 - **Grey Plaster 02** by Rob Tuytel, https://polyhaven.com/a/grey_plaster_02,
   CC0 1.0. Imported as a 2K PBR material; Unity mask data is generated from
   the supplied ARM map.
