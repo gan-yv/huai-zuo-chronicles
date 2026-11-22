@@ -11,3 +11,12 @@
 - 实际放入 Unity 的文件范围。
 
 禁止提交来源不明、授权不明或仅供个人试用的资源。
+
+## 当前资源
+
+- `Kenney/FantasyTownKit`：广陵灰盒的建筑、屋顶、摊位和小道具样板。
+- `PolyHaven/`：灰泥墙、旧木板和陶瓦三套 2K PBR 材质。
+
+原始下载包、许可证、来源与完整性记录位于
+`demo02/SourceAssets/ThirdParty/`。项目自有材质和预制体位于
+`Assets/Demo02/Art/`，不要直接修改本目录中的第三方源文件。
