@@ -22,6 +22,11 @@ namespace Demo02.Editor
             "Assets/Demo02/Art/Environment/Guangling/Prefabs";
         private const string PreviewScenePath =
             "Assets/Demo02/Scenes/Tests/ArtImportShowcase.unity";
+        private const string ReplacementPrefabPath =
+            "Assets/Demo02/Art/Environment/Guangling/Prefabs/ART_Replacement_Building_8x6.prefab";
+        private const string ComparisonScenePath =
+            "Assets/Demo02/Scenes/Tests/ArtReplacementComparison.unity";
+        private const string ReplacementChildSuffix = "_ArtReplacement";
 
         private static readonly string[] ModelFiles =
         {
@@ -62,7 +67,10 @@ namespace Demo02.Editor
             );
             Material previewFloor = CreatePreviewFloorMaterial();
             Material pedestal = CreatePreviewPedestalMaterial();
+            Material greybox = CreatePreviewGreyboxMaterial();
             GameObject samplePrefab = CreateSamplePrefab(kenneyMaterial);
+            GameObject replacementBuilding =
+                CreateReplacementBuildingPrefab(kenneyMaterial);
             CreateTemplatePrefab();
             CreatePreviewScene(
                 samplePrefab,
@@ -71,6 +79,11 @@ namespace Demo02.Editor
                 planks,
                 roof,
                 pedestal
+            );
+            CreateReplacementComparisonScene(
+                replacementBuilding,
+                greybox,
+                previewFloor
             );
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -84,11 +97,45 @@ namespace Demo02.Editor
         [MenuItem("Demo02/Art/Capture Import Preview")]
         public static void CapturePreview()
         {
-            EditorSceneManager.OpenScene(PreviewScenePath, OpenSceneMode.Single);
+            CaptureScene(
+                PreviewScenePath,
+                "../../docs/screenshots/art-import-showcase.png"
+            );
+        }
+
+        [MenuItem("Demo02/Art/Capture Replacement Comparison")]
+        public static void CaptureReplacementComparison()
+        {
+            CaptureScene(
+                ComparisonScenePath,
+                "../../docs/screenshots/art-replacement-comparison.png"
+            );
+        }
+
+        [MenuItem("Demo02/Art/Apply Building Replacement To Selection")]
+        public static void ApplyReplacementToSelected()
+        {
+            ApplyBuildingReplacement(Selection.activeGameObject);
+        }
+
+        [MenuItem("Demo02/Art/Remove Building Replacement From Selection")]
+        public static void RemoveReplacementFromSelected()
+        {
+            RemoveBuildingReplacement(Selection.activeGameObject);
+        }
+
+        private static void CaptureScene(
+            string scenePath,
+            string screenshotRelativePath
+        )
+        {
+            EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
             Camera camera = Camera.main;
             if (camera == null)
             {
-                throw new InvalidOperationException("Preview scene has no Main Camera.");
+                throw new InvalidOperationException(
+                    $"Preview scene has no Main Camera: {scenePath}"
+                );
             }
 
             const int width = 1280;
@@ -121,7 +168,7 @@ namespace Demo02.Editor
             string screenshotPath = Path.GetFullPath(
                 Path.Combine(
                     Application.dataPath,
-                    "../../docs/screenshots/art-import-showcase.png"
+                    screenshotRelativePath
                 )
             );
             Directory.CreateDirectory(Path.GetDirectoryName(screenshotPath)!);
@@ -130,7 +177,7 @@ namespace Demo02.Editor
             target.Release();
             UnityEngine.Object.DestroyImmediate(target);
             AssetDatabase.Refresh();
-            Debug.Log($"Art import preview captured at {screenshotPath}");
+            Debug.Log($"Art preview captured at {screenshotPath}");
         }
 
         [MenuItem("Demo02/Art/Log Third-Party Model Bounds")]
@@ -212,6 +259,12 @@ namespace Demo02.Editor
                 false,
                 failures
             );
+            ValidateMaterial(
+                $"{MaterialRoot}/MAT_Preview_Greybox.mat",
+                false,
+                false,
+                failures
+            );
 
             string prefabPath = $"{PrefabRoot}/ART_Sample_FantasyTownKit.prefab";
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
@@ -256,6 +309,19 @@ namespace Demo02.Editor
             {
                 failures.Add($"Missing preview scene: {PreviewScenePath}");
             }
+            if (AssetDatabase.LoadAssetAtPath<GameObject>(ReplacementPrefabPath) == null)
+            {
+                failures.Add($"Missing replacement building: {ReplacementPrefabPath}");
+            }
+            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(ComparisonScenePath) == null)
+            {
+                failures.Add($"Missing comparison scene: {ComparisonScenePath}");
+            }
+
+            ValidateReplacementBuilding(
+                ReplacementPrefabPath,
+                failures
+            );
 
             if (failures.Count > 0)
             {
@@ -269,6 +335,279 @@ namespace Demo02.Editor
                 "Third-party art sample validation passed: " +
                 $"{ModelFiles.Length} models, URP materials, prefab, and preview scene."
             );
+        }
+
+        public static void VerifyBuildingReplacementSwapForBatch()
+        {
+            Scene scene = EditorSceneManager.OpenScene(
+                "Assets/Demo02/Scenes/Guangling/Greybox.unity",
+                OpenSceneMode.Additive
+            );
+            GameObject building = FindGameObjectInScene(
+                scene,
+                "LeftBuilding_-14"
+            );
+            if (building == null)
+            {
+                EditorSceneManager.CloseScene(scene, true);
+                throw new InvalidOperationException(
+                    "Replacement verification could not find LeftBuilding_-14."
+                );
+            }
+
+            MeshRenderer buildingRenderer = building.GetComponent<MeshRenderer>();
+            BoxCollider buildingCollider = building.GetComponent<BoxCollider>();
+            GameObject replacement = null;
+            try
+            {
+                replacement = ApplyBuildingReplacement(
+                    building,
+                    registerUndo: false
+                );
+                if (replacement == null ||
+                    replacement.name != building.name + ReplacementChildSuffix ||
+                    buildingRenderer.enabled ||
+                    buildingCollider == null ||
+                    !buildingCollider.enabled)
+                {
+                    throw new InvalidOperationException(
+                        "Building replacement did not preserve gameplay collider."
+                    );
+                }
+
+                if (!RemoveBuildingReplacement(
+                        building,
+                        registerUndo: false
+                    ) ||
+                    !buildingRenderer.enabled ||
+                    building.transform.parent.Find(
+                        building.name + ReplacementChildSuffix
+                    ) != null)
+                {
+                    throw new InvalidOperationException(
+                        "Building replacement did not restore the greybox visual."
+                    );
+                }
+            }
+            finally
+            {
+                EditorSceneManager.CloseScene(scene, true);
+            }
+
+            Debug.Log(
+                "Building replacement verification passed: visual swap, " +
+                "collider preservation, facade hide, and restore."
+            );
+        }
+
+        private static GameObject ApplyBuildingReplacement(
+            GameObject building,
+            bool registerUndo = true
+        )
+        {
+            if (building == null ||
+                (!building.name.StartsWith("LeftBuilding_", StringComparison.Ordinal) &&
+                 !building.name.StartsWith("RightBuilding_", StringComparison.Ordinal)))
+            {
+                throw new InvalidOperationException(
+                    "Select a LeftBuilding_ or RightBuilding_ greybox object first."
+                );
+            }
+
+            Transform parent = building.transform.parent;
+            string replacementName = building.name + ReplacementChildSuffix;
+            if (parent.Find(replacementName) != null)
+            {
+                throw new InvalidOperationException(
+                    $"{building.name} already has a replacement."
+                );
+            }
+
+            Vector3 size = new(
+                Mathf.Abs(building.transform.localScale.x),
+                Mathf.Abs(building.transform.localScale.y),
+                Mathf.Abs(building.transform.localScale.z)
+            );
+            if (!Approximately(size, new Vector3(6f, 6f, 8f)))
+            {
+                throw new InvalidOperationException(
+                    "The selected building does not use the supported 6x6x8 footprint."
+                );
+            }
+
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                ReplacementPrefabPath
+            );
+            if (prefab == null)
+            {
+                throw new InvalidOperationException(
+                    $"Replacement prefab was not found: {ReplacementPrefabPath}"
+                );
+            }
+
+            MeshRenderer greyboxRenderer = building.GetComponent<MeshRenderer>();
+            if (greyboxRenderer == null)
+            {
+                throw new InvalidOperationException(
+                    $"{building.name} has no greybox MeshRenderer."
+                );
+            }
+
+            GameObject replacement =
+                (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+            replacement.name = replacementName;
+            replacement.transform.position = new Vector3(
+                building.transform.position.x,
+                building.transform.position.y - size.y * 0.5f,
+                building.transform.position.z
+            );
+            replacement.transform.rotation =
+                building.name.StartsWith("RightBuilding_", StringComparison.Ordinal)
+                    ? Quaternion.Euler(0f, 180f, 0f)
+                    : Quaternion.identity;
+
+            foreach (Collider collider in
+                     replacement.GetComponentsInChildren<Collider>(true))
+            {
+                collider.enabled = false;
+            }
+
+            if (registerUndo)
+            {
+                Undo.RegisterCreatedObjectUndo(
+                    replacement,
+                    "Apply Building Art Replacement"
+                );
+                Undo.RecordObject(
+                    greyboxRenderer,
+                    "Hide Greybox Building"
+                );
+            }
+            greyboxRenderer.enabled = false;
+
+            foreach (Transform sibling in parent)
+            {
+                if (!sibling.name.StartsWith(
+                        building.name + "_",
+                        StringComparison.Ordinal
+                    ) ||
+                    sibling == replacement.transform)
+                {
+                    continue;
+                }
+
+                foreach (Renderer renderer in
+                         sibling.GetComponentsInChildren<Renderer>(true))
+                {
+                    if (registerUndo)
+                    {
+                        Undo.RecordObject(
+                            renderer,
+                            "Hide Greybox Facade"
+                        );
+                    }
+                    renderer.enabled = false;
+                }
+            }
+
+            EditorSceneManager.MarkSceneDirty(building.scene);
+            Selection.activeGameObject = replacement;
+            return replacement;
+        }
+
+        private static bool RemoveBuildingReplacement(
+            GameObject building,
+            bool registerUndo = true
+        )
+        {
+            if (building == null || building.transform.parent == null)
+            {
+                throw new InvalidOperationException(
+                    "Select a replaced greybox building first."
+                );
+            }
+
+            Transform parent = building.transform.parent;
+            Transform replacement = parent.Find(
+                building.name + ReplacementChildSuffix
+            );
+            if (replacement == null)
+            {
+                throw new InvalidOperationException(
+                    $"{building.name} has no art replacement to remove."
+                );
+            }
+
+            MeshRenderer greyboxRenderer = building.GetComponent<MeshRenderer>();
+            if (greyboxRenderer != null)
+            {
+                if (registerUndo)
+                {
+                    Undo.RecordObject(
+                        greyboxRenderer,
+                        "Restore Greybox Building"
+                    );
+                }
+                greyboxRenderer.enabled = true;
+            }
+
+            foreach (Transform sibling in parent)
+            {
+                if (!sibling.name.StartsWith(
+                        building.name + "_",
+                        StringComparison.Ordinal
+                    ) ||
+                    sibling == replacement)
+                {
+                    continue;
+                }
+
+                foreach (Renderer renderer in
+                         sibling.GetComponentsInChildren<Renderer>(true))
+                {
+                    if (registerUndo)
+                    {
+                        Undo.RecordObject(
+                            renderer,
+                            "Restore Greybox Facade"
+                        );
+                    }
+                    renderer.enabled = true;
+                }
+            }
+
+            if (registerUndo)
+            {
+                Undo.DestroyObjectImmediate(replacement.gameObject);
+            }
+            else
+            {
+                UnityEngine.Object.DestroyImmediate(replacement.gameObject);
+            }
+
+            EditorSceneManager.MarkSceneDirty(building.scene);
+            Selection.activeGameObject = building;
+            return true;
+        }
+
+        private static GameObject FindGameObjectInScene(
+            Scene scene,
+            string name
+        )
+        {
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                foreach (Transform candidate in
+                         root.GetComponentsInChildren<Transform>(true))
+                {
+                    if (candidate.name == name)
+                    {
+                        return candidate.gameObject;
+                    }
+                }
+            }
+
+            return null;
         }
 
         private static void ValidateMaterial(
@@ -554,6 +893,18 @@ namespace Demo02.Editor
             return pedestal;
         }
 
+        private static Material CreatePreviewGreyboxMaterial()
+        {
+            Material greybox = LoadOrCreateMaterial(
+                $"{MaterialRoot}/MAT_Preview_Greybox.mat"
+            );
+            greybox.SetColor("_BaseColor", new Color(0.18f, 0.23f, 0.3f));
+            greybox.SetFloat("_Metallic", 0f);
+            greybox.SetFloat("_Smoothness", 0.12f);
+            EditorUtility.SetDirty(greybox);
+            return greybox;
+        }
+
         private static GameObject CreateSamplePrefab(Material kenneyMaterial)
         {
             GameObject root = new("ART_Sample_FantasyTownKit");
@@ -599,6 +950,202 @@ namespace Demo02.Editor
             GameObject saved = PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             UnityEngine.Object.DestroyImmediate(root);
             return saved;
+        }
+
+        private static GameObject CreateReplacementBuildingPrefab(
+            Material kenneyMaterial
+        )
+        {
+            GameObject root = new("ART_Replacement_Building_8x6");
+            GameObject visuals = new("Visuals");
+            visuals.transform.SetParent(root.transform, false);
+            GameObject facade = new("FrontFacade");
+            facade.transform.SetParent(visuals.transform, false);
+            GameObject roof = new("Roof");
+            roof.transform.SetParent(visuals.transform, false);
+            GameObject trim = new("Trim");
+            trim.transform.SetParent(visuals.transform, false);
+
+            AddReplacementModel(
+                facade.transform,
+                "wall-wood-door.fbx",
+                "DoorBay",
+                new Vector3(3.1f, 0f, -2f),
+                new Vector3(4f, 3f, 4f),
+                kenneyMaterial
+            );
+            AddReplacementModel(
+                facade.transform,
+                "wall-wood-window-small.fbx",
+                "WindowBay",
+                new Vector3(3.1f, 0f, 2f),
+                new Vector3(4f, 3f, 4f),
+                kenneyMaterial
+            );
+            AddReplacementModel(
+                facade.transform,
+                "wall-wood-window-shutters.fbx",
+                "UpperWindowBayA",
+                new Vector3(3.1f, 3f, -2f),
+                new Vector3(4f, 3f, 4f),
+                kenneyMaterial
+            );
+            AddReplacementModel(
+                facade.transform,
+                "wall-wood-window-small.fbx",
+                "UpperWindowBayB",
+                new Vector3(3.1f, 3f, 2f),
+                new Vector3(4f, 3f, 4f),
+                kenneyMaterial
+            );
+
+            for (int xIndex = 0; xIndex < 2; xIndex++)
+            {
+                for (int zIndex = 0; zIndex < 2; zIndex++)
+                {
+                    AddReplacementModel(
+                        roof.transform,
+                        "roof-gable.fbx",
+                        $"Roof_{xIndex}_{zIndex}",
+                        new Vector3(
+                            xIndex == 0 ? -2f : 2f,
+                            5.95f,
+                            zIndex == 0 ? -2f : 2f
+                        ),
+                        new Vector3(3.6f, 1.55f, 3.6f),
+                        kenneyMaterial
+                    );
+                }
+            }
+
+            foreach (float z in new[] { -4f, 0f, 4f })
+            {
+                AddReplacementModel(
+                    trim.transform,
+                    "pillar-wood.fbx",
+                    $"Pillar_{z:0}",
+                    new Vector3(3.25f, 0f, z),
+                    new Vector3(3f, 6f, 3f),
+                    kenneyMaterial
+                );
+            }
+            AddReplacementModel(
+                trim.transform,
+                "lantern.fbx",
+                "Lantern",
+                new Vector3(3.45f, 2.55f, 1.6f),
+                new Vector3(1.1f, 1.1f, 1.1f),
+                kenneyMaterial
+            );
+
+            GameObject colliders = new("Colliders");
+            colliders.transform.SetParent(root.transform, false);
+            BoxCollider footprint = colliders.AddComponent<BoxCollider>();
+            footprint.center = new Vector3(0f, 3f, 0f);
+            footprint.size = new Vector3(6f, 6f, 8f);
+
+            GameObject gameplay = new("Gameplay");
+            gameplay.transform.SetParent(root.transform, false);
+            GameObject metadata = new("Metadata");
+            metadata.transform.SetParent(root.transform, false);
+
+            GameObject saved =
+                PrefabUtility.SaveAsPrefabAsset(root, ReplacementPrefabPath);
+            UnityEngine.Object.DestroyImmediate(root);
+            return saved;
+        }
+
+        private static void AddReplacementModel(
+            Transform parent,
+            string modelFile,
+            string name,
+            Vector3 position,
+            Vector3 scale,
+            Material material
+        )
+        {
+            string modelPath = $"{FantasyTownRoot}/Models/{modelFile}";
+            GameObject model = AssetDatabase.LoadAssetAtPath<GameObject>(modelPath);
+            if (model == null)
+            {
+                throw new InvalidOperationException($"Model was not found: {modelPath}");
+            }
+
+            GameObject instance =
+                (GameObject)PrefabUtility.InstantiatePrefab(model);
+            instance.name = name;
+            instance.transform.localScale = scale;
+            Vector3 pivotOffset = GetPivotOffset(instance);
+            instance.transform.SetParent(parent, false);
+            instance.transform.localPosition = position + pivotOffset;
+            ApplyMaterial(instance, material);
+        }
+
+        private static void ValidateReplacementBuilding(
+            string prefabPath,
+            List<string> failures
+        )
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (prefab == null)
+            {
+                return;
+            }
+
+            foreach (string childName in new[]
+                     {
+                         "Visuals",
+                         "Colliders",
+                         "Gameplay",
+                         "Metadata"
+                     })
+            {
+                if (prefab.transform.Find(childName) == null)
+                {
+                    failures.Add(
+                        $"Replacement building is missing {childName}: {prefabPath}"
+                    );
+                }
+            }
+
+            BoxCollider footprint =
+                prefab.GetComponentInChildren<BoxCollider>(true);
+            if (footprint == null)
+            {
+                failures.Add(
+                    $"Replacement building has no footprint collider: {prefabPath}"
+                );
+            }
+            else if (
+                !Approximately(footprint.size, new Vector3(6f, 6f, 8f)) ||
+                !Approximately(footprint.center, new Vector3(0f, 3f, 0f))
+            )
+            {
+                failures.Add(
+                    $"Replacement building footprint changed unexpectedly: {prefabPath}"
+                );
+            }
+
+            foreach (Renderer renderer in
+                     prefab.GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer.sharedMaterials.Length == 0 ||
+                    Array.Exists(
+                        renderer.sharedMaterials,
+                        material => material == null || material.shader == null
+                    ))
+                {
+                    failures.Add(
+                        $"Replacement renderer has a missing material: " +
+                        $"{renderer.name} in {prefabPath}"
+                    );
+                }
+            }
+        }
+
+        private static bool Approximately(Vector3 left, Vector3 right)
+        {
+            return Vector3.SqrMagnitude(left - right) < 0.0001f;
         }
 
         private static void NormalizeModelScale(
@@ -767,6 +1314,76 @@ namespace Demo02.Editor
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, PreviewScenePath);
+        }
+
+        private static void CreateReplacementComparisonScene(
+            GameObject replacementBuilding,
+            Material greyboxMaterial,
+            Material floorMaterial
+        )
+        {
+            Scene scene = EditorSceneManager.NewScene(
+                NewSceneSetup.EmptyScene,
+                NewSceneMode.Single
+            );
+            RenderSettings.ambientMode = AmbientMode.Flat;
+            RenderSettings.ambientLight = new Color(0.36f, 0.34f, 0.31f);
+
+            GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            floor.name = "ComparisonFloor";
+            floor.transform.position = Vector3.zero;
+            floor.transform.localScale = new Vector3(2.4f, 1f, 1.4f);
+            floor.GetComponent<MeshRenderer>().sharedMaterial = floorMaterial;
+
+            GameObject greybox = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            greybox.name = "GreyboxProxy_8x6";
+            greybox.transform.position = new Vector3(-5f, 3f, 0f);
+            greybox.transform.localScale = new Vector3(6f, 6f, 8f);
+            greybox.GetComponent<MeshRenderer>().sharedMaterial = greyboxMaterial;
+
+            GameObject art = (GameObject)PrefabUtility.InstantiatePrefab(
+                replacementBuilding
+            );
+            art.name = "ArtReplacement_8x6";
+            art.transform.position = new Vector3(5f, 0f, 0f);
+
+            CreateWorldLabel(
+                "GREYBOX",
+                new Vector3(-5f, 7.3f, -4.1f),
+                0.07f
+            );
+            CreateWorldLabel(
+                "ART PASS 01",
+                new Vector3(5f, 7.3f, -4.1f),
+                0.07f
+            );
+
+            GameObject cameraObject = new("Main Camera");
+            cameraObject.tag = "MainCamera";
+            Camera camera = cameraObject.AddComponent<Camera>();
+            cameraObject.AddComponent<AudioListener>();
+            camera.fieldOfView = 52f;
+            cameraObject.transform.position = new Vector3(0f, 7f, -18f);
+            cameraObject.transform.LookAt(new Vector3(0f, 2.7f, 0f));
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.52f, 0.62f, 0.68f);
+
+            GameObject lightObject = new("Directional Light");
+            lightObject.transform.rotation = Quaternion.Euler(42f, -28f, 0f);
+            Light light = lightObject.AddComponent<Light>();
+            light.type = LightType.Directional;
+            light.intensity = 1.2f;
+            light.color = new Color(1f, 0.88f, 0.72f);
+
+            GameObject fillObject = new("Fill Light");
+            fillObject.transform.rotation = Quaternion.Euler(28f, 145f, 0f);
+            Light fill = fillObject.AddComponent<Light>();
+            fill.type = LightType.Directional;
+            fill.intensity = 0.7f;
+            fill.color = new Color(0.72f, 0.82f, 1f);
+
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene, ComparisonScenePath);
         }
 
         private static void CreateMaterialSwatch(

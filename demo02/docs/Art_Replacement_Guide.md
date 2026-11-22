@@ -11,6 +11,8 @@
 
 ![第三方素材导入预览](screenshots/art-import-showcase.png)
 
+![灰盒与美术替换对比](screenshots/art-replacement-comparison.png)
+
 ## 首次生成
 
 在 Unity 中打开 Demo02 工程，等待导入完成，执行：
@@ -31,10 +33,34 @@
 Assets/Demo02/Art/Materials/ThirdPartySamples/
 Assets/Demo02/Art/Environment/Guangling/Prefabs/
 Assets/Demo02/Scenes/Tests/ArtImportShowcase.unity
+Assets/Demo02/Scenes/Tests/ArtReplacementComparison.unity
 ```
 
 生成后可执行 `Demo02 > Art > Validate Third-Party Samples`，检查模型、
 URP Shader、Base Map、法线、遮挡、金属/光滑度引用、样板预制体和预览场景。
+
+`ART_Replacement_Building_8x6.prefab` 是一个已验证的替换样板：
+
+- 根节点下分离 `Visuals`、`Colliders`、`Gameplay` 和 `Metadata`。
+- 外来模型只进入 `Visuals`。
+- `Colliders` 保留 6×6×8 米街面建筑占位尺寸。
+- 墙体模块按 3 米层高、4 米面宽重新组合。
+- 材质、屋顶、立柱和灯笼均由项目自有材质引用。
+
+实际替换时复制此预制体，保留碰撞与玩法结构，再按目标灰盒尺寸调整
+`Visuals`。不要把原有玩法脚本挂到第三方模型子节点上。
+
+## 场景内安全替换
+
+选中灰盒中的 `LeftBuilding_*` 或 `RightBuilding_*`，执行：
+
+`Demo02 > Art > Apply Building Replacement To Selection`
+
+工具会隐藏旧长方体外观和同名前缀的灰盒立面细节，挂上建筑替换预制体，
+但保留原建筑的碰撞体、脚本和场景对象。右侧建筑会自动旋转朝向街道。
+
+执行 `Demo02 > Art > Remove Building Replacement From Selection` 可恢复原灰盒。
+两种操作均支持 Unity Undo。
 
 ## 替换一个灰盒对象
 
