@@ -46,7 +46,9 @@ $runtimeMetadata = @(
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/LICENSE.md",
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/grey_plaster_02/SOURCE.md",
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/old_planks_02/SOURCE.md",
-    "demo02/UnityProject/Assets/ThirdParty/PolyHaven/clay_roof_tiles_02/SOURCE.md"
+    "demo02/UnityProject/Assets/ThirdParty/PolyHaven/clay_roof_tiles_02/SOURCE.md",
+    "demo02/UnityProject/Assets/ThirdParty/PolyHaven/cobblestone_05/SOURCE.md",
+    "demo02/UnityProject/Assets/ThirdParty/PolyHaven/grey_roof_tiles_02/SOURCE.md"
 )
 foreach ($relativePath in $runtimeMetadata) {
     if (-not (Test-Path (Join-Path $RepositoryRoot $relativePath))) {

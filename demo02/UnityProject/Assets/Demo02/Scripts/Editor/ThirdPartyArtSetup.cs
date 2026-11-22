@@ -65,6 +65,14 @@ namespace Demo02.Editor
                 "clay_roof_tiles_02",
                 "ClayRoofTiles02"
             );
+            CreatePolyHavenMaterial(
+                "cobblestone_05",
+                "Cobblestone05"
+            );
+            CreatePolyHavenMaterial(
+                "grey_roof_tiles_02",
+                "GreyRoofTiles02"
+            );
             Material previewFloor = CreatePreviewFloorMaterial();
             Material pedestal = CreatePreviewPedestalMaterial();
             Material greybox = CreatePreviewGreyboxMaterial();
@@ -243,6 +251,18 @@ namespace Demo02.Editor
             );
             ValidateMaterial(
                 $"{MaterialRoot}/MAT_PolyHaven_ClayRoofTiles02.mat",
+                true,
+                true,
+                failures
+            );
+            ValidateMaterial(
+                $"{MaterialRoot}/MAT_PolyHaven_Cobblestone05.mat",
+                true,
+                true,
+                failures
+            );
+            ValidateMaterial(
+                $"{MaterialRoot}/MAT_PolyHaven_GreyRoofTiles02.mat",
                 true,
                 true,
                 failures
@@ -668,7 +688,9 @@ namespace Demo02.Editor
                      {
                          "grey_plaster_02",
                          "old_planks_02",
-                         "clay_roof_tiles_02"
+                         "clay_roof_tiles_02",
+                         "cobblestone_05",
+                         "grey_roof_tiles_02"
                      })
             {
                 string root = $"{PolyHavenRoot}/{assetId}";

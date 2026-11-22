@@ -6,6 +6,7 @@
 
 - [设定总纲](docs/Demo02_Design_Bible.md)：世界规则、历史、城市、主线、能力与主角。
 - [制作文档](docs/Demo02_Production.md)：广陵 Demo 规格、制作顺序和 Unity 内容组织。
+- [广陵美术方向规范](docs/Guangling_Art_Bible.md)：色彩、建筑尺度、材质、角色、灯光和性能预算。
 - [美术替换指南](docs/Art_Replacement_Guide.md)：公开素材来源、授权、Unity 导入和灰盒替换流程。
 - [Git 与工程规范](../CONTRIBUTING.md)：分支、提交、拉取请求、LFS 和提交前检查。
 
@@ -14,6 +15,7 @@
 - 世界设定和广陵 Demo 制作范围已整理。
 - Unity 6000.5.7f1 URP 工程和广陵灰盒已经建立。
 - 第三方美术样板、PBR 材质生成、独立预览场景和授权校验流程已经可用。
+- 官署前街 48 米美术试点、灰瓦坡顶、木构立面和完整主镜头已经生成。
 
 ## 工程目录
 

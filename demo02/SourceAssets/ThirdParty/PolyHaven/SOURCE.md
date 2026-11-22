@@ -32,3 +32,17 @@ downloaded maps remain unchanged under `Assets/ThirdParty/PolyHaven`.
 - Diffuse SHA256:
   `570E1878985993BF81433D785B4FA2D4AB9F6D32447706193089B11FF0851731`
 
+## Cobblestone 05
+
+- Author: Rob Tuytel
+- Source: https://polyhaven.com/a/cobblestone_05
+- Diffuse SHA256:
+  `999675E08545B44C8B863544480DA9BC88B0457C3AB196D36004D098734E4FFB`
+
+## Grey Roof Tiles 02
+
+- Author: Rob Tuytel
+- Source: https://polyhaven.com/a/grey_roof_tiles_02
+- Diffuse SHA256:
+  `6A95A3D95A8D8B96F02CAF9639F5CEAA814D0FAAE96F351D1E594B4D4FEEB6D7`
+
