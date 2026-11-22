@@ -188,3 +188,25 @@ Assets/Demo02/Art/
 试点使用灰泥、旧木、灰瓦和石板四套 CC0 PBR 材质，建立了 11 栋街面
 建筑、连续坡顶、木柱框架、门窗、店招、灯笼、货箱、街道纵深和远景门楼。
 
+## 12. 角色比例与剪影试点
+
+![主角、途印伙伴与官差角色代理](screenshots/guangling-character-showcase.png)
+
+首轮角色代理使用 1.7 米左右的人体比例，验证以下内容：
+
+- 主角使用深蓝衣身、铜金腰封、记录包和背负修复工具。
+- 途印伙伴使用较短的绿色外套、地图筒、斜挎带和非对称轮廓。
+- 官差使用长朱衣、官帽、宽袖和腰间印记。
+- 每个角色预制体都分离 `Visuals`、`Colliders`、`Gameplay` 和 `Metadata`。
+- 角色预制体带独立胶囊碰撞尺寸，便于按真实身高验收。
+
+这些代理是造型方向测试，不包含正式面部、布料、骨骼和动画。正式模型接入时
+可以保留当前根节点、碰撞和内容分组，只替换 `Visuals`。
+
+输出位置：
+
+- `Assets/Demo02/Art/Characters/Pilot/ART_Hero_Pilot.prefab`
+- `Assets/Demo02/Art/Characters/Pilot/ART_Guide_Pilot.prefab`
+- `Assets/Demo02/Art/Characters/Pilot/ART_Official_Pilot.prefab`
+- `Assets/Demo02/Scenes/Tests/GuanglingCharacterShowcase.unity`
+

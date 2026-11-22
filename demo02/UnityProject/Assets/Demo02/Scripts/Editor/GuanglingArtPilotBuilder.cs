@@ -25,6 +25,7 @@ namespace Demo02.Editor
         public static void BuildPilot()
         {
             ThirdPartyArtSetup.Setup();
+            GuanglingCharacterArtBuilder.BuildCharacters();
             EnsureFolder(MaterialRoot);
             EnsureFolder(MeshRoot);
 
@@ -40,6 +41,7 @@ namespace Demo02.Editor
             CreateStreet(root.transform, materials);
             CreateStreetBuildings(root.transform, materials, gableMesh);
             CreateStreetProps(root.transform, materials);
+            CreateCharacterInstances(root.transform);
             CreateBackground(root.transform, materials);
             CreateLighting();
             CreateCamera();
@@ -165,6 +167,7 @@ namespace Demo02.Editor
                 if (root.transform.Find("Buildings") == null ||
                     root.transform.Find("Street") == null ||
                     root.transform.Find("Props") == null ||
+                    root.transform.Find("Characters") == null ||
                     root.transform.Find("Backdrop") == null)
                 {
                     throw new InvalidOperationException(
@@ -184,6 +187,15 @@ namespace Demo02.Editor
                 {
                     throw new InvalidOperationException(
                         $"Guangling art pilot expected at least 10 buildings, found {buildingCount}."
+                    );
+                }
+
+                int characterCount =
+                    root.transform.Find("Characters").childCount;
+                if (characterCount < 3)
+                {
+                    throw new InvalidOperationException(
+                        $"Guangling art pilot expected at least 3 characters, found {characterCount}."
                     );
                 }
             }
@@ -884,6 +896,59 @@ namespace Demo02.Editor
                     )
                 );
             }
+        }
+
+        private static void CreateCharacterInstances(Transform parent)
+        {
+            GameObject characters = new("Characters");
+            characters.transform.SetParent(parent, false);
+
+            CreateCharacterInstance(
+                characters.transform,
+                "ART_Hero_Pilot",
+                "Hero",
+                new Vector3(0f, 0f, -15f),
+                Quaternion.identity
+            );
+            CreateCharacterInstance(
+                characters.transform,
+                "ART_Guide_Pilot",
+                "Guide",
+                new Vector3(4.25f, 0f, -5.5f),
+                Quaternion.Euler(0f, -90f, 0f)
+            );
+            CreateCharacterInstance(
+                characters.transform,
+                "ART_Official_Pilot",
+                "Official",
+                new Vector3(-4.35f, 0f, 5.2f),
+                Quaternion.Euler(0f, 90f, 0f)
+            );
+        }
+
+        private static void CreateCharacterInstance(
+            Transform parent,
+            string prefabName,
+            string instanceName,
+            Vector3 position,
+            Quaternion rotation
+        )
+        {
+            string path =
+                $"Assets/Demo02/Art/Characters/Pilot/{prefabName}.prefab";
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab == null)
+            {
+                throw new InvalidOperationException(
+                    $"Character prefab was not found: {path}"
+                );
+            }
+
+            GameObject character =
+                (GameObject)PrefabUtility.InstantiatePrefab(prefab, parent);
+            character.name = instanceName;
+            character.transform.position = position;
+            character.transform.rotation = rotation;
         }
 
         private static void CreateCrate(
