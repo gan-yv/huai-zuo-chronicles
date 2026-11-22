@@ -15,6 +15,10 @@ is retained for provenance and good practice.
   model, four skins, and idle/run/jump animations are used for the default
   character visuals. Project materials and prefabs are stored under
   `Assets/Demo02/Art/Characters/Stylized`.
+- **City Kit Commercial** by Kenney,
+  https://kenney.nl/assets/city-kit-commercial, CC0 1.0. Twelve complete
+  buildings are normalized for the existing street footprints. Project
+  materials and prefabs are stored under `Assets/Demo02/Art/Environment/CityKit`.
 - **Grey Plaster 02** by Rob Tuytel, https://polyhaven.com/a/grey_plaster_02,
   CC0 1.0. Imported as a 2K PBR material; Unity mask data is generated from
   the supplied ARM map.
