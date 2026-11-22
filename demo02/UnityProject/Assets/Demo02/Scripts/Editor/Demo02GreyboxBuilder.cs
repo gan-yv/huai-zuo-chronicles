@@ -841,7 +841,7 @@ namespace Demo02.Editor
                 root.transform,
                 "Ground",
                 new Vector3(0f, -0.5f, 5f),
-                new Vector3(16f, 1f, 54f),
+                new Vector3(20f, 1f, 54f),
                 new Color(0.55f, 0.52f, 0.46f)
             );
             ground.isStatic = true;
@@ -849,7 +849,7 @@ namespace Demo02.Editor
                 root.transform,
                 "OfficialStreetPaving",
                 new Vector3(0f, 0f, 5f),
-                15f,
+                19f,
                 52f,
                 new Color(0.46f, 0.43f, 0.38f)
             );
@@ -860,7 +860,7 @@ namespace Demo02.Editor
                 GameObject left = CreateBlock(
                     root.transform,
                     $"LeftBuilding_{z:0}",
-                    new Vector3(-7f, 3f, z),
+                    new Vector3(-9f, 3f, z),
                     new Vector3(6f, 6f, 8f),
                     new Color(0.23f, 0.28f, 0.34f)
                 );
@@ -870,7 +870,7 @@ namespace Demo02.Editor
                     right = CreateBlock(
                         root.transform,
                         $"RightBuilding_{z:0}",
-                        new Vector3(7f, 3f, z),
+                        new Vector3(9f, 3f, z),
                         new Vector3(6f, 6f, 8f),
                         new Color(0.3f, 0.27f, 0.32f)
                     );
@@ -909,7 +909,7 @@ namespace Demo02.Editor
                 root.transform,
                 "EndWall",
                 new Vector3(0f, 2f, 33f),
-                new Vector3(14f, 4f, 2f),
+                new Vector3(18f, 4f, 2f),
                 new Color(0.36f, 0.3f, 0.28f)
             );
             endWall.isStatic = true;
@@ -1308,7 +1308,7 @@ namespace Demo02.Editor
                 root.transform,
                 "Area_OfficialStreet",
                 new Vector3(0f, 1f, -8f),
-                new Vector3(9f, 3f, 16f),
+                new Vector3(13f, 3f, 16f),
                 "official-street",
                 "官署前街"
             );
