@@ -233,10 +233,11 @@ Characters Protagonists 的风格化人物，Blocky Characters 保留为动画�
 
 ## 14. 仿古建筑替换
 
-![正式可玩灰盒中的仿古建筑](screenshots/current-game-fantasy-town.png)
+![仿古建筑替换测试](screenshots/current-game-fantasy-town.png)
 
-场景建筑已从程序化方块替换为 Kenney Fantasy Town Kit 的现成木构、
-墙面和屋顶模块。City Kit 保留为少量近代都市元素的备选资源。替换规则：
+Kenney Fantasy Town Kit 已用于生成独立建筑替换样板，但默认可玩场景暂时
+保留原程序化街道，避免模块实例造成的渲染负担。City Kit 保留为少量近代
+都市元素的备选资源。试装规则：
 
 - 原建筑对象、BoxCollider 和玩法引用保持不动。
 - 只隐藏旧方块和旧立面细节的 Renderer。
@@ -245,5 +246,7 @@ Characters Protagonists 的风格化人物，Blocky Characters 保留为动画�
 - 使用轻微冷暖色差区分相邻店铺。
 - 角色、碰撞和道路宽度继续沿用现有玩法数据。
 
-该替换已应用到官署前街、东关街和彩衣街的灰盒建筑。
+现成建筑只有在完成静态合批、LOD 和阴影预算后才会重新进入默认可玩场景。
+当前性能采样中，模块化建筑版本平均约 109 FPS，回退原灰盒后恢复至约
+192.6 FPS。
 

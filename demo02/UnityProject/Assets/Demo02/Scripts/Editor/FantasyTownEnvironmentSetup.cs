@@ -55,17 +55,11 @@ namespace Demo02.Editor
                         ? Quaternion.Euler(0f, 180f, 0f)
                         : Quaternion.identity;
 
-                Color[] palette =
+                foreach (Transform child in
+                         visual.GetComponentsInChildren<Transform>(true))
                 {
-                    new Color(1f, 0.96f, 0.88f),
-                    new Color(0.88f, 0.94f, 1f),
-                    new Color(0.96f, 0.9f, 1f),
-                    new Color(1f, 0.9f, 0.84f)
-                };
-                visual.AddComponent<ColorTint>().Configure(
-                    palette[index % palette.Length],
-                    0.2f
-                );
+                    child.gameObject.isStatic = true;
+                }
 
                 MeshRenderer greyboxRenderer =
                     building.GetComponent<MeshRenderer>();
