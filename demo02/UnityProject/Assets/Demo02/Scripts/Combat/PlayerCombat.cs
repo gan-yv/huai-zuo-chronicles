@@ -48,6 +48,7 @@ namespace Demo02.Combat
         private void Attack()
         {
             ShowAttackVisual();
+            GameAudio.PlayAttackSwing();
             GetComponent<Demo02.Player.ProceduralCharacterAnimator>()?.PlayAttack();
             GetComponentInChildren<Demo02.Player.ReadyMadeCharacterAnimator>()?.PlayAttack();
             Vector3 center = transform.position + Vector3.up + transform.forward * attackRange;

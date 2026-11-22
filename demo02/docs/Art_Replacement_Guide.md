@@ -38,6 +38,7 @@ Medieval Village MegaKit 中现成的模块拼装，不手工制作建筑模型�
 | 1.24 现成街景与道具 | 375.3 | 207.2 |
 | 1.25 路灯、摊位比例与街景合批 | 364.8 | 244.9 |
 | 1.26 Idle、Walk、Sprint 步态 | 364.0 | 202.8 |
+| 1.27 Kenney 现成音效 | 402.6 | 233.0 |
 
 基准文件位于 `docs/benchmarks/`。帧率数据来自窗口正常显示并持续渲染
 12 秒的构建，不采用最小化窗口或关闭渲染得到的无效结果。
@@ -90,6 +91,16 @@ Medieval Village MegaKit 中现成的模块拼装，不手工制作建筑模型�
 
 场景重建入口仍是 `Demo02/Rebuild Greybox Scene`。新增工具位于
 `Assets/Demo02/Scripts/Editor/ReadyMadeStreetDressingSetup.cs`。
+
+## 现成音效
+
+程序化占位音效正在替换为 Kenney CC0 现成音频：
+
+- Interface Sounds：对话开启、菜单开关、按钮点击和确认。
+- Impact Sounds：五种混凝土脚步、金属命中和木质受击。
+- RPG Audio：书本开关、翻页、拔刀和挥击。
+- 音频库位于 `Assets/Demo02/Audio/GameAudioLibrary.asset`，由
+  `ReadyMadeAudioSetup` 在场景构建时绑定；缺失时会回退到旧程序音。
 
 ## 早期第三方样板
 

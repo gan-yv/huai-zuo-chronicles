@@ -30,6 +30,9 @@ is retained for provenance and good practice.
   standard free glTF set is used for sword attack, hit, interaction, pickup
   and death motion. Five clips are offline-retargeted at build time from the
   source Rigify skeleton to the project's Generic Kenney skeleton.
+- **Interface Sounds**, **Impact Sounds** and **RPG Audio** by Kenney,
+  https://kenney.nl, CC0 1.0. Selected UI, concrete footstep, impact,
+  book-page and weapon-handling sounds are imported as ready-made assets.
 - **Grey Plaster 02** by Rob Tuytel, https://polyhaven.com/a/grey_plaster_02,
   CC0 1.0. Imported as a 2K PBR material; Unity mask data is generated from
   the supplied ARM map.

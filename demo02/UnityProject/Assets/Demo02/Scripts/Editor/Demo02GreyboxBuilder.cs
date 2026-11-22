@@ -35,6 +35,7 @@ namespace Demo02.Editor
             QuaterniusAnimationLibrarySetup.BuildAll();
             QuaterniusEnvironmentSetup.BuildAll();
             ReadyMadeStreetDressingSetup.BuildAll();
+            ReadyMadeAudioSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -46,6 +47,7 @@ namespace Demo02.Editor
             QuaterniusAnimationLibrarySetup.BuildAll();
             QuaterniusEnvironmentSetup.BuildAll();
             ReadyMadeStreetDressingSetup.BuildAll();
+            ReadyMadeAudioSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
             ConfigureBuildSettings();
@@ -90,6 +92,7 @@ namespace Demo02.Editor
             QuaterniusAnimationLibrarySetup.ValidateForBatch();
             QuaterniusEnvironmentSetup.ValidateForBatch();
             ReadyMadeStreetDressingSetup.ValidateForBatch();
+            ReadyMadeAudioSetup.ValidateForBatch();
             Debug.Log(
                 "All automated checks passed: dialogue, combat, time layer, "
                 + "inventory, chapter and saves."
@@ -1265,7 +1268,9 @@ namespace Demo02.Editor
             gameSession.AddComponent<CombatHud>();
             gameSession.AddComponent<GameFlowController>();
             gameSession.AddComponent<SaveSystem>();
-            gameSession.AddComponent<GameAudio>();
+            GameAudio gameAudio = gameSession.AddComponent<GameAudio>();
+            ReadyMadeAudioSetup.ApplyTo(gameAudio);
+            gameSession.AddComponent<UiAudioFeedback>();
             gameSession
                 .AddComponent<EvidencePlanDisplay>()
                 .Configure(publicRecordVisual, privateRecordVisual);

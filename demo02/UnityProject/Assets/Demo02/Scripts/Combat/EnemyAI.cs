@@ -115,6 +115,7 @@ namespace Demo02.Combat
         {
             isWindingUp = true;
             attackWindupRemaining = attackWindup;
+            GameAudio.PlayAttackSwing();
             colorTint?.Configure(new Color(1f, 0.68f, 0.16f));
             GetComponentInChildren<ReadyMadeCharacterAnimator>()?.PlayAttack();
         }

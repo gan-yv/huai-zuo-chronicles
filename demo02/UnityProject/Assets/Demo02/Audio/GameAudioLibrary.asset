@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35cd04f11f4036e4694574f9f9ffc4d3, type: 3}
+  m_Name: GameAudioLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::Demo02.Core.GameAudioLibrary
+  ambientWind: {fileID: 0}
+  interaction: {fileID: 8300000, guid: b6af4f7afc3aaf9419122116438c8b01, type: 3}
+  confirmation: {fileID: 8300000, guid: e44f6fc6bef68b14b88aa4b175a3b550, type: 3}
+  menuOpen: {fileID: 8300000, guid: a5fcef90b3f21fb4c9c5088a9497d705, type: 3}
+  menuClose: {fileID: 8300000, guid: 35f1dc5a168cebf4db3f4d7ff03998c0, type: 3}
+  click: {fileID: 8300000, guid: 190d76b567ada6e4bba029188e0235c6, type: 3}
+  attackSwing: {fileID: 8300000, guid: 466fedc266056c04e984d15f6e52bd84, type: 3}
+  hit: {fileID: 8300000, guid: 1020c013a59f1b044bcb32c797c8567e, type: 3}
+  hurt: {fileID: 8300000, guid: 0ed7376883cc95b48b5c3c2341627723, type: 3}
+  bookOpen: {fileID: 8300000, guid: 6330914c6adcafc499b893634beac86a, type: 3}
+  bookClose: {fileID: 8300000, guid: 24a42c14e12660b4bb6189653f42068c, type: 3}
+  pageTurn: {fileID: 8300000, guid: 4ec46cf2d362abc4799e00cbf7fe9004, type: 3}
+  footsteps:
+  - {fileID: 8300000, guid: 17f12ae756ce3c943ad7c81a7d42f4cd, type: 3}
+  - {fileID: 8300000, guid: 304a87f4bc330cc4d83c1d89b854fd6d, type: 3}
+  - {fileID: 8300000, guid: a3438536836ef2b46a28ebf0539748d0, type: 3}
+  - {fileID: 8300000, guid: ec23c9fe2bd37844ea5d9856f765d84a, type: 3}
+  - {fileID: 8300000, guid: e8813b94b1bfa6547ad8fd74c0144a69, type: 3}

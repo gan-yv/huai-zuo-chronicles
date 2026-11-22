@@ -9,15 +9,24 @@ namespace Demo02.Core
         private const string MutedPreference = "demo02.audio.muted";
         private const int SampleRate = 44100;
 
+        [SerializeField] private GameAudioLibrary library;
+
         private AudioSource ambientSource;
         private AudioSource oneShotSource;
         private PlayerPartyController party;
         private AudioClip interactionClip;
-        private AudioClip footstepClip;
+        private AudioClip[] footstepClips;
         private AudioClip hitClip;
         private AudioClip hurtClip;
         private AudioClip portalClip;
         private AudioClip confirmClip;
+        private AudioClip menuOpenClip;
+        private AudioClip menuCloseClip;
+        private AudioClip clickClip;
+        private AudioClip attackSwingClip;
+        private AudioClip bookOpenClip;
+        private AudioClip bookCloseClip;
+        private AudioClip pageTurnClip;
         private Vector3 lastPlayerPosition;
         private float nextFootstepTime;
         private bool hasPlayerPosition;
@@ -39,13 +48,30 @@ namespace Demo02.Core
             ambientSource = CreateSource("Ambient Wind", loop: true, volume: 0.17f);
             oneShotSource = CreateSource("Gameplay Feedback", loop: false, volume: 0.55f);
 
-            ambientSource.clip = CreateAmbientClip();
-            interactionClip = CreateChimeClip("Interaction", 520f, 780f, 0.22f);
-            footstepClip = CreateFootstepClip();
-            hitClip = CreateImpactClip("Attack Hit", 92f, 0.18f, 0.72f);
-            hurtClip = CreateImpactClip("Player Hurt", 68f, 0.28f, 0.9f);
+            ambientSource.clip = library?.AmbientWind ?? CreateAmbientClip();
+            interactionClip =
+                library?.Interaction ??
+                CreateChimeClip("Interaction", 520f, 780f, 0.22f);
+            footstepClips = library?.Footsteps is { Length: > 0 }
+                ? library.Footsteps
+                : new[] { CreateFootstepClip() };
+            hitClip =
+                library?.Hit ??
+                CreateImpactClip("Attack Hit", 92f, 0.18f, 0.72f);
+            hurtClip =
+                library?.Hurt ??
+                CreateImpactClip("Player Hurt", 68f, 0.28f, 0.9f);
             portalClip = CreatePortalClip();
-            confirmClip = CreateChimeClip("Save Confirm", 700f, 1040f, 0.3f);
+            confirmClip =
+                library?.Confirmation ??
+                CreateChimeClip("Save Confirm", 700f, 1040f, 0.3f);
+            menuOpenClip = library?.MenuOpen;
+            menuCloseClip = library?.MenuClose;
+            clickClip = library?.Click;
+            attackSwingClip = library?.AttackSwing;
+            bookOpenClip = library?.BookOpen;
+            bookCloseClip = library?.BookClose;
+            pageTurnClip = library?.PageTurn;
 
             ApplyMuteState();
             ambientSource.Play();
@@ -91,7 +117,13 @@ namespace Demo02.Core
             float interval = speed > 5.4f ? 0.31f : 0.46f;
             nextFootstepTime = Time.time + interval;
             oneShotSource.pitch = Random.Range(0.92f, 1.06f);
-            oneShotSource.PlayOneShot(footstepClip, speed > 5.4f ? 0.42f : 0.3f);
+            AudioClip footstep = footstepClips[
+                Random.Range(0, footstepClips.Length)
+            ];
+            oneShotSource.PlayOneShot(
+                footstep,
+                speed > 5.4f ? 0.42f : 0.3f
+            );
         }
 
         public static void PlayInteraction()
@@ -117,6 +149,46 @@ namespace Demo02.Core
         public static void PlayConfirm()
         {
             PlayOneShot(Instance?.confirmClip, 0.55f);
+        }
+
+        public static void PlayClick()
+        {
+            PlayOneShot(Instance?.clickClip, 0.35f);
+        }
+
+        public static void PlayMenuOpen()
+        {
+            PlayOneShot(Instance?.menuOpenClip, 0.5f);
+        }
+
+        public static void PlayMenuClose()
+        {
+            PlayOneShot(Instance?.menuCloseClip, 0.5f);
+        }
+
+        public static void PlayAttackSwing()
+        {
+            PlayOneShot(Instance?.attackSwingClip, 0.7f);
+        }
+
+        public static void PlayBookOpen()
+        {
+            PlayOneShot(Instance?.bookOpenClip, 0.55f);
+        }
+
+        public static void PlayBookClose()
+        {
+            PlayOneShot(Instance?.bookCloseClip, 0.55f);
+        }
+
+        public static void PlayPageTurn()
+        {
+            PlayOneShot(Instance?.pageTurnClip, 0.45f);
+        }
+
+        public void Configure(GameAudioLibrary audioLibrary)
+        {
+            library = audioLibrary;
         }
 
         public static bool ToggleMuted()
