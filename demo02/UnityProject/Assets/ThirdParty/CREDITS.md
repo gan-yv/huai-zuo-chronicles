@@ -25,6 +25,11 @@ is retained for provenance and good practice.
   the standard free glTF distribution. The playable streets use three
   ready-made shell variants, with each street baked into a small set of
   material batches for runtime performance.
+- **Universal Animation Library** by Quaternius,
+  https://quaternius.itch.io/universal-animation-library, CC0 1.0. The
+  standard free glTF set is used for sword attack, hit, interaction, pickup
+  and death motion. Five clips are offline-retargeted at build time from the
+  source Rigify skeleton to the project's Generic Kenney skeleton.
 - **Grey Plaster 02** by Rob Tuytel, https://polyhaven.com/a/grey_plaster_02,
   CC0 1.0. Imported as a 2K PBR material; Unity mask data is generated from
   the supplied ARM map.

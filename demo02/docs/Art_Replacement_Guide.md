@@ -34,9 +34,33 @@ Medieval Village MegaKit 中现成的模块拼装，不手工制作建筑模型�
 |---|---:|---:|
 | 1.21 原灰盒回滚版 | 192.6 | 99.5 |
 | 1.22 Quaternius 主场景 | 376.3 | 164.7 |
+| 1.23 Quaternius 环境与动作 | 375.6 | 200.6 |
 
 基准文件位于 `docs/benchmarks/`。帧率数据来自窗口正常显示并持续渲染
 12 秒的构建，不采用最小化窗口或关闭渲染得到的无效结果。
+
+## Quaternius 动作库
+
+角色的待机、奔跑和跳跃继续使用 Kenney 原配动作；攻击、受击、交互、
+拾取和倒地来自 Quaternius Universal Animation Library 免费标准包。
+
+- Quaternius 源骨架：Rigify 风格的 `DEF-*` 骨骼。
+- 项目角色骨架：Kenney 的 Mixamo 风格 Generic 骨骼。
+- 运行时方案：构建阶段按骨骼全局旋转差离线重定向并烘焙，游戏内不执行
+  实时重定向，也不增加 Animator 重定向开销。
+- 控制器参数：`Attack`、`Hit`、`Interact`、`PickUp`、`Die`。
+
+![Quaternius 角色动作](screenshots/quaternius-animation-showcase.png)
+
+重新生成动作：
+
+1. 执行 `Demo02/Art/Build Stylized Character Assets`。
+2. 执行 `Demo02/Art/Quaternius/Rebuild Retargeted Character Actions`。
+3. 执行 `Demo02/Rebuild Greybox Scene`，让新状态进入正式场景构建。
+
+重定向脚本位于
+`Assets/Demo02/Scripts/Editor/QuaterniusAnimationLibrarySetup.cs`，输出片段位于
+`Assets/Demo02/Art/Characters/Stylized/Animations/`。
 
 ## 早期第三方样板
 

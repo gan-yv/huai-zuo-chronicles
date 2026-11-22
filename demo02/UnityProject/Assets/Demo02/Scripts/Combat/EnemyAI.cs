@@ -23,6 +23,8 @@ namespace Demo02.Combat
         private float attackWindupRemaining;
         private bool isWindingUp;
         private ColorTint colorTint;
+        private bool deathStarted;
+        private float deathVisibleUntil;
 
         private void Awake()
         {
@@ -38,9 +40,28 @@ namespace Demo02.Combat
 
         private void Update()
         {
-            if (self == null || !self.IsAlive)
+            if (self == null)
             {
-                gameObject.SetActive(false);
+                return;
+            }
+            if (!self.IsAlive)
+            {
+                if (!deathStarted)
+                {
+                    deathStarted = true;
+                    deathVisibleUntil = Time.time + 2.6f;
+                    colorTint?.Configure(new Color(0.34f, 0.12f, 0.1f));
+                    GetComponentInChildren<ReadyMadeCharacterAnimator>()?
+                        .PlayDeath();
+                    if (controller != null)
+                    {
+                        controller.enabled = false;
+                    }
+                }
+                if (Time.time >= deathVisibleUntil)
+                {
+                    gameObject.SetActive(false);
+                }
                 return;
             }
 

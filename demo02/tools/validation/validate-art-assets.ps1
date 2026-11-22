@@ -51,6 +51,8 @@ $runtimeMetadata = @(
     "demo02/UnityProject/Assets/ThirdParty/Kenney/CityKitCommercial/LICENSE.md",
     "demo02/UnityProject/Assets/ThirdParty/Quaternius/MedievalVillageMegaKit/SOURCE.md",
     "demo02/UnityProject/Assets/ThirdParty/Quaternius/MedievalVillageMegaKit/LICENSE.md",
+    "demo02/UnityProject/Assets/ThirdParty/Quaternius/UniversalAnimationLibrary/SOURCE.md",
+    "demo02/UnityProject/Assets/ThirdParty/Quaternius/UniversalAnimationLibrary/LICENSE.md",
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/LICENSE.md",
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/grey_plaster_02/SOURCE.md",
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/old_planks_02/SOURCE.md",

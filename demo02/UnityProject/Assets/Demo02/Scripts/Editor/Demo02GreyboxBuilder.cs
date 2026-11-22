@@ -32,6 +32,7 @@ namespace Demo02.Editor
         public static void RebuildFromMenu()
         {
             StylizedCharacterSetup.BuildAll();
+            QuaterniusAnimationLibrarySetup.BuildAll();
             QuaterniusEnvironmentSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
@@ -41,6 +42,7 @@ namespace Demo02.Editor
         public static void RebuildForBatch()
         {
             StylizedCharacterSetup.BuildAll();
+            QuaterniusAnimationLibrarySetup.BuildAll();
             QuaterniusEnvironmentSetup.BuildAll();
             BuildScene(forceRebuild: true);
             BuildBootScene();
@@ -83,6 +85,7 @@ namespace Demo02.Editor
             VerifyChapterFlowForBatch();
             VerifySaveSlotsForBatch();
             StylizedCharacterSetup.ValidateForBatch();
+            QuaterniusAnimationLibrarySetup.ValidateForBatch();
             QuaterniusEnvironmentSetup.ValidateForBatch();
             Debug.Log(
                 "All automated checks passed: dialogue, combat, time layer, "

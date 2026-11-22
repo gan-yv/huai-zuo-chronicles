@@ -15,6 +15,8 @@ namespace Demo02.Player
             Animator.StringToHash("Interact");
         private static readonly int PickUpParameter =
             Animator.StringToHash("PickUp");
+        private static readonly int HitParameter =
+            Animator.StringToHash("Hit");
         private static readonly int DieParameter =
             Animator.StringToHash("Die");
         private static readonly int JumpParameter =
@@ -29,10 +31,13 @@ namespace Demo02.Player
         private bool hasAttack;
         private bool hasInteract;
         private bool hasPickUp;
+        private bool hasHit;
         private bool hasDie;
         private bool hasJump;
         private bool deathPlayed;
         private float nextJumpTime;
+        private float previousHealth;
+        private bool subscribedToHealth;
 
         private void Awake()
         {
@@ -43,6 +48,23 @@ namespace Demo02.Player
         {
             CacheComponents();
             lastPosition = transform.position;
+            deathPlayed = false;
+            if (combatant != null)
+            {
+                combatant.HealthChanged -= OnHealthChanged;
+                combatant.HealthChanged += OnHealthChanged;
+                subscribedToHealth = true;
+                previousHealth = combatant.CurrentHealth;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (combatant != null && subscribedToHealth)
+            {
+                combatant.HealthChanged -= OnHealthChanged;
+            }
+            subscribedToHealth = false;
         }
 
         private void Update()
@@ -104,6 +126,21 @@ namespace Demo02.Player
             Trigger(PickUpParameter, hasPickUp);
         }
 
+        public void PlayHit()
+        {
+            Trigger(HitParameter, hasHit);
+        }
+
+        public void PlayDeath()
+        {
+            if (deathPlayed)
+            {
+                return;
+            }
+            deathPlayed = true;
+            Trigger(DieParameter, hasDie);
+        }
+
         private void CacheComponents()
         {
             animator ??= GetComponentInChildren<Animator>(true);
@@ -129,6 +166,9 @@ namespace Demo02.Player
                     case "PickUp":
                         hasPickUp = true;
                         break;
+                    case "Hit":
+                        hasHit = true;
+                        break;
                     case "Die":
                         hasDie = true;
                         break;
@@ -137,6 +177,28 @@ namespace Demo02.Player
                         break;
                 }
             }
+        }
+
+        private void OnHealthChanged(Combatant changed)
+        {
+            if (changed != combatant)
+            {
+                return;
+            }
+
+            float current = changed.CurrentHealth;
+            if (current < previousHealth)
+            {
+                if (changed.IsAlive)
+                {
+                    PlayHit();
+                }
+                else
+                {
+                    PlayDeath();
+                }
+            }
+            previousHealth = current;
         }
 
         private void Trigger(int parameter, bool available)

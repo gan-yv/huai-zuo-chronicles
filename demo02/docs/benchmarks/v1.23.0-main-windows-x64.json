@@ -1,0 +1,15 @@
+{
+    "Version": "1.23.0",
+    "CompletedAtUtc": "2026-11-22T13:59:24.8916642Z",
+    "Width": 1280,
+    "Height": 720,
+    "SampledFrames": 4507,
+    "DurationSeconds": 12.00072956085205,
+    "AverageFps": 375.56048583984377,
+    "OnePercentLowFps": 200.56564331054688,
+    "MinimumFps": 29.173572540283204,
+    "AverageFrameMs": 2.662686824798584,
+    "WorstFrameMs": 34.2775993347168,
+    "ManagedMemoryBytes": 4616192,
+    "GraphicsDevice": "NVIDIA GeForce RTX 3060 Laptop GPU"
+}

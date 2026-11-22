@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Demo02.Core;
 using Demo02.Narrative;
+using Demo02.Player;
 using Demo02.UI;
 
 namespace Demo02.Interaction
@@ -46,6 +47,17 @@ namespace Demo02.Interaction
             if (!interactPressed || currentInteractable == null || !currentInteractable.CanInteract)
             {
                 return;
+            }
+
+            ReadyMadeCharacterAnimator characterAnimator =
+                GetComponentInChildren<ReadyMadeCharacterAnimator>(true);
+            if (currentInteractable is InventoryItemPickup)
+            {
+                characterAnimator?.PlayPickUp();
+            }
+            else
+            {
+                characterAnimator?.PlayInteract();
             }
 
             statusMessage = currentInteractable.Interact(this);
