@@ -25,8 +25,6 @@ namespace Demo02.Editor
             "Assets/Demo02/Art/Characters/Stylized/AC_StylizedCharacter.controller";
         private const string ShowcaseScenePath =
             "Assets/Demo02/Scenes/Tests/StylizedCharacterShowcase.unity";
-        private const string ScreenshotPath =
-            "demo02/docs/screenshots/quaternius-animation-showcase.png";
         private const int BakeFrameRate = 30;
 
         private static readonly ClipSpec[] ClipSpecs =
@@ -36,6 +34,13 @@ namespace Demo02.Editor
             new("Interact", "Interact", "AC_Quaternius_Interact"),
             new("PickUp_Table", "PickUp", "AC_Quaternius_PickUp"),
             new("Death01", "Die", "AC_Quaternius_Death")
+        };
+
+        private static readonly LocomotionSpec[] LocomotionSpecs =
+        {
+            new("Idle_Loop", "AC_Quaternius_Idle"),
+            new("Walk_Loop", "AC_Quaternius_Walk"),
+            new("Sprint_Loop", "AC_Quaternius_Run")
         };
 
         private static readonly BoneMapping[] BoneMappings =
@@ -159,7 +164,39 @@ namespace Demo02.Editor
                     );
                 }
 
-                ConfigureController(baked);
+                Dictionary<string, AnimationClip> locomotion =
+                    new(StringComparer.Ordinal);
+                foreach (LocomotionSpec spec in LocomotionSpecs)
+                {
+                    AnimationClip sourceClip = sourceClips.FirstOrDefault(
+                        clip => string.Equals(
+                            clip.name,
+                            spec.SourceClip,
+                            StringComparison.Ordinal
+                        )
+                    );
+                    if (sourceClip == null)
+                    {
+                        throw new InvalidOperationException(
+                            $"Quaternius locomotion clip is missing: {spec.SourceClip}"
+                        );
+                    }
+                    AnimationClip clip = BakeClip(
+                        source,
+                        targetAnimator,
+                        context,
+                        sourceClip,
+                        spec.TargetClip,
+                        loop: true
+                    );
+                    locomotion.Add(spec.TargetClip, clip);
+                    Debug.Log(
+                        $"Retargeted locomotion {spec.SourceClip} -> " +
+                        $"{spec.TargetClip}: {clip.length:0.00}s."
+                    );
+                }
+
+                ConfigureController(baked, locomotion);
             }
             finally
             {
@@ -170,8 +207,9 @@ namespace Demo02.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log(
-                $"Quaternius character actions ready: {ClipSpecs.Length} " +
-                "offline-retargeted Generic clips."
+                $"Quaternius character animation set ready: " +
+                $"{ClipSpecs.Length} actions and {LocomotionSpecs.Length} " +
+                "locomotion clips."
             );
         }
 
@@ -265,6 +303,34 @@ namespace Demo02.Editor
                         );
                     }
                 }
+
+                foreach (LocomotionSpec spec in LocomotionSpecs)
+                {
+                    string path = ClipPath(spec.TargetClip);
+                    AnimationClip clip =
+                        AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
+                    string stateName = spec.TargetClip switch
+                    {
+                        "AC_Quaternius_Idle" => "Idle",
+                        "AC_Quaternius_Walk" => "Walk",
+                        "AC_Quaternius_Run" => "Run",
+                        _ => throw new InvalidOperationException(
+                            $"Unknown locomotion target: {spec.TargetClip}"
+                        )
+                    };
+                    AnimatorState state = stateMachine.states
+                        .Select(item => item.state)
+                        .FirstOrDefault(item => item.name == stateName);
+                    if (clip == null ||
+                        state == null ||
+                        state.motion != clip ||
+                        clip.wrapMode != WrapMode.Loop)
+                    {
+                        throw new InvalidOperationException(
+                            $"Locomotion state '{stateName}' is invalid."
+                        );
+                    }
+                }
             }
             finally
             {
@@ -273,7 +339,8 @@ namespace Demo02.Editor
 
             Debug.Log(
                 "Quaternius action validation passed: attack, hit, interact, " +
-                "pickup and death clips resolve against the Kenney skeleton."
+                "pickup, death and locomotion clips resolve against the " +
+                "Kenney skeleton."
             );
         }
 
@@ -306,6 +373,56 @@ namespace Demo02.Editor
                 SampleAtNormalizedTime(guide, interact, 0.50f);
                 SampleAtNormalizedTime(official, hit, 0.35f);
                 CaptureCamera(camera, "quaternius-animation-showcase");
+            }
+            finally
+            {
+                AnimationMode.StopAnimationMode();
+            }
+        }
+
+        [MenuItem("Demo02/Art/Quaternius/Capture Locomotion Showcase")]
+        public static void CaptureLocomotionShowcase()
+        {
+            EditorSceneManager.OpenScene(
+                ShowcaseScenePath,
+                OpenSceneMode.Single
+            );
+            Camera camera = Camera.main;
+            if (camera == null)
+            {
+                throw new InvalidOperationException(
+                    "Stylized character showcase has no Main Camera."
+                );
+            }
+
+            AnimationClip idle = AssetDatabase.LoadAssetAtPath<AnimationClip>(
+                ClipPath("AC_Quaternius_Idle")
+            );
+            AnimationClip walk = AssetDatabase.LoadAssetAtPath<AnimationClip>(
+                ClipPath("AC_Quaternius_Walk")
+            );
+            AnimationClip run = AssetDatabase.LoadAssetAtPath<AnimationClip>(
+                ClipPath("AC_Quaternius_Run")
+            );
+            AnimationMode.StartAnimationMode();
+            try
+            {
+                SampleAtNormalizedTime(
+                    GameObject.Find("VIS_Stylized_Hero"),
+                    run,
+                    0.36f
+                );
+                SampleAtNormalizedTime(
+                    GameObject.Find("VIS_Stylized_Guide"),
+                    walk,
+                    0.42f
+                );
+                SampleAtNormalizedTime(
+                    GameObject.Find("VIS_Stylized_Official"),
+                    idle,
+                    0.55f
+                );
+                CaptureCamera(camera, "quaternius-locomotion-showcase");
             }
             finally
             {
@@ -394,7 +511,8 @@ namespace Demo02.Editor
             Animator targetAnimator,
             BakeContext context,
             AnimationClip sourceClip,
-            string targetName)
+            string targetName,
+            bool loop = false)
         {
             int sampleCount = Mathf.Max(
                 2,
@@ -429,7 +547,7 @@ namespace Demo02.Editor
             {
                 name = targetName,
                 frameRate = BakeFrameRate,
-                wrapMode = WrapMode.ClampForever
+                wrapMode = loop ? WrapMode.Loop : WrapMode.ClampForever
             };
             foreach ((EditorCurveBinding binding, AnimationCurve curve) in curves)
             {
@@ -584,7 +702,8 @@ namespace Demo02.Editor
         }
 
         private static void ConfigureController(
-            Dictionary<string, AnimationClip> clips)
+            Dictionary<string, AnimationClip> clips,
+            Dictionary<string, AnimationClip> locomotion)
         {
             AnimatorController controller =
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(ControllerPath);
@@ -596,15 +715,19 @@ namespace Demo02.Editor
             }
 
             AnimatorStateMachine stateMachine = controller.layers[0].stateMachine;
-            AnimatorState idle = stateMachine.states
-                .Select(item => item.state)
-                .FirstOrDefault(state => state.name == "Idle");
+            AnimatorState idle = FindOrAddState(stateMachine, "Idle");
             if (idle == null)
             {
                 throw new InvalidOperationException(
                     "Stylized character controller has no Idle state."
                 );
             }
+            ConfigureLocomotion(
+                controller,
+                stateMachine,
+                idle,
+                locomotion
+            );
 
             foreach ((string trigger, AnimationClip clip) in clips)
             {
@@ -657,6 +780,89 @@ namespace Demo02.Editor
             }
 
             EditorUtility.SetDirty(controller);
+        }
+
+        private static void ConfigureLocomotion(
+            AnimatorController controller,
+            AnimatorStateMachine stateMachine,
+            AnimatorState idle,
+            Dictionary<string, AnimationClip> locomotion)
+        {
+            AnimatorState walk = FindOrAddState(stateMachine, "Walk");
+            AnimatorState run = FindOrAddState(stateMachine, "Run");
+            idle.motion = locomotion["AC_Quaternius_Idle"];
+            walk.motion = locomotion["AC_Quaternius_Walk"];
+            run.motion = locomotion["AC_Quaternius_Run"];
+            idle.speed = 1f;
+            walk.speed = 1f;
+            run.speed = 1f;
+
+            HashSet<AnimatorState> locomotionStates = new()
+            {
+                idle,
+                walk,
+                run
+            };
+            foreach (AnimatorState state in locomotionStates)
+            {
+                foreach (AnimatorStateTransition transition in
+                         state.transitions.ToArray())
+                {
+                    if (transition.destinationState != null &&
+                        locomotionStates.Contains(transition.destinationState))
+                    {
+                        state.RemoveTransition(transition);
+                    }
+                }
+            }
+
+            AnimatorStateTransition idleToWalk = idle.AddTransition(walk);
+            idleToWalk.hasExitTime = false;
+            idleToWalk.duration = 0.14f;
+            idleToWalk.AddCondition(
+                AnimatorConditionMode.Greater,
+                0.04f,
+                "Speed"
+            );
+
+            AnimatorStateTransition walkToRun = walk.AddTransition(run);
+            walkToRun.hasExitTime = false;
+            walkToRun.duration = 0.14f;
+            walkToRun.AddCondition(
+                AnimatorConditionMode.Greater,
+                0.72f,
+                "Speed"
+            );
+
+            AnimatorStateTransition runToWalk = run.AddTransition(walk);
+            runToWalk.hasExitTime = false;
+            runToWalk.duration = 0.16f;
+            runToWalk.AddCondition(
+                AnimatorConditionMode.Less,
+                0.68f,
+                "Speed"
+            );
+
+            AnimatorStateTransition walkToIdle = walk.AddTransition(idle);
+            walkToIdle.hasExitTime = false;
+            walkToIdle.duration = 0.14f;
+            walkToIdle.AddCondition(
+                AnimatorConditionMode.Less,
+                0.04f,
+                "Speed"
+            );
+
+            EnsureParameter(controller, "Speed");
+        }
+
+        private static AnimatorState FindOrAddState(
+            AnimatorStateMachine stateMachine,
+            string name)
+        {
+            AnimatorState state = stateMachine.states
+                .Select(item => item.state)
+                .FirstOrDefault(item => item.name == name);
+            return state ?? stateMachine.AddState(name);
         }
 
         private static void EnsureParameter(
@@ -725,7 +931,12 @@ namespace Demo02.Editor
             screenshot.Apply();
             RenderTexture.active = previous;
             string path = Path.GetFullPath(
-                Path.Combine(Application.dataPath, "../../..", ScreenshotPath)
+                Path.Combine(
+                    Application.dataPath,
+                    "../../..",
+                    "demo02/docs/screenshots",
+                    fileName + ".png"
+                )
             );
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             File.WriteAllBytes(path, screenshot.EncodeToPNG());
@@ -809,6 +1020,18 @@ namespace Demo02.Editor
 
             public string SourceClip { get; }
             public string Trigger { get; }
+            public string TargetClip { get; }
+        }
+
+        private readonly struct LocomotionSpec
+        {
+            public LocomotionSpec(string sourceClip, string targetClip)
+            {
+                SourceClip = sourceClip;
+                TargetClip = targetClip;
+            }
+
+            public string SourceClip { get; }
             public string TargetClip { get; }
         }
     }

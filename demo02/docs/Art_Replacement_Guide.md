@@ -37,6 +37,7 @@ Medieval Village MegaKit 中现成的模块拼装，不手工制作建筑模型�
 | 1.23 Quaternius 环境与动作 | 375.6 | 200.6 |
 | 1.24 现成街景与道具 | 375.3 | 207.2 |
 | 1.25 路灯、摊位比例与街景合批 | 364.8 | 244.9 |
+| 1.26 Idle、Walk、Sprint 步态 | 364.0 | 202.8 |
 
 基准文件位于 `docs/benchmarks/`。帧率数据来自窗口正常显示并持续渲染
 12 秒的构建，不采用最小化窗口或关闭渲染得到的无效结果。
@@ -63,6 +64,16 @@ Medieval Village MegaKit 中现成的模块拼装，不手工制作建筑模型�
 重定向脚本位于
 `Assets/Demo02/Scripts/Editor/QuaterniusAnimationLibrarySetup.cs`，输出片段位于
 `Assets/Demo02/Art/Characters/Stylized/Animations/`。
+
+移动状态也已接入 Quaternius 现成循环动作：
+
+- 静止使用 `Idle_Loop`。
+- 普通移动使用 `Walk_Loop`。
+- 按住 Shift 冲刺使用 `Sprint_Loop`。
+- 控制器按速度在 Idle、Walk、Run 之间过渡，攻击、受击和交互结束后
+  会回到当前移动状态。
+
+![Quaternius 移动动作](screenshots/quaternius-locomotion-showcase.png)
 
 ## 现成街景与道具
 
