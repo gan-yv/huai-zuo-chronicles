@@ -12,6 +12,7 @@ namespace Demo02.Editor
         private const string ArtRoot =
             "Assets/Demo02/Art/Environment/StreetDressing";
         private const string PrefabRoot = ArtRoot + "/Prefabs";
+        private const string MeshRoot = ArtRoot + "/Meshes";
         private const string KenneyRoot =
             "Assets/ThirdParty/Kenney/FantasyTownKit";
         private const string KenneyMaterialPath =
@@ -25,7 +26,9 @@ namespace Demo02.Editor
         {
             "stall",
             "tree-high",
-            "lantern"
+            "lantern",
+            "pillar-wood",
+            "cart"
         };
 
         [MenuItem("Demo02/Art/Rebuild Ready-Made Street Dressing")]
@@ -33,6 +36,7 @@ namespace Demo02.Editor
         {
             EnsureFolder(ArtRoot);
             EnsureFolder(PrefabRoot);
+            EnsureFolder(MeshRoot);
             Material material =
                 AssetDatabase.LoadAssetAtPath<Material>(KenneyMaterialPath);
             if (material == null)
@@ -52,6 +56,11 @@ namespace Demo02.Editor
                     throw new InvalidOperationException(
                         $"Kenney street model is missing: {modelPath}"
                     );
+                }
+                if (AssetImporter.GetAtPath(modelPath) is ModelImporter importer)
+                {
+                    importer.isReadable = true;
+                    importer.SaveAndReimport();
                 }
 
                 GameObject root = new(
@@ -82,7 +91,8 @@ namespace Demo02.Editor
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log(
-                "Ready-made street dressing is ready: Kenney stall, tree and lantern."
+                "Ready-made street dressing is ready: Kenney stalls, trees, " +
+                "lanterns, poles and cart."
             );
         }
 
@@ -124,7 +134,8 @@ namespace Demo02.Editor
                 ReplaceSingle(
                     FindDirect(greyboxRoot, $"Dongguan_Stall_{suffix}"),
                     stallPrefab,
-                    uniformScale: true
+                    uniformScale: true,
+                    minimumSize: new Vector3(2.8f, 2.2f, 2f)
                 );
             }
 
@@ -163,7 +174,8 @@ namespace Demo02.Editor
                 ReplaceInteractive(
                     FindDirect(greyboxRoot, name),
                     lanternPrefab,
-                    uniformScale: true
+                    uniformScale: true,
+                    minimumSize: new Vector3(0.45f, 0.65f, 0.45f)
                 );
             }
 
@@ -198,6 +210,8 @@ namespace Demo02.Editor
                     uniformScale: false
                 );
             }
+
+            CreateStreetScenery(greyboxRoot);
         }
 
         public static void ValidateForBatch()
@@ -207,6 +221,8 @@ namespace Demo02.Editor
                          $"{PrefabRoot}/VIS_Kenney_Stall.prefab",
                          $"{PrefabRoot}/VIS_Kenney_TreeHigh.prefab",
                          $"{PrefabRoot}/VIS_Kenney_Lantern.prefab",
+                         $"{PrefabRoot}/VIS_Kenney_PillarWood.prefab",
+                         $"{PrefabRoot}/VIS_Kenney_Cart.prefab",
                          $"{QuaterniusPrefabRoot}/ART_Quaternius_Prop_Crate.prefab",
                          $"{QuaterniusPrefabRoot}/ART_Quaternius_RoofAwning.prefab",
                          $"{QuaterniusPrefabRoot}/ART_Quaternius_WoodSign.prefab",
@@ -278,7 +294,8 @@ namespace Demo02.Editor
         private static void ReplaceSingle(
             Transform target,
             string prefabPath,
-            bool uniformScale)
+            bool uniformScale,
+            Vector3 minimumSize = default)
         {
             if (target == null)
             {
@@ -297,6 +314,7 @@ namespace Demo02.Editor
             }
 
             Bounds desired = targetRenderer.bounds;
+            desired.size = Vector3.Max(desired.size, minimumSize);
             GameObject visual = InstantiateVisual(
                 prefabPath,
                 target.parent,
@@ -310,7 +328,8 @@ namespace Demo02.Editor
         private static void ReplaceInteractive(
             Transform target,
             string prefabPath,
-            bool uniformScale)
+            bool uniformScale,
+            Vector3 minimumSize = default)
         {
             if (target == null)
             {
@@ -343,6 +362,7 @@ namespace Demo02.Editor
             }
 
             Bounds desired = targetRenderer.bounds;
+            desired.size = Vector3.Max(desired.size, minimumSize);
             GameObject visual = InstantiateVisual(
                 prefabPath,
                 anchor,
@@ -351,6 +371,168 @@ namespace Demo02.Editor
             visual.transform.rotation = target.rotation;
             FitVisual(visual, desired, uniformScale);
             targetRenderer.enabled = false;
+        }
+
+        private static void CreateStreetScenery(Transform greyboxRoot)
+        {
+            if (greyboxRoot.Find("ReadyMadeStreetScenery") != null)
+            {
+                return;
+            }
+
+            GameObject group = new("ReadyMadeStreetScenery");
+            group.transform.SetParent(greyboxRoot, false);
+            string polePrefab =
+                $"{PrefabRoot}/VIS_Kenney_PillarWood.prefab";
+            string lanternPrefab =
+                $"{PrefabRoot}/VIS_Kenney_Lantern.prefab";
+            Vector3[] lampPositions =
+            {
+                new(-5.2f, 0f, -2f),
+                new(5.2f, 0f, 6f),
+                new(-5.2f, 0f, 15f),
+                new(5.2f, 0f, 24f),
+                new(56.2f, 0f, 18f),
+                new(63.8f, 0f, 48f),
+                new(56.2f, 0f, 72f),
+                new(63.8f, 0f, 102f),
+                new(56.2f, 0f, 126f),
+                new(55.8f, 0f, 181f),
+                new(64.2f, 0f, 216f),
+                new(55.8f, 0f, 251f),
+                new(64.2f, 0f, 282f)
+            };
+            for (int index = 0; index < lampPositions.Length; index++)
+            {
+                Vector3 position = lampPositions[index];
+                GameObject pole = InstantiateVisual(
+                    polePrefab,
+                    group.transform,
+                    $"StreetPole_{index + 1}"
+                );
+                FitVisual(
+                    pole,
+                    new Bounds(
+                        position + Vector3.up * 1.5f,
+                        new Vector3(0.3f, 3f, 0.3f)
+                    ),
+                    uniformScale: true
+                );
+
+                GameObject lantern = InstantiateVisual(
+                    lanternPrefab,
+                    group.transform,
+                    $"StreetLantern_{index + 1}"
+                );
+                FitVisual(
+                    lantern,
+                    new Bounds(
+                        position + Vector3.up * 3.1f,
+                        new Vector3(0.5f, 0.55f, 0.5f)
+                    ),
+                    uniformScale: true
+                );
+            }
+
+            string cartPrefabPath =
+                $"{PrefabRoot}/VIS_Kenney_Cart.prefab";
+            GameObject cartPrefab =
+                AssetDatabase.LoadAssetAtPath<GameObject>(cartPrefabPath);
+            if (cartPrefab != null)
+            {
+                GameObject cart = (GameObject)PrefabUtility.InstantiatePrefab(
+                    cartPrefab,
+                    group.transform
+                );
+                cart.name = "StreetCart";
+                cart.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+                FitVisual(
+                    cart,
+                    new Bounds(
+                        new Vector3(4.55f, 0.9f, 12.5f),
+                        new Vector3(1.9f, 1.8f, 3.8f)
+                    ),
+                    uniformScale: true
+                );
+                cart.isStatic = true;
+            }
+
+            CombineStreetScenery(group);
+        }
+
+        private static void CombineStreetScenery(GameObject group)
+        {
+            List<CombineInstance> instances = new();
+            foreach (MeshFilter filter in
+                     group.GetComponentsInChildren<MeshFilter>(true))
+            {
+                Mesh mesh = filter.sharedMesh;
+                if (mesh == null || !mesh.isReadable)
+                {
+                    throw new InvalidOperationException(
+                        $"Street scenery mesh is not readable: {filter.name}"
+                    );
+                }
+                for (int subMesh = 0; subMesh < mesh.subMeshCount; subMesh++)
+                {
+                    instances.Add(new CombineInstance
+                    {
+                        mesh = mesh,
+                        subMeshIndex = subMesh,
+                        transform =
+                            group.transform.worldToLocalMatrix *
+                            filter.transform.localToWorldMatrix
+                    });
+                }
+            }
+
+            if (instances.Count == 0)
+            {
+                return;
+            }
+
+            Mesh combined = new()
+            {
+                name = "SM_ReadyMadeStreetScenery",
+                indexFormat = UnityEngine.Rendering.IndexFormat.UInt32
+            };
+            combined.CombineMeshes(
+                instances.ToArray(),
+                mergeSubMeshes: true,
+                useMatrices: true,
+                hasLightmapData: false
+            );
+            combined.RecalculateBounds();
+            string meshPath = $"{MeshRoot}/SM_ReadyMadeStreetScenery.asset";
+            Mesh existing = AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
+            if (existing != null)
+            {
+                EditorUtility.CopySerialized(combined, existing);
+                UnityEngine.Object.DestroyImmediate(combined);
+                combined = existing;
+            }
+            else
+            {
+                AssetDatabase.CreateAsset(combined, meshPath);
+            }
+
+            foreach (Transform child in group.transform.Cast<Transform>().ToArray())
+            {
+                UnityEngine.Object.DestroyImmediate(child.gameObject);
+            }
+
+            GameObject visual = new("StreetScenery_Merged");
+            visual.transform.SetParent(group.transform, false);
+            visual.AddComponent<MeshFilter>().sharedMesh = combined;
+            MeshRenderer renderer = visual.AddComponent<MeshRenderer>();
+            renderer.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(
+                KenneyMaterialPath
+            );
+            renderer.shadowCastingMode =
+                UnityEngine.Rendering.ShadowCastingMode.On;
+            renderer.receiveShadows = true;
+            visual.isStatic = true;
+            EditorUtility.SetDirty(combined);
         }
 
         private static GameObject InstantiateVisual(

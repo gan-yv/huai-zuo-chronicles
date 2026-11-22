@@ -53,3 +53,4 @@
 
 # Generated combined environment meshes are large binary Unity assets.
 demo02/UnityProject/Assets/Demo02/Art/Environment/Quaternius/Meshes/*.asset filter=lfs diff=lfs merge=lfs -text
+demo02/UnityProject/Assets/Demo02/Art/Environment/StreetDressing/Meshes/*.asset filter=lfs diff=lfs merge=lfs -text
