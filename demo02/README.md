@@ -47,6 +47,8 @@
 
 ![上班鱼角色美术试点](docs/screenshots/anime-fish-pilot.png)
 
+![上班鱼标题角色展示](docs/screenshots/title-anime-fish.png)
+
 ![东关街流式街区事件](docs/screenshots/openworld-street-story.png)
 
 ![街区事件地图标记](docs/screenshots/openworld-content-map.png)

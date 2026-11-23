@@ -109,67 +109,122 @@ namespace Demo02.Core
 
             ScreenCapture.CaptureScreenshot(path);
             Debug.Log($"Title preview captured to {path}");
+            yield return null;
+            if (System.Array.IndexOf(
+                    System.Environment.GetCommandLineArgs(),
+                    "--capture-exit"
+                ) >= 0)
+            {
+                Application.Quit();
+            }
         }
 
         private void OnGUI()
         {
+            float scale = Demo02.UI.UiTheme.Scale;
+            float split = Mathf.Clamp(
+                Screen.width * 0.56f,
+                620f * scale,
+                Screen.width * 0.64f
+            );
             Demo02.UI.UiTheme.DrawRect(
                 new Rect(0f, 0f, Screen.width, Screen.height),
-                Demo02.UI.UiTheme.Ink
+                new Color(0.025f, 0.035f, 0.05f, 0.16f)
             );
-
-            float scale = Demo02.UI.UiTheme.Scale;
             Demo02.UI.UiTheme.DrawRect(
-                new Rect(0f, Screen.height * 0.17f, Screen.width, 1f),
-                new Color(1f, 1f, 1f, 0.07f)
+                new Rect(0f, 0f, split, Screen.height),
+                new Color(0.025f, 0.035f, 0.05f, 0.965f)
             );
             Demo02.UI.UiTheme.DrawRect(
                 new Rect(
-                    Screen.width * 0.5f - 54f * scale,
-                    Screen.height * 0.17f - 1f,
-                    108f * scale,
-                    3f
+                    split,
+                    0f,
+                    2f,
+                    Screen.height
                 ),
-                Demo02.UI.UiTheme.Accent
+                new Color(0.88f, 0.7f, 0.38f, 0.55f)
             );
 
             GUIStyle eyebrowStyle = Demo02.UI.UiTheme.Label(
                 12,
-                TextAnchor.MiddleCenter,
+                TextAnchor.MiddleLeft,
                 bold: true
             );
             eyebrowStyle.normal.textColor = Demo02.UI.UiTheme.Accent;
             GUIStyle titleStyle = Demo02.UI.UiTheme.Label(
-                40,
-                TextAnchor.MiddleCenter,
+                38,
+                TextAnchor.MiddleLeft,
                 bold: true
             );
             GUIStyle subtitleStyle = Demo02.UI.UiTheme.Label(
                 17,
-                TextAnchor.MiddleCenter
+                TextAnchor.MiddleLeft
             );
             subtitleStyle.normal.textColor = Demo02.UI.UiTheme.Muted;
 
+            float contentX = 72f * scale;
+            float contentWidth = split - contentX - 54f * scale;
+            Demo02.UI.UiTheme.DrawRect(
+                new Rect(
+                    contentX,
+                    Screen.height * 0.125f,
+                    54f * scale,
+                    3f
+                ),
+                Demo02.UI.UiTheme.Accent
+            );
             GUI.Label(
-                new Rect(0f, Screen.height * 0.21f, Screen.width, 30f * scale),
+                new Rect(
+                    contentX,
+                    Screen.height * 0.14f,
+                    contentWidth,
+                    28f * scale
+                ),
                 "CHAPTER ONE · A PLAYABLE VERTICAL SLICE",
                 eyebrowStyle
             );
             GUI.Label(
-                new Rect(0f, Screen.height * 0.25f, Screen.width, 74f * scale),
+                new Rect(
+                    contentX,
+                    Screen.height * 0.19f,
+                    contentWidth,
+                    72f * scale
+                ),
                 "HUAI-ZUO CHRONICLES",
                 titleStyle
             );
             GUI.Label(
-                new Rect(0f, Screen.height * 0.34f, Screen.width, 42f * scale),
+                new Rect(
+                    contentX,
+                    Screen.height * 0.285f,
+                    contentWidth,
+                    38f * scale
+                ),
                 "Chronicles of Strange Events in Huai-Zuo · 第一章：消失的盐引",
                 subtitleStyle
             );
+            GUIStyle descriptionStyle = Demo02.UI.UiTheme.Label(14);
+            descriptionStyle.normal.textColor =
+                new Color(0.72f, 0.75f, 0.78f);
+            GUI.Label(
+                new Rect(
+                    contentX,
+                    Screen.height * 0.345f,
+                    contentWidth - 32f * scale,
+                    68f * scale
+                ),
+                "旧街从黄昏后浮现，名字从城市记录里消失。"
+                + "穿过广陵街巷，修复叠在一起的时间。",
+                descriptionStyle
+            );
 
-            float buttonWidth = 320f * scale;
+            float buttonWidth = Mathf.Min(
+                340f * scale,
+                contentWidth
+            );
             float buttonHeight = 52f * scale;
-            float buttonX = (Screen.width - buttonWidth) * 0.5f;
-            float buttonY = Screen.height * 0.5f;
+            float buttonX = contentX;
+            float buttonY = Screen.height * 0.47f;
             GUIStyle buttonStyle = Demo02.UI.UiTheme.Button(17);
 
             if (GUI.Button(
@@ -203,9 +258,9 @@ namespace Demo02.Core
 
             GUI.Label(
                 new Rect(
-                    0f,
+                    contentX,
                     Screen.height - 92f * scale,
-                    Screen.width,
+                    contentWidth,
                     28f * scale
                 ),
                 "WASD 移动   Shift 冲刺   Space 跳跃/滑翔   1/2/Tab 换人   F 技能   R 终结技   F1 帮助",
@@ -213,13 +268,30 @@ namespace Demo02.Core
             );
             GUI.Label(
                 new Rect(
-                    0f,
+                    contentX,
                     Screen.height - 52f * scale,
-                    Screen.width,
+                    contentWidth,
                     30f * scale
                 ),
                 $"当前版本：v{Application.version} · 可玩垂直切片",
                 subtitleStyle
+            );
+
+            GUIStyle creditStyle = Demo02.UI.UiTheme.Label(
+                11,
+                TextAnchor.LowerRight
+            );
+            creditStyle.normal.textColor =
+                new Color(0.65f, 0.69f, 0.72f, 0.82f);
+            GUI.Label(
+                new Rect(
+                    split + 18f * scale,
+                    Screen.height - 54f * scale,
+                    Screen.width - split - 36f * scale,
+                    30f * scale
+                ),
+                "美术角色：大肥鱼 打工版 · 木子恶魔",
+                creditStyle
             );
         }
 

@@ -1436,14 +1436,48 @@ namespace Demo02.Editor
 
         private static void BuildBootScene()
         {
-            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(BootScenePath) != null
-                || EditorApplication.isPlayingOrWillChangePlaymode)
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
             {
                 return;
             }
 
             Scene previousActiveScene = SceneManager.GetActiveScene();
             bool hasUnsavedStartupScene = string.IsNullOrWhiteSpace(previousActiveScene.path);
+            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(BootScenePath)
+                != null)
+            {
+                Scene existingBootScene = EditorSceneManager.OpenScene(
+                    BootScenePath,
+                    OpenSceneMode.Additive
+                );
+                GameObject existingBootRoot = existingBootScene
+                    .GetRootGameObjects()
+                    .FirstOrDefault(root => root.name == "Boot");
+                if (existingBootRoot != null)
+                {
+                    ConfigureBootPresentation(
+                        existingBootScene,
+                        existingBootRoot
+                    );
+                    EditorSceneManager.MarkSceneDirty(existingBootScene);
+                    EditorSceneManager.SaveScene(
+                        existingBootScene,
+                        BootScenePath
+                    );
+                }
+                EditorSceneManager.CloseScene(
+                    existingBootScene,
+                    removeScene: true
+                );
+                if (previousActiveScene.IsValid()
+                    && previousActiveScene.isLoaded)
+                {
+                    SceneManager.SetActiveScene(previousActiveScene);
+                }
+                ConfigureBuildSettings();
+                return;
+            }
+
             Scene bootScene = EditorSceneManager.NewScene(
                 NewSceneSetup.DefaultGameObjects,
                 hasUnsavedStartupScene ? NewSceneMode.Single : NewSceneMode.Additive
@@ -1457,6 +1491,7 @@ namespace Demo02.Editor
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, bootScene);
             worldRuntimeObject.AddComponent<WorldRuntime>();
+            ConfigureBootPresentation(bootScene, bootRoot);
 
             EditorSceneManager.SaveScene(bootScene, BootScenePath);
             if (!hasUnsavedStartupScene)
@@ -1472,6 +1507,130 @@ namespace Demo02.Editor
             }
 
             Debug.Log("Demo02 boot scene generated.");
+        }
+
+        private static void ConfigureBootPresentation(
+            Scene bootScene,
+            GameObject bootRoot)
+        {
+            Camera camera = bootScene
+                .GetRootGameObjects()
+                .Select(root => root.GetComponent<Camera>())
+                .FirstOrDefault(item => item != null);
+            if (camera == null)
+            {
+                GameObject cameraObject = new("Main Camera");
+                cameraObject.tag = "MainCamera";
+                SceneManager.MoveGameObjectToScene(
+                    cameraObject,
+                    bootScene
+                );
+                camera = cameraObject.AddComponent<Camera>();
+            }
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor =
+                new Color(0.035f, 0.055f, 0.085f);
+            camera.fieldOfView = 32f;
+            camera.nearClipPlane = 0.05f;
+            camera.transform.position =
+                new Vector3(0.9f, 1.08f, 3.45f);
+            camera.transform.LookAt(
+                new Vector3(0.9f, 0.94f, 0f)
+            );
+
+            Light keyLight = bootScene
+                .GetRootGameObjects()
+                .Select(root => root.GetComponent<Light>())
+                .FirstOrDefault(item => item != null);
+            if (keyLight == null)
+            {
+                GameObject lightObject = new("Title Key Light");
+                SceneManager.MoveGameObjectToScene(
+                    lightObject,
+                    bootScene
+                );
+                keyLight = lightObject.AddComponent<Light>();
+            }
+            keyLight.type = LightType.Directional;
+            keyLight.color = new Color(1f, 0.86f, 0.7f);
+            keyLight.intensity = 1.35f;
+            keyLight.shadows = LightShadows.Soft;
+            keyLight.transform.rotation =
+                Quaternion.Euler(32f, -28f, 0f);
+
+            Transform floor = bootRoot.transform.Find(
+                "TitleStudioFloor"
+            );
+            if (floor == null)
+            {
+                floor = CreateBlock(
+                    bootRoot.transform,
+                    "TitleStudioFloor",
+                    new Vector3(0f, -0.08f, 0f),
+                    new Vector3(7f, 0.15f, 6f),
+                    new Color(0.055f, 0.075f, 0.1f)
+                ).transform;
+            }
+            floor.position = new Vector3(0f, -0.08f, 0f);
+            floor.localScale = new Vector3(7f, 0.15f, 6f);
+
+            Transform backdrop = bootRoot.transform.Find(
+                "TitleStudioBackdrop"
+            );
+            if (backdrop == null)
+            {
+                backdrop = CreateBlock(
+                    bootRoot.transform,
+                    "TitleStudioBackdrop",
+                    new Vector3(0f, 2.4f, -2.5f),
+                    new Vector3(7f, 5f, 0.12f),
+                    new Color(0.035f, 0.05f, 0.075f)
+                ).transform;
+            }
+            backdrop.position = new Vector3(0f, 2.4f, -2.5f);
+            backdrop.localScale = new Vector3(7f, 5f, 0.12f);
+
+            GameObject existingCharacter =
+                bootRoot.transform.Find("TitleAnimeFish")?.gameObject;
+            if (existingCharacter != null)
+            {
+                existingCharacter.transform.localPosition =
+                    new Vector3(0f, 0f, 0f);
+                if (existingCharacter.GetComponent<
+                        TitleCharacterPresentation>() == null)
+                {
+                    existingCharacter.AddComponent<
+                        TitleCharacterPresentation>();
+                }
+                return;
+            }
+
+            GameObject titleCharacterPrefab =
+                AssetDatabase.LoadAssetAtPath<GameObject>(
+                    "Assets/Demo02/Art/Characters/AnimeFishPilot/"
+                    + "VIS_AnimeFish_Work.prefab"
+                );
+            if (titleCharacterPrefab == null)
+            {
+                throw new System.InvalidOperationException(
+                    "Title anime fish prefab is missing."
+                );
+            }
+            GameObject titleCharacter =
+                (GameObject)PrefabUtility.InstantiatePrefab(
+                    titleCharacterPrefab
+                );
+            titleCharacter.name = "TitleAnimeFish";
+            titleCharacter.transform.SetParent(
+                bootRoot.transform,
+                false
+            );
+            titleCharacter.transform.localPosition =
+                new Vector3(0f, 0f, 0f);
+            titleCharacter.transform.localRotation =
+                Quaternion.identity;
+            titleCharacter.AddComponent<TitleCharacterPresentation>();
+            Debug.Log("Demo02 boot title character configured.");
         }
 
         private static void ConfigureBuildSettings()

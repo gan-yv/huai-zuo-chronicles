@@ -67,6 +67,7 @@ namespace Demo02.Editor
                 -scaled.min.y,
                 -scaled.center.z
             );
+            ApplyRelaxedPose(model);
 
             int rendererCount = 0;
             int texturedMaterialCount = 0;
@@ -319,6 +320,65 @@ namespace Demo02.Editor
                 bounds.Encapsulate(renderers[index].bounds);
             }
             return bounds;
+        }
+
+        private static void ApplyRelaxedPose(GameObject root)
+        {
+            LowerArm(
+                root.transform,
+                FindDescendant(root.transform, "upper_arm.L"),
+                FindDescendant(root.transform, "lower_arm.L"),
+                -1f
+            );
+            LowerArm(
+                root.transform,
+                FindDescendant(root.transform, "upper_arm.R"),
+                FindDescendant(root.transform, "lower_arm.R"),
+                1f
+            );
+        }
+
+        private static void LowerArm(
+            Transform root,
+            Transform upperArm,
+            Transform lowerArm,
+            float side)
+        {
+            if (upperArm == null || lowerArm == null)
+            {
+                return;
+            }
+
+            Vector3 current = lowerArm.position - upperArm.position;
+            if (current.sqrMagnitude < 0.0001f)
+            {
+                return;
+            }
+
+            Vector3 target = (
+                -root.up * 0.94f
+                + root.right * side * 0.24f
+                + root.forward * 0.06f
+            ).normalized;
+            upperArm.rotation =
+                Quaternion.FromToRotation(current.normalized, target)
+                * upperArm.rotation;
+            Physics.SyncTransforms();
+        }
+
+        private static Transform FindDescendant(
+            Transform root,
+            string name)
+        {
+            foreach (Transform child in
+                     root.GetComponentsInChildren<Transform>(true))
+            {
+                if (child.name == name)
+                {
+                    return child;
+                }
+            }
+            return null;
         }
     }
 }
