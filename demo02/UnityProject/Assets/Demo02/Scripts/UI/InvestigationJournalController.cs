@@ -2,6 +2,8 @@ using System.Collections;
 using System.IO;
 using Demo02.Core;
 using Demo02.Narrative;
+using Demo02.Player;
+using Demo02.WorldState;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -463,6 +465,13 @@ namespace Demo02.UI
                     + $"/{investigationState.RequiredTimeAnchorCount}"
                     + $"\n残留回声：{investigationState.DiscoveredEchoCount}/3"
                     + GetStoryFactSummary(investigationState.CaseContent)
+                    + (WorldContentTracker.Instance != null
+                        ? WorldContentTracker.Instance.GetJournalSummary()
+                        : string.Empty)
+                    + "\n"
+                    + (ContinuationLoadout.Instance != null
+                        ? ContinuationLoadout.Instance.GetJournalSummary()
+                        : "续式槽位：未初始化")
                     + $"\n调查立场：{ChapterCopy.GetStanceLabel(investigationState)}"
                     + $"\n证据去向：{ChapterCopy.GetPlanLabel(investigationState)}"
                     + "\n按 V 开启修痕视界，寻找隐藏回声。",
@@ -521,6 +530,14 @@ namespace Demo02.UI
 
             ScreenCapture.CaptureScreenshot(path);
             Debug.Log($"Investigation journal preview captured to {path}");
+            yield return null;
+            if (System.Array.IndexOf(
+                    System.Environment.GetCommandLineArgs(),
+                    "--capture-exit"
+                ) >= 0)
+            {
+                Application.Quit();
+            }
         }
     }
 }

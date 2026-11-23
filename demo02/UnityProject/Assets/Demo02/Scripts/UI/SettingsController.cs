@@ -132,7 +132,7 @@ namespace Demo02.UI
 
             float scale = UiTheme.Scale;
             float width = Mathf.Min(Screen.width - 60f, 720f * scale);
-            float height = Mathf.Min(Screen.height - 60f, 500f * scale);
+            float height = Mathf.Min(Screen.height - 60f, 560f * scale);
             Rect panel = new(
                 (Screen.width - width) * 0.5f,
                 (Screen.height - height) * 0.5f,
@@ -229,6 +229,39 @@ namespace Demo02.UI
             ))
             {
                 GameSettings.SetReduceMotion(!GameSettings.ReduceMotion);
+            }
+
+            Rect displayRow = new(
+                rowX,
+                rowY + 264f * scale,
+                rowWidth,
+                rowHeight
+            );
+            UiTheme.DrawRect(displayRow, UiTheme.Ink);
+            GUI.Label(
+                new Rect(
+                    displayRow.x + 16f * scale,
+                    displayRow.y,
+                    displayRow.width * 0.55f,
+                    displayRow.height
+                ),
+                "显示模式",
+                UiTheme.Label(15)
+            );
+            if (GUI.Button(
+                new Rect(
+                    displayRow.xMax - 220f * scale,
+                    displayRow.y + 9f * scale,
+                    200f * scale,
+                    40f * scale
+                ),
+                DisplaySettings.UseBorderlessFullscreen
+                    ? "无边框全屏"
+                    : "窗口化",
+                UiTheme.Button(13)
+            ))
+            {
+                DisplaySettings.ToggleMode();
             }
 
             float footerY = panel.yMax - 72f * scale;

@@ -4,6 +4,7 @@ using System.IO;
 using Demo02.Narrative;
 using Demo02.Player;
 using Demo02.UI;
+using Demo02.WorldState;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -37,6 +38,125 @@ namespace Demo02.Core
             Time.timeScale = 1f;
             sessionStartedAt = Time.unscaledTime;
 
+            string gameplayCapture = GetArgumentValue("--capture-game=");
+            if (!string.IsNullOrWhiteSpace(gameplayCapture))
+            {
+                StartCoroutine(CaptureGameplay(gameplayCapture));
+            }
+            if (Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
+                    "--preview-teahouse"
+                ) >= 0)
+            {
+                StartCoroutine(
+                    PreparePreviewPosition(
+                        new Vector3(61.4f, 0f, 106.5f),
+                        "dongguan-street",
+                        "东关街"
+                    )
+                );
+            }
+            if (Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
+                    "--preview-combat"
+                ) >= 0)
+            {
+                StartCoroutine(
+                    PreparePreviewPosition(
+                        new Vector3(0f, 1f, -1f),
+                        "official-street",
+                        "官署前街"
+                    )
+                );
+            }
+            if (Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
+                    "--preview-glide"
+                ) >= 0)
+            {
+                StartCoroutine(PrepareGlidePreview());
+            }
+            if (Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
+                    "--preview-abilities"
+                ) >= 0)
+            {
+                StartCoroutine(PrepareAbilityPreview());
+            }
+            if (Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
+                    "--preview-streaming"
+                ) >= 0)
+            {
+                StartCoroutine(
+                    PreparePreviewPosition(
+                        new Vector3(0f, 1f, 2f),
+                        "salt-street",
+                        "盐仓横街"
+                    )
+                );
+            }
+            if (Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
+                    "--preview-story"
+                ) >= 0)
+            {
+                StartCoroutine(
+                    PreparePreviewPosition(
+                        new Vector3(60f, 1f, 35f),
+                        "dongguan-street",
+                        "东关街"
+                    )
+                );
+            }
+            if (Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
+                    "--preview-elite"
+                ) >= 0)
+            {
+                StartCoroutine(
+                    PreparePreviewPosition(
+                        new Vector3(60f, 1f, 210f),
+                        "caiyi-street",
+                        "彩衣街"
+                    )
+                );
+            }
+            if (Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
+                    "--preview-glide-course"
+                ) >= 0)
+            {
+                StartCoroutine(
+                    PreparePreviewPosition(
+                        new Vector3(57f, 1f, 8f),
+                        "dongguan-street",
+                        "东关街"
+                    )
+                );
+            }
+            if (Array.IndexOf(
+                Environment.GetCommandLineArgs(),
+                "--preview-paper-kite"
+            ) >= 0)
+            {
+                StartCoroutine(PreparePaperKitePreview(showChoice: false));
+            }
+            if (Array.IndexOf(
+                Environment.GetCommandLineArgs(),
+                "--preview-paper-kite-choice"
+            ) >= 0)
+            {
+                StartCoroutine(PreparePaperKitePreview(showChoice: true));
+            }
+            if (Array.IndexOf(
+                Environment.GetCommandLineArgs(),
+                "--preview-paper-kite-result"
+            ) >= 0)
+            {
+                StartCoroutine(PreparePaperKiteResultPreview());
+            }
+
             if (Array.IndexOf(
                 Environment.GetCommandLineArgs(),
                 "--preview-ending"
@@ -48,6 +168,146 @@ namespace Demo02.Core
                 {
                     StartCoroutine(CaptureEnding(path));
                 }
+            }
+        }
+
+        private IEnumerator PreparePreviewPosition(
+            Vector3 position,
+            string areaId,
+            string areaName)
+        {
+            yield return null;
+            PlayerPartyController previewParty =
+                FindAnyObjectByType<PlayerPartyController>();
+            Transform character = previewParty != null
+                ? previewParty.ActiveCharacter
+                : null;
+            if (character == null)
+            {
+                yield break;
+            }
+
+            CharacterController controller =
+                character.GetComponent<CharacterController>();
+            bool wasEnabled = controller != null && controller.enabled;
+            if (controller != null)
+            {
+                controller.enabled = false;
+            }
+            character.SetPositionAndRotation(
+                position,
+                Quaternion.identity
+            );
+            if (controller != null)
+            {
+                controller.enabled = wasEnabled;
+            }
+            WorldRuntime.Instance?.SetCurrentArea(
+                areaId,
+                areaName
+            );
+        }
+
+        private IEnumerator PrepareGlidePreview()
+        {
+            yield return PreparePreviewPosition(
+                new Vector3(0f, 12f, 0f),
+                "official-street",
+                "官署前街"
+            );
+            yield return null;
+            PlayerPartyController previewParty =
+                FindAnyObjectByType<PlayerPartyController>();
+            previewParty?.ActiveCharacter?
+                .GetComponent<ThirdPersonController>()
+                ?.ForceGlideForPreview();
+        }
+
+        private IEnumerator PreparePaperKitePreview(bool showChoice)
+        {
+            yield return PreparePreviewPosition(
+                showChoice
+                    ? new Vector3(60f, 1f, 51.5f)
+                    : new Vector3(57f, 1f, -1f),
+                "dongguan-street",
+                "东关街"
+            );
+            yield return null;
+            PaperKiteStoryController story =
+                PaperKiteStoryController.Instance;
+            if (story == null)
+            {
+                yield break;
+            }
+
+            if (showChoice)
+            {
+                story.PrepareChoicePreview();
+                story.BeginKnotInteraction();
+            }
+            else
+            {
+                story.StartQuestFromPreview();
+            }
+        }
+
+        private IEnumerator PreparePaperKiteResultPreview()
+        {
+            yield return PreparePreviewPosition(
+                new Vector3(60f, 1f, 34f),
+                "dongguan-street",
+                "东关街"
+            );
+            yield return null;
+            PaperKiteStoryController.Instance
+                ?.CompletePublicChoiceFromPreview();
+        }
+
+        private IEnumerator PrepareAbilityPreview()
+        {
+            yield return PreparePreviewPosition(
+                new Vector3(0f, 1f, -1f),
+                "official-street",
+                "官署前街"
+            );
+            yield return null;
+            PlayerPartyController previewParty =
+                FindAnyObjectByType<PlayerPartyController>();
+            CharacterRuntime runtime = previewParty?.ActiveCharacter != null
+                ? previewParty.ActiveCharacter
+                    .GetComponent<CharacterRuntime>()
+                : null;
+            runtime?.RestoreEnergy(runtime.MaxEnergy);
+        }
+
+        private IEnumerator CaptureGameplay(string path)
+        {
+            float delay = 1.5f;
+            string delayArgument = GetArgumentValue("--capture-delay=");
+            if (float.TryParse(
+                    delayArgument,
+                    System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out float parsedDelay))
+            {
+                delay = Mathf.Clamp(parsedDelay, 0.1f, 30f);
+            }
+            yield return new WaitForSecondsRealtime(delay);
+            yield return new WaitForEndOfFrame();
+            string directory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrWhiteSpace(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            ScreenCapture.CaptureScreenshot(path);
+            Debug.Log($"Gameplay preview captured to {path}");
+            yield return null;
+            if (Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
+                    "--capture-exit"
+                ) >= 0)
+            {
+                Application.Quit();
             }
         }
 

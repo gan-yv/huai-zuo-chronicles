@@ -102,7 +102,7 @@ namespace Demo02.UI
                 case ChapterStage.Arrival:
                     Enqueue(
                         "movement",
-                        "WASD 移动 · Shift 奔跑 · 按住鼠标右键旋转镜头"
+                        "WASD 移动 · Shift 冲刺耗体力 · 空中再按 Space 展开滑翔"
                     );
                     Enqueue(
                         "talk-shenbo",

@@ -17,23 +17,60 @@ namespace Demo02.UI
         private string navigationHint = string.Empty;
         private Transform optionalTarget;
         private string optionalHint = string.Empty;
-        private float nextRefreshTime;
 
         private void Start()
         {
             investigationState = FindAnyObjectByType<InvestigationState>();
             party = FindAnyObjectByType<PlayerPartyController>();
             timeLayerController = FindAnyObjectByType<TimeLayerController>();
-        }
 
-        private void Update()
-        {
-            if (Time.unscaledTime < nextRefreshTime)
+            if (investigationState != null)
             {
-                return;
+                investigationState.StageChanged += OnStageChanged;
+                investigationState.ClueCountChanged += OnProgressChanged;
+                investigationState.AnchorCountChanged += OnProgressChanged;
+                investigationState.StoryFactAdded += OnStoryFactAdded;
+            }
+            if (timeLayerController != null)
+            {
+                timeLayerController.LayerChanged += OnLayerChanged;
             }
 
-            nextRefreshTime = Time.unscaledTime + 0.25f;
+            RefreshNavigationTarget();
+        }
+
+        private void OnDestroy()
+        {
+            if (investigationState != null)
+            {
+                investigationState.StageChanged -= OnStageChanged;
+                investigationState.ClueCountChanged -= OnProgressChanged;
+                investigationState.AnchorCountChanged -= OnProgressChanged;
+                investigationState.StoryFactAdded -= OnStoryFactAdded;
+            }
+            if (timeLayerController != null)
+            {
+                timeLayerController.LayerChanged -= OnLayerChanged;
+            }
+        }
+
+        private void OnStageChanged(ChapterStage stage)
+        {
+            RefreshNavigationTarget();
+        }
+
+        private void OnProgressChanged(int current, int required)
+        {
+            RefreshNavigationTarget();
+        }
+
+        private void OnStoryFactAdded(string factId)
+        {
+            RefreshNavigationTarget();
+        }
+
+        private void OnLayerChanged(TimeLayer layer)
+        {
             RefreshNavigationTarget();
         }
 

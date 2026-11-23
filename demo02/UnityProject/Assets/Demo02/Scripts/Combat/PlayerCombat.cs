@@ -28,7 +28,9 @@ namespace Demo02.Combat
         private void Update()
         {
             if (Time.timeScale <= 0f
-                || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
+                || (ScreenFade.Instance != null
+                    && ScreenFade.Instance.IsTransitioning)
+                || GameplayUiState.IsGameplayBlocked)
             {
                 return;
             }
@@ -47,6 +49,21 @@ namespace Demo02.Combat
 
         private void Attack()
         {
+            Combatant assistedTarget = FindAssistTarget();
+            if (assistedTarget != null)
+            {
+                Vector3 direction =
+                    assistedTarget.transform.position - transform.position;
+                direction.y = 0f;
+                if (direction.sqrMagnitude > 0.001f)
+                {
+                    transform.rotation = Quaternion.LookRotation(
+                        direction.normalized,
+                        Vector3.up
+                    );
+                }
+            }
+
             ShowAttackVisual();
             GameAudio.PlayAttackSwing();
             GetComponent<Demo02.Player.ProceduralCharacterAnimator>()?.PlayAttack();
@@ -73,7 +90,20 @@ namespace Demo02.Combat
                     continue;
                 }
 
-                target.TakeDamage(attackDamage);
+                EnemyBreakStatus breakStatus =
+                    target.GetComponent<EnemyBreakStatus>();
+                breakStatus?.ApplyPoiseDamage(24f);
+                float finalDamage = attackDamage
+                    * (breakStatus?.DamageMultiplier ?? 1f);
+                float previousHealth = target.CurrentHealth;
+                target.TakeDamage(finalDamage);
+                CombatFeedback.ReportDamage(
+                    target.transform.position,
+                    previousHealth - target.CurrentHealth
+                );
+                target.GetComponent<EnemyAI>()?.ApplyHit(transform.position);
+                GetComponent<Demo02.Player.CharacterRuntime>()
+                    ?.GainEnergy(12f);
                 hits++;
             }
 
@@ -81,7 +111,19 @@ namespace Demo02.Combat
             if (hits > 0)
             {
                 GameAudio.PlayHit();
+                GetComponent<Demo02.Player.ThirdPersonController>()
+                    ?.AddCameraShake(0.075f, 0.09f);
             }
+        }
+
+        private Combatant FindAssistTarget()
+        {
+            return CombatTargeting.FindNearestEnemy(
+                transform,
+                attackRange + attackRadius + 1.2f,
+                out _,
+                minimumFacingDot: 0.12f
+            );
         }
 
         private void ShowAttackVisual()

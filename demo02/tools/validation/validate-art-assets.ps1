@@ -64,11 +64,32 @@ $runtimeMetadata = @(
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/old_planks_02/SOURCE.md",
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/clay_roof_tiles_02/SOURCE.md",
     "demo02/UnityProject/Assets/ThirdParty/PolyHaven/cobblestone_05/SOURCE.md",
-    "demo02/UnityProject/Assets/ThirdParty/PolyHaven/grey_roof_tiles_02/SOURCE.md"
+    "demo02/UnityProject/Assets/ThirdParty/PolyHaven/grey_roof_tiles_02/SOURCE.md",
+    "demo02/UnityProject/Assets/ThirdParty/PolyHaven/Models/chinese_screen_panels/SOURCE.md",
+    "demo02/UnityProject/Assets/ThirdParty/PolyHaven/Models/chinese_armchair/SOURCE.md",
+    "demo02/UnityProject/Assets/ThirdParty/PolyHaven/Models/chinese_tea_table/SOURCE.md",
+    "demo02/UnityProject/Assets/ThirdParty/PolyHaven/Models/chinese_cabinet/SOURCE.md",
+    "demo02/UnityProject/Assets/ThirdParty/OpenGameArt/Audio/SOURCE.md"
 )
 foreach ($relativePath in $runtimeMetadata) {
     if (-not (Test-Path (Join-Path $RepositoryRoot $relativePath))) {
         $issues.Add("Missing runtime provenance file: $relativePath")
+    }
+}
+
+$allowedLicenses = @(
+    "CC0-1.0",
+    "CC-BY-4.0",
+    "CC-BY-3.0",
+    "Licensed-Runtime-Use"
+)
+if (Test-Path $manifestPath) {
+    foreach ($row in (Import-Csv $manifestPath)) {
+        if ($row.license -notin $allowedLicenses) {
+            $issues.Add(
+                "Asset '$($row.asset_id)' has an unapproved license: $($row.license)"
+            )
+        }
     }
 }
 

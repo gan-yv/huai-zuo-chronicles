@@ -1,8 +1,12 @@
 # Third-Party Art Credits
 
-The following assets are used under CC0 1.0. Attribution is not required, but
-is retained for provenance and good practice.
+The following assets are used under their recorded licenses. CC0 attribution
+is retained for provenance; CC-BY attribution is required.
 
+- **大肥鱼 打工版 / 上班鱼** by 木子恶魔, https://www.bilibili.com/.
+  The project owner confirmed the author's written permission for non-video
+  uses. Source provenance is recorded in
+  `Assets/Demo02/Art/Characters/AnimeFishPilot/SOURCE.md`.
 - **Fantasy Town Kit** by Kenney, https://kenney.nl/assets/fantasy-town-kit,
   CC0 1.0. Selected models were imported unchanged; project materials and
   prefabs are stored under `Assets/Demo02/Art`.
@@ -48,4 +52,11 @@ is retained for provenance and good practice.
 - **Grey Roof Tiles 02** by Rob Tuytel,
   https://polyhaven.com/a/grey_roof_tiles_02, CC0 1.0. Imported as a 2K PBR
   material; Unity mask data is generated from the supplied ARM map.
+- **Chinese Screen Panels**, **Chinese Armchair**, **Chinese Tea Table** and
+  **Chinese Cabinet** by Kirill Sannikov, https://polyhaven.com,
+  CC0 1.0. Downloaded as 1K glTF sets and used for the teahouse and warehouse
+  interior without mesh edits.
+- **Liyan** by elerya, https://opengameart.org/content/liyan,
+  CC-BY 3.0. Used as looping exploration music. Attribution must remain in
+  the game credits and portfolio materials.
 

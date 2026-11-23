@@ -27,6 +27,11 @@ namespace Demo02.Core
         public List<string> StoryFactIds = new();
         public List<InventoryItemSaveData> InventoryItems = new();
         public List<string> CollectedPickupIds = new();
+        public List<string> UnlockedAnchorIds = new();
+        public List<string> CompletedStreamingRegionIds = new();
+        public List<string> CompletedEncounterIds = new();
+        public List<string> CompletedWorldContentIds = new();
+        public List<string> StartedWorldContentIds = new();
         public ChapterStage ChapterStage;
         public bool TestimonyContradictionSolved;
         public int ContradictionAttempts;

@@ -44,7 +44,6 @@ namespace Demo02.UI
 
                 hasShownInitialArea = true;
                 lastAreaName = currentArea;
-                Show(currentArea);
                 return;
             }
 

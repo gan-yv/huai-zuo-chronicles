@@ -1178,31 +1178,48 @@ namespace Demo02.Editor
             {
                 material.SetColor(
                     "_BaseColor",
-                    new Color(1f, 0.88f, 0.72f, 1f)
+                    new Color(0.84f, 0.85f, 0.79f, 1f)
                 );
-                material.SetFloat("_Smoothness", 0.18f);
+                material.SetFloat("_Smoothness", 0.16f);
             }
             else if (key == "Brick")
             {
                 material.SetColor(
                     "_BaseColor",
-                    new Color(0.92f, 0.77f, 0.66f, 1f)
+                    new Color(0.76f, 0.73f, 0.67f, 1f)
                 );
             }
             else if (key == "UnevenBrick")
             {
                 material.SetColor(
                     "_BaseColor",
-                    new Color(0.91f, 0.87f, 0.80f, 1f)
+                    new Color(0.68f, 0.66f, 0.62f, 1f)
                 );
             }
             else if (key == "RoundTiles")
             {
-                material.SetColor(
-                    "_BaseColor",
-                    new Color(0.97f, 0.79f, 0.64f, 1f)
+                Material greyRoof = AssetDatabase.LoadAssetAtPath<Material>(
+                    "Assets/Demo02/Art/Materials/ThirdPartySamples/" +
+                    "MAT_PolyHaven_GreyRoofTiles02.mat"
                 );
-                material.SetFloat("_Smoothness", 0.22f);
+                if (greyRoof != null)
+                {
+                    EditorUtility.CopySerialized(greyRoof, material);
+                    material.name = key;
+                    material.enableInstancing = true;
+                    material.SetColor(
+                        "_BaseColor",
+                        new Color(0.68f, 0.74f, 0.75f, 1f)
+                    );
+                    material.SetFloat("_Smoothness", 0.22f);
+                }
+                else
+                {
+                    material.SetColor(
+                        "_BaseColor",
+                        new Color(0.55f, 0.61f, 0.62f, 1f)
+                    );
+                }
             }
             else if (key == "Vine")
             {

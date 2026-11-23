@@ -12,6 +12,7 @@ namespace Demo02.Core
         [SerializeField] private GameAudioLibrary library;
 
         private AudioSource ambientSource;
+        private AudioSource musicSource;
         private AudioSource oneShotSource;
         private PlayerPartyController party;
         private AudioClip interactionClip;
@@ -46,9 +47,15 @@ namespace Demo02.Core
             IsMuted = PlayerPrefs.GetInt(MutedPreference, 0) == 1;
 
             ambientSource = CreateSource("Ambient Wind", loop: true, volume: 0.17f);
+            musicSource = CreateSource(
+                "Exploration Music",
+                loop: true,
+                volume: 0.16f
+            );
             oneShotSource = CreateSource("Gameplay Feedback", loop: false, volume: 0.55f);
 
             ambientSource.clip = library?.AmbientWind ?? CreateAmbientClip();
+            musicSource.clip = library?.ExplorationMusic;
             interactionClip =
                 library?.Interaction ??
                 CreateChimeClip("Interaction", 520f, 780f, 0.22f);
@@ -75,6 +82,10 @@ namespace Demo02.Core
 
             ApplyMuteState();
             ambientSource.Play();
+            if (musicSource.clip != null)
+            {
+                musicSource.Play();
+            }
         }
 
         private void Start()

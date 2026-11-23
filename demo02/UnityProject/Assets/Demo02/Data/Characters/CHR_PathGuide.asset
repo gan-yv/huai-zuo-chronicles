@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40cc984adb2ebd940bfc8aedaa131dcc, type: 3}
+  m_Name: CHR_PathGuide
+  m_EditorClassIdentifier: Assembly-CSharp::Demo02.Player.CharacterDefinition
+  contentVersion: 2
+  characterId: path-guide
+  displayName: "\u9014\u5370\u5411\u5BFC"
+  roleLabel: "\u6E38\u51FB \xB7 \u63A2\u7D22\u5411\u5BFC"
+  affiliation: "\u5E7F\u9675\u8857\u574A"
+  resonanceMark: 2
+  accentColor: {r: 0.31, g: 0.78, b: 0.72, a: 1}
+  maxStamina: 145
+  sprintCostPerSecond: 15
+  glideCostPerSecond: 11
+  staminaRecoveryPerSecond: 34
+  staminaRecoveryDelay: 0.55
+  maxEnergy: 100
+  skillName: "\u9014\xB7\u6298\u884C"
+  burstName: "\u767E\u5DF7\u5F52\u9014"
+  skillDescription: "\u501F\u8857\u5DF7\u6B8B\u54CD\u5FEB\u901F\u4F4D\u79FB\uFF0C\u5E76\u83B7\u5F97\u66F4\u6301\u4E45\u7684\u63A2\u7D22\u4F53\u529B\u3002"
+  skillStyle: 1
+  skillCooldown: 5
+  skillDamage: 28
+  skillRadius: 2.3
+  burstDamage: 64
+  burstRadius: 4.8
+  burstHealing: 18

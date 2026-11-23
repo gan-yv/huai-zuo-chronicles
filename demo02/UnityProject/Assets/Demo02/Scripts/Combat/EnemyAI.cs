@@ -21,10 +21,38 @@ namespace Demo02.Combat
         private float verticalVelocity;
         private float nextAttackTime;
         private float attackWindupRemaining;
+        private float staggerRemaining;
+        private Vector3 knockbackVelocity;
         private bool isWindingUp;
         private ColorTint colorTint;
         private bool deathStarted;
         private float deathVisibleUntil;
+        private bool externalActionLock;
+
+        public bool IsWindingUp => isWindingUp;
+        public float AttackWindupNormalized =>
+            isWindingUp
+                ? Mathf.Clamp01(
+                    1f - attackWindupRemaining / Mathf.Max(0.01f, attackWindup)
+                )
+                : 0f;
+
+        public void ConfigureCombatProfile(
+            float newMoveSpeed,
+            float newAttackDamage,
+            float newAttackCooldown,
+            float newAttackWindup)
+        {
+            moveSpeed = Mathf.Max(0f, newMoveSpeed);
+            attackDamage = Mathf.Max(0f, newAttackDamage);
+            attackCooldown = Mathf.Max(0.1f, newAttackCooldown);
+            attackWindup = Mathf.Max(0.05f, newAttackWindup);
+        }
+
+        public void SetActionLocked(bool locked)
+        {
+            externalActionLock = locked;
+        }
 
         private void Awake()
         {
@@ -62,6 +90,32 @@ namespace Demo02.Combat
                 {
                     gameObject.SetActive(false);
                 }
+                return;
+            }
+
+            if (externalActionLock)
+            {
+                return;
+            }
+
+            if (staggerRemaining > 0f)
+            {
+                staggerRemaining = Mathf.Max(
+                    0f,
+                    staggerRemaining - Time.deltaTime
+                );
+                if (controller.enabled)
+                {
+                    controller.Move(
+                        (knockbackVelocity + Vector3.down * 2f) *
+                        Time.deltaTime
+                    );
+                }
+                knockbackVelocity = Vector3.MoveTowards(
+                    knockbackVelocity,
+                    Vector3.zero,
+                    12f * Time.deltaTime
+                );
                 return;
             }
 
@@ -134,11 +188,41 @@ namespace Demo02.Combat
             }
 
             Combatant targetHealth = target.GetComponent<Combatant>();
+            float previousHealth = targetHealth != null
+                ? targetHealth.CurrentHealth
+                : 0f;
             targetHealth?.TakeDamage(attackDamage);
             if (targetHealth != null)
             {
+                CombatFeedback.ReportDamage(
+                    target.position + Vector3.up * 1.8f,
+                    previousHealth - targetHealth.CurrentHealth,
+                    isPlayerDamage: true
+                );
+                CombatFeedback.ReportPlayerHurt();
                 GameAudio.PlayPlayerHurt();
             }
+        }
+
+        public void ApplyHit(
+            Vector3 sourcePosition,
+            float staggerDuration = 0.2f,
+            float pushDistance = 1.8f)
+        {
+            if (!self.IsAlive)
+            {
+                return;
+            }
+
+            Vector3 direction = transform.position - sourcePosition;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.001f)
+            {
+                direction = -transform.forward;
+            }
+            CancelAttackWindup();
+            staggerRemaining = Mathf.Max(staggerRemaining, staggerDuration);
+            knockbackVelocity = direction.normalized * pushDistance;
         }
 
         private void CancelAttackWindup()

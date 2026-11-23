@@ -35,12 +35,31 @@ namespace Demo02.Combat
             }
         }
 
+        private void OnEnable()
+        {
+            CombatRegistry.Register(this);
+        }
+
+        private void OnDisable()
+        {
+            CombatRegistry.Unregister(this);
+        }
+
         public void Configure(CombatTeam combatTeam, float health)
         {
+            bool registered = isActiveAndEnabled;
+            if (registered)
+            {
+                CombatRegistry.Unregister(this);
+            }
             team = combatTeam;
             maxHealth = Mathf.Max(1f, health);
             currentHealth = maxHealth;
             isInitialized = true;
+            if (registered)
+            {
+                CombatRegistry.Register(this);
+            }
         }
 
         public void TakeDamage(float damage)

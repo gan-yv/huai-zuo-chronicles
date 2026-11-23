@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Demo02.Combat;
 using Demo02.Core;
 using Demo02.Narrative;
@@ -12,20 +13,23 @@ namespace Demo02.UI
     {
         private PlayerPartyController party;
         private EncounterState encounterState;
-        private InvestigationState investigationState;
         private TimeLayerController timeLayerController;
         private WorldRuntime worldRuntime;
         private bool showHelp;
+        private int previousAliveEnemies;
+        private float clearNoticeUntil;
 
         private void Awake()
         {
             party = FindAnyObjectByType<PlayerPartyController>();
             encounterState = FindAnyObjectByType<EncounterState>();
-            investigationState = FindAnyObjectByType<InvestigationState>();
             timeLayerController = FindAnyObjectByType<TimeLayerController>();
             worldRuntime = WorldRuntime.Instance != null
                 ? WorldRuntime.Instance
                 : FindAnyObjectByType<WorldRuntime>();
+            previousAliveEnemies = encounterState != null
+                ? encounterState.AliveEnemyCount
+                : 0;
         }
 
         private void Update()
@@ -76,6 +80,8 @@ namespace Demo02.UI
                 return;
             }
 
+            DrawTimeLayerTransition();
+
             Transform activeCharacter = party != null ? party.ActiveCharacter : null;
             Combatant activeHealth = activeCharacter != null
                 ? activeCharacter.GetComponent<Combatant>()
@@ -86,16 +92,25 @@ namespace Demo02.UI
                 DrawHealth(activeHealth);
             }
 
-            int aliveEnemies = encounterState != null ? encounterState.AliveEnemyCount : 0;
+            int nearbyEnemies = GetNearbyEnemyCount(activeCharacter, 16f);
+            int aliveEnemies = encounterState != null
+                ? encounterState.AliveEnemyCount
+                : 0;
             float scale = UiTheme.Scale;
 
-            if (aliveEnemies > 0)
+            if (previousAliveEnemies > 0 && aliveEnemies == 0)
+            {
+                clearNoticeUntil = Time.unscaledTime + 2.6f;
+            }
+            previousAliveEnemies = aliveEnemies;
+
+            if (nearbyEnemies > 0)
             {
                 Rect threatPanel = new(
-                    Screen.width - 176f * scale,
-                    72f * scale,
-                    152f * scale,
-                    32f * scale
+                    Screen.width - 236f * scale - 18f * scale,
+                    52f * scale,
+                    236f * scale,
+                    26f * scale
                 );
                 UiTheme.DrawRect(threatPanel, UiTheme.Ink);
                 GUIStyle threatStyle = UiTheme.Label(
@@ -106,7 +121,7 @@ namespace Demo02.UI
                 threatStyle.normal.textColor = new Color(0.94f, 0.48f, 0.3f);
                 GUI.Label(
                     threatPanel,
-                    $"威胁  {aliveEnemies}",
+                    $"街口封锁 · {nearbyEnemies} 名守卫",
                     threatStyle
                 );
             }
@@ -157,8 +172,10 @@ namespace Demo02.UI
             }
 
             DrawEnemyHealthBars();
+            DrawTargetMarker(activeCharacter);
+            DrawCombatClearNotice();
 
-            float utilityWidth = 100f * scale;
+            float utilityWidth = 92f * scale;
             float utilityHeight = 30f * scale;
             float utilityY = Screen.height - utilityHeight - 12f * scale;
             float right = Screen.width - 18f * scale;
@@ -196,21 +213,6 @@ namespace Demo02.UI
                     utilityWidth,
                     utilityHeight
                 ),
-                GameAudio.Instance != null && GameAudio.Instance.IsMuted
-                    ? "声音关 [F2]"
-                    : "声音开 [F2]",
-                UiTheme.Button(13)
-            ))
-            {
-                GameAudio.ToggleMuted();
-            }
-            if (GUI.Button(
-                new Rect(
-                    right - utilityWidth * 4f - 30f * scale,
-                    utilityY,
-                    utilityWidth,
-                    utilityHeight
-                ),
                 "J 案卷",
                 UiTheme.Button(13)
             ))
@@ -219,7 +221,7 @@ namespace Demo02.UI
             }
             if (GUI.Button(
                 new Rect(
-                    right - utilityWidth * 5f - 40f * scale,
+                    right - utilityWidth * 4f - 30f * scale,
                     utilityY,
                     utilityWidth,
                     utilityHeight
@@ -229,51 +231,6 @@ namespace Demo02.UI
             ))
             {
                 InventoryController.Instance?.ToggleInventory();
-            }
-            GUI.enabled = investigationState != null
-                && investigationState.CanOpenTestimonyBoard;
-            if (GUI.Button(
-                new Rect(
-                    right - utilityWidth * 6f - 50f * scale,
-                    utilityY,
-                    utilityWidth,
-                    utilityHeight
-                ),
-                "T 对照",
-                UiTheme.Button(13)
-            ))
-            {
-                TestimonyBoardController.Instance?.ToggleBoard();
-            }
-            GUI.enabled = true;
-            if (GUI.Button(
-                new Rect(
-                    right - utilityWidth * 7f - 60f * scale,
-                    utilityY,
-                    utilityWidth,
-                    utilityHeight
-                ),
-                InvestigationVisionController.Instance != null
-                    && InvestigationVisionController.Instance.IsActive
-                    ? "V 关视界"
-                    : "V 视界",
-                UiTheme.Button(13)
-            ))
-            {
-                InvestigationVisionController.Instance?.ToggleVision();
-            }
-            if (GUI.Button(
-                new Rect(
-                    right - utilityWidth * 8f - 70f * scale,
-                    utilityY,
-                    utilityWidth,
-                    utilityHeight
-                ),
-                "O 设置",
-                UiTheme.Button(13)
-            ))
-            {
-                SettingsController.Instance?.ToggleSettings();
             }
 
             if (showHelp)
@@ -308,9 +265,11 @@ namespace Demo02.UI
                         panel.width - 56f * scale,
                         236f * scale
                     ),
-                    "WASD  移动      Shift  奔跑      Ctrl  闪避      Space  跳跃\n"
-                    + "鼠标左键  攻击      按住鼠标右键  旋转镜头\n"
-                    + "E  调查 / 对话 / 修复      Tab  切换角色      Q  切换时间层\n"
+                    "WASD  移动      Shift  冲刺（耗体力）      Ctrl  闪避\n"
+                    + "Space  跳跃 / 空中再按展开滑翔      1/2/Tab  切换角色\n"
+                    + "鼠标左键  攻击      F  核心技能      R  终结技（满能量）\n"
+                    + "按住鼠标右键  旋转镜头\n"
+                    + "E  调查 / 对话 / 修复      Q  切换时间层\n"
                     + "J  调查案卷      M  世界地图      Esc  暂停      F2  静音\n"
                     + "B  背包      T  证词对照      V  修痕视界      O  设置\n"
                     + "F3  性能面板      F5/F9  保存/读取\n"
@@ -330,16 +289,66 @@ namespace Demo02.UI
             }
         }
 
-        private void DrawEnemyHealthBars()
+        private void DrawTimeLayerTransition()
         {
-            Camera sceneCamera = Camera.main;
-            if (encounterState == null || sceneCamera == null)
+            if (timeLayerController == null)
             {
                 return;
             }
 
-            foreach (Combatant enemy in encounterState.Enemies)
+            float age = Time.unscaledTime - timeLayerController.LastChangedAt;
+            if (age < 0f || age >= 0.55f)
             {
+                return;
+            }
+
+            float fade = 1f - age / 0.55f;
+            Color tint = timeLayerController.CurrentLayer == TimeLayer.Past
+                ? new Color(0.18f, 0.38f, 0.48f, 0.12f * fade)
+                : new Color(0.86f, 0.68f, 0.36f, 0.1f * fade);
+            UiTheme.DrawRect(
+                new Rect(0f, 0f, Screen.width, Screen.height),
+                tint
+            );
+
+            float scale = UiTheme.Scale;
+            GUIStyle style = UiTheme.Label(
+                24,
+                TextAnchor.MiddleCenter,
+                bold: true
+            );
+            style.normal.textColor = new Color(
+                1f,
+                0.92f,
+                0.72f,
+                fade
+            );
+            GUI.Label(
+                new Rect(
+                    0f,
+                    Screen.height * 0.32f,
+                    Screen.width,
+                    46f * scale
+                ),
+                timeLayerController.CurrentLayer == TimeLayer.Past
+                    ? "旧 时"
+                    : "现 世",
+                style
+            );
+        }
+
+        private void DrawEnemyHealthBars()
+        {
+            Camera sceneCamera = Camera.main;
+            if (sceneCamera == null)
+            {
+                return;
+            }
+
+            IReadOnlyList<Combatant> enemies = CombatRegistry.Enemies;
+            for (int index = 0; index < enemies.Count; index++)
+            {
+                Combatant enemy = enemies[index];
                 if (enemy == null || !enemy.IsAlive)
                 {
                     continue;
@@ -371,7 +380,298 @@ namespace Demo02.UI
                 UiTheme.DrawRect(background, UiTheme.Ink);
                 UiTheme.DrawRect(fill, new Color(0.86f, 0.24f, 0.16f));
                 UiTheme.DrawBorder(background, new Color(1f, 1f, 1f, 0.16f));
+
+                EnemyAI enemyAi = enemy.GetComponent<EnemyAI>();
+                EnemyBreakStatus breakStatus =
+                    enemy.GetComponent<EnemyBreakStatus>();
+                if (breakStatus != null)
+                {
+                    Rect poiseBackground = new(
+                        background.x,
+                        background.yMax + 2f * UiTheme.Scale,
+                        background.width,
+                        4f * UiTheme.Scale
+                    );
+                    UiTheme.DrawRect(
+                        poiseBackground,
+                        new Color(0f, 0f, 0f, 0.45f)
+                    );
+                    UiTheme.DrawRect(
+                        new Rect(
+                            poiseBackground.x,
+                            poiseBackground.y,
+                            poiseBackground.width
+                                * (breakStatus.IsBroken
+                                    ? 1f
+                                    : breakStatus.PoiseRatio),
+                            poiseBackground.height
+                        ),
+                        breakStatus.IsBroken
+                            ? new Color(1f, 0.72f, 0.24f)
+                            : new Color(0.52f, 0.7f, 0.82f)
+                    );
+                    if (breakStatus.IsBroken)
+                    {
+                        GUIStyle brokenStyle = UiTheme.Label(
+                            9,
+                            TextAnchor.MiddleCenter,
+                            bold: true
+                        );
+                        brokenStyle.normal.textColor =
+                            new Color(1f, 0.78f, 0.35f);
+                        GUI.Label(
+                            new Rect(
+                                background.x - 18f * UiTheme.Scale,
+                                background.yMax + 5f * UiTheme.Scale,
+                                background.width + 36f * UiTheme.Scale,
+                                18f * UiTheme.Scale
+                            ),
+                            "破防 · 伤害提升",
+                            brokenStyle
+                        );
+                    }
+                }
+                if (enemyAi != null && enemyAi.IsWindingUp)
+                {
+                    Rect warning = new(
+                        background.x - 24f * UiTheme.Scale,
+                        background.y - 24f * UiTheme.Scale,
+                        background.width + 48f * UiTheme.Scale,
+                        20f * UiTheme.Scale
+                    );
+                    UiTheme.DrawRect(
+                        warning,
+                        new Color(0.14f, 0.045f, 0.02f, 0.94f)
+                    );
+                    UiTheme.DrawBorder(
+                        warning,
+                        new Color(1f, 0.6f, 0.2f, 0.9f)
+                    );
+                    UiTheme.DrawRect(
+                        new Rect(
+                            warning.x + 1f,
+                            warning.yMax - 3f * UiTheme.Scale,
+                            (warning.width - 2f) *
+                            enemyAi.AttackWindupNormalized,
+                            2f * UiTheme.Scale
+                        ),
+                        new Color(1f, 0.58f, 0.16f)
+                    );
+                    GUIStyle warningStyle = UiTheme.Label(
+                        10,
+                        TextAnchor.MiddleCenter,
+                        bold: true
+                    );
+                    warningStyle.normal.textColor =
+                        new Color(1f, 0.78f, 0.46f);
+                    GUI.Label(warning, "攻击蓄力", warningStyle);
+                }
             }
+        }
+
+        private int GetNearbyEnemyCount(
+            Transform activeCharacter,
+            float radius)
+        {
+            if (activeCharacter == null)
+            {
+                return 0;
+            }
+
+            return CombatRegistry.CountNearbyEnemies(
+                activeCharacter.position,
+                radius
+            );
+        }
+
+        private void DrawTargetMarker(Transform activeCharacter)
+        {
+            if (!TryFindNearestEnemy(
+                    activeCharacter,
+                    18f,
+                    out Combatant target,
+                    out float distance)
+                || Camera.main == null)
+            {
+                return;
+            }
+
+            Vector3 screenPoint = Camera.main.WorldToScreenPoint(
+                target.transform.position + Vector3.up * 1.75f
+            );
+            if (screenPoint.z <= 0f)
+            {
+                return;
+            }
+
+            float scale = UiTheme.Scale;
+            float size = 42f * scale;
+            Rect marker = new(
+                screenPoint.x - size * 0.5f,
+                Screen.height - screenPoint.y - size * 0.5f,
+                size,
+                size
+            );
+            Color markerColor = new(1f, 0.69f, 0.3f, 0.96f);
+            DrawTargetCorners(marker, markerColor, 3f * scale, 10f * scale);
+
+            Rect labelPanel = new(
+                marker.center.x - 79f * scale,
+                marker.y - 26f * scale,
+                158f * scale,
+                21f * scale
+            );
+            UiTheme.DrawRect(
+                labelPanel,
+                new Color(0.025f, 0.035f, 0.05f, 0.88f)
+            );
+            UiTheme.DrawRect(
+                new Rect(
+                    labelPanel.x,
+                    labelPanel.y,
+                    2f * scale,
+                    labelPanel.height
+                ),
+                markerColor
+            );
+
+            GUIStyle label = UiTheme.Label(
+                11,
+                TextAnchor.MiddleCenter,
+                bold: true
+            );
+            label.normal.textColor = markerColor;
+            string targetLabel = GetTargetLabel(target);
+            GUI.Label(
+                labelPanel,
+                $"锁定 · {targetLabel} · {distance:0.0}m",
+                label
+            );
+        }
+
+        private static string GetTargetLabel(Combatant target)
+        {
+            string objectName = target.gameObject.name;
+            if (objectName.Contains("Dongguan"))
+            {
+                return "东关巡哨";
+            }
+            if (objectName.Contains("Caiyi"))
+            {
+                return "彩衣望风";
+            }
+            if (objectName.Contains("Support"))
+            {
+                return "盐仓增援";
+            }
+
+            string guardNumber = objectName
+                .Replace("Enemy_Patrol_", string.Empty)
+                .Trim();
+            return string.IsNullOrWhiteSpace(guardNumber)
+                ? "巡逻守卫"
+                : $"守卫 {guardNumber}";
+        }
+
+        private static void DrawTargetCorners(
+            Rect rect,
+            Color color,
+            float thickness,
+            float length)
+        {
+            length = Mathf.Min(length, rect.width * 0.45f);
+            UiTheme.DrawRect(
+                new Rect(rect.x, rect.y, length, thickness),
+                color
+            );
+            UiTheme.DrawRect(
+                new Rect(rect.x, rect.y, thickness, length),
+                color
+            );
+            UiTheme.DrawRect(
+                new Rect(rect.xMax - length, rect.y, length, thickness),
+                color
+            );
+            UiTheme.DrawRect(
+                new Rect(rect.xMax - thickness, rect.y, thickness, length),
+                color
+            );
+            UiTheme.DrawRect(
+                new Rect(rect.x, rect.yMax - thickness, length, thickness),
+                color
+            );
+            UiTheme.DrawRect(
+                new Rect(rect.x, rect.yMax - length, thickness, length),
+                color
+            );
+            UiTheme.DrawRect(
+                new Rect(
+                    rect.xMax - length,
+                    rect.yMax - thickness,
+                    length,
+                    thickness
+                ),
+                color
+            );
+            UiTheme.DrawRect(
+                new Rect(rect.xMax - thickness, rect.yMax - length, thickness, length),
+                color
+            );
+        }
+
+        private void DrawCombatClearNotice()
+        {
+            if (Time.unscaledTime >= clearNoticeUntil)
+            {
+                return;
+            }
+
+            float alpha = Mathf.Clamp01(
+                (clearNoticeUntil - Time.unscaledTime) / 0.5f
+            );
+            float scale = UiTheme.Scale;
+            Rect panel = new(
+                Screen.width * 0.5f - 170f * scale,
+                Screen.height * 0.25f,
+                340f * scale,
+                42f * scale
+            );
+            UiTheme.DrawRect(
+                panel,
+                new Color(0.06f, 0.08f, 0.065f, 0.92f * alpha)
+            );
+            UiTheme.DrawBorder(
+                panel,
+                new Color(0.86f, 0.7f, 0.34f, alpha),
+                2f
+            );
+            GUIStyle style = UiTheme.Label(
+                16,
+                TextAnchor.MiddleCenter,
+                bold: true
+            );
+            style.normal.textColor = new Color(1f, 0.86f, 0.52f, alpha);
+            GUI.Label(panel, "街口封锁已解除", style);
+        }
+
+        private bool TryFindNearestEnemy(
+            Transform activeCharacter,
+            float radius,
+            out Combatant target,
+            out float distance)
+        {
+            if (activeCharacter == null)
+            {
+                target = null;
+                distance = float.MaxValue;
+                return false;
+            }
+            target = CombatTargeting.FindNearestEnemy(
+                activeCharacter,
+                radius,
+                out distance
+            );
+            return target != null;
         }
 
         private static void DrawHealth(Combatant health)

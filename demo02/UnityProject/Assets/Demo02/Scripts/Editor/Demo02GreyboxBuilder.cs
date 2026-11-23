@@ -20,6 +20,12 @@ namespace Demo02.Editor
     {
         private const string ScenePath = "Assets/Demo02/Scenes/Guangling/Greybox.unity";
         private const string BootScenePath = "Assets/Demo02/Scenes/Boot/Boot.unity";
+        private const string StreamingScenePath =
+            "Assets/Demo02/Scenes/Guangling/Streaming/SaltStreetSupport.unity";
+        private const string DongguanStreamingScenePath =
+            "Assets/Demo02/Scenes/Guangling/Streaming/DongguanPatrol.unity";
+        private const string CaiyiStreamingScenePath =
+            "Assets/Demo02/Scenes/Guangling/Streaming/CaiyiLookout.unity";
         private const string RootName = "Greybox";
 
         [InitializeOnLoadMethod]
@@ -31,24 +37,30 @@ namespace Demo02.Editor
         [MenuItem("Demo02/Rebuild Greybox Scene")]
         public static void RebuildFromMenu()
         {
+            CharacterDefinitionSeeder.BuildAll();
+            EncounterDefinitionSeeder.BuildAll();
             StylizedCharacterSetup.BuildAll();
             QuaterniusAnimationLibrarySetup.BuildAll();
             QuaterniusEnvironmentSetup.BuildAll();
             ReadyMadeStreetDressingSetup.BuildAll();
             ReadyMadeAudioSetup.BuildAll();
             BuildScene(forceRebuild: true);
+            BuildStreamingEncounterScene();
             BuildBootScene();
             ConfigureBuildSettings();
         }
 
         public static void RebuildForBatch()
         {
+            CharacterDefinitionSeeder.BuildAll();
+            EncounterDefinitionSeeder.BuildAll();
             StylizedCharacterSetup.BuildAll();
             QuaterniusAnimationLibrarySetup.BuildAll();
             QuaterniusEnvironmentSetup.BuildAll();
             ReadyMadeStreetDressingSetup.BuildAll();
             ReadyMadeAudioSetup.BuildAll();
             BuildScene(forceRebuild: true);
+            BuildStreamingEncounterScene();
             BuildBootScene();
             ConfigureBuildSettings();
         }
@@ -88,14 +100,468 @@ namespace Demo02.Editor
             VerifyTimeLayerForBatch();
             VerifyChapterFlowForBatch();
             VerifySaveSlotsForBatch();
+            CharacterDefinitionSeeder.ValidateOrThrow();
+            EncounterDefinitionSeeder.ValidateOrThrow();
+            VerifyCharacterFrameworkForBatch();
+            VerifyOpenWorldFrameworkForBatch();
+            VerifyStreamingSceneForBatch();
             StylizedCharacterSetup.ValidateForBatch();
             QuaterniusAnimationLibrarySetup.ValidateForBatch();
             QuaterniusEnvironmentSetup.ValidateForBatch();
             ReadyMadeStreetDressingSetup.ValidateForBatch();
             ReadyMadeAudioSetup.ValidateForBatch();
+            PublicPropDressingSetup.ValidateForBatch();
+            VerifyMapReadabilityForBatch();
             Debug.Log(
                 "All automated checks passed: dialogue, combat, time layer, "
                 + "inventory, chapter and saves."
+            );
+        }
+
+        private static void VerifyCharacterFrameworkForBatch()
+        {
+            CharacterDefinition definition =
+                CharacterDefinitionSeeder.LoadRepairer();
+            GameObject probe = new("CharacterRuntimeProbe");
+            CharacterRuntime runtime = probe.AddComponent<CharacterRuntime>();
+            runtime.Configure(definition);
+            float initialStamina = runtime.CurrentStamina;
+            bool drained = runtime.DrainStamina(18f);
+            runtime.GainEnergy(12f);
+            bool spent = runtime.TrySpendEnergy(10f);
+            bool valid = Mathf.Approximately(initialStamina, definition.MaxStamina)
+                && drained
+                && Mathf.Approximately(
+                    runtime.CurrentStamina,
+                    definition.MaxStamina - 18f
+                )
+                && Mathf.Approximately(runtime.CurrentEnergy, 2f)
+                && spent;
+            runtime.SetContinuationBonuses(10f, 1.25f);
+            runtime.RestoreEnergy(0f);
+            runtime.GainEnergy(20f);
+            valid &= Mathf.Approximately(
+                runtime.MaxStamina,
+                definition.MaxStamina + 10f
+            ) && Mathf.Approximately(runtime.CurrentEnergy, 25f);
+            Object.DestroyImmediate(probe);
+
+            if (!valid)
+            {
+                throw new System.InvalidOperationException(
+                    "Character stamina or energy framework validation failed."
+                );
+            }
+            Debug.Log(
+                "Character framework validation passed: stamina drain and "
+                + "energy gain/spend."
+            );
+        }
+
+        private static void VerifyOpenWorldFrameworkForBatch()
+        {
+            Scene scene = SceneManager.GetSceneByPath(ScenePath);
+            bool openedHere = !scene.IsValid() || !scene.isLoaded;
+            if (openedHere)
+            {
+                scene = EditorSceneManager.OpenScene(
+                    ScenePath,
+                    OpenSceneMode.Additive
+                );
+            }
+            try
+            {
+                GameObject root = scene
+                    .GetRootGameObjects()
+                    .FirstOrDefault(item => item.name == RootName);
+                if (root == null
+                    || root.transform.Find("Chapter01_OpenWorldFramework") == null
+                    || root.transform.Find("Chapter01_AbilityFramework") == null)
+                {
+                    throw new System.InvalidOperationException(
+                        "Open-world framework marker is missing."
+                    );
+                }
+
+                PlayerPartyController party = root
+                    .GetComponentsInChildren<PlayerPartyController>(true)
+                    .FirstOrDefault();
+                if (party == null
+                    || party.PartySlotCount != PlayerPartyController.MaxPartySlots
+                    || party.GetCharacter(0) == null
+                    || party.GetCharacter(1) == null
+                    || party.GetCharacter(2) != null
+                    || party.GetCharacter(3) != null)
+                {
+                    throw new System.InvalidOperationException(
+                        "Party framework must expose four slots with two current members."
+                    );
+                }
+
+                CharacterRuntime repairer = party.GetCharacter(0)
+                    .GetComponent<CharacterRuntime>();
+                CharacterRuntime guide = party.GetCharacter(1)
+                    .GetComponent<CharacterRuntime>();
+                if (repairer?.Definition == null
+                    || guide?.Definition == null
+                    || repairer.Definition.ResonanceMark
+                        != ResonanceMark.Continuation
+                    || guide.Definition.ResonanceMark != ResonanceMark.Path)
+                {
+                    throw new System.InvalidOperationException(
+                        "Playable party members are missing their character definitions."
+                    );
+                }
+
+                foreach (Transform member in new[]
+                         {
+                             party.GetCharacter(0),
+                             party.GetCharacter(1)
+                         })
+                {
+                    if (member.Find("ExplorationGlider") == null)
+                    {
+                        throw new System.InvalidOperationException(
+                            $"{member.name} is missing its glider visual."
+                        );
+                    }
+                    if (member.Find("AbilityPulse") == null
+                        || member.GetComponent<CharacterAbilityController>()
+                            == null)
+                    {
+                        throw new System.InvalidOperationException(
+                            $"{member.name} is missing its ability runtime."
+                        );
+                    }
+                }
+
+                if (root.GetComponentsInChildren<AbilityHud>(true).Length == 0
+                    || root.GetComponentsInChildren<Combatant>(true)
+                        .FirstOrDefault(enemy =>
+                            enemy.Team == CombatTeam.Enemy
+                            && enemy.GetComponent<ResonanceStatus>() != null)
+                        == null)
+                {
+                    throw new System.InvalidOperationException(
+                        "Ability HUD or resonance status framework is missing."
+                    );
+                }
+
+                WorldContentTracker contentTracker = root
+                    .GetComponentInChildren<WorldContentTracker>(true);
+                if (contentTracker == null
+                    || contentTracker.Entries.Count != 4)
+                {
+                    throw new System.InvalidOperationException(
+                        "World content tracker is incomplete."
+                    );
+                }
+                if (root.GetComponentInChildren<ContinuationLoadout>(true) == null)
+                {
+                    throw new System.InvalidOperationException(
+                        "Continuation loadout is missing."
+                    );
+                }
+                if (root.transform.Find(
+                        "DongguanStreet/Challenge_DongguanWindCourse"
+                    ) == null)
+                {
+                    throw new System.InvalidOperationException(
+                        "Dongguan wind course is missing."
+                    );
+                }
+                PaperKiteStoryController paperKiteStory = root
+                    .GetComponentInChildren<PaperKiteStoryController>(
+                        true
+                    );
+                if (paperKiteStory == null
+                    || paperKiteStory.StorytellerTarget == null
+                    || paperKiteStory.KnotTarget == null
+                    || root.GetComponentsInChildren<
+                        PaperKiteStoryInteractable>(true).Length != 4)
+                {
+                    throw new System.InvalidOperationException(
+                        "Dongguan paper kite story is incomplete."
+                    );
+                }
+
+                WorldEncounterZone[] encounterZones = root
+                    .GetComponentsInChildren<WorldEncounterZone>(true);
+                WorldEncounterDirector encounterDirector = root
+                    .GetComponentsInChildren<WorldEncounterDirector>(true)
+                    .FirstOrDefault();
+                WorldAdditiveSceneRegion[] streamingRegions = root
+                    .GetComponentsInChildren<WorldAdditiveSceneRegion>(true);
+                WorldStreamingDirector streamingDirector = scene
+                    .GetRootGameObjects()
+                    .SelectMany(item =>
+                        item.GetComponentsInChildren<WorldStreamingDirector>(
+                            true
+                        ))
+                    .FirstOrDefault();
+                if (encounterDirector == null
+                    || streamingDirector == null
+                    || encounterZones.Length != 1
+                    || encounterZones.FirstOrDefault(zone =>
+                        zone.Definition != null
+                        && zone.Definition.EncounterId == "official-blockade"
+                        && zone.Definition.SupportEncounterIds.Contains(
+                            "salt-street-support"
+                        )) == null
+                    || streamingRegions.Length != 3
+                    || !streamingRegions.Any(region =>
+                        region.RegionId == "salt-street-support"
+                        && region.SceneName == "SaltStreetSupport")
+                    || !streamingRegions.Any(region =>
+                        region.RegionId == "dongguan-patrol"
+                        && region.SceneName == "DongguanPatrol")
+                    || !streamingRegions.Any(region =>
+                        region.RegionId == "caiyi-lookout"
+                        && region.SceneName == "CaiyiLookout")
+                    || streamingRegions.Any(region => region.PreloadRadius
+                        <= region.LoadRadius))
+                {
+                    throw new System.InvalidOperationException(
+                        "Encounter director or streaming support region is missing."
+                    );
+                }
+
+                WorldSpawnPoint[] anchors = root
+                    .GetComponentsInChildren<WorldSpawnPoint>(true)
+                    .Where(spawnPoint => spawnPoint.IsFastTravelAnchor)
+                    .ToArray();
+                if (anchors.Length != 3
+                    || !anchors.Any(anchor =>
+                        anchor.SpawnId == "guangling_start"
+                        && anchor.StartsUnlocked)
+                    || !anchors.Any(anchor =>
+                        anchor.SpawnId == "dongguan_start"
+                        && !anchor.StartsUnlocked)
+                    || !anchors.Any(anchor =>
+                        anchor.SpawnId == "caiyi_start"
+                        && !anchor.StartsUnlocked))
+                {
+                    throw new System.InvalidOperationException(
+                        "World anchor network is incomplete."
+                    );
+                }
+            }
+            finally
+            {
+                if (openedHere)
+                {
+                    EditorSceneManager.CloseScene(scene, true);
+                }
+            }
+            Debug.Log(
+                "Open-world framework validation passed: four party slots, "
+                + "character definitions, abilities, encounters, anchors "
+                + "and glider visuals."
+            );
+        }
+
+        private static void VerifyStreamingSceneForBatch()
+        {
+            foreach ((string path, string encounterId, string enemyName,
+                         string contentId)
+                     in new[]
+                     {
+                         (
+                             StreamingScenePath,
+                             "salt-street-support",
+                             "Enemy_Support_01",
+                             (string)null
+                         ),
+                         (
+                             DongguanStreamingScenePath,
+                             "dongguan-patrol",
+                             "Enemy_DongguanPatrol",
+                             "dongguan-apprentice-ledger"
+                         ),
+                         (
+                             CaiyiStreamingScenePath,
+                             "caiyi-lookout",
+                             "Enemy_CaiyiLookout",
+                             "caiyi-apprentice-ledger-page"
+                         )
+                     })
+            {
+                Scene scene = SceneManager.GetSceneByPath(path);
+                bool openedHere = !scene.IsValid() || !scene.isLoaded;
+                if (openedHere)
+                {
+                    scene = EditorSceneManager.OpenScene(
+                        path,
+                        OpenSceneMode.Additive
+                    );
+                }
+                try
+                {
+                    WorldEncounterZone zone = scene
+                        .GetRootGameObjects()
+                        .SelectMany(root =>
+                            root.GetComponentsInChildren<WorldEncounterZone>(
+                                true
+                            ))
+                        .FirstOrDefault();
+                    Combatant enemy = scene
+                        .GetRootGameObjects()
+                        .SelectMany(root =>
+                            root.GetComponentsInChildren<Combatant>(true))
+                        .FirstOrDefault(combatant =>
+                            combatant.Team == CombatTeam.Enemy);
+                    WorldContentEvent contentEvent = scene
+                        .GetRootGameObjects()
+                        .SelectMany(root =>
+                            root.GetComponentsInChildren<WorldContentEvent>(
+                                true
+                            ))
+                        .FirstOrDefault();
+                    EliteEnemyController elite = scene
+                        .GetRootGameObjects()
+                        .SelectMany(root =>
+                            root.GetComponentsInChildren<
+                                EliteEnemyController
+                            >(true))
+                        .FirstOrDefault();
+                    EliteArenaBoundary eliteArena = scene
+                        .GetRootGameObjects()
+                        .SelectMany(root =>
+                            root.GetComponentsInChildren<
+                                EliteArenaBoundary
+                            >(true))
+                        .FirstOrDefault();
+                    Transform visualSlot = scene
+                        .GetRootGameObjects()
+                        .SelectMany(root =>
+                            root.GetComponentsInChildren<Transform>(true))
+                        .FirstOrDefault(item =>
+                            item.name == "VisualReplacementSlot");
+                    bool hasStoryNpc = contentId != null
+                        && scene
+                            .GetRootGameObjects()
+                            .SelectMany(root =>
+                                root.GetComponentsInChildren<
+                                    WorldStoryNpcInteractable
+                                >(true))
+                            .Any();
+                    if (zone == null
+                        || zone.Definition == null
+                        || zone.Definition.EncounterId != encounterId
+                        || enemy == null
+                        || enemy.gameObject.name != enemyName
+                        || (contentId != null
+                            && (contentEvent == null
+                                || contentEvent.ContentId != contentId
+                                || !hasStoryNpc))
+                        || (encounterId == "caiyi-lookout"
+                            && (elite == null
+                                || enemy.MaxHealth < 120f
+                                || eliteArena == null
+                                || visualSlot == null)))
+                    {
+                        throw new System.InvalidOperationException(
+                            $"Streaming scene is incomplete: {path}"
+                        );
+                    }
+                }
+                finally
+                {
+                    if (openedHere)
+                    {
+                        EditorSceneManager.CloseScene(scene, true);
+                    }
+                }
+            }
+            Debug.Log(
+                "Streaming scene validation passed: three encounter layers "
+                + "are isolated."
+            );
+        }
+
+        private static void VerifyMapReadabilityForBatch()
+        {
+            Scene scene = SceneManager.GetSceneByPath(ScenePath);
+            bool openedHere = !scene.IsValid() || !scene.isLoaded;
+            if (openedHere)
+            {
+                scene = EditorSceneManager.OpenScene(
+                    ScenePath,
+                    OpenSceneMode.Additive
+                );
+            }
+            try
+            {
+                GameObject root = scene
+                    .GetRootGameObjects()
+                    .FirstOrDefault(item => item.name == RootName);
+                if (root == null)
+                {
+                    throw new System.InvalidOperationException(
+                        "Map readability validation could not find Greybox."
+                    );
+                }
+                if (root.transform.Find("Chapter01_MapReadability") == null)
+                {
+                    throw new System.InvalidOperationException(
+                        "Map readability marker is missing."
+                    );
+                }
+                if (root.transform.Find("Chapter01_PublicPropDressing") == null)
+                {
+                    throw new System.InvalidOperationException(
+                        "Public prop dressing marker is missing."
+                    );
+                }
+
+                foreach (string path in new[]
+                         {
+                             "MapReadabilityDressing/OfficialStreet_Curb_Left",
+                             "MapReadabilityDressing/DongguanStreet_Curb_Right",
+                             "MapReadabilityDressing/CaiyiStreet_Curb_Left",
+                             "MapReadabilityDressing/CourtyardGate_Beam",
+                             "MapReadabilityDressing/OfficialStreet_EndGate_Beam",
+                             "PublicPropDressing/TeaHouse_Screen",
+                             "PublicPropDressing/TeaHouse_Table",
+                             "PublicPropDressing/TeaHouse_Chair_Left",
+                             "PublicPropDressing/TeaHouse_Chair_Right",
+                             "PublicPropDressing/Warehouse_ChineseCabinet"
+                         })
+                {
+                    if (root.transform.Find(path) == null)
+                    {
+                        throw new System.InvalidOperationException(
+                            $"Map readability object is missing: {path}"
+                        );
+                    }
+                }
+
+                foreach (string clueName in new[]
+                         {
+                             "Clue_OldStreetSign",
+                             "Clue_SaltLedger",
+                             "Clue_OfficialSeal"
+                         })
+                {
+                    Transform clue = root.transform.Find(clueName);
+                    if (clue == null || Mathf.Abs(clue.position.x) < 3.8f)
+                    {
+                        throw new System.InvalidOperationException(
+                            $"Map clue still obstructs the street center: {clueName}"
+                        );
+                    }
+                }
+            }
+            finally
+            {
+                if (openedHere)
+                {
+                    EditorSceneManager.CloseScene(scene, true);
+                }
+            }
+            Debug.Log(
+                "Map readability validation passed: street edges, side branch, "
+                + "end gate and interaction clearance."
             );
         }
 
@@ -433,7 +899,12 @@ namespace Demo02.Editor
                         || data.InventoryItems.Count != 1
                         || data.InventoryItems[0].ItemId != "ginger-tea"
                         || data.InventoryItems[0].Count != 2
-                        || data.CollectedPickupIds.Count != 1)
+                        || data.CollectedPickupIds.Count != 1
+                        || data.UnlockedAnchorIds.Count != 2
+                        || data.CompletedStreamingRegionIds.Count != 1
+                        || data.CompletedEncounterIds.Count != 1
+                        || data.CompletedWorldContentIds.Count != 1
+                        || data.StartedWorldContentIds.Count != 1)
                     {
                         throw new System.InvalidOperationException(
                             $"Manual slot {slot} did not round-trip correctly."
@@ -522,6 +993,27 @@ namespace Demo02.Editor
                 CollectedPickupIds = new List<string>
                 {
                     "pickup-ginger-tea"
+                },
+                UnlockedAnchorIds = new List<string>
+                {
+                    "guangling_start",
+                    "dongguan_start"
+                },
+                CompletedStreamingRegionIds = new List<string>
+                {
+                    "salt-street-support"
+                },
+                CompletedEncounterIds = new List<string>
+                {
+                    "dongguan-patrol"
+                },
+                CompletedWorldContentIds = new List<string>
+                {
+                    "dongguan-apprentice-ledger"
+                },
+                StartedWorldContentIds = new List<string>
+                {
+                    "caiyi-apprentice-ledger-page"
                 }
             };
             File.WriteAllText(path, JsonUtility.ToJson(data, prettyPrint: true));
@@ -697,6 +1189,251 @@ namespace Demo02.Editor
             ConfigureBuildSettings();
         }
 
+        private static void BuildStreamingEncounterScene()
+        {
+            if (!AssetDatabase.IsValidFolder(
+                    "Assets/Demo02/Scenes/Guangling/Streaming"
+                ))
+            {
+                AssetDatabase.CreateFolder(
+                    "Assets/Demo02/Scenes/Guangling",
+                    "Streaming"
+                );
+            }
+
+            BuildStreamingScene(
+                StreamingScenePath,
+                "Streaming_SaltStreetSupport",
+                "Encounter_SaltStreetSupport",
+                "Enemy_Support_01",
+                new Vector3(1.4f, 0.9f, 24f),
+                EncounterDefinitionSeeder.LoadSupport()
+            );
+            BuildStreamingScene(
+                DongguanStreamingScenePath,
+                "Streaming_DongguanPatrol",
+                "Encounter_DongguanPatrol",
+                "Enemy_DongguanPatrol",
+                new Vector3(60f, 0.9f, 44f),
+                EncounterDefinitionSeeder.LoadDongguanPatrol()
+            );
+            BuildStreamingScene(
+                CaiyiStreamingScenePath,
+                "Streaming_CaiyiLookout",
+                "Encounter_CaiyiLookout",
+                "Enemy_CaiyiLookout",
+                new Vector3(60f, 0.9f, 220f),
+                EncounterDefinitionSeeder.LoadCaiyiLookout()
+            );
+        }
+
+        private static void BuildStreamingScene(
+            string scenePath,
+            string rootName,
+            string zoneName,
+            string enemyName,
+            Vector3 enemyPosition,
+            WorldEncounterDefinition definition)
+        {
+            Scene streamingScene = EditorSceneManager.NewScene(
+                NewSceneSetup.EmptyScene,
+                NewSceneMode.Additive
+            );
+            GameObject root = new(rootName);
+            SceneManager.MoveGameObjectToScene(root, streamingScene);
+
+            Combatant enemy = CreateEnemy(
+                root.transform,
+                enemyName,
+                enemyPosition
+            );
+            EliteEnemyController eliteController = null;
+            if (definition.EncounterId == "caiyi-lookout")
+            {
+                enemy.Configure(CombatTeam.Enemy, 120f);
+                eliteController =
+                    enemy.gameObject.AddComponent<EliteEnemyController>();
+                eliteController.Configure("彩衣街望风 · 精英");
+                enemy.gameObject.AddComponent<EliteChargeAttack>();
+                PrepareEliteVisualSlot(enemy.transform);
+            }
+            GameObject zoneObject = new(zoneName);
+            zoneObject.transform.SetParent(root.transform);
+            zoneObject.transform.position = enemyPosition;
+            zoneObject.AddComponent<WorldEncounterZone>().Configure(
+                definition,
+                new[] { enemy }
+            );
+            if (eliteController != null)
+            {
+                zoneObject
+                    .AddComponent<EliteArenaBoundary>()
+                    .Configure(eliteController, 10.5f);
+            }
+            AddStreetStory(
+                root.transform,
+                zoneObject.GetComponent<WorldEncounterZone>(),
+                definition.EncounterId
+            );
+
+            EditorSceneManager.MarkSceneDirty(streamingScene);
+            if (!EditorSceneManager.SaveScene(
+                    streamingScene,
+                    scenePath
+                ))
+            {
+                throw new System.InvalidOperationException(
+                    $"Could not save streaming scene: {scenePath}"
+                );
+            }
+            EditorSceneManager.CloseScene(streamingScene, true);
+            AssetDatabase.Refresh();
+            Debug.Log(
+                $"Streaming encounter scene generated at {scenePath}"
+            );
+        }
+
+        private static void AddStreetStory(
+            Transform root,
+            WorldEncounterZone zone,
+            string encounterId)
+        {
+            string storyId;
+            string npcName;
+            string rewardItemId;
+            Vector3 npcPosition;
+            Color outfit;
+            Color accent;
+            DialogueLine[] intro;
+            DialogueLine[] ready;
+            DialogueLine[] completed;
+
+            if (encounterId == "dongguan-patrol")
+            {
+                storyId = "dongguan-apprentice-ledger";
+                npcName = "新来的脚夫";
+                rewardItemId = "ginger-tea";
+                npcPosition = new Vector3(57.5f, 1f, 40.5f);
+                outfit = new Color(0.34f, 0.28f, 0.2f);
+                accent = new Color(0.74f, 0.52f, 0.25f);
+                intro = new[]
+                {
+                    new DialogueLine(
+                        npcName,
+                        "那队巡哨把一只旧账袋拖进盐仓，说里面只剩废纸。可我看见封签上盖的是官印。"
+                    ),
+                    new DialogueLine(
+                        "主角",
+                        "巡逻若真是查案，就不会把封签藏起来。"
+                    )
+                };
+                ready = new[]
+                {
+                    new DialogueLine(
+                        npcName,
+                        "队伍散了。账袋还在供桌后，我没敢碰。"
+                    ),
+                    new DialogueLine(
+                        npcName,
+                        "这壶热姜汤你先拿着，潮气重，别在旧仓里病倒。"
+                    )
+                };
+                completed = new[]
+                {
+                    new DialogueLine(
+                        npcName,
+                        "街口今天安静多了，我也该回去搬货了。"
+                    )
+                };
+            }
+            else if (encounterId == "caiyi-lookout")
+            {
+                storyId = "caiyi-apprentice-ledger-page";
+                npcName = "裁衣学徒";
+                rewardItemId = "blank-ledger-page";
+                npcPosition = new Vector3(62.5f, 1f, 216f);
+                outfit = new Color(0.38f, 0.22f, 0.28f);
+                accent = new Color(0.78f, 0.44f, 0.28f);
+                intro = new[]
+                {
+                    new DialogueLine(
+                        npcName,
+                        "每晚都有人替望风的人改衣，袖口藏着纸条。师父说别问，可我不信他们只是在巡夜。"
+                    ),
+                    new DialogueLine(
+                        "主角",
+                        "纸条既然能缝进衣服，就也能从这里带出去。"
+                    )
+                };
+                ready = new[]
+                {
+                    new DialogueLine(
+                        npcName,
+                        "望风的人走了。我在裁衣案板下找到一张空白账页。"
+                    ),
+                    new DialogueLine(
+                        npcName,
+                        "你比我更需要它。若真能把街名写回来，记得别写错。"
+                    )
+                };
+                completed = new[]
+                {
+                    new DialogueLine(
+                        npcName,
+                        "针脚已经拆干净了。希望下次来，这里只剩正常做买卖的人。"
+                    )
+                };
+            }
+            else
+            {
+                return;
+            }
+
+            GameObject npc = CreateCharacter(
+                root,
+                $"NPC_Story_{encounterId}",
+                npcPosition,
+                outfit,
+                accent,
+                addNpcCollider: true
+            );
+            WorldContentEvent contentEvent =
+                root.gameObject.AddComponent<WorldContentEvent>();
+            contentEvent.Configure(
+                storyId,
+                npcName,
+                zone,
+                rewardItemId,
+                1,
+                "巡哨线索已交付并领取街区奖励。"
+            );
+            npc.AddComponent<WorldStoryNpcInteractable>().Configure(
+                npcName,
+                contentEvent,
+                intro,
+                ready,
+                completed
+            );
+        }
+
+        private static void PrepareEliteVisualSlot(Transform enemy)
+        {
+            GameObject slot = new("VisualReplacementSlot");
+            slot.transform.SetParent(enemy, false);
+            foreach (string visualName in new[]
+                     {
+                         "BlockyVisual",
+                         "GreyboxVisual"
+                     })
+            {
+                Transform visual = enemy.Find(visualName);
+                if (visual != null)
+                {
+                    visual.SetParent(slot.transform, true);
+                }
+            }
+        }
+
         private static void BuildBootScene()
         {
             if (AssetDatabase.LoadAssetAtPath<SceneAsset>(BootScenePath) != null
@@ -741,7 +1478,21 @@ namespace Demo02.Editor
         {
             SceneAsset bootScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(BootScenePath);
             SceneAsset greyboxScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(ScenePath);
-            if (bootScene == null || greyboxScene == null)
+            SceneAsset streamingScene =
+                AssetDatabase.LoadAssetAtPath<SceneAsset>(StreamingScenePath);
+            SceneAsset dongguanStreamingScene =
+                AssetDatabase.LoadAssetAtPath<SceneAsset>(
+                    DongguanStreamingScenePath
+                );
+            SceneAsset caiyiStreamingScene =
+                AssetDatabase.LoadAssetAtPath<SceneAsset>(
+                    CaiyiStreamingScenePath
+                );
+            if (bootScene == null
+                || greyboxScene == null
+                || streamingScene == null
+                || dongguanStreamingScene == null
+                || caiyiStreamingScene == null)
             {
                 Debug.LogWarning("World scenes are not ready for Build Settings yet.");
                 return;
@@ -750,7 +1501,13 @@ namespace Demo02.Editor
             EditorBuildSettings.scenes = new[]
             {
                 new EditorBuildSettingsScene(BootScenePath, true),
-                new EditorBuildSettingsScene(ScenePath, true)
+                new EditorBuildSettingsScene(ScenePath, true),
+                new EditorBuildSettingsScene(StreamingScenePath, true),
+                new EditorBuildSettingsScene(
+                    DongguanStreamingScenePath,
+                    true
+                ),
+                new EditorBuildSettingsScene(CaiyiStreamingScenePath, true)
             };
         }
 
@@ -803,6 +1560,21 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find("Chapter01_InventorySystem") == null
                     || existingRoot.transform.Find("Chapter01_OnboardingGuidance") == null
                     || existingRoot.transform.Find("Chapter01_RuntimeDiagnostics") == null
+                    || existingRoot.transform.Find("Chapter01_MapReadability") == null
+                    || existingRoot.transform.Find("Chapter01_PublicPropDressing") == null
+                    || existingRoot.transform.Find("Chapter01_OpenWorldFramework") == null
+                    || existingRoot.transform.Find("Chapter01_AbilityFramework") == null
+                    || existingRoot.transform.Find("Chapter01_EncounterDirector") == null
+                    || existingRoot.transform.Find("Stream_SaltStreetSupport") == null
+                    || existingRoot.transform.Find(
+                        "DongguanStreet/Stream_DongguanPatrol"
+                    ) == null
+                    || existingRoot.transform.Find(
+                        "CaiyiStreet/Stream_CaiyiLookout"
+                    ) == null
+                    || existingRoot.transform.Find(
+                        "DongguanStreet/Challenge_DongguanWindCourse"
+                    ) == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -836,6 +1608,10 @@ namespace Demo02.Editor
                     generatedRoot.transform
                 );
                 ReadyMadeStreetDressingSetup.ApplyToGreybox(
+                    generatedRoot.transform
+                );
+                CreateMapReadabilityDressing(generatedRoot.transform);
+                PublicPropDressingSetup.ApplyToGreybox(
                     generatedRoot.transform
                 );
                 EditorSceneManager.MarkSceneDirty(greyboxScene);
@@ -941,7 +1717,7 @@ namespace Demo02.Editor
             CreateBlock(
                 root.transform,
                 "Crate_A",
-                new Vector3(2.5f, 0.75f, -2f),
+                new Vector3(4.3f, 0.75f, -2f),
                 new Vector3(1.5f, 1.5f, 1.5f),
                 new Color(0.45f, 0.3f, 0.17f)
             );
@@ -950,7 +1726,7 @@ namespace Demo02.Editor
             CreateBlock(
                 root.transform,
                 "Crate_B",
-                new Vector3(-2.5f, 1f, 14f),
+                new Vector3(-4.3f, 1f, 14f),
                 new Vector3(2f, 2f, 2f),
                 new Color(0.45f, 0.3f, 0.17f)
             );
@@ -968,6 +1744,19 @@ namespace Demo02.Editor
             player.AddComponent<PlayerInteractor>();
             player.AddComponent<PlayerCombat>();
             player.AddComponent<Combatant>().Configure(CombatTeam.Player, 100f);
+            player.AddComponent<CharacterRuntime>().Configure(
+                CharacterDefinitionSeeder.LoadRepairer()
+            );
+            player.AddComponent<CharacterAbilityController>();
+            CreateGliderVisual(
+                player.transform,
+                new Color(0.78f, 0.67f, 0.43f),
+                new Color(0.93f, 0.76f, 0.36f)
+            );
+            CreateAbilityPulse(
+                player.transform,
+                new Color(0.93f, 0.76f, 0.36f)
+            );
 
             GameObject meleeArc = GameObject.CreatePrimitive(PrimitiveType.Cube);
             meleeArc.name = "MeleeArc";
@@ -993,6 +1782,21 @@ namespace Demo02.Editor
             PlayerInteractor partnerInteractor = partner.AddComponent<PlayerInteractor>();
             partnerInteractor.enabled = false;
             partner.AddComponent<Combatant>().Configure(CombatTeam.Player, 100f);
+            partner.AddComponent<CharacterRuntime>().Configure(
+                CharacterDefinitionSeeder.LoadPathGuide()
+            );
+            CharacterAbilityController partnerAbilities =
+                partner.AddComponent<CharacterAbilityController>();
+            partnerAbilities.enabled = false;
+            CreateGliderVisual(
+                partner.transform,
+                new Color(0.28f, 0.55f, 0.5f),
+                new Color(0.31f, 0.78f, 0.72f)
+            );
+            CreateAbilityPulse(
+                partner.transform,
+                new Color(0.31f, 0.78f, 0.72f)
+            );
 
             GameObject worker = CreateCharacter(
                 root.transform,
@@ -1019,11 +1823,11 @@ namespace Demo02.Editor
             GameObject clue = CreateBlock(
                 root.transform,
                 "Clue_OldStreetSign",
-                new Vector3(2.7f, 1.2f, -6f),
-                new Vector3(2.2f, 1.8f, 0.25f),
+                new Vector3(4.35f, 1.35f, -6f),
+                new Vector3(1.6f, 1.5f, 0.22f),
                 new Color(0.95f, 0.72f, 0.25f)
             );
-            clue.transform.rotation = Quaternion.Euler(0f, -20f, 0f);
+            clue.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
             EvidenceDefinition oldStreetEvidence = RequireEvidence(
                 chapterContent,
                 "old-street-sign"
@@ -1038,11 +1842,11 @@ namespace Demo02.Editor
             GameObject saltLedger = CreateBlock(
                 root.transform,
                 "Clue_SaltLedger",
-                new Vector3(-2.7f, 1.1f, 2f),
-                new Vector3(1.6f, 1.1f, 0.25f),
+                new Vector3(-4.35f, 1.1f, 2f),
+                new Vector3(1.2f, 0.9f, 0.22f),
                 new Color(0.82f, 0.56f, 0.25f)
             );
-            saltLedger.transform.rotation = Quaternion.Euler(0f, 20f, 0f);
+            saltLedger.transform.rotation = Quaternion.Euler(0f, -90f, 0f);
             EvidenceDefinition ledgerEvidence = RequireEvidence(
                 chapterContent,
                 "salt-ledger"
@@ -1057,11 +1861,11 @@ namespace Demo02.Editor
             GameObject officialSeal = CreateBlock(
                 root.transform,
                 "Clue_OfficialSeal",
-                new Vector3(2.7f, 1.2f, 18f),
-                new Vector3(1.4f, 1.8f, 0.25f),
+                new Vector3(4.35f, 1.3f, 18f),
+                new Vector3(1.15f, 1.45f, 0.22f),
                 new Color(0.82f, 0.28f, 0.2f)
             );
-            officialSeal.transform.rotation = Quaternion.Euler(0f, -20f, 0f);
+            officialSeal.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
             EvidenceDefinition sealEvidence = RequireEvidence(
                 chapterContent,
                 "official-seal"
@@ -1155,9 +1959,37 @@ namespace Demo02.Editor
 
             List<Combatant> enemies = new()
             {
-                CreateEnemy(root.transform, "Enemy_Patrol_01", new Vector3(-1.2f, 0.9f, 12f)),
-                CreateEnemy(root.transform, "Enemy_Patrol_02", new Vector3(1.4f, 0.9f, 24f))
+                CreateEnemy(
+                    root.transform,
+                    "Enemy_Patrol_01",
+                    new Vector3(-1.2f, 0.9f, 12f)
+                )
             };
+            GameObject blockadeZoneObject =
+                new("Encounter_OfficialBlockade");
+            blockadeZoneObject.transform.SetParent(root.transform);
+            blockadeZoneObject.transform.position =
+                new Vector3(0f, 0.9f, 12f);
+            blockadeZoneObject.AddComponent<WorldEncounterZone>().Configure(
+                EncounterDefinitionSeeder.LoadBlockade(),
+                new[] { enemies[0] }
+            );
+            GameObject streamingRegionObject =
+                new("Stream_SaltStreetSupport");
+            streamingRegionObject.transform.SetParent(root.transform);
+            streamingRegionObject.transform.position =
+                new Vector3(1.4f, 0.9f, 20f);
+            streamingRegionObject
+                .AddComponent<WorldAdditiveSceneRegion>()
+                .Configure(
+                    "salt-street-support",
+                    "SaltStreetSupport",
+                    "盐仓横街增援",
+                    20f,
+                    38f,
+                    46f,
+                    false
+                );
 
             GameObject preserveOutcome = CreateBlock(
                 root.transform,
@@ -1265,6 +2097,62 @@ namespace Demo02.Editor
             gameSession.AddComponent<AreaBanner>();
             PlayerPartyController party = gameSession.AddComponent<PlayerPartyController>();
             party.Configure(player.transform, partner.transform);
+            gameSession.AddComponent<ContinuationLoadout>();
+            gameSession.AddComponent<PartyHud>();
+            gameSession.AddComponent<AbilityHud>();
+            gameSession.AddComponent<EliteEnemyHud>();
+            gameSession.AddComponent<EliteBattleResultHud>();
+            gameSession.AddComponent<CombatFeedbackHud>();
+            gameSession.AddComponent<WorldContentToast>();
+            gameSession.AddComponent<WorldContentTracker>().Configure(
+                new[]
+                {
+                    new WorldContentEntry
+                    {
+                        ContentId = PaperKiteStoryController.ContentId,
+                        Title = "东关纸鸢旧信",
+                        AreaId = "dongguan-street",
+                        AreaName = "东关街",
+                        Hint = "与东关街说书人交谈",
+                        EncounterId = PaperKiteStoryController.ReadyId,
+                        MapX = 0.53f,
+                        MapY = 0.48f
+                    },
+                    new WorldContentEntry
+                    {
+                        ContentId = "dongguan-apprentice-ledger",
+                        Title = "脚夫看见的封条",
+                        AreaId = "dongguan-street",
+                        AreaName = "东关街",
+                        Hint = "找到新来的脚夫，清除巡哨后回去交付",
+                        EncounterId = "dongguan-patrol",
+                        MapX = 0.45f,
+                        MapY = 0.62f
+                    },
+                    new WorldContentEntry
+                    {
+                        ContentId = "caiyi-apprentice-ledger-page",
+                        Title = "缝进袖口的纸",
+                        AreaId = "caiyi-street",
+                        AreaName = "彩衣街",
+                        Hint = "询问裁衣学徒，解除望风后领取账页",
+                        EncounterId = "caiyi-lookout",
+                        MapX = 0.84f,
+                        MapY = 0.3f
+                    },
+                    new WorldContentEntry
+                    {
+                        ContentId = "dongguan-rooftop-glide",
+                        Title = "东关风廊",
+                        AreaId = "dongguan-street",
+                        AreaName = "东关街",
+                        Hint = "在街口摊位旁进入风场，依次穿过屋顶航点",
+                        MapX = 0.59f,
+                        MapY = 0.57f
+                    }
+                }
+            );
+            gameSession.AddComponent<WorldEncounterDirector>();
             gameSession.AddComponent<CombatHud>();
             gameSession.AddComponent<GameFlowController>();
             gameSession.AddComponent<SaveSystem>();
@@ -1320,6 +2208,25 @@ namespace Demo02.Editor
             GameObject diagnosticsMarker = new GameObject("Chapter01_RuntimeDiagnostics");
             diagnosticsMarker.transform.SetParent(root.transform);
 
+            GameObject mapPolishMarker = new GameObject("Chapter01_MapReadability");
+            mapPolishMarker.transform.SetParent(root.transform);
+
+            GameObject publicPropMarker =
+                new("Chapter01_PublicPropDressing");
+            publicPropMarker.transform.SetParent(root.transform);
+
+            GameObject frameworkMarker =
+                new("Chapter01_OpenWorldFramework");
+            frameworkMarker.transform.SetParent(root.transform);
+
+            GameObject abilityMarker =
+                new("Chapter01_AbilityFramework");
+            abilityMarker.transform.SetParent(root.transform);
+
+            GameObject encounterMarker =
+                new("Chapter01_EncounterDirector");
+            encounterMarker.transform.SetParent(root.transform);
+
             GameObject worldRuntimeObject = new GameObject("WorldRuntime");
             SceneManager.MoveGameObjectToScene(worldRuntimeObject, scene);
             WorldRuntime worldRuntime = worldRuntimeObject.AddComponent<WorldRuntime>();
@@ -1328,7 +2235,16 @@ namespace Demo02.Editor
             GameObject spawn = new GameObject("PlayerSpawn");
             spawn.transform.SetParent(root.transform);
             spawn.transform.position = new Vector3(0f, 0f, -10f);
-            spawn.AddComponent<WorldSpawnPoint>().Configure("guangling_start");
+            WorldSpawnPoint officialSpawn =
+                spawn.AddComponent<WorldSpawnPoint>();
+            officialSpawn.Configure("guangling_start");
+            officialSpawn.ConfigureAsAnchor("官署前街", true);
+            CreateWorldAnchor(
+                root.transform,
+                "Anchor_OfficialStreet",
+                officialSpawn,
+                new Color(0.93f, 0.76f, 0.36f)
+            );
 
             CreateWorldArea(
                 root.transform,
@@ -1388,6 +2304,135 @@ namespace Demo02.Editor
             RenderSettings.fogEndDistance = 165f;
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(0.42f, 0.46f, 0.52f);
+        }
+
+        private static void CreateMapReadabilityDressing(Transform root)
+        {
+            Transform group = new GameObject("MapReadabilityDressing").transform;
+            group.SetParent(root, false);
+
+            Color roadEdge = new(0.30f, 0.29f, 0.26f);
+            Color walkway = new(0.59f, 0.55f, 0.47f);
+            CreateStreetEdgeRun(
+                group,
+                "OfficialStreet",
+                centerX: 0f,
+                centerZ: 5f,
+                halfWidth: 5.8f,
+                length: 52f,
+                roadEdge,
+                walkway
+            );
+            CreateStreetEdgeRun(
+                group,
+                "DongguanStreet",
+                centerX: 60f,
+                centerZ: 58f,
+                halfWidth: 5.05f,
+                length: 154f,
+                roadEdge,
+                walkway
+            );
+            CreateStreetEdgeRun(
+                group,
+                "CaiyiStreet",
+                centerX: 60f,
+                centerZ: 225f,
+                halfWidth: 4.95f,
+                length: 128f,
+                roadEdge,
+                new Color(0.54f, 0.54f, 0.5f)
+            );
+
+            CreateBlock(
+                group,
+                "OfficialStreet_PlazaInlay",
+                new Vector3(0f, 0.025f, 6f),
+                new Vector3(6.6f, 0.035f, 5.2f),
+                new Color(0.52f, 0.49f, 0.42f)
+            );
+
+            CreateBlock(
+                group,
+                "CourtyardGate_Left",
+                new Vector3(6.15f, 2.2f, 3f),
+                new Vector3(0.45f, 4.4f, 0.45f),
+                new Color(0.34f, 0.24f, 0.15f)
+            );
+            CreateBlock(
+                group,
+                "CourtyardGate_Right",
+                new Vector3(6.15f, 2.2f, 9f),
+                new Vector3(0.45f, 4.4f, 0.45f),
+                new Color(0.34f, 0.24f, 0.15f)
+            );
+            CreateBlock(
+                group,
+                "CourtyardGate_Beam",
+                new Vector3(6.15f, 4.55f, 6f),
+                new Vector3(0.5f, 0.65f, 6.45f),
+                new Color(0.42f, 0.3f, 0.18f)
+            );
+
+            CreateBlock(
+                group,
+                "OfficialStreet_EndGate_Left",
+                new Vector3(-5.1f, 2.45f, 31.3f),
+                new Vector3(0.55f, 4.9f, 0.65f),
+                new Color(0.32f, 0.26f, 0.2f)
+            );
+            CreateBlock(
+                group,
+                "OfficialStreet_EndGate_Right",
+                new Vector3(5.1f, 2.45f, 31.3f),
+                new Vector3(0.55f, 4.9f, 0.65f),
+                new Color(0.32f, 0.26f, 0.2f)
+            );
+            CreateBlock(
+                group,
+                "OfficialStreet_EndGate_Beam",
+                new Vector3(0f, 4.8f, 31.3f),
+                new Vector3(10.75f, 0.7f, 0.72f),
+                new Color(0.44f, 0.33f, 0.2f)
+            );
+            CreateBlock(
+                group,
+                "OfficialStreet_EndGate_Plaque",
+                new Vector3(0f, 5.28f, 31.2f),
+                new Vector3(3.8f, 0.55f, 0.24f),
+                new Color(0.78f, 0.59f, 0.25f)
+            );
+        }
+
+        private static void CreateStreetEdgeRun(
+            Transform parent,
+            string streetName,
+            float centerX,
+            float centerZ,
+            float halfWidth,
+            float length,
+            Color roadEdge,
+            Color walkway)
+        {
+            for (int side = -1; side <= 1; side += 2)
+            {
+                float edgeX = centerX + side * halfWidth;
+                float walkX = centerX + side * (halfWidth + 0.22f);
+                CreateBlock(
+                    parent,
+                    $"{streetName}_Curb_{(side < 0 ? "Left" : "Right")}",
+                    new Vector3(edgeX, 0.055f, centerZ),
+                    new Vector3(0.14f, 0.11f, length),
+                    roadEdge
+                );
+                CreateBlock(
+                    parent,
+                    $"{streetName}_Walk_{(side < 0 ? "Left" : "Right")}",
+                    new Vector3(walkX, 0.025f, centerZ),
+                    new Vector3(0.34f, 0.05f, length),
+                    walkway
+                );
+            }
         }
 
         private static GameObject CreateBlock(
@@ -1638,6 +2683,92 @@ namespace Demo02.Editor
             Object.DestroyImmediate(part.GetComponent<Collider>());
             part.AddComponent<ColorTint>().Configure(tint, 0.32f);
             return part;
+        }
+
+        private static void CreateGliderVisual(
+            Transform character,
+            Color canopyColor,
+            Color frameColor)
+        {
+            GameObject root = new("ExplorationGlider");
+            root.transform.SetParent(character, false);
+            root.transform.localPosition = new Vector3(0f, 0.82f, -0.12f);
+
+            GameObject leftWing = CreateAvatarPart(
+                root.transform,
+                "Canopy_Left",
+                PrimitiveType.Cube,
+                new Vector3(-0.61f, 0.08f, 0f),
+                new Vector3(1.16f, 0.055f, 0.72f),
+                canopyColor
+            );
+            leftWing.transform.localRotation = Quaternion.Euler(0f, 0f, -9f);
+            GameObject rightWing = CreateAvatarPart(
+                root.transform,
+                "Canopy_Right",
+                PrimitiveType.Cube,
+                new Vector3(0.61f, 0.08f, 0f),
+                new Vector3(1.16f, 0.055f, 0.72f),
+                canopyColor
+            );
+            rightWing.transform.localRotation = Quaternion.Euler(0f, 0f, 9f);
+            CreateAvatarPart(
+                root.transform,
+                "Canopy_Ridge",
+                PrimitiveType.Cube,
+                new Vector3(0f, 0.11f, 0f),
+                new Vector3(0.08f, 0.09f, 0.76f),
+                frameColor
+            );
+            CreateAvatarPart(
+                root.transform,
+                "Glider_Crossbar",
+                PrimitiveType.Cube,
+                new Vector3(0f, -0.05f, 0f),
+                new Vector3(2.36f, 0.045f, 0.055f),
+                frameColor
+            );
+            root.SetActive(false);
+        }
+
+        private static void CreateAbilityPulse(
+            Transform character,
+            Color color)
+        {
+            GameObject pulse = CreateAvatarPart(
+                character,
+                "AbilityPulse",
+                PrimitiveType.Cylinder,
+                new Vector3(0f, -0.88f, 0f),
+                new Vector3(0.3f, 0.035f, 0.3f),
+                color
+            );
+            pulse.AddComponent<AbilityPulseVisual>();
+            pulse.SetActive(false);
+        }
+
+        private static void CreateWorldAnchor(
+            Transform parent,
+            string name,
+            WorldSpawnPoint spawnPoint,
+            Color color)
+        {
+            GameObject anchor = new(name);
+            anchor.transform.SetParent(parent);
+            anchor.transform.position = spawnPoint.transform.position;
+            SphereCollider trigger = anchor.AddComponent<SphereCollider>();
+            trigger.isTrigger = true;
+            trigger.radius = 1.45f;
+            CreateAvatarPart(
+                anchor.transform,
+                "Anchor_Core",
+                PrimitiveType.Cylinder,
+                new Vector3(0f, 0.28f, 0f),
+                new Vector3(0.34f, 0.24f, 0.34f),
+                color
+            );
+            anchor.AddComponent<WorldAnchorInteractable>()
+                .Configure(spawnPoint);
         }
 
         private static void CreateShopFacadeDetails(
@@ -1945,6 +3076,8 @@ namespace Demo02.Editor
             enemy.AddComponent<CharacterController>();
             Combatant combatant = enemy.AddComponent<Combatant>();
             combatant.Configure(CombatTeam.Enemy, 60f);
+            enemy.AddComponent<ResonanceStatus>();
+            enemy.AddComponent<EnemyBreakStatus>();
             enemy.AddComponent<EnemyAI>();
             return combatant;
         }
@@ -2321,7 +3454,64 @@ namespace Demo02.Editor
             GameObject dongguanSpawn = new("DongguanSpawn");
             dongguanSpawn.transform.SetParent(areaRoot);
             dongguanSpawn.transform.position = new Vector3(60f, 0f, -16f);
-            dongguanSpawn.AddComponent<WorldSpawnPoint>().Configure("dongguan_start");
+            WorldSpawnPoint dongguanAnchor =
+                dongguanSpawn.AddComponent<WorldSpawnPoint>();
+            dongguanAnchor.Configure("dongguan_start");
+            dongguanAnchor.ConfigureAsAnchor("东关街", false);
+            CreateWorldAnchor(
+                areaRoot,
+                "Anchor_DongguanStreet",
+                dongguanAnchor,
+                new Color(0.31f, 0.78f, 0.72f)
+            );
+            GameObject dongguanStreamObject =
+                new("Stream_DongguanPatrol");
+            dongguanStreamObject.transform.SetParent(areaRoot);
+            dongguanStreamObject.transform.position =
+                new Vector3(60f, 0.9f, 44f);
+            dongguanStreamObject
+                .AddComponent<WorldAdditiveSceneRegion>()
+                .Configure(
+                    "dongguan-patrol",
+                    "DongguanPatrol",
+                    "东关街巡哨",
+                    18f,
+                    34f,
+                    44f,
+                    false
+                );
+
+            GameObject glideChallengeObject =
+                new("Challenge_DongguanWindCourse");
+            glideChallengeObject.transform.SetParent(areaRoot);
+            glideChallengeObject.transform.position =
+                new Vector3(57f, 0f, 8f);
+            GlideChallengeController glideChallenge =
+                glideChallengeObject.AddComponent<GlideChallengeController>();
+            glideChallenge.Configure(
+                "dongguan-rooftop-glide",
+                new[]
+                {
+                    new Vector3(58f, 5f, 12f),
+                    new Vector3(60f, 7f, 20f),
+                    new Vector3(60f, 6f, 30f),
+                    new Vector3(60f, 4f, 42f),
+                    new Vector3(60f, 2.5f, 54f)
+                },
+                40f
+            );
+            BoxCollider windTrigger =
+                glideChallengeObject.AddComponent<BoxCollider>();
+            windTrigger.isTrigger = true;
+            windTrigger.center = new Vector3(0f, 2.5f, 0f);
+            windTrigger.size = new Vector3(4f, 6f, 4f);
+            Rigidbody windBody =
+                glideChallengeObject.AddComponent<Rigidbody>();
+            windBody.isKinematic = true;
+            windBody.useGravity = false;
+            glideChallengeObject
+                .AddComponent<WindLiftZone>()
+                .Configure(glideChallenge, 8f);
 
             CreateWorldArea(
                 areaRoot,
@@ -2369,20 +3559,118 @@ namespace Demo02.Editor
                 new Color(0.72f, 0.58f, 0.3f),
                 addNpcCollider: true
             );
-            NpcDialogueInteractable storytellerDialogue =
-                storyteller.AddComponent<NpcDialogueInteractable>();
-            storytellerDialogue.Configure(
-                "说书人",
-                "E  与说书人交谈",
-                new DialogueLine(
-                    "说书人",
-                    "二十年前有场盐仓大火，第二天整条盐引巷就从官图上没了。老辈人都说，那不是火，是有人拿纸盖住了火。"
-                ),
-                new DialogueLine(
-                    "说书人",
-                    "城里的故事总要有人讲。你若真找到那七页账，别让它只留在官府手里。"
-                )
+
+            GameObject paperKiteRoot =
+                new("Story_DongguanPaperKite");
+            paperKiteRoot.transform.SetParent(areaRoot);
+            paperKiteRoot.transform.position =
+                new Vector3(60f, 0f, 28f);
+
+            GameObject presentTrace = CreateBlock(
+                paperKiteRoot.transform,
+                "Trace_PaperKiteCord_Present",
+                new Vector3(56.8f, 1.15f, 16f),
+                new Vector3(0.22f, 1.6f, 0.22f),
+                new Color(0.3f, 0.68f, 0.64f)
             );
+
+            GameObject pastTrace = CreateBlock(
+                paperKiteRoot.transform,
+                "Trace_PaperKiteBell_Past",
+                new Vector3(63.2f, 1.05f, 27f),
+                new Vector3(0.28f, 1.35f, 0.28f),
+                new Color(0.78f, 0.64f, 0.32f)
+            );
+            pastTrace
+                .AddComponent<TimeLayerVisibility>()
+                .Configure(TimeLayer.Past);
+
+            GameObject windlineKnot = CreateBlock(
+                paperKiteRoot.transform,
+                "Anchor_OldWindlineKnot",
+                new Vector3(60f, 1.05f, 54f),
+                new Vector3(0.3f, 1.55f, 0.3f),
+                new Color(0.3f, 0.72f, 0.76f)
+            );
+
+            GameObject publicConsequence =
+                new("Consequence_PaperKitePublicName");
+            publicConsequence.transform.SetParent(
+                paperKiteRoot.transform
+            );
+            CreateBlock(
+                publicConsequence.transform,
+                "PublicNoticePost",
+                new Vector3(62.6f, 0.62f, 35f),
+                new Vector3(0.14f, 1.24f, 0.14f),
+                new Color(0.28f, 0.18f, 0.1f)
+            );
+            CreateBlock(
+                publicConsequence.transform,
+                "PublicNoticeBoard",
+                new Vector3(62.6f, 1.42f, 35f),
+                new Vector3(0.92f, 0.58f, 0.1f),
+                new Color(0.68f, 0.46f, 0.2f)
+            );
+            publicConsequence.SetActive(false);
+
+            GameObject privateConsequence =
+                new("Consequence_PaperKitePrivateMemory");
+            privateConsequence.transform.SetParent(
+                paperKiteRoot.transform
+            );
+            CreateBlock(
+                privateConsequence.transform,
+                "PrivateMemoryPost",
+                new Vector3(57.4f, 0.72f, 35f),
+                new Vector3(0.13f, 1.44f, 0.13f),
+                new Color(0.25f, 0.2f, 0.14f)
+            );
+            CreateBlock(
+                privateConsequence.transform,
+                "PrivateMemorySilk",
+                new Vector3(57.4f, 1.18f, 35.18f),
+                new Vector3(0.08f, 0.7f, 0.38f),
+                new Color(0.28f, 0.62f, 0.72f)
+            );
+            privateConsequence.SetActive(false);
+
+            PaperKiteStoryController paperKiteStory =
+                paperKiteRoot.AddComponent<PaperKiteStoryController>();
+            paperKiteStory.Configure(
+                storyteller.transform,
+                presentTrace.transform,
+                pastTrace.transform,
+                windlineKnot.transform,
+                glideChallenge,
+                publicConsequence,
+                privateConsequence
+            );
+
+            storyteller
+                .AddComponent<PaperKiteStoryInteractable>()
+                .Configure(
+                    paperKiteStory,
+                    PaperKiteInteractionKind.Storyteller
+                );
+            presentTrace
+                .AddComponent<PaperKiteStoryInteractable>()
+                .Configure(
+                    paperKiteStory,
+                    PaperKiteInteractionKind.PresentTrace
+                );
+            pastTrace
+                .AddComponent<PaperKiteStoryInteractable>()
+                .Configure(
+                    paperKiteStory,
+                    PaperKiteInteractionKind.PastTrace
+                );
+            windlineKnot
+                .AddComponent<PaperKiteStoryInteractable>()
+                .Configure(
+                    paperKiteStory,
+                    PaperKiteInteractionKind.WindlineKnot
+                );
 
             GameObject clothMerchant = CreateCharacter(
                 areaRoot,
@@ -2553,7 +3841,32 @@ namespace Demo02.Editor
             GameObject caiyiSpawn = new("CaiyiSpawn");
             caiyiSpawn.transform.SetParent(areaRoot);
             caiyiSpawn.transform.position = new Vector3(60f, 0f, 166f);
-            caiyiSpawn.AddComponent<WorldSpawnPoint>().Configure("caiyi_start");
+            WorldSpawnPoint caiyiAnchor =
+                caiyiSpawn.AddComponent<WorldSpawnPoint>();
+            caiyiAnchor.Configure("caiyi_start");
+            caiyiAnchor.ConfigureAsAnchor("彩衣街", false);
+            CreateWorldAnchor(
+                areaRoot,
+                "Anchor_CaiyiStreet",
+                caiyiAnchor,
+                new Color(0.78f, 0.38f, 0.24f)
+            );
+            GameObject caiyiStreamObject =
+                new("Stream_CaiyiLookout");
+            caiyiStreamObject.transform.SetParent(areaRoot);
+            caiyiStreamObject.transform.position =
+                new Vector3(60f, 0.9f, 220f);
+            caiyiStreamObject
+                .AddComponent<WorldAdditiveSceneRegion>()
+                .Configure(
+                    "caiyi-lookout",
+                    "CaiyiLookout",
+                    "彩衣街望风",
+                    18f,
+                    34f,
+                    44f,
+                    false
+                );
 
             CreateWorldArea(
                 areaRoot,

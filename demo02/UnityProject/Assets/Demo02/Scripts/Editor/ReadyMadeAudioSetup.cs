@@ -16,6 +16,8 @@ namespace Demo02.Editor
             "Assets/ThirdParty/Kenney/AudioPacks/ImpactSounds";
         private const string RpgRoot =
             "Assets/ThirdParty/Kenney/AudioPacks/RpgAudio";
+        private const string MusicPath =
+            "Assets/ThirdParty/OpenGameArt/Audio/liyan.mp3";
 
         [MenuItem("Demo02/Art/Rebuild Ready-Made Audio Library")]
         public static void BuildAll()
@@ -54,7 +56,8 @@ namespace Demo02.Editor
                 LoadClip(RpgRoot, "book_open"),
                 LoadClip(RpgRoot, "book_close"),
                 LoadClip(RpgRoot, "book_flip_1"),
-                footsteps
+                footsteps,
+                AssetDatabase.LoadAssetAtPath<AudioClip>(MusicPath)
             );
             EditorUtility.SetDirty(library);
             AssetDatabase.SaveAssets();
@@ -97,6 +100,7 @@ namespace Demo02.Editor
                 library.BookOpen == null ||
                 library.BookClose == null ||
                 library.PageTurn == null ||
+                library.ExplorationMusic == null ||
                 library.Footsteps == null ||
                 library.Footsteps.Length < 5)
             {
@@ -105,8 +109,8 @@ namespace Demo02.Editor
                 );
             }
             Debug.Log(
-                "Ready-made audio validation passed: 12 one-shot clips and " +
-                "five footstep variants."
+                "Ready-made audio validation passed: 12 one-shot clips, " +
+                "five footstep variants and exploration music."
             );
         }
 

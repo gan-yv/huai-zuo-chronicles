@@ -11,5 +11,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Demo02/Scenes/Guangling/Greybox.unity
     guid: d5462d81a711463298ea3049a5b34097
+  - enabled: 1
+    path: Assets/Demo02/Scenes/Guangling/Streaming/SaltStreetSupport.unity
+    guid: 0d7452c09461bfe409250ecef640a73f
+  - enabled: 1
+    path: Assets/Demo02/Scenes/Guangling/Streaming/DongguanPatrol.unity
+    guid: fec97e41d100df9428d563b5375c460e
+  - enabled: 1
+    path: Assets/Demo02/Scenes/Guangling/Streaming/CaiyiLookout.unity
+    guid: b56fb3d9c402fae4c9edb4c74100b529
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

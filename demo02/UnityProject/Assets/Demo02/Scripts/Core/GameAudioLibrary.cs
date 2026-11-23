@@ -17,6 +17,7 @@ namespace Demo02.Core
         [SerializeField] private AudioClip bookClose;
         [SerializeField] private AudioClip pageTurn;
         [SerializeField] private AudioClip[] footsteps;
+        [SerializeField] private AudioClip explorationMusic;
 
         public AudioClip AmbientWind => ambientWind;
         public AudioClip Interaction => interaction;
@@ -31,6 +32,7 @@ namespace Demo02.Core
         public AudioClip BookClose => bookClose;
         public AudioClip PageTurn => pageTurn;
         public AudioClip[] Footsteps => footsteps;
+        public AudioClip ExplorationMusic => explorationMusic;
 
         public void Configure(
             AudioClip ambientWindClip,
@@ -45,7 +47,8 @@ namespace Demo02.Core
             AudioClip bookOpenClip,
             AudioClip bookCloseClip,
             AudioClip pageTurnClip,
-            AudioClip[] footstepClips)
+            AudioClip[] footstepClips,
+            AudioClip explorationMusicClip)
         {
             ambientWind = ambientWindClip;
             interaction = interactionClip;
@@ -60,6 +63,7 @@ namespace Demo02.Core
             bookClose = bookCloseClip;
             pageTurn = pageTurnClip;
             footsteps = footstepClips;
+            explorationMusic = explorationMusicClip;
         }
     }
 }

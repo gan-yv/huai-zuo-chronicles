@@ -8,9 +8,17 @@ using UnityEngine.SceneManagement;
 namespace Demo02.WorldState
 {
     [DefaultExecutionOrder(-100)]
+    [RequireComponent(typeof(WorldStreamingDirector))]
     public sealed class WorldRuntime : MonoBehaviour
     {
         private readonly Dictionary<string, WorldSpawnPoint> spawnPoints = new();
+        private readonly Dictionary<string, WorldSpawnPoint> anchors = new();
+        private readonly HashSet<string> unlockedAnchorIds = new();
+        private readonly HashSet<string> completedStreamingRegionIds =
+            new();
+        private readonly HashSet<string> completedEncounterIds = new();
+        private readonly HashSet<string> completedWorldContentIds = new();
+        private readonly HashSet<string> startedWorldContentIds = new();
 
         public static WorldRuntime Instance { get; private set; }
 
@@ -30,6 +38,10 @@ namespace Demo02.WorldState
             }
 
             Instance = this;
+            if (GetComponent<WorldStreamingDirector>() == null)
+            {
+                gameObject.AddComponent<WorldStreamingDirector>();
+            }
             DontDestroyOnLoad(gameObject);
             CurrentDistrictId = SceneManager.GetActiveScene().name;
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -59,6 +71,226 @@ namespace Demo02.WorldState
                 if (current == spawnPoint)
                 {
                     spawnPoints.Remove(spawnPoint.SpawnId);
+                }
+            }
+        }
+
+        public void RegisterAnchor(WorldSpawnPoint anchor)
+        {
+            if (anchor == null
+                || !anchor.IsFastTravelAnchor
+                || string.IsNullOrWhiteSpace(anchor.SpawnId))
+            {
+                return;
+            }
+
+            anchors[anchor.SpawnId] = anchor;
+            if (anchor.StartsUnlocked)
+            {
+                unlockedAnchorIds.Add(anchor.SpawnId);
+            }
+        }
+
+        public void UnregisterAnchor(WorldSpawnPoint anchor)
+        {
+            if (anchor != null
+                && anchors.TryGetValue(
+                    anchor.SpawnId,
+                    out WorldSpawnPoint current
+                )
+                && current == anchor)
+            {
+                anchors.Remove(anchor.SpawnId);
+            }
+        }
+
+        public bool IsAnchorUnlocked(string anchorId)
+        {
+            return !string.IsNullOrWhiteSpace(anchorId)
+                && unlockedAnchorIds.Contains(anchorId);
+        }
+
+        public bool UnlockAnchor(string anchorId)
+        {
+            return !string.IsNullOrWhiteSpace(anchorId)
+                && unlockedAnchorIds.Add(anchorId);
+        }
+
+        public IReadOnlyCollection<string> ExportUnlockedAnchorIds()
+        {
+            return unlockedAnchorIds;
+        }
+
+        public void RestoreUnlockedAnchors(
+            IEnumerable<string> anchorIds)
+        {
+            if (anchorIds == null)
+            {
+                return;
+            }
+
+            unlockedAnchorIds.Clear();
+            foreach (string anchorId in anchorIds)
+            {
+                if (!string.IsNullOrWhiteSpace(anchorId))
+                {
+                    unlockedAnchorIds.Add(anchorId);
+                }
+            }
+
+            foreach (WorldSpawnPoint anchor in anchors.Values)
+            {
+                if (anchor.StartsUnlocked)
+                {
+                    unlockedAnchorIds.Add(anchor.SpawnId);
+                }
+            }
+        }
+
+        public bool IsStreamingRegionCompleted(string regionId)
+        {
+            return !string.IsNullOrWhiteSpace(regionId)
+                && completedStreamingRegionIds.Contains(regionId);
+        }
+
+        public void MarkStreamingRegionCompleted(string regionId)
+        {
+            if (!string.IsNullOrWhiteSpace(regionId))
+            {
+                completedStreamingRegionIds.Add(regionId);
+            }
+        }
+
+        public IReadOnlyCollection<string>
+            ExportCompletedStreamingRegionIds()
+        {
+            return completedStreamingRegionIds;
+        }
+
+        public void RestoreCompletedStreamingRegions(
+            IEnumerable<string> regionIds)
+        {
+            completedStreamingRegionIds.Clear();
+            if (regionIds == null)
+            {
+                return;
+            }
+
+            foreach (string regionId in regionIds)
+            {
+                if (!string.IsNullOrWhiteSpace(regionId))
+                {
+                    completedStreamingRegionIds.Add(regionId);
+                }
+            }
+        }
+
+        public bool IsEncounterCompleted(string encounterId)
+        {
+            return !string.IsNullOrWhiteSpace(encounterId)
+                && completedEncounterIds.Contains(encounterId);
+        }
+
+        public void MarkEncounterCompleted(string encounterId)
+        {
+            if (!string.IsNullOrWhiteSpace(encounterId))
+            {
+                completedEncounterIds.Add(encounterId);
+            }
+        }
+
+        public IReadOnlyCollection<string> ExportCompletedEncounterIds()
+        {
+            return completedEncounterIds;
+        }
+
+        public void RestoreCompletedEncounters(
+            IEnumerable<string> encounterIds)
+        {
+            completedEncounterIds.Clear();
+            if (encounterIds == null)
+            {
+                return;
+            }
+
+            foreach (string encounterId in encounterIds)
+            {
+                if (!string.IsNullOrWhiteSpace(encounterId))
+                {
+                    completedEncounterIds.Add(encounterId);
+                }
+            }
+        }
+
+        public bool IsWorldContentCompleted(string contentId)
+        {
+            return !string.IsNullOrWhiteSpace(contentId)
+                && completedWorldContentIds.Contains(contentId);
+        }
+
+        public void MarkWorldContentCompleted(string contentId)
+        {
+            if (!string.IsNullOrWhiteSpace(contentId))
+            {
+                completedWorldContentIds.Add(contentId);
+            }
+        }
+
+        public IReadOnlyCollection<string>
+            ExportCompletedWorldContentIds()
+        {
+            return completedWorldContentIds;
+        }
+
+        public void RestoreCompletedWorldContent(
+            IEnumerable<string> contentIds)
+        {
+            completedWorldContentIds.Clear();
+            if (contentIds == null)
+            {
+                return;
+            }
+
+            foreach (string contentId in contentIds)
+            {
+                if (!string.IsNullOrWhiteSpace(contentId))
+                {
+                    completedWorldContentIds.Add(contentId);
+                }
+            }
+        }
+
+        public bool IsWorldContentStarted(string contentId)
+        {
+            return !string.IsNullOrWhiteSpace(contentId)
+                && startedWorldContentIds.Contains(contentId);
+        }
+
+        public void MarkWorldContentStarted(string contentId)
+        {
+            if (!string.IsNullOrWhiteSpace(contentId))
+            {
+                startedWorldContentIds.Add(contentId);
+            }
+        }
+
+        public IReadOnlyCollection<string> ExportStartedWorldContentIds()
+        {
+            return startedWorldContentIds;
+        }
+
+        public void RestoreStartedWorldContent(IEnumerable<string> contentIds)
+        {
+            startedWorldContentIds.Clear();
+            if (contentIds == null)
+            {
+                return;
+            }
+            foreach (string contentId in contentIds)
+            {
+                if (!string.IsNullOrWhiteSpace(contentId))
+                {
+                    startedWorldContentIds.Add(contentId);
                 }
             }
         }
@@ -108,7 +340,10 @@ namespace Demo02.WorldState
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            CurrentDistrictId = scene.name;
+            if (mode == LoadSceneMode.Single)
+            {
+                CurrentDistrictId = scene.name;
+            }
             if (!string.IsNullOrWhiteSpace(pendingSpawnId))
             {
                 StartCoroutine(PlacePlayerAtPendingSpawn());

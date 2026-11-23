@@ -268,6 +268,31 @@ namespace Demo02.Core
                         inventoryState.ExportCollectedPickupIds()
                     )
                     : new List<string>(),
+                UnlockedAnchorIds = runtime != null
+                    ? new List<string>(
+                        runtime.ExportUnlockedAnchorIds()
+                    )
+                    : new List<string>(),
+                CompletedStreamingRegionIds = runtime != null
+                    ? new List<string>(
+                        runtime.ExportCompletedStreamingRegionIds()
+                    )
+                    : new List<string>(),
+                CompletedEncounterIds = runtime != null
+                    ? new List<string>(
+                        runtime.ExportCompletedEncounterIds()
+                    )
+                    : new List<string>(),
+                CompletedWorldContentIds = runtime != null
+                    ? new List<string>(
+                        runtime.ExportCompletedWorldContentIds()
+                    )
+                    : new List<string>(),
+                StartedWorldContentIds = runtime != null
+                    ? new List<string>(
+                        runtime.ExportStartedWorldContentIds()
+                    )
+                    : new List<string>(),
                 ChapterStage = investigationState.Stage,
                 TestimonyContradictionSolved =
                     investigationState.TestimonyContradictionSolved,
@@ -435,6 +460,21 @@ namespace Demo02.Core
             );
             timeLayerController.SetLayer(data.TimeLayer);
             party.RestoreActiveCharacter(data.ActivePartyIndex);
+            WorldRuntime.Instance?.RestoreUnlockedAnchors(
+                data.UnlockedAnchorIds
+            );
+            WorldRuntime.Instance?.RestoreCompletedStreamingRegions(
+                data.CompletedStreamingRegionIds
+            );
+            WorldRuntime.Instance?.RestoreCompletedEncounters(
+                data.CompletedEncounterIds
+            );
+            WorldRuntime.Instance?.RestoreCompletedWorldContent(
+                data.CompletedWorldContentIds
+            );
+            WorldRuntime.Instance?.RestoreStartedWorldContent(
+                data.StartedWorldContentIds
+            );
             inventoryState?.Restore(
                 data.InventoryItems,
                 data.CollectedPickupIds
@@ -529,6 +569,21 @@ namespace Demo02.Core
                 investigationState.SelectedConclusion,
                 timeLayerController.CurrentLayer,
                 runtime != null ? runtime.CurrentAreaId : string.Empty,
+                runtime != null
+                    ? runtime.ExportUnlockedAnchorIds().Count
+                    : 0,
+                runtime != null
+                    ? runtime.ExportCompletedStreamingRegionIds().Count
+                    : 0,
+                runtime != null
+                    ? runtime.ExportCompletedEncounterIds().Count
+                    : 0,
+                runtime != null
+                    ? runtime.ExportCompletedWorldContentIds().Count
+                    : 0,
+                runtime != null
+                    ? runtime.ExportStartedWorldContentIds().Count
+                    : 0,
                 enemyHealth
             );
         }

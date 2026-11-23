@@ -33,7 +33,7 @@ namespace Demo02.Editor
             if (existing != null)
             {
                 if (existing.DialogueScripts.Count == 0
-                    || existing.ContentVersion < 8)
+                    || existing.ContentVersion < 9)
                 {
                     existing.ConfigureOptionalContentForEditor(
                         CreateDialogueScripts(),
@@ -43,7 +43,7 @@ namespace Demo02.Editor
                     );
                     EditorUtility.SetDirty(existing);
                     AssetDatabase.SaveAssets();
-                    Debug.Log("Upgraded chapter asset to content version 8.");
+                    Debug.Log("Upgraded chapter asset to content version 9.");
                 }
                 return existing;
             }
@@ -316,6 +316,46 @@ namespace Demo02.Editor
                     Title = "茶肆盐车事件结束",
                     Detail =
                         "你已经决定是追问盐车细节，还是保护茶肆不被卷入。"
+                },
+                new()
+                {
+                    Id = "paper-kite-present-cord",
+                    Title = "茶肆门框上的纸鸢线",
+                    Detail =
+                        "一段青色纸鸢线今早缠在东关街茶肆门框上，"
+                        + "线尾打着旧时才会用的结。"
+                },
+                new()
+                {
+                    Id = "paper-kite-past-bell",
+                    Title = "旧时风铃里的名字",
+                    Detail =
+                        "旧时风铃内侧刻着“沈阿绫，十二岁”。"
+                        + "她曾替父亲守风铃，也把纸鸢放上东关街的屋顶。"
+                },
+                new()
+                {
+                    Id = "paper-kite-trail-secured",
+                    Title = "途印追住的风线",
+                    Detail =
+                        "途印向导在屋顶航线的尽头缚住了旧风线，"
+                        + "纸鸢留下的名字终于能够被修复者稳定。"
+                },
+                new()
+                {
+                    Id = "paper-kite-public-name",
+                    Title = "沈阿绫重新入册",
+                    Detail =
+                        "你选择把沈阿绫写回公开户册。"
+                        + "东关街多了一段能被官府查到的往事，也多了一批追问旧账的人。"
+                },
+                new()
+                {
+                    Id = "paper-kite-private-name",
+                    Title = "名字留在街坊记忆里",
+                    Detail =
+                        "你没有把沈阿绫写回官册，"
+                        + "而是让这个名字继续留在东关街坊和说书人的故事中。"
                 }
             };
         }
@@ -373,6 +413,18 @@ namespace Demo02.Editor
                     RequiredStoryFactId = "teahouse-cart-testimony",
                     ResultStoryFactId = "teahouse-written-record",
                     ConsumeOnUse = true
+                },
+                new()
+                {
+                    Id = "paper-kite-letter",
+                    DisplayName = "纸鸢旧信",
+                    Category = "信物",
+                    Description =
+                        "一小段青色纸鸢线和风铃上拓下的名字。"
+                        + "它记录了沈阿绫留给东关街的最后一声风响。",
+                    MaxStack = 1,
+                    Effect = InventoryItemEffect.None,
+                    ConsumeOnUse = false
                 }
             };
         }

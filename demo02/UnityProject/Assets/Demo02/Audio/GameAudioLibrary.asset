@@ -30,3 +30,4 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a3438536836ef2b46a28ebf0539748d0, type: 3}
   - {fileID: 8300000, guid: ec23c9fe2bd37844ea5d9856f765d84a, type: 3}
   - {fileID: 8300000, guid: e8813b94b1bfa6547ad8fd74c0144a69, type: 3}
+  explorationMusic: {fileID: 8300000, guid: fa7cb42d98ff3b944898787bca3111d1, type: 3}

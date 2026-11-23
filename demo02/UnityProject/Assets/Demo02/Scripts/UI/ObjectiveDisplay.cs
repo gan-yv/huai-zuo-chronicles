@@ -1,5 +1,6 @@
 using Demo02.Core;
 using Demo02.Narrative;
+using Demo02.WorldState;
 using System;
 using UnityEngine;
 
@@ -56,6 +57,8 @@ namespace Demo02.UI
                     investigationState.CaseContent,
                     investigationState
                 );
+            WorldContentEntry trackedContent =
+                WorldContentTracker.Instance?.GetTrackedEntry();
             if (investigationState.IsConclusionReached)
             {
                 text += "。按 R 重新开始";
@@ -67,6 +70,7 @@ namespace Demo02.UI
                 20f * scale,
                 448f * scale,
                 (optional != null ? 92f : 66f) * scale
+                    + (trackedContent != null ? 25f * scale : 0f)
             );
             UiTheme.DrawRect(panel, UiTheme.Ink);
             UiTheme.DrawRect(
@@ -119,6 +123,26 @@ namespace Demo02.UI
                     ),
                     $"可选目标 · {optional.Title}    {optional.TrackerHint}",
                     optionalStyle
+                );
+            }
+            if (trackedContent != null)
+            {
+                GUIStyle streetStyle = UiTheme.Label(
+                    11,
+                    TextAnchor.MiddleLeft,
+                    bold: true
+                );
+                streetStyle.normal.textColor =
+                    new Color(0.42f, 0.82f, 0.58f);
+                GUI.Label(
+                    new Rect(
+                        panel.x + 18f * scale,
+                        panel.yMax - 24f * scale,
+                        panel.width - 32f * scale,
+                        20f * scale
+                    ),
+                    $"街区事件 · {trackedContent.Title}",
+                    streetStyle
                 );
             }
         }

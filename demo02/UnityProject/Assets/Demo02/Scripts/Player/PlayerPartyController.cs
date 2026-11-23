@@ -8,12 +8,30 @@ namespace Demo02.Player
     [DisallowMultipleComponent]
     public sealed class PlayerPartyController : MonoBehaviour
     {
-        [SerializeField] private Transform[] characters = new Transform[2];
+        public const int MaxPartySlots = 4;
+
+        [SerializeField] private Transform[] characters = new Transform[MaxPartySlots];
         [SerializeField] private int activeIndex;
 
         public Transform ActiveCharacter =>
             characters.Length > activeIndex ? characters[activeIndex] : null;
         public int ActiveIndex => activeIndex;
+        public int PartySlotCount => characters.Length;
+        public int UnlockedSlotCount
+        {
+            get
+            {
+                int count = 0;
+                for (int index = 0; index < characters.Length; index++)
+                {
+                    if (characters[index] != null)
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
+        }
         public bool IsPartyDefeated
         {
             get
@@ -35,8 +53,17 @@ namespace Demo02.Player
 
         public void Configure(Transform first, Transform second)
         {
-            characters = new[] { first, second };
+            characters = new Transform[MaxPartySlots];
+            characters[0] = first;
+            characters[1] = second;
             activeIndex = 0;
+        }
+
+        public Transform GetCharacter(int index)
+        {
+            return characters != null && index >= 0 && index < characters.Length
+                ? characters[index]
+                : null;
         }
 
         public void RestoreActiveCharacter(int index)
@@ -56,11 +83,28 @@ namespace Demo02.Player
 
         private void Update()
         {
-            if (Time.timeScale > 0f
-                && Keyboard.current != null
-                && Keyboard.current.tabKey.wasPressedThisFrame)
+            if (Time.timeScale > 0f && Keyboard.current != null)
             {
-                SwitchCharacter();
+                if (Keyboard.current.digit1Key.wasPressedThisFrame)
+                {
+                    SwitchCharacter(0);
+                }
+                if (Keyboard.current.digit2Key.wasPressedThisFrame)
+                {
+                    SwitchCharacter(1);
+                }
+                if (Keyboard.current.digit3Key.wasPressedThisFrame)
+                {
+                    SwitchCharacter(2);
+                }
+                if (Keyboard.current.digit4Key.wasPressedThisFrame)
+                {
+                    SwitchCharacter(3);
+                }
+                if (Keyboard.current.tabKey.wasPressedThisFrame)
+                {
+                    CycleCharacter();
+                }
             }
 
             Combatant activeHealth = ActiveCharacter != null
@@ -72,29 +116,50 @@ namespace Demo02.Player
                 return;
             }
 
-            int otherIndex = 1 - activeIndex;
-            Combatant otherHealth = characters.Length > otherIndex
-                ? characters[otherIndex].GetComponent<Combatant>()
-                : null;
-
-            if (otherHealth != null && otherHealth.IsAlive)
+            for (int offset = 1; offset < characters.Length; offset++)
             {
-                SetActiveCharacter(otherIndex, moveToActivePosition: true);
+                int nextIndex = (activeIndex + offset) % characters.Length;
+                Combatant nextHealth = characters[nextIndex] != null
+                    ? characters[nextIndex].GetComponent<Combatant>()
+                    : null;
+                if (nextHealth != null && nextHealth.IsAlive)
+                {
+                    SetActiveCharacter(nextIndex, moveToActivePosition: true);
+                    return;
+                }
             }
         }
 
-        private void SwitchCharacter()
+        public bool SwitchCharacter(int targetIndex)
         {
-            int targetIndex = 1 - activeIndex;
-            if (characters.Length <= targetIndex || characters[targetIndex] == null)
+            if (characters == null
+                || targetIndex < 0
+                || targetIndex >= characters.Length
+                || characters[targetIndex] == null
+                || targetIndex == activeIndex)
             {
-                return;
+                return false;
             }
 
             Combatant targetHealth = characters[targetIndex].GetComponent<Combatant>();
             if (targetHealth != null && targetHealth.IsAlive)
             {
                 SetActiveCharacter(targetIndex, moveToActivePosition: true);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void CycleCharacter()
+        {
+            for (int offset = 1; offset < characters.Length; offset++)
+            {
+                int nextIndex = (activeIndex + offset) % characters.Length;
+                if (SwitchCharacter(nextIndex))
+                {
+                    return;
+                }
             }
         }
 
@@ -125,6 +190,7 @@ namespace Demo02.Player
                 bool isActive = current == activeIndex;
                 SetEnabled<ThirdPersonController>(character, isActive);
                 SetEnabled<PlayerCombat>(character, isActive);
+                SetEnabled<CharacterAbilityController>(character, isActive);
                 SetEnabled<PlayerInteractor>(character, isActive);
 
                 CharacterController controller = character.GetComponent<CharacterController>();

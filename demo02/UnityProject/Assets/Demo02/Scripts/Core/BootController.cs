@@ -26,7 +26,7 @@ namespace Demo02.Core
 
         private void Start()
         {
-            FitWindowToDisplay();
+            DisplaySettings.Apply();
 
             string[] arguments = System.Environment.GetCommandLineArgs();
             string capturePath = GetArgumentValue(arguments, "--capture-title=");
@@ -54,7 +54,31 @@ namespace Demo02.Core
                 || System.Array.IndexOf(arguments, "--preview-fact") >= 0
                 || System.Array.IndexOf(arguments, "--preview-inventory") >= 0
                 || System.Array.IndexOf(arguments, "--preview-optional") >= 0
-                || System.Array.IndexOf(arguments, "--preview-ending") >= 0)
+                || System.Array.IndexOf(arguments, "--preview-ending") >= 0
+                || System.Array.IndexOf(arguments, "--preview-teahouse") >= 0
+                || System.Array.IndexOf(arguments, "--preview-combat") >= 0
+                || System.Array.IndexOf(arguments, "--preview-glide") >= 0
+                || System.Array.IndexOf(arguments, "--preview-abilities") >= 0
+                || System.Array.IndexOf(arguments, "--preview-streaming") >= 0
+                || System.Array.IndexOf(arguments, "--preview-story") >= 0
+                || System.Array.IndexOf(arguments, "--preview-elite") >= 0
+                || System.Array.IndexOf(arguments, "--preview-glide-course") >= 0
+                || System.Array.IndexOf(arguments, "--preview-paper-kite") >= 0
+                || System.Array.IndexOf(
+                    arguments,
+                    "--preview-paper-kite-choice"
+                ) >= 0
+                || System.Array.IndexOf(
+                    arguments,
+                    "--preview-paper-kite-result"
+                ) >= 0
+                || System.Array.Exists(
+                    arguments,
+                    argument => argument.StartsWith(
+                        "--capture-game=",
+                        System.StringComparison.Ordinal
+                    )
+                ))
             {
                 StartGame(showOpening: false);
             }
@@ -85,38 +109,6 @@ namespace Demo02.Core
 
             ScreenCapture.CaptureScreenshot(path);
             Debug.Log($"Title preview captured to {path}");
-        }
-
-        private static void FitWindowToDisplay()
-        {
-            Display display = Display.main;
-            if (display == null
-                || display.systemWidth <= 0
-                || display.systemHeight <= 0
-                || Screen.fullScreenMode != FullScreenMode.Windowed)
-            {
-                return;
-            }
-
-            int maxWidth = Mathf.Max(960, display.systemWidth - 96);
-            int maxHeight = Mathf.Max(540, display.systemHeight - 120);
-            int targetWidth = Mathf.Min(Screen.width, maxWidth);
-            int targetHeight = Mathf.Min(Screen.height, maxHeight);
-
-            const float targetAspect = 16f / 9f;
-            if (targetHeight > targetWidth / targetAspect)
-            {
-                targetHeight = Mathf.RoundToInt(targetWidth / targetAspect);
-            }
-            else
-            {
-                targetWidth = Mathf.RoundToInt(targetHeight * targetAspect);
-            }
-
-            if (targetWidth != Screen.width || targetHeight != Screen.height)
-            {
-                Screen.SetResolution(targetWidth, targetHeight, FullScreenMode.Windowed);
-            }
         }
 
         private void OnGUI()
@@ -216,7 +208,7 @@ namespace Demo02.Core
                     Screen.width,
                     28f * scale
                 ),
-                "WASD 移动   E 调查/对话   Tab 切换角色   T 证词对照   J 案卷   M 地图   F1 帮助",
+                "WASD 移动   Shift 冲刺   Space 跳跃/滑翔   1/2/Tab 换人   F 技能   R 终结技   F1 帮助",
                 subtitleStyle
             );
             GUI.Label(
