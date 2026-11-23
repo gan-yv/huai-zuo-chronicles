@@ -15,7 +15,7 @@ namespace Demo02.Editor
             "Assets/Demo02/Art/Characters/AnimeFishPilot";
         private const string SourceModelPath =
             ArtRoot + "/VIS_WorkFish.glb";
-        private const string PrefabPath =
+        public const string PrefabPath =
             ArtRoot + "/VIS_AnimeFish_Work.prefab";
         private const string ScenePath =
             "Assets/Demo02/Scenes/Tests/AnimeFishPilotShowcase.unity";

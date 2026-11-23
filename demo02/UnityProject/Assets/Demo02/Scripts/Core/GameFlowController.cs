@@ -156,6 +156,19 @@ namespace Demo02.Core
             {
                 StartCoroutine(PreparePaperKiteResultPreview());
             }
+            if (Array.IndexOf(
+                Environment.GetCommandLineArgs(),
+                "--preview-companion"
+            ) >= 0)
+            {
+                StartCoroutine(
+                    PreparePreviewPosition(
+                        new Vector3(60f, 1f, 18f),
+                        "dongguan-street",
+                        "东关街"
+                    )
+                );
+            }
 
             if (Array.IndexOf(
                 Environment.GetCommandLineArgs(),

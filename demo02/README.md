@@ -38,6 +38,7 @@
 - 东关街和彩衣街加入“交谈、清剿、交付、领奖”的流式街区事件闭环。
 - 东关街加入利用风场与滑翔系统的五检查点屋顶航线，完成后记录世界进度。
 - 东关街说书人新增“纸鸢旧信”短支线，把时间层调查、屋顶风廊、双角色协作和街区选择串成完整流程。
+- 非战斗伙伴“阿鱼”会在广陵街区同行，可随队伍换人切换跟随目标并与其交谈。
 
 ![东关风廊屋顶航线](docs/screenshots/openworld-wind-course.png)
 
@@ -48,6 +49,8 @@
 ![上班鱼角色美术试点](docs/screenshots/anime-fish-pilot.png)
 
 ![上班鱼标题角色展示](docs/screenshots/title-anime-fish.png)
+
+![阿鱼非战斗同行伙伴](docs/screenshots/work-fish-companion.png)
 
 ![东关街流式街区事件](docs/screenshots/openworld-street-story.png)
 

@@ -1956,6 +1956,7 @@ namespace Demo02.Editor
                 partner.transform,
                 new Color(0.31f, 0.78f, 0.72f)
             );
+            CreateWorkFishCompanion(player.transform, root.transform);
 
             GameObject worker = CreateCharacter(
                 root.transform,
@@ -3100,6 +3101,45 @@ namespace Demo02.Editor
                 new Vector3(0.24f, 0.1f, 0.24f),
                 lanternCap
             );
+        }
+
+        private static void CreateWorkFishCompanion(
+            Transform player,
+            Transform root)
+        {
+            GameObject prefab =
+                AssetDatabase.LoadAssetAtPath<GameObject>(
+                    AnimeFishPilotSetup.PrefabPath
+                );
+            if (prefab == null)
+            {
+                throw new System.InvalidOperationException(
+                    "Work fish companion prefab is missing."
+                );
+            }
+
+            GameObject companion =
+                (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+            companion.name = "Companion_WorkFish";
+            companion.transform.SetParent(root, false);
+            companion.transform.position = player.position
+                + player.right * 2.1f
+                - player.forward * 0.45f
+                + Vector3.down;
+            companion.transform.rotation = player.rotation;
+
+            CapsuleCollider interactionCollider =
+                companion.AddComponent<CapsuleCollider>();
+            interactionCollider.isTrigger = true;
+            interactionCollider.center = new Vector3(0f, 0.9f, 0f);
+            interactionCollider.height = 1.9f;
+            interactionCollider.radius = 0.55f;
+
+            WorkFishCompanion follower =
+                companion.AddComponent<WorkFishCompanion>();
+            companion
+                .AddComponent<WorkFishCompanionInteractable>()
+                .Configure(follower);
         }
 
         private static GameObject CreateDecorBlock(
