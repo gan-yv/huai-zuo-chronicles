@@ -44,6 +44,7 @@
 - “减弱动态效果”已覆盖镜头震动、标题视差、交互摇摆与伙伴待机动作。
 - 阿鱼在现世与旧时拥有轮换交谈内容，连续对话不再完全重复。
 - 阿鱼遇到近处敌人时会自动退到玩家侧后方，战后恢复普通随行距离。
+- 开局引导依次说明移动、鼠标右键镜头与首次交谈，降低操作门槛。
 
 ![东关风廊屋顶航线](docs/screenshots/openworld-wind-course.png)
 
@@ -58,6 +59,8 @@
 ![阿鱼非战斗同行伙伴](docs/screenshots/work-fish-companion.png)
 
 ![阿鱼在近战发生时退到侧后方](docs/screenshots/work-fish-combat-retreat.png)
+
+![开局镜头操作引导](docs/screenshots/camera-control-hint.png)
 
 ![东关街流式街区事件](docs/screenshots/openworld-street-story.png)
 

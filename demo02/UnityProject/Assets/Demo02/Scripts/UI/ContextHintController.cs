@@ -105,6 +105,10 @@ namespace Demo02.UI
                         "WASD 移动 · Shift 冲刺耗体力 · 空中再按 Space 展开滑翔"
                     );
                     Enqueue(
+                        "camera",
+                        "按住鼠标右键转动镜头，松开右键后恢复鼠标指针。"
+                    );
+                    Enqueue(
                         "talk-shenbo",
                         "靠近沈伯后按 E 交谈，确认沈砚最后留下的记录。"
                     );
