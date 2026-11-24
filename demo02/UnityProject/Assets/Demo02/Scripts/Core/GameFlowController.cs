@@ -182,6 +182,19 @@ namespace Demo02.Core
                     )
                 );
             }
+            if (Array.IndexOf(
+                Environment.GetCommandLineArgs(),
+                "--preview-pavilion"
+            ) >= 0)
+            {
+                StartCoroutine(
+                    PreparePreviewPosition(
+                        new Vector3(60f, 0.1f, 118f),
+                        "dongguan-street",
+                        "东关街"
+                    )
+                );
+            }
 
             if (Array.IndexOf(
                 Environment.GetCommandLineArgs(),

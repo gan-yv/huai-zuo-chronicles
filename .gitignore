@@ -36,6 +36,9 @@
 .vscode/
 *.code-workspace
 
+# Local toolchain downloads
+/.tools/
+
 # Operating system files
 .DS_Store
 Thumbs.db

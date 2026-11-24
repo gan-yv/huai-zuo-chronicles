@@ -59,4 +59,9 @@ is retained for provenance; CC-BY attribution is required.
 - **Liyan** by elerya, https://opengameart.org/content/liyan,
   CC-BY 3.0. Used as looping exploration music. Attribution must remain in
   the game credits and portfolio materials.
+- **鹿鸣同款凉亭** by 泡面fly. The project owner confirmed permission for
+  project use. The original Blender package is retained under
+  `SourceAssets/References/Downloads/Approved/Environment/`; the optimized
+  Unity GLB and processing notes are stored under
+  `Assets/Demo02/Art/Environment/Downloaded/Pavilion/`.
 

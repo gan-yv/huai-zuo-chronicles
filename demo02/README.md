@@ -48,6 +48,8 @@
 - 近战期间阿鱼不再提供交谈提示，避免用对话暂停规避战斗。
 - 时间锚点美术统一贴到街道侧立面，中央行走轴线保持清晰。
 - 新下载参考素材先在 `SourceAssets/References/Downloads` 核对授权，再决定是否导入。
+- 东关街末端接入优化后的现成凉亭地标，使用 1K 贴图和约 14.4 万面模型。
+- v1.57.0 在东关街凉亭前 1920×1080 实测平均约 182.9 FPS，1% Low 约 68.6 FPS。
 
 ![东关风廊屋顶航线](docs/screenshots/openworld-wind-course.png)
 
@@ -68,6 +70,8 @@
 ![开局镜头操作引导](docs/screenshots/camera-control-hint.png)
 
 ![地图时间锚点贴墙整理](docs/screenshots/map-art-placement.png)
+
+![东关街末端凉亭地标](docs/screenshots/dongguan-luming-pavilion.png)
 
 ![东关街流式街区事件](docs/screenshots/openworld-street-story.png)
 
