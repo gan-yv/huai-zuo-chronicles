@@ -68,7 +68,7 @@ secrets/
 /demo02/二创/
 /demo02/上班鱼_by_木子恶魔_f2d5f0024ae8b34c6543bb82896791ac/
 
-# Downloaded art references stay local until source and license are verified.
+# Downloaded art packages stay local; the tracked README records their status.
 /demo02/SourceAssets/References/Downloads/**
 !/demo02/SourceAssets/References/Downloads/README.md
 
