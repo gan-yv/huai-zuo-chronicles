@@ -46,6 +46,8 @@
 - 阿鱼遇到近处敌人时会自动退到玩家侧后方，战后恢复普通随行距离。
 - 开局引导依次说明移动、鼠标右键镜头与首次交谈，降低操作门槛。
 - 近战期间阿鱼不再提供交谈提示，避免用对话暂停规避战斗。
+- 时间锚点美术统一贴到街道侧立面，中央行走轴线保持清晰。
+- 新下载参考素材先在 `SourceAssets/References/Downloads` 核对授权，再决定是否导入。
 
 ![东关风廊屋顶航线](docs/screenshots/openworld-wind-course.png)
 
@@ -64,6 +66,8 @@
 ![战斗期间隐藏伙伴交谈提示](docs/screenshots/work-fish-combat-no-chat.png)
 
 ![开局镜头操作引导](docs/screenshots/camera-control-hint.png)
+
+![地图时间锚点贴墙整理](docs/screenshots/map-art-placement.png)
 
 ![东关街流式街区事件](docs/screenshots/openworld-street-story.png)
 

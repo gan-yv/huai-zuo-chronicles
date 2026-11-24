@@ -2095,26 +2095,29 @@ namespace Demo02.Editor
             CreateTimeAnchor(
                 root.transform,
                 "TimeAnchor_Present_01",
-                new Vector3(2.7f, 1.2f, 5f),
+                new Vector3(3.35f, 1.2f, 5f),
                 "present-01",
                 TimeLayer.Present,
-                "东验锚点"
+                "东验锚点",
+                90f
             );
             CreateTimeAnchor(
                 root.transform,
                 "TimeAnchor_Past_02",
-                new Vector3(-2.7f, 1.2f, 14f),
+                new Vector3(-3.35f, 1.2f, 14f),
                 "past-02",
                 TimeLayer.Past,
-                "西仓锚点"
+                "西仓锚点",
+                90f
             );
             CreateTimeAnchor(
                 root.transform,
                 "TimeAnchor_Present_03",
-                new Vector3(0f, 1.2f, 22f),
+                new Vector3(3.35f, 1.2f, 22f),
                 "present-03",
                 TimeLayer.Present,
-                "中册锚点"
+                "中册锚点",
+                90f
             );
 
             List<Combatant> enemies = new()
@@ -4173,7 +4176,8 @@ namespace Demo02.Editor
             Vector3 position,
             string anchorId,
             TimeLayer layer,
-            string displayName)
+            string displayName,
+            float rotationY)
         {
             GameObject anchor = CreateBlock(
                 parent,
@@ -4184,6 +4188,7 @@ namespace Demo02.Editor
                     ? new Color(0.2f, 0.78f, 0.88f)
                     : new Color(0.78f, 0.32f, 0.92f)
             );
+            anchor.transform.rotation = Quaternion.Euler(0f, rotationY, 0f);
             anchor.AddComponent<TimeLayerVisibility>().Configure(layer);
             anchor.AddComponent<TimeAnchor>().Configure(anchorId, displayName);
         }
