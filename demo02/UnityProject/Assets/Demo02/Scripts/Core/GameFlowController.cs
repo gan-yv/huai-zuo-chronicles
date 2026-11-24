@@ -71,6 +71,19 @@ namespace Demo02.Core
             }
             if (Array.IndexOf(
                     Environment.GetCommandLineArgs(),
+                    "--preview-companion-combat"
+                ) >= 0)
+            {
+                StartCoroutine(
+                    PreparePreviewPosition(
+                        new Vector3(0f, 1f, 7.5f),
+                        "official-street",
+                        "官署前街"
+                    )
+                );
+            }
+            if (Array.IndexOf(
+                    Environment.GetCommandLineArgs(),
                     "--preview-glide"
                 ) >= 0)
             {

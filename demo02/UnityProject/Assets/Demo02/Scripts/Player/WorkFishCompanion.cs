@@ -1,3 +1,4 @@
+using Demo02.Combat;
 using UnityEngine;
 using Demo02.Core;
 
@@ -10,11 +11,16 @@ namespace Demo02.Player
         [SerializeField, Min(0f)] private float backOffset = 0.45f;
         [SerializeField, Min(1f)] private float stopDistance = 1.2f;
         [SerializeField, Min(1f)] private float warpDistance = 12f;
+        [SerializeField, Min(1f)] private float combatCheckRadius = 5.5f;
+        [SerializeField, Min(0f)] private float combatBackOffset = 3.2f;
+        [SerializeField, Min(0f)] private float combatSideOffset = 0.7f;
 
         private PlayerPartyController party;
         private Transform tail;
         private Quaternion tailBase;
         private Vector3 lastPosition;
+        private bool enemiesNearby;
+        private float nextCombatCheck;
 
         public Transform FollowTarget =>
             party != null ? party.ActiveCharacter : null;
@@ -37,9 +43,23 @@ namespace Demo02.Player
                 return;
             }
 
+            if (Time.time >= nextCombatCheck)
+            {
+                nextCombatCheck = Time.time + 0.2f;
+                enemiesNearby = CombatRegistry.CountNearbyEnemies(
+                    target.position,
+                    combatCheckRadius
+                ) > 0;
+            }
+
+            float lateralOffset = sideOffset
+                + (enemiesNearby ? combatSideOffset : 0f);
+            float trailingOffset = enemiesNearby
+                ? Mathf.Max(backOffset, combatBackOffset)
+                : backOffset;
             Vector3 desired = target.position
-                + target.right * sideOffset
-                - target.forward * backOffset;
+                + target.right * lateralOffset
+                - target.forward * trailingOffset;
             float motionScale = GameSettings.ReduceMotion ? 0.28f : 1f;
             desired.y = target.position.y - 1f
                 + Mathf.Sin(Time.time * 2.1f) * 0.025f * motionScale;
