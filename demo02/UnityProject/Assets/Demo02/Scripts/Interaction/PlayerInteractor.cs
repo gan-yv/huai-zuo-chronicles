@@ -25,8 +25,7 @@ namespace Demo02.Interaction
             if (Time.timeScale <= 0f
                 || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
             {
-                currentInteractable = null;
-                RestoreHighlight();
+                ClearInteraction();
                 return;
             }
 
@@ -34,7 +33,7 @@ namespace Demo02.Interaction
                 && (DialogueController.Instance.IsOpen
                     || DialogueController.Instance.LastClosedFrame == Time.frameCount))
             {
-                currentInteractable = null;
+                ClearInteraction();
                 return;
             }
 
@@ -63,6 +62,12 @@ namespace Demo02.Interaction
             statusMessage = currentInteractable.Interact(this);
             statusMessageUntil = Time.time + messageDuration;
             GameAudio.PlayInteraction();
+        }
+
+        private void ClearInteraction()
+        {
+            currentInteractable = null;
+            RestoreHighlight();
         }
 
         private void OnGUI()
