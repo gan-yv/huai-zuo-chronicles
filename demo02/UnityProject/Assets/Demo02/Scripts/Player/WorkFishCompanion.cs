@@ -24,6 +24,7 @@ namespace Demo02.Player
 
         public Transform FollowTarget =>
             party != null ? party.ActiveCharacter : null;
+        public bool IsInCombat => enemiesNearby;
 
         private void Start()
         {

@@ -77,7 +77,8 @@ namespace Demo02.Interaction
         [SerializeField] private WorkFishCompanion companion;
         private int chatIndex;
 
-        public bool CanInteract => companion != null;
+        public bool CanInteract =>
+            companion != null && !companion.IsInCombat;
         public string Prompt => "E  和阿鱼说说话";
 
         public void Configure(WorkFishCompanion follower)
@@ -88,7 +89,10 @@ namespace Demo02.Interaction
         public string Interact(PlayerInteractor interactor)
         {
             DialogueController dialogue = DialogueController.Instance;
-            if (dialogue == null || dialogue.IsOpen)
+            if (companion == null
+                || companion.IsInCombat
+                || dialogue == null
+                || dialogue.IsOpen)
             {
                 return string.Empty;
             }
