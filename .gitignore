@@ -67,6 +67,11 @@ secrets/
 /demo02/*.zip
 /demo02/二创/
 /demo02/上班鱼_by_木子恶魔_f2d5f0024ae8b34c6543bb82896791ac/
+
+# Downloaded art references stay local until source and license are verified.
+/demo02/SourceAssets/References/Downloads/**
+!/demo02/SourceAssets/References/Downloads/README.md
+
 /demo02/UnityProject/Assets/Demo02/Art/Characters/AnimeFishPilot/VIS_WorkFish.fbx
 /demo02/UnityProject/Assets/Demo02/Art/Characters/AnimeFishPilot/VIS_WorkFish.fbx.meta
 /demo02/UnityProject/Assets/Demo02/Art/Characters/AnimeFishPilot/Textures/
