@@ -10,7 +10,7 @@ namespace Demo02.Editor
     public static class Demo02Build
     {
         private const string ProductName = "Huai-Zuo Chronicles";
-        private const string Version = "1.48.0";
+        private const string Version = "1.49.0";
         private const string OutputDirectory = "../Builds/WindowsDemo";
         private const string ExecutableName = "HuaiZuoChronicles.exe";
 

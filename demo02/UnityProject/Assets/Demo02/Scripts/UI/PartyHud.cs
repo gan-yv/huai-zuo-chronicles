@@ -9,6 +9,7 @@ namespace Demo02.UI
     public sealed class PartyHud : MonoBehaviour
     {
         private PlayerPartyController party;
+        private WorkFishCompanion companion;
         private float cachedScale = -1f;
         private GUIStyle activeSlotStyle;
         private GUIStyle mutedSlotStyle;
@@ -16,10 +17,13 @@ namespace Demo02.UI
         private GUIStyle memberNameStyle;
         private GUIStyle staminaStyle;
         private GUIStyle lowStaminaStyle;
+        private GUIStyle companionNameStyle;
+        private GUIStyle companionStateStyle;
 
         private void Awake()
         {
             party = FindAnyObjectByType<PlayerPartyController>();
+            companion = FindAnyObjectByType<WorkFishCompanion>();
         }
 
         private void OnGUI()
@@ -31,6 +35,7 @@ namespace Demo02.UI
 
             EnsureStyles();
             DrawPartyCards();
+            DrawCompanionCard();
             DrawStamina();
         }
 
@@ -169,6 +174,56 @@ namespace Demo02.UI
             }
         }
 
+        private void DrawCompanionCard()
+        {
+            if (companion == null)
+            {
+                return;
+            }
+
+            float scale = UiTheme.Scale;
+            float width = 172f * scale;
+            float height = 42f * scale;
+            float gap = 6f * scale;
+            float right = Screen.width - 18f * scale;
+            float top = 88f * scale
+                + 4f * (46f * scale + gap)
+                + 6f * scale;
+            Rect card = new(right - width, top, width, height);
+            UiTheme.DrawRect(
+                card,
+                new Color(0.025f, 0.055f, 0.075f, 0.92f)
+            );
+            UiTheme.DrawBorder(
+                card,
+                new Color(0.32f, 0.74f, 0.78f, 0.72f)
+            );
+            UiTheme.DrawRect(
+                new Rect(card.x, card.y, 3f * scale, card.height),
+                new Color(0.32f, 0.74f, 0.78f)
+            );
+            GUI.Label(
+                new Rect(
+                    card.x + 12f * scale,
+                    card.y + 4f * scale,
+                    card.width - 20f * scale,
+                    20f * scale
+                ),
+                "随行 · 阿鱼",
+                companionNameStyle
+            );
+            GUI.Label(
+                new Rect(
+                    card.x + 12f * scale,
+                    card.y + 22f * scale,
+                    card.width - 20f * scale,
+                    16f * scale
+                ),
+                "非战斗伙伴 · 靠近按 E 交谈",
+                companionStateStyle
+            );
+        }
+
         private void DrawStamina()
         {
             Transform character = party.ActiveCharacter;
@@ -280,6 +335,19 @@ namespace Demo02.UI
             );
             lowStaminaStyle.normal.textColor =
                 new Color(0.94f, 0.42f, 0.22f);
+            companionNameStyle = UiTheme.Label(
+                12,
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            companionNameStyle.normal.textColor =
+                new Color(0.62f, 0.9f, 0.9f);
+            companionStateStyle = UiTheme.Label(
+                9,
+                TextAnchor.MiddleLeft
+            );
+            companionStateStyle.normal.textColor =
+                new Color(0.62f, 0.7f, 0.74f);
         }
 
         private static bool IsBlockedByOtherUi()
