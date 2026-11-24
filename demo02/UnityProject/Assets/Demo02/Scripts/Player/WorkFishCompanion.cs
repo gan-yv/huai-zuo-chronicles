@@ -1,4 +1,5 @@
 using UnityEngine;
+using Demo02.Core;
 
 namespace Demo02.Player
 {
@@ -39,8 +40,9 @@ namespace Demo02.Player
             Vector3 desired = target.position
                 + target.right * sideOffset
                 - target.forward * backOffset;
+            float motionScale = GameSettings.ReduceMotion ? 0.28f : 1f;
             desired.y = target.position.y - 1f
-                + Mathf.Sin(Time.time * 2.1f) * 0.025f;
+                + Mathf.Sin(Time.time * 2.1f) * 0.025f * motionScale;
 
             float distance = Vector3.Distance(
                 transform.position,
@@ -77,7 +79,9 @@ namespace Demo02.Player
 
             if (tail != null)
             {
-                float sway = Mathf.Sin(Time.unscaledTime * 2.6f) * 11f;
+                float sway = Mathf.Sin(Time.unscaledTime * 2.6f)
+                    * 11f
+                    * motionScale;
                 tail.localRotation = tailBase
                     * Quaternion.Euler(0f, sway, 0f);
             }

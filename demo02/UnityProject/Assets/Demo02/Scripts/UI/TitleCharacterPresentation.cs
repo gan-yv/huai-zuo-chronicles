@@ -1,3 +1,4 @@
+using Demo02.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -36,10 +37,12 @@ namespace Demo02.UI
                 0f,
                 1f
             );
-            float yaw = (x - 0.5f) * 2f * yawRange;
-            float pitch = (0.5f - y) * pitchRange;
+            float motionScale = GameSettings.ReduceMotion ? 0.28f : 1f;
+            float yaw = (x - 0.5f) * 2f * yawRange * motionScale;
+            float pitch = (0.5f - y) * pitchRange * motionScale;
             float bob = Mathf.Sin(Time.unscaledTime * 1.35f)
-                * bobHeight;
+                * bobHeight
+                * motionScale;
             transform.localPosition = basePosition + Vector3.up * bob;
             transform.localRotation =
                 baseRotation * Quaternion.Euler(pitch, yaw, 0f);

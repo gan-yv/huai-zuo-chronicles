@@ -151,7 +151,10 @@ namespace Demo02.Interaction
 
             if (highlightedTransform != null)
             {
-                float angle = Mathf.Sin(Time.unscaledTime * 4f) * 3f;
+                float motionScale = GameSettings.ReduceMotion ? 0.28f : 1f;
+                float angle = Mathf.Sin(Time.unscaledTime * 4f)
+                    * 3f
+                    * motionScale;
                 highlightedTransform.localRotation =
                     highlightedBaseRotation * Quaternion.Euler(0f, angle, 0f);
             }

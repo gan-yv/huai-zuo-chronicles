@@ -293,7 +293,8 @@ namespace Demo02.Player
 
         public void AddCameraShake(float strength, float duration)
         {
-            shakeStrength = Mathf.Max(shakeStrength, strength);
+            float motionScale = GameSettings.ReduceMotion ? 0.28f : 1f;
+            shakeStrength = Mathf.Max(shakeStrength, strength * motionScale);
             shakeRemaining = Mathf.Max(shakeRemaining, duration);
         }
 
