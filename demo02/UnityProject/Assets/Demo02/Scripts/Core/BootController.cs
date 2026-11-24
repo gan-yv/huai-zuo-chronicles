@@ -66,6 +66,7 @@ namespace Demo02.Core
                 || System.Array.IndexOf(arguments, "--preview-streaming") >= 0
                 || System.Array.IndexOf(arguments, "--preview-story") >= 0
                 || System.Array.IndexOf(arguments, "--preview-pavilion") >= 0
+                || System.Array.IndexOf(arguments, "--preview-cottage") >= 0
                 || System.Array.IndexOf(arguments, "--preview-elite") >= 0
                 || System.Array.IndexOf(arguments, "--preview-glide-course") >= 0
                 || System.Array.IndexOf(arguments, "--preview-companion") >= 0

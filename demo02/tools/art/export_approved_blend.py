@@ -13,6 +13,7 @@ def parse_args():
     parser.add_argument("--max-texture-size", type=int, default=0)
     parser.add_argument("--decimate-over", type=int, default=0)
     parser.add_argument("--decimate-ratio", type=float, default=1.0)
+    parser.add_argument("--collections", default="")
     return parser.parse_args(
         sys.argv[sys.argv.index("--") + 1 :]
     )
@@ -59,7 +60,33 @@ def main():
     output = os.path.abspath(args.output)
     os.makedirs(os.path.dirname(output), exist_ok=True)
 
-    meshes = [obj for obj in bpy.context.scene.objects if obj.type == "MESH"]
+    if args.collections:
+        collection_names = {
+            name.strip()
+            for name in args.collections.split(",")
+            if name.strip()
+        }
+        meshes = sorted(
+            {
+                obj
+                for name in collection_names
+                for collection in [bpy.data.collections.get(name)]
+                if collection is not None
+                for obj in collection.all_objects
+                if obj.type == "MESH"
+            },
+            key=lambda obj: obj.name,
+        )
+        if not meshes:
+            raise RuntimeError(
+                "No mesh objects found in requested collections."
+            )
+    else:
+        meshes = [
+            obj
+            for obj in bpy.context.scene.objects
+            if obj.type == "MESH"
+        ]
     decimate_large_meshes(
         meshes,
         args.decimate_over,

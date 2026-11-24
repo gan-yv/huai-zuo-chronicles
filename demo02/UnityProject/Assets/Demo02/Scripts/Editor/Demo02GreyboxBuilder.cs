@@ -2440,6 +2440,7 @@ namespace Demo02.Editor
                 "回潮巷"
             );
 
+            BuildCottageCourtyard(root.transform, spawn.transform);
             BuildDongguanStreet(root.transform, spawn.transform);
 
             Camera sceneCamera = scene
@@ -2473,6 +2474,57 @@ namespace Demo02.Editor
             RenderSettings.fogEndDistance = 165f;
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(0.42f, 0.46f, 0.52f);
+        }
+
+        private static void BuildCottageCourtyard(
+            Transform root,
+            Transform mainSpawn)
+        {
+            GameObject courtyard =
+                DownloadedMapArtSetup.InstantiateCottageCourtyard(
+                    root,
+                    out Transform courtyardSpawn
+                );
+            CreateWorldArea(
+                root,
+                "Area_CottageCourtyard",
+                new Vector3(0f, 1f, -100f),
+                new Vector3(26f, 5f, 26f),
+                "cottage-courtyard",
+                "林间小屋"
+            );
+
+            GameObject entrance = CreateBlock(
+                root,
+                "Gate_CottageCourtyard",
+                new Vector3(-5.95f, 1.2f, -4f),
+                new Vector3(0.25f, 2.4f, 1.2f),
+                new Color(0.32f, 0.58f, 0.36f)
+            );
+            entrance.AddComponent<LocalWorldPortal>().Configure(
+                courtyardSpawn,
+                "cottage-courtyard",
+                "林间小屋",
+                "E  前往林间小屋"
+            );
+
+            GameObject exit = CreateBlock(
+                courtyard.transform,
+                "Gate_ReturnFromCottage",
+                new Vector3(
+                    courtyardSpawn.position.x - 4f,
+                    1.2f,
+                    courtyardSpawn.position.z + 1f
+                ),
+                new Vector3(0.45f, 2.2f, 0.25f),
+                new Color(0.72f, 0.54f, 0.24f)
+            );
+            exit.AddComponent<LocalWorldPortal>().Configure(
+                mainSpawn,
+                "official-street",
+                "官署前街",
+                "E  返回官署前街"
+            );
         }
 
         private static void CreateMapReadabilityDressing(Transform root)

@@ -195,6 +195,19 @@ namespace Demo02.Core
                     )
                 );
             }
+            if (Array.IndexOf(
+                Environment.GetCommandLineArgs(),
+                "--preview-cottage"
+            ) >= 0)
+            {
+                StartCoroutine(
+                    PreparePreviewPosition(
+                        new Vector3(0f, 0.1f, -107f),
+                        "cottage-courtyard",
+                        "林间小屋"
+                    )
+                );
+            }
 
             if (Array.IndexOf(
                 Environment.GetCommandLineArgs(),

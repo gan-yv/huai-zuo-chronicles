@@ -52,6 +52,8 @@
 - v1.57.0 在东关街凉亭前 1920×1080 实测平均约 182.9 FPS，1% Low 约 68.6 FPS。
 - 东关街围墙后接入五种现成树牌组成的远景树列，补足空旷天际线。
 - v1.58.0 在同一亭前镜头实测平均约 225.2 FPS，1% Low 约 129.4 FPS。
+- 官署前街新增可往返的“林间小屋”独立建筑区域，复用现成木屋与院落。
+- v1.59.0 林间小屋区域 1920×1080 实测平均约 188.1 FPS，1% Low 约 73.8 FPS。
 
 ![东关风廊屋顶航线](docs/screenshots/openworld-wind-course.png)
 
@@ -76,6 +78,10 @@
 ![东关街末端凉亭地标](docs/screenshots/dongguan-luming-pavilion.png)
 
 ![东关街末端远景树列](docs/screenshots/dongguan-tree-line.png)
+
+![林间小屋独立地图区域](docs/screenshots/cottage-courtyard-map.png)
+
+![林间小屋源场景检查](docs/screenshots/cottage-courtyard-source.png)
 
 ![东关街流式街区事件](docs/screenshots/openworld-street-story.png)
 

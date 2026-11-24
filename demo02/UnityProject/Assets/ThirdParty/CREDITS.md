@@ -68,4 +68,6 @@ is retained for provenance; CC-BY attribution is required.
   project use. Five existing billboard trees are composed into the distant
   Dongguan street tree line; the source package remains under
   `SourceAssets/References/Downloads/Approved/Environment/`.
+- The same **林间小屋** package provides the complete cottage, doors, fence,
+  garden beds and path used by the standalone cottage courtyard map area.
 
