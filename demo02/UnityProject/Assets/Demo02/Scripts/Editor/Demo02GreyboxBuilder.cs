@@ -1737,6 +1737,9 @@ namespace Demo02.Editor
                     || existingRoot.transform.Find(
                         "DongguanStreet/ART_Dongguan_PavilionLandmark"
                     ) == null
+                    || existingRoot.transform.Find(
+                        "DongguanStreet/ART_Dongguan_DownloadedTreeLine"
+                    ) == null
                     || existingRoot.transform.Find("GameSession") == null);
 
             if (existingRoot == null || forceRebuild || needsUpgrade)
@@ -3620,6 +3623,7 @@ namespace Demo02.Editor
                 new Color(0.72f, 0.5f, 0.24f)
             );
             DownloadedMapArtSetup.InstantiateDongguanPavilion(areaRoot);
+            DownloadedMapArtSetup.InstantiateDongguanTreeLine(areaRoot);
             CreateBlock(
                 areaRoot,
                 "Dongguan_Well",

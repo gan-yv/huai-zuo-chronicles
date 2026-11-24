@@ -8,6 +8,9 @@ namespace Demo02.Editor
         private const string PavilionModelPath =
             "Assets/Demo02/Art/Environment/Downloaded/Pavilion/"
             + "VIS_LumingPavilion.glb";
+        private const string DongguanTreeLineModelPath =
+            "Assets/Demo02/Art/Environment/Downloaded/BillboardTrees/"
+            + "VIS_DongguanTreeLine.glb";
 
         public static GameObject InstantiateDongguanPavilion(
             Transform parent)
@@ -75,6 +78,49 @@ namespace Demo02.Editor
                 + $"{renderers.Length} renderers."
             );
             return pavilion;
+        }
+
+        public static GameObject InstantiateDongguanTreeLine(
+            Transform parent)
+        {
+            AssetDatabase.ImportAsset(
+                DongguanTreeLineModelPath,
+                ImportAssetOptions.ForceUpdate
+                    | ImportAssetOptions.ForceSynchronousImport
+            );
+            GameObject source =
+                AssetDatabase.LoadAssetAtPath<GameObject>(
+                    DongguanTreeLineModelPath
+                );
+            if (source == null)
+            {
+                throw new System.InvalidOperationException(
+                    $"Downloaded tree line model is missing: "
+                    + DongguanTreeLineModelPath
+                );
+            }
+
+            GameObject treeLine =
+                (GameObject)PrefabUtility.InstantiatePrefab(
+                    source,
+                    parent
+                );
+            treeLine.name = "ART_Dongguan_DownloadedTreeLine";
+            treeLine.transform.localPosition =
+                new Vector3(60f, 0.02f, 136.5f);
+            treeLine.transform.localRotation = Quaternion.identity;
+            treeLine.transform.localScale = Vector3.one;
+            foreach (Transform child in
+                     treeLine.GetComponentsInChildren<Transform>())
+            {
+                child.gameObject.isStatic = true;
+            }
+
+            Debug.Log(
+                "Downloaded billboard tree line placed behind "
+                + "the Dongguan end wall."
+            );
+            return treeLine;
         }
     }
 }

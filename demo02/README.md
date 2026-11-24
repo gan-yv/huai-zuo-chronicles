@@ -50,6 +50,8 @@
 - 新下载参考素材先在 `SourceAssets/References/Downloads` 核对授权，再决定是否导入。
 - 东关街末端接入优化后的现成凉亭地标，使用 1K 贴图和约 14.4 万面模型。
 - v1.57.0 在东关街凉亭前 1920×1080 实测平均约 182.9 FPS，1% Low 约 68.6 FPS。
+- 东关街围墙后接入五种现成树牌组成的远景树列，补足空旷天际线。
+- v1.58.0 在同一亭前镜头实测平均约 225.2 FPS，1% Low 约 129.4 FPS。
 
 ![东关风廊屋顶航线](docs/screenshots/openworld-wind-course.png)
 
@@ -72,6 +74,8 @@
 ![地图时间锚点贴墙整理](docs/screenshots/map-art-placement.png)
 
 ![东关街末端凉亭地标](docs/screenshots/dongguan-luming-pavilion.png)
+
+![东关街末端远景树列](docs/screenshots/dongguan-tree-line.png)
 
 ![东关街流式街区事件](docs/screenshots/openworld-street-story.png)
 

@@ -64,4 +64,8 @@ is retained for provenance; CC-BY attribution is required.
   `SourceAssets/References/Downloads/Approved/Environment/`; the optimized
   Unity GLB and processing notes are stored under
   `Assets/Demo02/Art/Environment/Downloaded/Pavilion/`.
+- **林间小屋** by HK416单推人. The project owner confirmed permission for
+  project use. Five existing billboard trees are composed into the distant
+  Dongguan street tree line; the source package remains under
+  `SourceAssets/References/Downloads/Approved/Environment/`.
 
