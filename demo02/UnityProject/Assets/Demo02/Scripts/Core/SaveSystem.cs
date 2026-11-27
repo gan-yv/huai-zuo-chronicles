@@ -150,10 +150,10 @@ namespace Demo02.Core
         private void Start()
         {
             isPreviewMode = HasPreviewArgument();
-            investigationState = FindAnyObjectByType<InvestigationState>();
-            inventoryState = FindAnyObjectByType<InventoryState>();
-            party = FindAnyObjectByType<PlayerPartyController>();
-            timeLayerController = FindAnyObjectByType<TimeLayerController>();
+            investigationState = Demo02.Core.GameServices.Resolve<InvestigationState>();
+            inventoryState = Demo02.Core.GameServices.Resolve<InventoryState>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
+            timeLayerController = Demo02.Core.GameServices.Resolve<TimeLayerController>();
 
             WorldRuntime runtime = WorldRuntime.Instance;
             if (runtime != null && runtime.PendingSave != null)
@@ -614,10 +614,10 @@ namespace Demo02.Core
 
         private bool RefreshReferences()
         {
-            investigationState ??= FindAnyObjectByType<InvestigationState>();
-            inventoryState ??= FindAnyObjectByType<InventoryState>();
-            party ??= FindAnyObjectByType<PlayerPartyController>();
-            timeLayerController ??= FindAnyObjectByType<TimeLayerController>();
+            investigationState ??= Demo02.Core.GameServices.Resolve<InvestigationState>();
+            inventoryState ??= Demo02.Core.GameServices.Resolve<InventoryState>();
+            party ??= Demo02.Core.GameServices.Resolve<PlayerPartyController>();
+            timeLayerController ??= Demo02.Core.GameServices.Resolve<TimeLayerController>();
             return investigationState != null
                 && party != null
                 && party.ActiveCharacter != null

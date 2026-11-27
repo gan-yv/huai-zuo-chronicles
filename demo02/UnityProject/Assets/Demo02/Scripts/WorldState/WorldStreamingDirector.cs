@@ -27,7 +27,7 @@ namespace Demo02.WorldState
             {
                 if (party == null)
                 {
-                    party = FindAnyObjectByType<PlayerPartyController>();
+                    party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
                 }
                 return party != null ? party.ActiveCharacter : null;
             }

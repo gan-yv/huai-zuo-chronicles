@@ -96,10 +96,10 @@ namespace Demo02.WorldState
         private void Start()
         {
             investigationState =
-                FindAnyObjectByType<InvestigationState>();
+                Demo02.Core.GameServices.Resolve<InvestigationState>();
             timeLayerController =
-                FindAnyObjectByType<TimeLayerController>();
-            party = FindAnyObjectByType<PlayerPartyController>();
+                Demo02.Core.GameServices.Resolve<TimeLayerController>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             contentTracker = WorldContentTracker.Instance;
             RefreshState(force: true);
         }
@@ -117,10 +117,10 @@ namespace Demo02.WorldState
             if (investigationState == null)
             {
                 investigationState =
-                    FindAnyObjectByType<InvestigationState>();
+                    Demo02.Core.GameServices.Resolve<InvestigationState>();
                 timeLayerController =
-                    FindAnyObjectByType<TimeLayerController>();
-                party = FindAnyObjectByType<PlayerPartyController>();
+                    Demo02.Core.GameServices.Resolve<TimeLayerController>();
+                party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
                 contentTracker = WorldContentTracker.Instance;
                 hasRefreshed = false;
             }
@@ -488,7 +488,7 @@ namespace Demo02.WorldState
             );
             InventoryState inventory = InventoryState.Instance != null
                 ? InventoryState.Instance
-                : FindAnyObjectByType<InventoryState>();
+                : Demo02.Core.GameServices.Resolve<InventoryState>();
             if (inventory != null
                 && inventory.GetCount(RewardItemId) <= 0)
             {
@@ -545,12 +545,12 @@ namespace Demo02.WorldState
         {
             StartQuest();
             investigationState ??=
-                FindAnyObjectByType<InvestigationState>();
+                Demo02.Core.GameServices.Resolve<InvestigationState>();
             investigationState?.SetFact(PresentTraceFact);
             investigationState?.SetFact(PastTraceFact);
             investigationState?.SetFact(TrailFact);
             WorldRuntime.Instance?.MarkEncounterCompleted(ReadyId);
-            party ??= FindAnyObjectByType<PlayerPartyController>();
+            party ??= Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             party?.RestoreActiveCharacter(0);
             RefreshState(force: true);
         }

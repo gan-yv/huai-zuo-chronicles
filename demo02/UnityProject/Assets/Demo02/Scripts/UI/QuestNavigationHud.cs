@@ -36,10 +36,10 @@ namespace Demo02.UI
         private void Start()
         {
             investigationState =
-                FindAnyObjectByType<InvestigationState>();
-            party = FindAnyObjectByType<PlayerPartyController>();
+                Demo02.Core.GameServices.Resolve<InvestigationState>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             timeLayerController =
-                FindAnyObjectByType<TimeLayerController>();
+                Demo02.Core.GameServices.Resolve<TimeLayerController>();
 
             if (investigationState != null)
             {

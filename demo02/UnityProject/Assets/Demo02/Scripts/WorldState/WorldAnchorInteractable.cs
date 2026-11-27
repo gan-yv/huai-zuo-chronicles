@@ -78,7 +78,7 @@ namespace Demo02.WorldState
         private static void RestoreParty()
         {
             PlayerPartyController party =
-                FindAnyObjectByType<PlayerPartyController>();
+                Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             if (party == null)
             {
                 return;

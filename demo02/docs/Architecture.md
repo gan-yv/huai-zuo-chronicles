@@ -30,6 +30,11 @@
 不再必须依赖具体控制器实例。旧静态单例在迁移期只作为兼容回退，新增代码应
 优先通过 `GameServices` 获取服务。
 
+运行时组件获取场景依赖统一使用 `GameServices.Resolve<T>()`。该入口先读取
+已注册服务，未注册时只执行一次场景解析并缓存结果；Unity 对象销毁后，下一次
+查询会自动移除失效条目。架构审计禁止 `GameServices` 之外的运行时源码直接调用
+`FindAnyObjectByType`，避免依赖发现逻辑继续散落到各控制器中。
+
 `IContentProvider` 隔离统一内容目录的读取方式。默认实现
 `ResourcesContentProvider` 负责 `Resources` 加载和目录缓存；
 `GameContentRegistry` 保留为兼容门面。未来 Addressables 或其他内容包实现只需

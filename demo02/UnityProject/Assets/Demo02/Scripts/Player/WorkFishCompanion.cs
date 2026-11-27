@@ -29,7 +29,7 @@ namespace Demo02.Player
 
         private void Start()
         {
-            party = FindAnyObjectByType<PlayerPartyController>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             tail = FindChild(transform, "tail");
             tailBase = tail != null
                 ? tail.localRotation

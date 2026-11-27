@@ -99,7 +99,7 @@ namespace Demo02.Combat
 
         private void Start()
         {
-            party = FindAnyObjectByType<PlayerPartyController>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
         }
 
         private void Update()

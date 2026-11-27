@@ -28,7 +28,7 @@ namespace Demo02.Interaction
 
         private void Start()
         {
-            investigationState = FindAnyObjectByType<InvestigationState>();
+            investigationState = Demo02.Core.GameServices.Resolve<InvestigationState>();
             if (System.Array.IndexOf(
                 Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-choice"
@@ -41,7 +41,7 @@ namespace Demo02.Interaction
         private IEnumerator CaptureChoicePreview()
         {
             yield return new WaitForSecondsRealtime(0.4f);
-            DialogueController dialogue = FindAnyObjectByType<DialogueController>();
+            DialogueController dialogue = Demo02.Core.GameServices.Resolve<DialogueController>();
             if (dialogue == null || investigationState == null)
             {
                 yield break;
@@ -89,7 +89,7 @@ namespace Demo02.Interaction
 
         public string Interact(PlayerInteractor interactor)
         {
-            DialogueController dialogue = FindAnyObjectByType<DialogueController>();
+            DialogueController dialogue = Demo02.Core.GameServices.Resolve<DialogueController>();
             if (dialogue == null || investigationState == null)
             {
                 return "沈伯似乎已经听不见你的声音。";

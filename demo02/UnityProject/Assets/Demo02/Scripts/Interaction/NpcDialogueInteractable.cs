@@ -30,7 +30,7 @@ namespace Demo02.Interaction
 
         private void Start()
         {
-            investigationState = FindAnyObjectByType<InvestigationState>();
+            investigationState = Demo02.Core.GameServices.Resolve<InvestigationState>();
         }
 
         public void Configure(
@@ -51,7 +51,7 @@ namespace Demo02.Interaction
 
         public string Interact(PlayerInteractor interactor)
         {
-            DialogueController controller = FindAnyObjectByType<DialogueController>();
+            DialogueController controller = Demo02.Core.GameServices.Resolve<DialogueController>();
             if (controller == null)
             {
                 return "对话系统尚未初始化。";

@@ -43,9 +43,9 @@ namespace Demo02.Interaction
         {
             inventoryState = InventoryState.Instance != null
                 ? InventoryState.Instance
-                : FindAnyObjectByType<InventoryState>();
+                : Demo02.Core.GameServices.Resolve<InventoryState>();
             InvestigationState investigation =
-                FindAnyObjectByType<InvestigationState>();
+                Demo02.Core.GameServices.Resolve<InvestigationState>();
             caseContent = investigation?.CaseContent;
 
             if (inventoryState != null)

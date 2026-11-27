@@ -46,7 +46,7 @@ namespace Demo02.Combat
                 return;
             }
 
-            Transform player = FindAnyObjectByType<PlayerPartyController>()
+            Transform player = Demo02.Core.GameServices.Resolve<PlayerPartyController>()
                 ?.ActiveCharacter;
             if (player == null)
             {

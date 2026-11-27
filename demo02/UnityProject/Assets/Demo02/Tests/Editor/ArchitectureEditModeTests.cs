@@ -1,6 +1,7 @@
 using Demo02.Editor;
 using Demo02.Core;
 using Demo02.Narrative;
+using Demo02.WorldState;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -65,6 +66,40 @@ namespace Demo02.Tests.EditMode
             }
             finally
             {
+                GameServices.Clear();
+            }
+        }
+
+        [Test]
+        public void ServiceRegistry_ResolvesOnceAndDropsDestroyedObjects()
+        {
+            GameServices.Clear();
+            GameObject probe = new("ServiceResolutionProbe");
+            TimeLayerController service =
+                probe.AddComponent<TimeLayerController>();
+            try
+            {
+                Assert.That(
+                    GameServices.Resolve<TimeLayerController>(),
+                    Is.SameAs(service)
+                );
+                Assert.That(
+                    GameServices.Resolve<TimeLayerController>(),
+                    Is.SameAs(service)
+                );
+
+                Object.DestroyImmediate(probe);
+                Assert.That(
+                    GameServices.TryGet<TimeLayerController>(out _),
+                    Is.False
+                );
+            }
+            finally
+            {
+                if (probe != null)
+                {
+                    Object.DestroyImmediate(probe);
+                }
                 GameServices.Clear();
             }
         }

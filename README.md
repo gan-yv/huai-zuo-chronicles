@@ -13,7 +13,7 @@
 
 | 项目 | 内容 |
 |---|---|
-| 当前版本 | **v1.75.0** |
+| 当前版本 | **v1.75.1** |
 | 引擎 | Unity 6000.5.7f1、Universal Render Pipeline |
 | 语言 | C# |
 | 目标平台 | Windows x64 |
@@ -130,7 +130,7 @@
 - `World`：开放世界、流式区域和地图可读性。
 - `InputUi`：Input Actions、重绑定、模态栈和 UGUI 层级。
 
-最新完整回归为 EditMode **12/12**、PlayMode **3/3** 通过。
+最新完整回归为 EditMode **13/13**、PlayMode **3/3** 通过。
 
 ## 仓库结构
 

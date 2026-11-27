@@ -23,11 +23,11 @@ namespace Demo02.Player
 
         private void Start()
         {
-            party = FindAnyObjectByType<PlayerPartyController>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             inventory = InventoryState.Instance != null
                 ? InventoryState.Instance
-                : FindAnyObjectByType<InventoryState>();
-            investigation = FindAnyObjectByType<InvestigationState>();
+                : Demo02.Core.GameServices.Resolve<InventoryState>();
+            investigation = Demo02.Core.GameServices.Resolve<InvestigationState>();
         }
 
         private void Update()

@@ -65,7 +65,7 @@ namespace Demo02.WorldState
 
             InventoryState inventory = InventoryState.Instance != null
                 ? InventoryState.Instance
-                : FindAnyObjectByType<InventoryState>();
+                : Demo02.Core.GameServices.Resolve<InventoryState>();
             if (inventory != null
                 && !string.IsNullOrWhiteSpace(rewardItemId)
                 && !inventory.AddItem(rewardItemId, rewardAmount))

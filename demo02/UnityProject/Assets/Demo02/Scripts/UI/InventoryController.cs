@@ -41,10 +41,10 @@ namespace Demo02.UI
         {
             inventoryState = InventoryState.Instance != null
                 ? InventoryState.Instance
-                : FindAnyObjectByType<InventoryState>();
-            party = FindAnyObjectByType<PlayerPartyController>();
+                : Demo02.Core.GameServices.Resolve<InventoryState>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             investigationState =
-                FindAnyObjectByType<InvestigationState>();
+                Demo02.Core.GameServices.Resolve<InvestigationState>();
             caseContent = investigationState?.CaseContent;
 
             if (Array.IndexOf(

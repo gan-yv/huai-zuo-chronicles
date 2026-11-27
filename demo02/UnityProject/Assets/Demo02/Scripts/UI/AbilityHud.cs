@@ -44,7 +44,7 @@ namespace Demo02.UI
 
         private void Awake()
         {
-            party = FindAnyObjectByType<PlayerPartyController>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
         }
 
         private void Start()

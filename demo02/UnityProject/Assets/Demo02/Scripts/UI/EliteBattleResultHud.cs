@@ -22,9 +22,8 @@ namespace Demo02.UI
         {
             if (!tracking)
             {
-                elite = FindAnyObjectByType<EliteEnemyController>(
-                    FindObjectsInactive.Exclude
-                );
+                elite = Demo02.Core.GameServices
+                    .Resolve<EliteEnemyController>();
                 if (elite == null || !elite.IsActive)
                 {
                     return;

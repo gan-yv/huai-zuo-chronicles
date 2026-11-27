@@ -31,12 +31,26 @@ namespace Demo02.Core
         public static bool TryGet<T>(out T service)
             where T : class
         {
-            if (Services.TryGetValue(typeof(T), out object value)
-                && value is T typed)
+            if (!Services.TryGetValue(typeof(T), out object value))
+            {
+                service = null;
+                return false;
+            }
+
+            if (value is UnityEngine.Object unityObject
+                && unityObject == null)
+            {
+                Services.Remove(typeof(T));
+                service = null;
+                return false;
+            }
+
+            if (value is T typed)
             {
                 service = typed;
                 return true;
             }
+
             service = null;
             return false;
         }
@@ -45,6 +59,26 @@ namespace Demo02.Core
             where T : class
         {
             return TryGet(out T service) ? service : null;
+        }
+
+        public static T Resolve<T>(bool includeInactive = false)
+            where T : UnityEngine.Object
+        {
+            if (TryGet(out T registered))
+            {
+                return registered;
+            }
+
+            T discovered = includeInactive
+                ? UnityEngine.Object.FindAnyObjectByType<T>(
+                    FindObjectsInactive.Include
+                )
+                : UnityEngine.Object.FindAnyObjectByType<T>();
+            if (discovered != null)
+            {
+                Services[typeof(T)] = discovered;
+            }
+            return discovered;
         }
 
         public static bool Unregister<T>(T expected)

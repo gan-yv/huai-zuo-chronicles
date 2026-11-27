@@ -68,7 +68,7 @@ namespace Demo02.UI
 
         private void Start()
         {
-            saveSystem = FindAnyObjectByType<SaveSystem>();
+            saveSystem = Demo02.Core.GameServices.Resolve<SaveSystem>();
             SaveSystem.HasSave();
             selectedManualSlot = SaveSystem.ActiveManualSlot > 0
                 ? SaveSystem.ActiveManualSlot
@@ -807,7 +807,7 @@ namespace Demo02.UI
 
         private void ExecuteSave(int slot)
         {
-            saveSystem ??= FindAnyObjectByType<SaveSystem>();
+            saveSystem ??= Demo02.Core.GameServices.Resolve<SaveSystem>();
             if (saveSystem == null)
             {
                 ShowStatus("存档系统尚未就绪");

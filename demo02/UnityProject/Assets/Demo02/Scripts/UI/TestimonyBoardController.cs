@@ -36,7 +36,7 @@ namespace Demo02.UI
 
         private void Start()
         {
-            investigationState = FindAnyObjectByType<InvestigationState>();
+            investigationState = Demo02.Core.GameServices.Resolve<InvestigationState>();
             if (Array.IndexOf(
                 Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-testimony"

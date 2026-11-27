@@ -31,7 +31,7 @@ namespace Demo02.Interaction
         public string Interact(PlayerInteractor interactor)
         {
             GameAudio.PlayPortal();
-            ScreenFade fade = FindAnyObjectByType<ScreenFade>();
+            ScreenFade fade = Demo02.Core.GameServices.Resolve<ScreenFade>();
             if (fade != null)
             {
                 if (!fade.PlayTransition(() =>
@@ -62,7 +62,7 @@ namespace Demo02.Interaction
             out string message)
         {
             message = string.Empty;
-            PlayerPartyController party = FindAnyObjectByType<PlayerPartyController>();
+            PlayerPartyController party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             Transform activeCharacter = party != null ? party.ActiveCharacter : null;
             if (activeCharacter == null || target == null)
             {

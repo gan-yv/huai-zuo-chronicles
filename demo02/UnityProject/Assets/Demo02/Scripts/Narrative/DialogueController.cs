@@ -458,7 +458,7 @@ namespace Demo02.Narrative
                 return;
             }
             PlayerPartyController party =
-                FindAnyObjectByType<PlayerPartyController>();
+                Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             Transform player = party != null
                 ? party.ActiveCharacter
                 : null;

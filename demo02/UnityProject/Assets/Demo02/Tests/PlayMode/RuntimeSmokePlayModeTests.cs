@@ -23,7 +23,7 @@ namespace Demo02.Tests.PlayMode
 
             foreach (GameFlowController controller in
                      Object.FindObjectsByType<GameFlowController>(
-                         FindObjectsSortMode.None
+                         FindObjectsInactive.Exclude
                      ))
             {
                 Object.Destroy(controller.gameObject);

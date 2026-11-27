@@ -34,10 +34,10 @@ namespace Demo02.UI
         private void Start()
         {
             investigationState =
-                FindAnyObjectByType<InvestigationState>();
+                Demo02.Core.GameServices.Resolve<InvestigationState>();
             inventoryState = InventoryState.Instance != null
                 ? InventoryState.Instance
-                : FindAnyObjectByType<InventoryState>();
+                : Demo02.Core.GameServices.Resolve<InventoryState>();
 
             if (investigationState != null)
             {

@@ -15,7 +15,7 @@ namespace Demo02.Core
                 return;
             }
 
-            DialogueController dialogue = FindAnyObjectByType<DialogueController>();
+            DialogueController dialogue = Demo02.Core.GameServices.Resolve<DialogueController>();
             if (dialogue == null)
             {
                 return;

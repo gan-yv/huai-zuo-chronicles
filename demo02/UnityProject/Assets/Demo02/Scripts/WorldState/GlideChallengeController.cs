@@ -56,7 +56,7 @@ namespace Demo02.WorldState
             liftGraceUntil = startedAt + 1.25f;
             WorldRuntime.Instance?.MarkWorldContentStarted(contentId);
             PlayerPartyController party =
-                FindAnyObjectByType<PlayerPartyController>();
+                Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             Transform player = party != null ? party.ActiveCharacter : null;
             player?.GetComponent<CharacterRuntime>()
                 ?.RestoreStamina(
@@ -76,7 +76,7 @@ namespace Demo02.WorldState
                     return;
                 }
                 PlayerPartyController nearbyParty =
-                    FindAnyObjectByType<PlayerPartyController>();
+                    Demo02.Core.GameServices.Resolve<PlayerPartyController>();
                 Transform nearbyPlayer = nearbyParty != null
                     ? nearbyParty.ActiveCharacter
                     : null;
@@ -94,7 +94,7 @@ namespace Demo02.WorldState
             }
 
             PlayerPartyController party =
-                FindAnyObjectByType<PlayerPartyController>();
+                Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             Transform player = party != null ? party.ActiveCharacter : null;
             if (player == null)
             {
@@ -136,7 +136,7 @@ namespace Demo02.WorldState
             WorldRuntime.Instance?.MarkWorldContentCompleted(contentId);
             InventoryState inventory = InventoryState.Instance != null
                 ? InventoryState.Instance
-                : FindAnyObjectByType<InventoryState>();
+                : Demo02.Core.GameServices.Resolve<InventoryState>();
             inventory?.AddItem("ginger-tea", 2);
             finishUntil = Time.unscaledTime + 4f;
             GameAudio.PlayConfirm();

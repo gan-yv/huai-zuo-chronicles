@@ -46,8 +46,8 @@ namespace Demo02.UI
 
         private void Awake()
         {
-            party = FindAnyObjectByType<PlayerPartyController>();
-            companion = FindAnyObjectByType<WorkFishCompanion>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
+            companion = Demo02.Core.GameServices.Resolve<WorkFishCompanion>();
             EnsureUi();
         }
 

@@ -65,13 +65,13 @@ namespace Demo02.UI
 
         private void Awake()
         {
-            party = FindAnyObjectByType<PlayerPartyController>();
-            encounterState = FindAnyObjectByType<EncounterState>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
+            encounterState = Demo02.Core.GameServices.Resolve<EncounterState>();
             timeLayerController =
-                FindAnyObjectByType<TimeLayerController>();
+                Demo02.Core.GameServices.Resolve<TimeLayerController>();
             worldRuntime = WorldRuntime.Instance != null
                 ? WorldRuntime.Instance
-                : FindAnyObjectByType<WorldRuntime>();
+                : Demo02.Core.GameServices.Resolve<WorldRuntime>();
             previousAliveEnemies = encounterState != null
                 ? encounterState.AliveEnemyCount
                 : 0;

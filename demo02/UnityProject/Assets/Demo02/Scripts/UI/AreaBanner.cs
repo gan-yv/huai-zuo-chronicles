@@ -33,7 +33,7 @@ namespace Demo02.UI
         {
             worldRuntime = WorldRuntime.Instance != null
                 ? WorldRuntime.Instance
-                : FindAnyObjectByType<WorldRuntime>();
+                : Demo02.Core.GameServices.Resolve<WorldRuntime>();
         }
 
         private void Update()

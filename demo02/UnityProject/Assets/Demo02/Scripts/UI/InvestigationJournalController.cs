@@ -32,7 +32,7 @@ namespace Demo02.UI
 
         private void Start()
         {
-            investigationState = FindAnyObjectByType<InvestigationState>();
+            investigationState = Demo02.Core.GameServices.Resolve<InvestigationState>();
             if (System.Array.IndexOf(
                 Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-journal"

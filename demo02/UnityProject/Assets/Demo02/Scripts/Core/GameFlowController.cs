@@ -44,8 +44,8 @@ namespace Demo02.Core
         {
             Instance = this;
             GameServices.Register<IGameFlowState>(this);
-            investigationState = FindAnyObjectByType<InvestigationState>();
-            party = FindAnyObjectByType<PlayerPartyController>();
+            investigationState = Demo02.Core.GameServices.Resolve<InvestigationState>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
         }
 
         private void Start()
@@ -245,7 +245,7 @@ namespace Demo02.Core
         {
             yield return null;
             PlayerPartyController previewParty =
-                FindAnyObjectByType<PlayerPartyController>();
+                Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             Transform character = previewParty != null
                 ? previewParty.ActiveCharacter
                 : null;
@@ -284,7 +284,7 @@ namespace Demo02.Core
             );
             yield return null;
             PlayerPartyController previewParty =
-                FindAnyObjectByType<PlayerPartyController>();
+                Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             previewParty?.ActiveCharacter?
                 .GetComponent<ThirdPersonController>()
                 ?.ForceGlideForPreview();
@@ -339,7 +339,7 @@ namespace Demo02.Core
             );
             yield return null;
             PlayerPartyController previewParty =
-                FindAnyObjectByType<PlayerPartyController>();
+                Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             CharacterRuntime runtime = previewParty?.ActiveCharacter != null
                 ? previewParty.ActiveCharacter
                     .GetComponent<CharacterRuntime>()

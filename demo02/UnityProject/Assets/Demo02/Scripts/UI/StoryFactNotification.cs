@@ -35,7 +35,7 @@ namespace Demo02.UI
         private void Start()
         {
             investigationState =
-                FindAnyObjectByType<InvestigationState>();
+                Demo02.Core.GameServices.Resolve<InvestigationState>();
             if (investigationState == null)
             {
                 return;

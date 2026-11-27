@@ -2,6 +2,16 @@
 
 本项目按可验证的开发里程碑记录变更。详细差异可通过 Git 提交和对应标签查看。
 
+## Centralized Runtime Services v1.75.1 - 2026-11-27
+
+- 新增 `GameServices.Resolve<T>()`，统一运行时代码的场景服务发现和缓存入口。
+- 将运行时全部 85 处直接 `FindAnyObjectByType` 调用迁移到服务入口。
+- 服务查询会识别已销毁的 Unity 对象并移除失效注册，避免场景切换后继续返回
+  被销毁的控制器。
+- 架构审计禁止 `GameServices` 之外的运行时源码直接调用场景类型搜索，新增依赖
+  必须经过统一入口。
+- 增加服务解析、缓存和销毁失效测试；EditMode 扩展到 13 个测试入口。
+
 ## PlayMode Runtime Smoke v1.75.0 - 2026-11-27
 
 - 新增 `Demo02.Tests.PlayMode` 显式测试程序集，在真实播放模式下验证游戏启动链路。

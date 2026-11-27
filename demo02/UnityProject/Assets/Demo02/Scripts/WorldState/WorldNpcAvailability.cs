@@ -21,7 +21,7 @@ namespace Demo02.WorldState
         private void Start()
         {
             investigationState =
-                FindAnyObjectByType<InvestigationState>();
+                Demo02.Core.GameServices.Resolve<InvestigationState>();
             if (investigationState != null)
             {
                 investigationState.StageChanged += OnStageChanged;

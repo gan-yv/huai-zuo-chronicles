@@ -13,7 +13,7 @@ namespace Demo02.Narrative
 
         private void Start()
         {
-            investigationState = FindAnyObjectByType<InvestigationState>();
+            investigationState = Demo02.Core.GameServices.Resolve<InvestigationState>();
             Refresh();
         }
 

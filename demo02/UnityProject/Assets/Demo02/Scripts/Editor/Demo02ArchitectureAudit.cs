@@ -121,6 +121,20 @@ namespace Demo02.Editor
                         + sourcePath
                     );
                 }
+                if (!sourcePath.EndsWith(
+                        "GameServices.cs",
+                        StringComparison.Ordinal
+                    )
+                    && source.Contains(
+                        "FindAnyObjectByType",
+                        StringComparison.Ordinal
+                    ))
+                {
+                    throw new InvalidOperationException(
+                        "Runtime source bypasses GameServices dependency "
+                        + $"resolution: {sourcePath}"
+                    );
+                }
             }
 
             Debug.Log(

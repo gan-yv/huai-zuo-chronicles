@@ -27,7 +27,7 @@ namespace Demo02.Combat
             }
 
             PlayerPartyController party =
-                FindAnyObjectByType<PlayerPartyController>();
+                Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             Transform player = party != null ? party.ActiveCharacter : null;
             if (player == null)
             {

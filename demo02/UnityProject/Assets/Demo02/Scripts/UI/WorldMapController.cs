@@ -72,9 +72,9 @@ namespace Demo02.UI
 
         private void Start()
         {
-            screenFade = FindAnyObjectByType<ScreenFade>();
+            screenFade = Demo02.Core.GameServices.Resolve<ScreenFade>();
             investigationState =
-                FindAnyObjectByType<InvestigationState>();
+                Demo02.Core.GameServices.Resolve<InvestigationState>();
             if (System.Array.IndexOf(
                 Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-map"

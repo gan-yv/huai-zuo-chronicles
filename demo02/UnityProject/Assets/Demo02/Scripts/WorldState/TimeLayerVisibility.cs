@@ -20,7 +20,7 @@ namespace Demo02.WorldState
 
         private void Start()
         {
-            controller = FindAnyObjectByType<TimeLayerController>();
+            controller = Demo02.Core.GameServices.Resolve<TimeLayerController>();
             if (controller != null)
             {
                 controller.LayerChanged += OnLayerChanged;

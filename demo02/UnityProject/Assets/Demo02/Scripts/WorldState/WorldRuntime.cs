@@ -384,7 +384,7 @@ namespace Demo02.WorldState
                 yield break;
             }
 
-            PlayerPartyController party = FindAnyObjectByType<PlayerPartyController>();
+            PlayerPartyController party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             if (party == null || party.ActiveCharacter == null)
             {
                 Debug.LogWarning("WorldRuntime could not find the player party after scene load.");

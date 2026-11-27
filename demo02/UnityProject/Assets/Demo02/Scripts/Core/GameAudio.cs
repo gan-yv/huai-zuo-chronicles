@@ -90,7 +90,7 @@ namespace Demo02.Core
 
         private void Start()
         {
-            party = FindAnyObjectByType<PlayerPartyController>();
+            party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
         }
 
         private void Update()

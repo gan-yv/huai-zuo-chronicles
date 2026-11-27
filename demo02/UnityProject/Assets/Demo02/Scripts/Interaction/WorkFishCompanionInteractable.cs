@@ -98,7 +98,7 @@ namespace Demo02.Interaction
             }
 
             TimeLayerController timeLayer =
-                FindAnyObjectByType<TimeLayerController>();
+                Demo02.Core.GameServices.Resolve<TimeLayerController>();
             DialogueLine[][] chats =
                 timeLayer != null
                     && timeLayer.CurrentLayer == TimeLayer.Past
