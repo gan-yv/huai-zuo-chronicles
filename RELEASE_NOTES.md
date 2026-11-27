@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.74.3
+# Huai-Zuo Chronicles v1.74.4
 
 发布日期：2026-11-27  
 平台：Windows x64 / Unity Project  
@@ -6,7 +6,7 @@
 
 ## 当前入口
 
-- [GitHub Release](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.74.3)
+- [GitHub Release](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.74.4)
 - [全部历史版本](https://github.com/gan-yv/huai-zuo-chronicles/releases)
 - [项目首页](README.md)
 - [完整变更记录](CHANGELOG.md)
@@ -23,6 +23,8 @@ Unity 工程。
   运行时参数入口和 Markdown 本地链接。
 - 新增结构化 Bug 和 Feature Request Issue 模板。
 - 新增 Pull Request 检查清单和 Security Policy。
+- 修复仓库检查在 Linux GitHub Runner 上的路径分隔符误判。
+- 移除 Demo01 指向被忽略构建目录的失效链接。
 
 ### 构建同步
 
@@ -74,7 +76,7 @@ Unity 工程。
 - 版本审计确认：
 
 ```text
-Version audit passed: v1.74.3, content v16, save schema v3.
+Version audit passed: v1.74.4, content v16, save schema v3.
 ```
 
 ## 已知限制

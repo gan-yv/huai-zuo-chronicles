@@ -40,7 +40,7 @@ $runtimeFiles = Get-ChildItem (
     Join-Path $demoRoot "UnityProject/Assets/Demo02/Scripts"
 ) -Recurse -Filter *.cs |
     Where-Object {
-        $_.FullName -notmatch "\\Editor\\" -and
+        $_.FullName -notmatch "[\\/]Editor[\\/]" -and
         $_.Name -ne "RuntimeLaunchOptions.cs"
     }
 foreach ($file in $runtimeFiles) {

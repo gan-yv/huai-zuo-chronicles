@@ -15,7 +15,7 @@ demo01/
 
 ## 入口
 
-- Windows 构建：[SpringRiverYiben.exe](Builds/WindowsDemo/SpringRiverYiben.exe)
+- Windows 构建：构建目录不进入 Git，历史试玩包以 GitHub Release 附件为准
 - Unity 工程：[UnityProject](UnityProject/)
 - 旧设计文档：[归档说明](docs/archive/legacy_spring_river/README.md)
 

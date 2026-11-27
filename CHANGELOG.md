@@ -2,6 +2,13 @@
 
 本项目按可验证的开发里程碑记录变更。详细差异可通过 Git 提交和对应标签查看。
 
+## Repository Check Fix v1.74.4 - 2026-11-27
+
+- 修复 GitHub Actions 在 Linux 路径下误将编辑器脚本当作运行时源码扫描的问题。
+- 修正 Demo01 README 指向已忽略本地构建目录的失效链接。
+- 仓库检查工作流重新覆盖版本、程序集、运行时边界和 Markdown 本地链接。
+- 运行时和数据格式无变化；继续提供 Windows x64 可玩构建。
+
 ## Repository Operations v1.74.3 - 2026-11-27
 
 - 新增 GitHub Actions 仓库检查，验证版本、程序集边界、运行时参数来源和
