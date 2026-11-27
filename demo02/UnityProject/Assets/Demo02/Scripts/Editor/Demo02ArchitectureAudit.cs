@@ -43,30 +43,49 @@ namespace Demo02.Editor
                 definitions[definition.name] = definition;
             }
 
+            Require(definitions, "Demo02.Foundation");
             Require(definitions, "Demo02.Runtime");
             Require(definitions, "Demo02.Editor");
             Require(definitions, "Demo02.Tests.EditMode");
             Require(definitions, "Demo02.Tests.PlayMode");
 
+            AssemblyDefinition foundation =
+                definitions["Demo02.Foundation"];
+            if (foundation.references != null
+                && foundation.references.Any(reference =>
+                    reference.StartsWith(
+                        "Demo02.",
+                        StringComparison.Ordinal
+                    )))
+            {
+                throw new InvalidOperationException(
+                    "Demo02.Foundation must not reference game assemblies."
+                );
+            }
+
             AssemblyDefinition runtime = definitions["Demo02.Runtime"];
+            RequireReference(runtime, "Demo02.Foundation");
             RequireReference(runtime, "Unity.InputSystem");
             RequireReference(runtime, "UnityEngine.UI");
             RejectReference(runtime, "Demo02.Editor");
             RejectReference(runtime, "Demo02.Tests.EditMode");
 
             AssemblyDefinition editor = definitions["Demo02.Editor"];
+            RequireReference(editor, "Demo02.Foundation");
             RequireReference(editor, "Demo02.Runtime");
             RejectReference(editor, "Demo02.Tests.EditMode");
             RequireEditorPlatform(editor);
 
             AssemblyDefinition tests =
                 definitions["Demo02.Tests.EditMode"];
+            RequireReference(tests, "Demo02.Foundation");
             RequireReference(tests, "Demo02.Runtime");
             RequireReference(tests, "Demo02.Editor");
             RequireEditorPlatform(tests);
 
             AssemblyDefinition playModeTests =
                 definitions["Demo02.Tests.PlayMode"];
+            RequireReference(playModeTests, "Demo02.Foundation");
             RequireReference(playModeTests, "Demo02.Runtime");
             RejectReference(playModeTests, "Demo02.Editor");
             RejectReference(playModeTests, "Demo02.Tests.EditMode");
@@ -148,8 +167,8 @@ namespace Demo02.Editor
             }
 
             Debug.Log(
-                "Architecture audit passed: runtime, editor, EditMode and "
-                + "PlayMode test assembly boundaries are explicit and one-way."
+                "Architecture audit passed: foundation, runtime, editor, "
+                + "EditMode and PlayMode assembly boundaries are one-way."
             );
         }
 

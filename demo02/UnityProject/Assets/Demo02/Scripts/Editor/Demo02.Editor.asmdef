@@ -2,6 +2,7 @@
   "name": "Demo02.Editor",
   "rootNamespace": "Demo02.Editor",
   "references": [
+    "Demo02.Foundation",
     "Demo02.Runtime",
     "Unity.InputSystem",
     "UnityEngine.UI",

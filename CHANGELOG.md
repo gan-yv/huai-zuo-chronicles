@@ -2,6 +2,16 @@
 
 本项目按可验证的开发里程碑记录变更。详细差异可通过 Git 提交和对应标签查看。
 
+## Foundation Assembly Boundary v1.75.3 - 2026-11-27
+
+- 新增 `Demo02.Foundation` 运行时基础程序集，承载 `GameServices`、场景名称常量和
+  启动参数入口。
+- `Demo02.Runtime`、编辑器、EditMode 和 PlayMode 程序集显式依赖 Foundation。
+- 架构审计要求 Foundation 不引用任何 `Demo02.*` 游戏程序集，运行时依赖方向由
+  编译器与测试共同约束。
+- 保留原脚本 `.meta` GUID，场景和 Prefab 对基础类型及脚本的序列化引用不变。
+- 该拆分为后续拆分内容、世界、玩法、叙事和表现程序集建立最底层依赖。
+
 ## Stable World Object IDs v1.75.2 - 2026-11-27
 
 - 新增 `WorldObjectId` 场景组件和 `WorldRuntime` 对象注册表，按稳定 ID 查询

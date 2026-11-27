@@ -63,6 +63,7 @@ $asmdefNames = @(
         }
 )
 foreach ($required in @(
+    "Demo02.Foundation",
     "Demo02.Runtime",
     "Demo02.Editor",
     "Demo02.Tests.EditMode",

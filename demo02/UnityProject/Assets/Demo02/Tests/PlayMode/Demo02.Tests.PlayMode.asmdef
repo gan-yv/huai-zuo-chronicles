@@ -2,6 +2,7 @@
   "name": "Demo02.Tests.PlayMode",
   "rootNamespace": "Demo02.Tests.PlayMode",
   "references": [
+    "Demo02.Foundation",
     "Demo02.Runtime"
   ],
   "includePlatforms": [],

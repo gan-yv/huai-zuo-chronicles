@@ -2,6 +2,7 @@
   "name": "Demo02.Tests.EditMode",
   "rootNamespace": "Demo02.Tests.EditMode",
   "references": [
+    "Demo02.Foundation",
     "Demo02.Runtime",
     "Demo02.Editor"
   ],

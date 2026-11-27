@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.75.2
+# Huai-Zuo Chronicles v1.75.3
 
 发布日期：2026-11-27  
 平台：Windows x64 / Unity Project  
@@ -11,16 +11,14 @@
 - [项目首页](README.md)
 - [完整变更记录](CHANGELOG.md)
 
-本次版本用稳定世界对象 ID 替代运行时字符串对象查找，不改变玩法、存档格式和
-内容版本。
+本次版本建立最底层 Foundation 程序集边界，不改变玩法、存档格式和内容版本。
 
 ## 本版重点
 
-- 新增 `WorldObjectId` 和 `WorldRuntime` 世界对象注册表。
-- 任务导航改用稳定对象 ID，不再依赖 NPC、修复点和结局选项的 GameObject 名称。
-- 地图快速旅行改用出生点注册表，不再使用 `GameObject.Find`。
-- 场景装配器为导航对象配置稳定 ID，重复或缺失 ID 会由内容回归发现。
-- 架构审计禁止运行时源码继续使用 `GameObject.Find`。
+- 新增 `Demo02.Foundation` 程序集，收纳服务注册、场景常量和启动参数入口。
+- Runtime、Editor、EditMode 和 PlayMode 显式依赖 Foundation。
+- Foundation 禁止引用任何游戏程序集，依赖方向由架构测试强制检查。
+- 保留脚本 GUID，现有场景、Prefab 和构建引用保持兼容。
 
 ## 验证
 

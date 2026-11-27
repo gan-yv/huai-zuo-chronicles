@@ -2,6 +2,7 @@
   "name": "Demo02.Runtime",
   "rootNamespace": "Demo02",
   "references": [
+    "Demo02.Foundation",
     "Unity.InputSystem",
     "UnityEngine.UI"
   ],

@@ -11,16 +11,19 @@
 
 ## 程序集边界
 
-当前工程使用三个显式程序集：
+当前工程使用五个显式程序集：
 
 | 程序集 | 范围 | 依赖 |
 |---|---|---|
+| `Demo02.Foundation` | 服务入口、场景常量、启动参数 | Unity 基础运行时 |
 | `Demo02.Runtime` | `Scripts` 下的运行时领域与表现代码 | Input System、UGUI |
 | `Demo02.Editor` | 内容生成、场景装配、构建和验证工具 | `Demo02.Runtime`、Unity 编辑器与 URP |
 | `Demo02.Tests.EditMode` | EditMode 测试入口 | `Demo02.Runtime`、`Demo02.Editor`、Test Framework |
+| `Demo02.Tests.PlayMode` | 真实播放模式冒烟 | `Demo02.Runtime`、Test Framework |
 
 运行时代码不得引用 `Demo02.Editor`，编辑器不得依赖测试程序集。架构测试
 `Demo02ArchitectureAudit` 会从 `.asmdef` 和运行时源码两侧检查这些约束。
+Foundation 不得引用任何游戏程序集；其他程序集必须显式声明 Foundation 依赖。
 运行时代码也不得直接读取 `Environment.GetCommandLineArgs()`；所有预览、截图、
 性能采样和测试启动参数统一通过 `RuntimeLaunchOptions` 获取。下一阶段会把
 参数判断从各控制器进一步移动到独立的预览场景运行器。
