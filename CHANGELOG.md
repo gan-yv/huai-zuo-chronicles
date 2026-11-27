@@ -2,6 +2,15 @@
 
 本项目按可验证的开发里程碑记录变更。详细差异可通过 Git 提交和对应标签查看。
 
+## Repository Presentation v1.74.1 - 2026-11-27
+
+- 重写 GitHub 仓库首页，统一项目定位、核心体验、截图、快速开始、工程重点、
+  自动验证、文档入口和维护规则。
+- 更新作品集与发布说明，移除旧版本下载地址、过时 OnGUI 状态和已完成的开放
+  世界限制描述。
+- 同步 GitHub 仓库 Description、Homepage 和 Topics，强化项目检索和作品展示。
+- 当前版本仍使用内容版本 16、存档架构版本 3，运行时和数据格式无破坏性变化。
+
 ## Engineering Hardening v1.74.0 - 2026-11-27
 
 - 建立 `version.json` 单一版本源和版本审计；构建版本、ProjectSettings、

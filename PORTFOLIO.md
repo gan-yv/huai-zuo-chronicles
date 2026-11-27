@@ -2,7 +2,9 @@
 
 Unity 3D 城市探索与技术策划作品集项目。
 
-当前版本为可运行灰盒垂直切片，包含第一章《消失的盐引》的完整玩法闭环。重点展示叙事流程、系统拆分、存档、世界内容组织、调试和迭代过程。
+当前维护版本为 **v1.74.1**。项目以可运行垂直切片为基础，持续完善 Unity
+工程边界、内容管线、存档、输入、UGUI、流式世界和自动验证，重点展示玩法实现
+与长期维护能力。
 
 ![标题界面](demo02/docs/screenshots/title-screen.png)
 
@@ -88,21 +90,17 @@ Unity 3D 城市探索与技术策划作品集项目。
 
 ## 运行
 
-Windows 构建位于：
+当前源码版本：
 
 ```text
-demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
+demo02/UnityProject
 ```
 
-发布压缩包位于：
+从 Unity `6000.5.7f1` 打开 `Assets/Demo02/Scenes/Boot/Boot.unity` 即可运行。
+Windows 构建附件以对应 GitHub Release 的 Assets 为准。
 
-```text
-demo02/Builds/Releases/HuaiZuoChronicles_Windows_x64_v1.21.0.zip
-```
-
-[从 GitHub Release 下载 Windows 试玩包](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.21.0)。
-
-构建目录默认不进入 Git，发布包作为 GitHub Release 附件保存。
+- [最新版本 portfolio-v1.74.1](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.74.1)
+- [全部历史版本](https://github.com/gan-yv/huai-zuo-chronicles/releases)
 
 ## 操作
 
@@ -148,10 +146,12 @@ R          结局或队伍倒下后重开
 
 ### 运行验证
 
-- 2026-11-22 在本机 NVIDIA RTX 3060 Laptop、1280×720 窗口下完成 15 秒自动采样。
-- 平均 172.6 FPS，1% Low 102.4 FPS，平均帧耗时 5.8 ms，托管内存约 4.9 MB。
-- 最低瞬时帧 25.1 FPS、最差帧 39.9 ms，属于运行期间偶发卡顿，仍需继续优化。
-- [查看原始 JSON 基准报告](demo02/docs/benchmarks/v1.20.0-windows-x64.json)
+- `Architecture` 审计程序集、单向依赖、服务容器、Resources 边界、运行时参数来源
+  和版本一致性。
+- `Save` 覆盖迁移、校验和、备份恢复、槽位和稳定实体 ID。
+- `Story / Combat / Data / World / InputUi` 分别验证领域流程。
+- 当前完整 EditMode 回归为 12/12 通过。
+- 性能方法和历史数据见 [性能预算](demo02/docs/Performance_Budget.md)。
 
 ### 内容系统
 
@@ -172,14 +172,19 @@ R          结局或队伍倒下后重开
 - 灰盒场景由可重复运行的 Editor Builder 生成，降低手工维护成本。
 - 演示截图通过 Unity 内部截屏参数生成，避免窗口缩放和环境遮挡。
 - 章节阶段状态机带批量验收，防止线索、锚点、修复和结局乱序。
+- 运行时、编辑器工具和 EditMode 测试拆为三个显式程序集。
+- `GameServices` 提供 Composition Root，`IGameFlowState` 与
+  `IContentProvider` 隔离具体实现。
+- 主要 HUD 与模态界面迁移到持久 UGUI，统一模态栈管理输入阻塞。
+- 自动存档使用状态签名、防抖和限频检查点；当前存档架构版本为 3。
 
 ## 已知限制
 
 - 美术仍为程序化占位模型与基础材质，但角色和店铺已具备统一轮廓。
 - 正式角色、建筑和贴图将由外部生成工具制作，再替换现有占位资源。
-- 界面主要使用原型级 OnGUI。
-- 当前音频为程序化占位反馈，车辆、人群、正式音乐和 VFX 尚未制作。
-- 大地图目前由街内远距离区域验证，后续需要拆分 Additive Scene。
+- 标题、暂停、诊断及少数专用提示仍使用 IMGUI，其余主要 HUD 和模态界面已迁移。
+- 当前音频仍混合程序化反馈和已导入素材，正式音乐、人群和 VFX 尚未完成。
+- 世界流式已支持三张附加场景，但异步场景池和更细的每帧预算仍待补充。
 - 长时间游玩和低配置性能尚未完成系统测试。
 
 ## 面试讲述方向
