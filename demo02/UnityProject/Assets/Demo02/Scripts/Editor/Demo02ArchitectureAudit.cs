@@ -46,6 +46,7 @@ namespace Demo02.Editor
             Require(definitions, "Demo02.Runtime");
             Require(definitions, "Demo02.Editor");
             Require(definitions, "Demo02.Tests.EditMode");
+            Require(definitions, "Demo02.Tests.PlayMode");
 
             AssemblyDefinition runtime = definitions["Demo02.Runtime"];
             RequireReference(runtime, "Unity.InputSystem");
@@ -63,6 +64,12 @@ namespace Demo02.Editor
             RequireReference(tests, "Demo02.Runtime");
             RequireReference(tests, "Demo02.Editor");
             RequireEditorPlatform(tests);
+
+            AssemblyDefinition playModeTests =
+                definitions["Demo02.Tests.PlayMode"];
+            RequireReference(playModeTests, "Demo02.Runtime");
+            RejectReference(playModeTests, "Demo02.Editor");
+            RejectReference(playModeTests, "Demo02.Tests.EditMode");
 
             string runtimeRoot = Path.Combine(
                 Application.dataPath,
@@ -117,8 +124,8 @@ namespace Demo02.Editor
             }
 
             Debug.Log(
-                "Architecture audit passed: runtime, editor and EditMode "
-                + "test assembly boundaries are explicit and one-way."
+                "Architecture audit passed: runtime, editor, EditMode and "
+                + "PlayMode test assembly boundaries are explicit and one-way."
             );
         }
 

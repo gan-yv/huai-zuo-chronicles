@@ -1,0 +1,19 @@
+{
+  "name": "Demo02.Tests.PlayMode",
+  "rootNamespace": "Demo02.Tests.PlayMode",
+  "references": [
+    "Demo02.Runtime"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

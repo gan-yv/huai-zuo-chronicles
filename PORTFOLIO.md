@@ -2,7 +2,7 @@
 
 Unity 3D 城市探索与技术策划作品集项目。
 
-当前维护版本为 **v1.74.1**。项目以可运行垂直切片为基础，持续完善 Unity
+当前维护版本为 **v1.75.0**。项目以可运行垂直切片为基础，持续完善 Unity
 工程边界、内容管线、存档、输入、UGUI、流式世界和自动验证，重点展示玩法实现
 与长期维护能力。
 
@@ -99,7 +99,7 @@ demo02/UnityProject
 从 Unity `6000.5.7f1` 打开 `Assets/Demo02/Scenes/Boot/Boot.unity` 即可运行。
 Windows 构建附件以对应 GitHub Release 的 Assets 为准。
 
-- [最新版本 portfolio-v1.74.1](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.74.1)
+- [最新发布 portfolio-v1.74.4](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.74.4)
 - [全部历史版本](https://github.com/gan-yv/huai-zuo-chronicles/releases)
 
 ## 操作

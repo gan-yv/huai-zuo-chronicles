@@ -63,3 +63,24 @@ VerifyInputUiSuiteForBatch
 
 EditMode 测试直接调用对应领域套件，`Demo02GreyboxBuilder` 和
 `Demo02RegressionVerifier` 仅用于兼容既有命令。
+
+## PlayMode 测试
+
+运行时代码另由 `Demo02.Tests.PlayMode` 程序集覆盖。当前冒烟测试验证：
+
+- `Boot` 场景可加载，并可从统一内容目录解析默认章节和案件。
+- 默认章节正式场景可加载，核心世界、流程、存档和队伍服务能够启动。
+- 目录中的每个流式场景都存在于 Build Settings，并可完成附加加载和卸载。
+
+运行 PlayMode 分组：
+
+```powershell
+Unity.exe -batchmode -nographics `
+  -projectPath <UnityProject> `
+  -runTests -testPlatform PlayMode `
+  -testCategory PlayMode `
+  -testResults <results.xml>
+```
+
+PlayMode 入口使用真实场景加载，不替代 EditMode 的静态内容和存档校验；两类
+测试必须同时通过才能发布。

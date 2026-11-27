@@ -65,7 +65,8 @@ $asmdefNames = @(
 foreach ($required in @(
     "Demo02.Runtime",
     "Demo02.Editor",
-    "Demo02.Tests.EditMode"
+    "Demo02.Tests.EditMode",
+    "Demo02.Tests.PlayMode"
 )) {
     if ($required -notin $asmdefNames) {
         $errors.Add("Missing assembly definition: $required")
