@@ -45,7 +45,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89a2daec8568e6943bc888ede72c027c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Demo02.Player.ReadyMadeCharacterAnimator
+  m_EditorClassIdentifier: Demo02.Runtime::Demo02.Player.ReadyMadeCharacterAnimator
   fullSpeed: 7.2
 --- !u!114 &5235896966009798341
 MonoBehaviour:
@@ -58,7 +58,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ed9c199eb5dea9e48b2f6e3898ab6d35, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Demo02.Player.CharacterExpressionAnimator
+  m_EditorClassIdentifier: Demo02.Runtime::Demo02.Player.CharacterExpressionAnimator
 --- !u!1001 &2764914585601488111
 PrefabInstance:
   m_ObjectHideFlags: 0

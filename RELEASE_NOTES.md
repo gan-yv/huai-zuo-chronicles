@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.74.1
+# Huai-Zuo Chronicles v1.74.2
 
 发布日期：2026-11-27  
 平台：Windows x64 / Unity Project  
@@ -6,7 +6,7 @@
 
 ## 当前入口
 
-- [GitHub Release](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.74.1)
+- [GitHub Release](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.74.2)
 - [全部历史版本](https://github.com/gan-yv/huai-zuo-chronicles/releases)
 - [项目首页](README.md)
 - [完整变更记录](CHANGELOG.md)
@@ -15,6 +15,13 @@ Windows 构建附件以具体 Release 的 Assets 为准；仓库本身包含可�
 Unity 工程。
 
 ## 本版重点
+
+### 构建同步
+
+- 完整重建场景、Prefab、材质引用和内容清单。
+- 将生成内容更新到 `Demo02.Runtime` 程序集。
+- 修复内容清单版本滞后。
+- 提供 Windows x64 构建 ZIP，并验证构建可启动。
 
 ### 项目展示
 
@@ -59,7 +66,7 @@ Unity 工程。
 - 版本审计确认：
 
 ```text
-Version audit passed: v1.74.1, content v16, save schema v3.
+Version audit passed: v1.74.2, content v16, save schema v3.
 ```
 
 ## 已知限制
