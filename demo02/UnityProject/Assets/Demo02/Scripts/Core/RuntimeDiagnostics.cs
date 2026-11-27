@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Demo02.UI;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.Profiling;
 
 namespace Demo02.Core
 {
@@ -25,6 +25,14 @@ namespace Demo02.Core
             public float AverageFrameMs;
             public float WorstFrameMs;
             public long ManagedMemoryBytes;
+            public long TotalAllocatedBytes;
+            public long TotalReservedBytes;
+            public long MonoHeapBytes;
+            public long MonoUsedBytes;
+            public long TempAllocatorBytes;
+            public int GcGen0Collections;
+            public int GcGen1Collections;
+            public int GcGen2Collections;
             public string GraphicsDevice;
         }
 
@@ -40,6 +48,11 @@ namespace Demo02.Core
         private long previousManagedMemory;
         private float nextMemorySample;
         private long managedMemoryDelta;
+        private long benchmarkStartAllocated;
+        private long benchmarkStartReserved;
+        private int benchmarkStartGc0;
+        private int benchmarkStartGc1;
+        private int benchmarkStartGc2;
 
         private void Start()
         {
@@ -52,7 +65,7 @@ namespace Demo02.Core
             {
                 string outputPath = GetArgumentValue("--benchmark-output=");
                 bool quitAfter = Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--benchmark-exit"
                 ) >= 0;
                 StartCoroutine(RunBenchmark(seconds, outputPath, quitAfter));
@@ -61,8 +74,7 @@ namespace Demo02.Core
 
         private void Update()
         {
-            if (Keyboard.current != null
-                && Keyboard.current.f3Key.wasPressedThisFrame)
+            if (Demo02Input.DiagnosticsPressed)
             {
                 overlayVisible = !overlayVisible;
                 GameAudio.PlayInteraction();
@@ -159,6 +171,13 @@ namespace Demo02.Core
         {
             yield return new WaitForSecondsRealtime(1.5f);
             benchmarkFrameTimes.Clear();
+            benchmarkStartAllocated =
+                Profiler.GetTotalAllocatedMemoryLong();
+            benchmarkStartReserved =
+                Profiler.GetTotalReservedMemoryLong();
+            benchmarkStartGc0 = GC.CollectionCount(0);
+            benchmarkStartGc1 = GC.CollectionCount(1);
+            benchmarkStartGc2 = GC.CollectionCount(2);
             benchmarkRunning = true;
             float startedAt = Time.unscaledTime;
 
@@ -236,6 +255,19 @@ namespace Demo02.Core
                     ? sorted[sorted.Count - 1] * 1000f
                     : 0f,
                 ManagedMemoryBytes = GC.GetTotalMemory(false),
+                TotalAllocatedBytes =
+                    Profiler.GetTotalAllocatedMemoryLong(),
+                TotalReservedBytes =
+                    Profiler.GetTotalReservedMemoryLong(),
+                MonoHeapBytes = Profiler.GetMonoHeapSizeLong(),
+                MonoUsedBytes = Profiler.GetMonoUsedSizeLong(),
+                TempAllocatorBytes = Profiler.GetTempAllocatorSize(),
+                GcGen0Collections =
+                    GC.CollectionCount(0) - benchmarkStartGc0,
+                GcGen1Collections =
+                    GC.CollectionCount(1) - benchmarkStartGc1,
+                GcGen2Collections =
+                    GC.CollectionCount(2) - benchmarkStartGc2,
                 GraphicsDevice = SystemInfo.graphicsDeviceName
             };
         }
@@ -250,7 +282,7 @@ namespace Demo02.Core
 
         private static string GetArgumentValue(string prefix)
         {
-            foreach (string argument in Environment.GetCommandLineArgs())
+            foreach (string argument in Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
                 if (argument.StartsWith(prefix, StringComparison.Ordinal))
                 {

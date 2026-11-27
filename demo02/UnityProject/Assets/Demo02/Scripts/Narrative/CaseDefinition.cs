@@ -816,7 +816,7 @@ namespace Demo02.Narrative
             storyFacts = newStoryFacts;
             inventoryItems = newInventoryItems;
             optionalObjectives = newOptionalObjectives;
-            contentVersion = 9;
+            contentVersion = 16;
         }
 
         public void ConfigureStoryContentForEditor(
@@ -849,7 +849,7 @@ namespace Demo02.Narrative
             storyFacts = newStoryFacts;
             inventoryItems = newInventoryItems;
             optionalObjectives = newOptionalObjectives;
-            contentVersion = 9;
+            contentVersion = 16;
         }
 #endif
     }

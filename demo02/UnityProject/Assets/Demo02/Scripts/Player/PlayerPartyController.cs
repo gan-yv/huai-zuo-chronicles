@@ -1,7 +1,7 @@
 using Demo02.Combat;
 using Demo02.Interaction;
+using Demo02.Core;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Demo02.Player
 {
@@ -83,25 +83,25 @@ namespace Demo02.Player
 
         private void Update()
         {
-            if (Time.timeScale > 0f && Keyboard.current != null)
+            if (Time.timeScale > 0f)
             {
-                if (Keyboard.current.digit1Key.wasPressedThisFrame)
+                if (Demo02Input.PartySlotPressed(0))
                 {
                     SwitchCharacter(0);
                 }
-                if (Keyboard.current.digit2Key.wasPressedThisFrame)
+                if (Demo02Input.PartySlotPressed(1))
                 {
                     SwitchCharacter(1);
                 }
-                if (Keyboard.current.digit3Key.wasPressedThisFrame)
+                if (Demo02Input.PartySlotPressed(2))
                 {
                     SwitchCharacter(2);
                 }
-                if (Keyboard.current.digit4Key.wasPressedThisFrame)
+                if (Demo02Input.PartySlotPressed(3))
                 {
                     SwitchCharacter(3);
                 }
-                if (Keyboard.current.tabKey.wasPressedThisFrame)
+                if (Demo02Input.CyclePartyPressed)
                 {
                     CycleCharacter();
                 }

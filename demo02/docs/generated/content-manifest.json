@@ -1,0 +1,82 @@
+{
+    "Version": "1.73.0",
+    "GeneratedAtUtc": "2026-11-27T06:22:55.5903551Z",
+    "CatalogPath": "Assets/Demo02/Resources/Data/Demo02ContentCatalog.asset",
+    "Chapters": [
+        {
+            "Id": "chapter-01",
+            "DisplayName": "消失的盐引",
+            "AssetPath": "Assets/Demo02/Data/Chapters/Chapter01.asset",
+            "SceneName": "Greybox",
+            "EntrySpawnId": "guangling_start",
+            "EntryAreaId": "official-street",
+            "CaseId": "chapter-01",
+            "CasePath": "Assets/Demo02/Data/Cases/Chapter01_Case.asset"
+        }
+    ],
+    "Characters": [
+        {
+            "Id": "repairer",
+            "DisplayName": "修复者",
+            "AssetPath": "Assets/Demo02/Data/Characters/CHR_Repairer.asset",
+            "ResonanceMark": "Continuation"
+        },
+        {
+            "Id": "path-guide",
+            "DisplayName": "途印向导",
+            "AssetPath": "Assets/Demo02/Data/Characters/CHR_PathGuide.asset",
+            "ResonanceMark": "Path"
+        }
+    ],
+    "Encounters": [
+        {
+            "Id": "official-blockade",
+            "DisplayName": "官署前街封锁",
+            "AssetPath": "Assets/Demo02/Data/Encounters/ENC_OfficialBlockade.asset",
+            "SupportEncounterIds": [
+                "salt-street-support"
+            ]
+        },
+        {
+            "Id": "salt-street-support",
+            "DisplayName": "盐仓横街增援",
+            "AssetPath": "Assets/Demo02/Data/Encounters/ENC_SaltStreetSupport.asset",
+            "SupportEncounterIds": []
+        },
+        {
+            "Id": "dongguan-patrol",
+            "DisplayName": "东关街巡哨",
+            "AssetPath": "Assets/Demo02/Data/Encounters/ENC_DongguanPatrol.asset",
+            "SupportEncounterIds": []
+        },
+        {
+            "Id": "caiyi-lookout",
+            "DisplayName": "彩衣街望风",
+            "AssetPath": "Assets/Demo02/Data/Encounters/ENC_CaiyiLookout.asset",
+            "SupportEncounterIds": []
+        }
+    ],
+    "StreamingRegions": [
+        {
+            "Id": "salt-street-support",
+            "DisplayName": "盐仓横街增援",
+            "AssetPath": "Assets/Demo02/Data/WorldStreaming/STREAM_SaltStreetSupport.asset",
+            "SceneName": "SaltStreetSupport",
+            "EncounterId": "salt-street-support"
+        },
+        {
+            "Id": "dongguan-patrol",
+            "DisplayName": "东关街巡哨",
+            "AssetPath": "Assets/Demo02/Data/WorldStreaming/STREAM_DongguanPatrol.asset",
+            "SceneName": "DongguanPatrol",
+            "EncounterId": "dongguan-patrol"
+        },
+        {
+            "Id": "caiyi-lookout",
+            "DisplayName": "彩衣街望风",
+            "AssetPath": "Assets/Demo02/Data/WorldStreaming/STREAM_CaiyiLookout.asset",
+            "SceneName": "CaiyiLookout",
+            "EncounterId": "caiyi-lookout"
+        }
+    ]
+}

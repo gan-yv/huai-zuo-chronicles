@@ -7,7 +7,6 @@ using Demo02.Core;
 using Demo02.Narrative;
 using Demo02.Player;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Demo02.UI
 {
@@ -49,7 +48,7 @@ namespace Demo02.UI
             caseContent = investigationState?.CaseContent;
 
             if (Array.IndexOf(
-                Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-inventory"
             ) >= 0)
             {
@@ -68,22 +67,17 @@ namespace Demo02.UI
 
         private void Update()
         {
-            if (Keyboard.current == null)
-            {
-                return;
-            }
-
             if (isOpen)
             {
-                if (Keyboard.current.escapeKey.wasPressedThisFrame
-                    || Keyboard.current.bKey.wasPressedThisFrame)
+                if (Demo02Input.CancelPressed
+                    || Demo02Input.InventoryPressed)
                 {
                     ToggleInventory();
                 }
                 return;
             }
 
-            if (!Keyboard.current.bKey.wasPressedThisFrame
+            if (!Demo02Input.InventoryPressed
                 || Time.timeScale <= 0f
                 || IsBlockedByOtherUi())
             {
@@ -95,7 +89,9 @@ namespace Demo02.UI
 
         public void ToggleInventory()
         {
-            if (!isOpen && Time.timeScale <= 0f)
+            if (!isOpen
+                && (Time.timeScale <= 0f
+                    || GameplayUiState.HasOpenModalExcept(this)))
             {
                 return;
             }
@@ -105,6 +101,7 @@ namespace Demo02.UI
             {
                 previousTimeScale = Time.timeScale;
                 Time.timeScale = 0f;
+                GameplayUiState.RegisterModal(this);
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
                 EnsureSelection();
@@ -113,6 +110,7 @@ namespace Demo02.UI
             else
             {
                 Time.timeScale = previousTimeScale;
+                GameplayUiState.UnregisterModal(this);
                 GameAudio.PlayInteraction();
             }
         }
@@ -124,10 +122,12 @@ namespace Demo02.UI
                 Time.timeScale = previousTimeScale;
                 isOpen = false;
             }
+            GameplayUiState.UnregisterModal(this);
         }
 
         private void OnDestroy()
         {
+            GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
                 Instance = null;
@@ -136,18 +136,7 @@ namespace Demo02.UI
 
         private bool IsBlockedByOtherUi()
         {
-            return (DialogueController.Instance != null
-                    && DialogueController.Instance.IsOpen)
-                || (WorldMapController.Instance != null
-                    && WorldMapController.Instance.IsOpen)
-                || (InvestigationJournalController.Instance != null
-                    && InvestigationJournalController.Instance.IsOpen)
-                || (TestimonyBoardController.Instance != null
-                    && TestimonyBoardController.Instance.IsOpen)
-                || (SettingsController.Instance != null
-                    && SettingsController.Instance.IsOpen)
-                || (SaveSlotController.Instance != null
-                    && SaveSlotController.Instance.IsOpen)
+            return GameplayUiState.HasOpenModalExcept(this)
                 || (ScreenFade.Instance != null
                     && ScreenFade.Instance.IsTransitioning);
         }
@@ -578,7 +567,7 @@ namespace Demo02.UI
 
         private static string GetArgumentValue(string prefix)
         {
-            foreach (string argument in Environment.GetCommandLineArgs())
+            foreach (string argument in Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
                 if (argument.StartsWith(prefix, StringComparison.Ordinal))
                 {

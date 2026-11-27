@@ -12,6 +12,8 @@ namespace Demo02.Combat
         [SerializeField] private string encounterId = "new-encounter";
         [SerializeField] private string displayName = "新遭遇";
         [SerializeField, Min(1f)] private float activationRadius = 16f;
+        [SerializeField] private EnemyArchetype enemyArchetype =
+            EnemyArchetype.Chaser;
         [SerializeField, Min(1f)] private float enemyHealth = 60f;
         [SerializeField, Min(0f)] private float enemyDamage = 10f;
         [SerializeField, Min(0f)] private float enemyMoveSpeed = 2.2f;
@@ -22,6 +24,7 @@ namespace Demo02.Combat
         public string EncounterId => encounterId;
         public string DisplayName => displayName;
         public float ActivationRadius => activationRadius;
+        public EnemyArchetype EnemyArchetype => enemyArchetype;
         public float EnemyHealth => enemyHealth;
         public float EnemyDamage => enemyDamage;
         public float EnemyMoveSpeed => enemyMoveSpeed;
@@ -38,6 +41,7 @@ namespace Demo02.Combat
             float damage,
             float moveSpeed,
             float aggroDistance,
+            EnemyArchetype archetype,
             bool activeByDefault,
             IEnumerable<string> supportIds)
         {
@@ -48,6 +52,7 @@ namespace Demo02.Combat
             enemyDamage = Mathf.Max(0f, damage);
             enemyMoveSpeed = Mathf.Max(0f, moveSpeed);
             enemyAggroDistance = Mathf.Max(0f, aggroDistance);
+            enemyArchetype = archetype;
             startsActive = activeByDefault;
             supportEncounterIds = supportIds != null
                 ? new List<string>(supportIds)

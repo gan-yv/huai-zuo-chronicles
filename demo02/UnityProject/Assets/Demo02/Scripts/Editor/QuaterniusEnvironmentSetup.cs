@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Demo02.Core;
+using Demo02.Player;
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -172,9 +174,18 @@ namespace Demo02.Editor
                 );
             }
 
-            for (int frame = 0; frame < 4; frame++)
+            AnimationMode.StartAnimationMode();
+            try
             {
-                RenderPipeline.SubmitRenderRequest(camera, request);
+                SampleDefaultPoses();
+                for (int frame = 0; frame < 4; frame++)
+                {
+                    RenderPipeline.SubmitRenderRequest(camera, request);
+                }
+            }
+            finally
+            {
+                AnimationMode.StopAnimationMode();
             }
             RenderTexture previous = RenderTexture.active;
             RenderTexture.active = target;
@@ -199,6 +210,40 @@ namespace Demo02.Editor
             UnityEngine.Object.DestroyImmediate(target);
             AssetDatabase.Refresh();
             Debug.Log($"Quaternius screenshot captured at {fullPath}");
+        }
+
+        private static void SampleDefaultPoses()
+        {
+            ReadyMadeCharacterAnimator[] characters =
+                UnityEngine.Object.FindObjectsByType<
+                    ReadyMadeCharacterAnimator
+                >(
+                    FindObjectsInactive.Exclude,
+                    FindObjectsSortMode.None
+                );
+            foreach (ReadyMadeCharacterAnimator character in characters)
+            {
+                Animator animator =
+                    character.GetComponentInChildren<Animator>(true);
+                if (animator == null
+                    || animator.runtimeAnimatorController
+                        is not AnimatorController controller)
+                {
+                    continue;
+                }
+
+                AnimationClip clip =
+                    controller.layers[0].stateMachine.defaultState?.motion
+                        as AnimationClip;
+                if (clip != null)
+                {
+                    AnimationMode.SampleAnimationClip(
+                        animator.gameObject,
+                        clip,
+                        clip.length * 0.45f
+                    );
+                }
+            }
         }
 
         public static void BuildPilotWindowsForBatch()
@@ -1029,7 +1074,10 @@ namespace Demo02.Editor
                 importer.filterMode = FilterMode.Bilinear;
                 importer.wrapMode = TextureWrapMode.Repeat;
                 importer.textureCompression = TextureImporterCompression.CompressedHQ;
-                importer.maxTextureSize = 2048;
+                RuntimeAssetBudgetSetup.ApplyToImporter(
+                    importer,
+                    assetPath
+                );
                 importer.SaveAndReimport();
             }
         }

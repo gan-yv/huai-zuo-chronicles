@@ -6,13 +6,12 @@ using Demo02.Player;
 using Demo02.UI;
 using Demo02.WorldState;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace Demo02.Core
 {
     [DefaultExecutionOrder(-50)]
-    public sealed class GameFlowController : MonoBehaviour
+    public sealed class GameFlowController : MonoBehaviour, IGameFlowState
     {
         public static GameFlowController Instance { get; private set; }
 
@@ -20,15 +19,31 @@ namespace Demo02.Core
         private PlayerPartyController party;
         private bool isPaused;
         private bool isEndingFrozen;
+        private bool endingDismissed;
         private float sessionStartedAt;
         private float capturedPlayTime;
 
         public bool IsPaused => isPaused;
         public bool IsGameEnding => IsEnding;
+        public bool CanExploreAfterEnding =>
+            investigationState != null
+            && investigationState.IsConclusionReached
+            && (party == null || !party.IsPartyDefeated);
+
+#if UNITY_EDITOR
+        public void BindForTests(
+            InvestigationState state,
+            PlayerPartyController playerParty)
+        {
+            investigationState = state;
+            party = playerParty;
+        }
+#endif
 
         private void Awake()
         {
             Instance = this;
+            GameServices.Register<IGameFlowState>(this);
             investigationState = FindAnyObjectByType<InvestigationState>();
             party = FindAnyObjectByType<PlayerPartyController>();
         }
@@ -44,7 +59,7 @@ namespace Demo02.Core
                 StartCoroutine(CaptureGameplay(gameplayCapture));
             }
             if (Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--preview-teahouse"
                 ) >= 0)
             {
@@ -57,7 +72,7 @@ namespace Demo02.Core
                 );
             }
             if (Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--preview-combat"
                 ) >= 0)
             {
@@ -70,7 +85,7 @@ namespace Demo02.Core
                 );
             }
             if (Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--preview-companion-combat"
                 ) >= 0)
             {
@@ -83,21 +98,21 @@ namespace Demo02.Core
                 );
             }
             if (Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--preview-glide"
                 ) >= 0)
             {
                 StartCoroutine(PrepareGlidePreview());
             }
             if (Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--preview-abilities"
                 ) >= 0)
             {
                 StartCoroutine(PrepareAbilityPreview());
             }
             if (Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--preview-streaming"
                 ) >= 0)
             {
@@ -110,7 +125,7 @@ namespace Demo02.Core
                 );
             }
             if (Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--preview-story"
                 ) >= 0)
             {
@@ -123,7 +138,7 @@ namespace Demo02.Core
                 );
             }
             if (Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--preview-elite"
                 ) >= 0)
             {
@@ -136,7 +151,7 @@ namespace Demo02.Core
                 );
             }
             if (Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--preview-glide-course"
                 ) >= 0)
             {
@@ -149,28 +164,28 @@ namespace Demo02.Core
                 );
             }
             if (Array.IndexOf(
-                Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-paper-kite"
             ) >= 0)
             {
                 StartCoroutine(PreparePaperKitePreview(showChoice: false));
             }
             if (Array.IndexOf(
-                Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-paper-kite-choice"
             ) >= 0)
             {
                 StartCoroutine(PreparePaperKitePreview(showChoice: true));
             }
             if (Array.IndexOf(
-                Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-paper-kite-result"
             ) >= 0)
             {
                 StartCoroutine(PreparePaperKiteResultPreview());
             }
             if (Array.IndexOf(
-                Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-companion"
             ) >= 0)
             {
@@ -183,7 +198,7 @@ namespace Demo02.Core
                 );
             }
             if (Array.IndexOf(
-                Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-pavilion"
             ) >= 0)
             {
@@ -196,7 +211,7 @@ namespace Demo02.Core
                 );
             }
             if (Array.IndexOf(
-                Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-cottage"
             ) >= 0)
             {
@@ -210,7 +225,7 @@ namespace Demo02.Core
             }
 
             if (Array.IndexOf(
-                Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-ending"
             ) >= 0)
             {
@@ -355,7 +370,7 @@ namespace Demo02.Core
             Debug.Log($"Gameplay preview captured to {path}");
             yield return null;
             if (Array.IndexOf(
-                    Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--capture-exit"
                 ) >= 0)
             {
@@ -365,41 +380,7 @@ namespace Demo02.Core
 
         private void Update()
         {
-            if (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
-            {
-                return;
-            }
-
-            if (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
-            {
-                return;
-            }
-
-            if (InvestigationJournalController.Instance != null
-                && InvestigationJournalController.Instance.IsOpen)
-            {
-                return;
-            }
-
-            if (InventoryController.Instance != null
-                && InventoryController.Instance.IsOpen)
-            {
-                return;
-            }
-
-            if (SettingsController.Instance != null && SettingsController.Instance.IsOpen)
-            {
-                return;
-            }
-
-            if (TestimonyBoardController.Instance != null
-                && TestimonyBoardController.Instance.IsOpen)
-            {
-                return;
-            }
-
-            if (SaveSlotController.Instance != null
-                && SaveSlotController.Instance.IsOpen)
+            if (GameplayUiState.IsModalOpen)
             {
                 return;
             }
@@ -413,7 +394,7 @@ namespace Demo02.Core
                     capturedPlayTime = Time.unscaledTime - sessionStartedAt;
                 }
 
-                if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
+                if (Demo02Input.RestartPressed)
                 {
                     RestartCurrentScene();
                 }
@@ -427,7 +408,7 @@ namespace Demo02.Core
                 Time.timeScale = 1f;
             }
 
-            if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (Demo02Input.CancelPressed)
             {
                 TogglePause();
                 return;
@@ -446,6 +427,7 @@ namespace Demo02.Core
 
         private void OnDestroy()
         {
+            GameServices.Unregister<IGameFlowState>(this);
             if (Instance == this)
             {
                 Instance = null;
@@ -464,6 +446,7 @@ namespace Demo02.Core
             {
                 return;
             }
+            bool endingShown = IsEnding;
 
             UiTheme.DrawRect(
                 new Rect(0f, 0f, Screen.width, Screen.height),
@@ -473,21 +456,23 @@ namespace Demo02.Core
 
             string title;
             string body;
-            if (IsEnding)
+            if (endingShown)
             {
                 if (investigationState != null
                     && investigationState.SelectedConclusion == ConclusionChoice.Preserve)
                 {
                     title = "结局：盐引巷重新入册";
                     body = "沈砚的名字重新出现在盐仓账册上，盐引巷回到广陵地图。陆崇背后的势力也看见了修复留下的光。"
-                        + ChapterCopy.GetEndingDetail(investigationState);
+                        + ChapterCopy.GetEndingDetail(investigationState)
+                        + ChapterCopy.GetEndingEpilogue(investigationState);
                 }
                 else if (investigationState != null
                     && investigationState.SelectedConclusion == ConclusionChoice.Seal)
                 {
                     title = "结局：盐引巷封存";
                     body = "时缝平息，私盐案被永久藏进旧街。沈砚没有回来，只在你手中的修复记录里留下一行名字。"
-                        + ChapterCopy.GetEndingDetail(investigationState);
+                        + ChapterCopy.GetEndingDetail(investigationState)
+                        + ChapterCopy.GetEndingEpilogue(investigationState);
                 }
                 else
                 {
@@ -528,23 +513,35 @@ namespace Demo02.Core
 
             float width = 300f * scale;
             float x = (Screen.width - width) * 0.5f;
-            if (IsEnding)
+            if (endingShown)
             {
                 DrawEndingSummary(scale);
             }
 
-            float y = Screen.height * (IsEnding ? 0.69f : 0.48f);
+            float y = Screen.height * (endingShown ? 0.69f : 0.48f);
             float buttonHeight = 48f * scale;
-            if (!IsEnding && GUI.Button(
-                new Rect(x, y, width, buttonHeight),
-                "继续游戏",
-                UiTheme.Button(16)
-            ))
+            if (endingShown && CanExploreAfterEnding)
+            {
+                if (GUI.Button(
+                    new Rect(x, y, width, buttonHeight),
+                    "继续探索街区",
+                    UiTheme.Button(16)
+                ))
+                {
+                    ContinueAfterEnding();
+                }
+                y += 62f * scale;
+            }
+            else if (!endingShown && GUI.Button(
+                    new Rect(x, y, width, buttonHeight),
+                    "继续游戏",
+                    UiTheme.Button(16)
+                ))
             {
                 TogglePause();
             }
             float saveY = y + 62f * scale;
-            if (!IsEnding && GUI.Button(
+            if (!endingShown && GUI.Button(
                 new Rect(x, saveY, width, buttonHeight),
                 "存档与读档",
                 UiTheme.Button(16)
@@ -552,7 +549,7 @@ namespace Demo02.Core
             {
                 OpenSaveSlots();
             }
-            float restartY = IsEnding ? saveY : saveY + 62f * scale;
+            float restartY = endingShown ? y : saveY + 62f * scale;
             if (GUI.Button(
                 new Rect(x, restartY, width, buttonHeight),
                 "重新开始",
@@ -580,7 +577,7 @@ namespace Demo02.Core
 
             string[] lines = BuildSummaryLines();
             float width = Mathf.Min(Screen.width - 100f, 760f * scale);
-            float height = 118f * scale;
+            float height = 156f * scale;
             Rect panel = new(
                 (Screen.width - width) * 0.5f,
                 Screen.height * 0.43f,
@@ -660,6 +657,50 @@ namespace Demo02.Core
                 teaStatus = "未调查茶肆旁证";
             }
 
+            string clerkStatus;
+            if (investigationState.HasFact("archive-clerk-recruited"))
+            {
+                clerkStatus = "严槐参与抄录";
+            }
+            else if (investigationState.HasFact(
+                    "archive-clerk-sheltered"))
+            {
+                clerkStatus = "严槐留在局外";
+            }
+            else if (investigationState.HasFact(
+                    "archive-clerk-ink-record"))
+            {
+                clerkStatus = "严槐已记录新浆";
+            }
+            else
+            {
+                clerkStatus = "严槐未追问";
+            }
+            string aheStatus;
+            if (!investigationState.HasFact(
+                    "warehouse-daughter-remembered"
+                ))
+            {
+                aheStatus = "阿禾未找到";
+            }
+            else if (investigationState.SelectedConclusion
+                == ConclusionChoice.Preserve)
+            {
+                aheStatus = investigationState.HasFact(
+                    "warehouse-daughter-public"
+                )
+                    ? "阿禾写回公开名册"
+                    : "阿禾留在私人案卷";
+            }
+            else
+            {
+                aheStatus = investigationState.HasFact(
+                    "warehouse-daughter-public"
+                )
+                    ? "阿禾公开页转入私藏"
+                    : "阿禾留在封条之外";
+            }
+
             return new[]
             {
                 $"本次用时  {minutes:00}:{seconds:00}",
@@ -671,7 +712,11 @@ namespace Demo02.Core
                 $"可选目标  {completedOptional}/{content?.OptionalObjectives.Count ?? 0}    "
                     + teaStatus,
                 $"调查立场  {ChapterCopy.GetStanceLabel(investigationState)}    "
-                    + $"证据去向  {ChapterCopy.GetPlanLabel(investigationState)}"
+                    + $"证据去向  {ChapterCopy.GetPlanLabel(investigationState)}",
+                $"人物线  {clerkStatus}    {aheStatus}",
+                investigationState.HasFact("lu-chong-threat")
+                    ? "陆崇  仍以空白秩序威胁证人"
+                    : "陆崇  尚未当面交涉"
             };
         }
 
@@ -707,6 +752,17 @@ namespace Demo02.Core
             investigationState.SetFact("teahouse-cart-testimony");
             investigationState.SetFact("teahouse-event-completed");
             investigationState.SetFact("teahouse-written-record");
+            investigationState.SetFact("archive-clerk-ink-record");
+            investigationState.SetFact(
+                "archive-clerk-father-name"
+            );
+            investigationState.SetFact("archive-clerk-recruited");
+            investigationState.SetFact("lu-chong-threat");
+            investigationState.SetFact("warehouse-second-meal");
+            investigationState.SetFact("warehouse-daughter-public");
+            investigationState.SetFact(
+                "warehouse-daughter-remembered"
+            );
         }
 
         private IEnumerator CaptureEnding(string path)
@@ -724,7 +780,7 @@ namespace Demo02.Core
 
         private static string GetArgumentValue(string prefix)
         {
-            foreach (string argument in Environment.GetCommandLineArgs())
+            foreach (string argument in Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
                 if (argument.StartsWith(prefix, StringComparison.Ordinal))
                 {
@@ -736,13 +792,28 @@ namespace Demo02.Core
         }
 
         private bool IsEnding =>
-            (investigationState != null && investigationState.IsConclusionReached)
-            || (party != null && party.IsPartyDefeated);
+            (party != null && party.IsPartyDefeated)
+            || (investigationState != null
+                && investigationState.IsConclusionReached
+                && !endingDismissed);
 
         public void TogglePause()
         {
             isPaused = !isPaused;
             Time.timeScale = isPaused ? 0f : 1f;
+        }
+
+        public void ContinueAfterEnding()
+        {
+            if (!CanExploreAfterEnding)
+            {
+                return;
+            }
+
+            endingDismissed = true;
+            isEndingFrozen = false;
+            isPaused = false;
+            Time.timeScale = 1f;
         }
 
         public void OpenSaveSlots()

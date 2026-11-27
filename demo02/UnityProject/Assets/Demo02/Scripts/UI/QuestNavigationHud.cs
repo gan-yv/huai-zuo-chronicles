@@ -4,6 +4,7 @@ using Demo02.Narrative;
 using Demo02.Player;
 using Demo02.WorldState;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Demo02.UI
 {
@@ -17,12 +18,28 @@ namespace Demo02.UI
         private string navigationHint = string.Empty;
         private Transform optionalTarget;
         private string optionalHint = string.Empty;
+        private GameObject canvasObject;
+        private Canvas canvas;
+        private GameObject primaryPanel;
+        private GameObject optionalPanel;
+        private Text navigationText;
+        private Text optionalText;
+        private float nextTextRefresh;
+        private string cachedNavigation = string.Empty;
+        private string cachedOptional = string.Empty;
+
+        private void Awake()
+        {
+            EnsureUi();
+        }
 
         private void Start()
         {
-            investigationState = FindAnyObjectByType<InvestigationState>();
+            investigationState =
+                FindAnyObjectByType<InvestigationState>();
             party = FindAnyObjectByType<PlayerPartyController>();
-            timeLayerController = FindAnyObjectByType<TimeLayerController>();
+            timeLayerController =
+                FindAnyObjectByType<TimeLayerController>();
 
             if (investigationState != null)
             {
@@ -52,26 +69,172 @@ namespace Demo02.UI
             {
                 timeLayerController.LayerChanged -= OnLayerChanged;
             }
+            if (canvasObject == null)
+            {
+                return;
+            }
+            if (Application.isPlaying)
+            {
+                Destroy(canvasObject);
+            }
+            else
+            {
+                DestroyImmediate(canvasObject);
+            }
+            canvasObject = null;
         }
 
-        private void OnStageChanged(ChapterStage stage)
+        private void OnDisable()
         {
-            RefreshNavigationTarget();
+            if (canvas != null)
+            {
+                canvas.enabled = false;
+            }
         }
 
-        private void OnProgressChanged(int current, int required)
+        private void OnEnable()
         {
-            RefreshNavigationTarget();
+            if (canvas != null)
+            {
+                canvas.enabled = true;
+            }
         }
 
-        private void OnStoryFactAdded(string factId)
+        private void Update()
         {
-            RefreshNavigationTarget();
+            EnsureUi();
+            bool visible = !GameplayUiState.IsGameplayBlocked
+                && party != null
+                && party.ActiveCharacter != null
+                && (currentTarget != null || optionalTarget != null);
+            canvas.enabled = visible;
+            if (!visible)
+            {
+                return;
+            }
+
+            primaryPanel.SetActive(currentTarget != null);
+            optionalPanel.SetActive(
+                optionalTarget != null
+                    && optionalTarget != currentTarget
+            );
+            if (Time.unscaledTime < nextTextRefresh)
+            {
+                return;
+            }
+            nextTextRefresh = Time.unscaledTime + 0.1f;
+            SetText(
+                navigationText,
+                BuildNavigationText(
+                    currentTarget,
+                    navigationHint,
+                    false
+                ),
+                ref cachedNavigation
+            );
+            SetText(
+                optionalText,
+                BuildNavigationText(
+                    optionalTarget,
+                    optionalHint,
+                    true
+                ),
+                ref cachedOptional
+            );
         }
 
-        private void OnLayerChanged(TimeLayer layer)
+        private void EnsureUi()
         {
-            RefreshNavigationTarget();
+            if (canvasObject != null)
+            {
+                return;
+            }
+
+            RectTransform root = HudUiFactory.CreateCanvas(
+                transform,
+                "QuestNavigationCanvas",
+                18
+            );
+            canvasObject = root.gameObject;
+            canvas = root.GetComponent<Canvas>();
+
+            RectTransform primary = CreatePanel(
+                root,
+                "PrimaryNavigation",
+                -84f,
+                46f,
+                UiTheme.Accent,
+                new Color(0.92f, 0.82f, 0.62f),
+                out navigationText
+            );
+            primaryPanel = primary.gameObject;
+
+            RectTransform optional = CreatePanel(
+                root,
+                "OptionalNavigation",
+                -136f,
+                42f,
+                new Color(0.72f, 0.58f, 0.3f),
+                new Color(0.82f, 0.7f, 0.45f),
+                out optionalText
+            );
+            optionalPanel = optional.gameObject;
+            primaryPanel.SetActive(false);
+            optionalPanel.SetActive(false);
+        }
+
+        private static RectTransform CreatePanel(
+            Transform root,
+            string name,
+            float top,
+            float height,
+            Color accent,
+            Color textColor,
+            out Text text)
+        {
+            RectTransform panel = HudUiFactory.CreatePanel(
+                root,
+                name,
+                new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f),
+                new Vector2(0f, top),
+                new Vector2(430f, height),
+                UiTheme.Panel
+            );
+            Outline outline =
+                panel.gameObject.AddComponent<Outline>();
+            outline.effectDistance = new Vector2(1f, -1f);
+            outline.useGraphicAlpha = true;
+            outline.effectColor = new Color(1f, 1f, 1f, 0.12f);
+
+            Image topLine = HudUiFactory.CreateImage(
+                panel,
+                "TopLine",
+                accent
+            );
+            RectTransform lineRect = topLine.rectTransform;
+            lineRect.anchorMin = new Vector2(0f, 1f);
+            lineRect.anchorMax = new Vector2(1f, 1f);
+            lineRect.pivot = new Vector2(0.5f, 1f);
+            lineRect.anchoredPosition = Vector2.zero;
+            lineRect.sizeDelta = new Vector2(0f, 2f);
+
+            text = HudUiFactory.CreateText(
+                panel,
+                "Text",
+                string.Empty,
+                15,
+                new Vector2(0f, 0f),
+                new Vector2(1f, 1f),
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                new Vector2(-24f, 0f),
+                TextAnchor.MiddleCenter,
+                bold: true
+            );
+            text.color = textColor;
+            return panel;
         }
 
         private void RefreshNavigationTarget()
@@ -81,12 +244,15 @@ namespace Demo02.UI
             optionalTarget = null;
             optionalHint = string.Empty;
 
-            if (investigationState == null || party == null || party.ActiveCharacter == null)
+            if (investigationState == null
+                || party == null
+                || party.ActiveCharacter == null)
             {
                 return;
             }
 
-            if (investigationState.SelectedConclusion != ConclusionChoice.None)
+            if (investigationState.SelectedConclusion
+                != ConclusionChoice.None)
             {
                 return;
             }
@@ -97,7 +263,9 @@ namespace Demo02.UI
                     investigationState
                 );
             if (optional != null
-                && !string.IsNullOrWhiteSpace(optional.TargetObjectName))
+                && !string.IsNullOrWhiteSpace(
+                    optional.TargetObjectName
+                ))
             {
                 GameObject targetObject = GameObject.Find(
                     optional.TargetObjectName
@@ -127,26 +295,36 @@ namespace Demo02.UI
                     return;
                 case ChapterStage.StabilizeAnchors:
                     TimeAnchor anchor = FindUnstabilizedAnchor();
-                    currentTarget = anchor != null ? anchor.transform : null;
-                    if (anchor != null && timeLayerController != null)
+                    currentTarget = anchor != null
+                        ? anchor.transform
+                        : null;
+                    if (anchor != null
+                        && timeLayerController != null)
                     {
-                        TimeLayerVisibility visibility = anchor.GetComponent<TimeLayerVisibility>();
+                        TimeLayerVisibility visibility =
+                            anchor.GetComponent<TimeLayerVisibility>();
                         if (visibility != null
-                            && visibility.VisibleLayer != timeLayerController.CurrentLayer)
+                            && visibility.VisibleLayer
+                                != timeLayerController.CurrentLayer)
                         {
                             navigationHint = "按 Q 切换时间层";
                         }
                     }
-
                     return;
                 case ChapterStage.RepairRift:
-                    GameObject repairSite = GameObject.Find("RepairSite_TimeRift");
-                    currentTarget = repairSite != null ? repairSite.transform : null;
+                    GameObject repairSite =
+                        GameObject.Find("RepairSite_TimeRift");
+                    currentTarget = repairSite != null
+                        ? repairSite.transform
+                        : null;
                     navigationHint = "压下被撕开的记录";
                     return;
                 case ChapterStage.FinalDecision:
-                    GameObject choice = GameObject.Find("Choice_Preserve");
-                    currentTarget = choice != null ? choice.transform : null;
+                    GameObject choice =
+                        GameObject.Find("Choice_Preserve");
+                    currentTarget = choice != null
+                        ? choice.transform
+                        : null;
                     navigationHint = "决定盐引巷的命运";
                     return;
             }
@@ -160,9 +338,10 @@ namespace Demo02.UI
 
         private Transform FindUncollectedClue()
         {
-            ClueInteractable[] clues = FindObjectsByType<ClueInteractable>(
-                FindObjectsInactive.Exclude
-            );
+            ClueInteractable[] clues =
+                FindObjectsByType<ClueInteractable>(
+                    FindObjectsInactive.Exclude
+                );
             foreach (ClueInteractable clue in clues)
             {
                 if (!investigationState.HasClue(clue.ClueId))
@@ -170,111 +349,59 @@ namespace Demo02.UI
                     return clue.transform;
                 }
             }
-
             return null;
         }
 
         private TimeAnchor FindUnstabilizedAnchor()
         {
-            TimeAnchor[] anchors = FindObjectsByType<TimeAnchor>(FindObjectsInactive.Exclude);
+            TimeAnchor[] anchors =
+                FindObjectsByType<TimeAnchor>(
+                    FindObjectsInactive.Exclude
+                );
             string expectedId = TimeAnchorPuzzleRules.GetExpectedId(
                 investigationState.StabilizedTimeAnchorCount
             );
             foreach (TimeAnchor anchor in anchors)
             {
                 if (anchor.AnchorId == expectedId
-                    && !investigationState.HasStabilizedAnchor(anchor.AnchorId))
+                    && !investigationState.HasStabilizedAnchor(
+                        anchor.AnchorId
+                    ))
                 {
                     return anchor;
                 }
             }
-
             foreach (TimeAnchor anchor in anchors)
             {
-                if (!investigationState.HasStabilizedAnchor(anchor.AnchorId))
+                if (!investigationState.HasStabilizedAnchor(
+                    anchor.AnchorId
+                ))
                 {
                     return anchor;
                 }
             }
-
             return null;
         }
 
-        private void OnGUI()
-        {
-            if ((GameFlowController.Instance != null
-                    && GameFlowController.Instance.IsGameEnding)
-                || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
-                || (InvestigationJournalController.Instance != null
-                    && InvestigationJournalController.Instance.IsOpen)
-                || (InventoryController.Instance != null
-                    && InventoryController.Instance.IsOpen)
-                || (SettingsController.Instance != null
-                    && SettingsController.Instance.IsOpen)
-                || (TestimonyBoardController.Instance != null
-                    && TestimonyBoardController.Instance.IsOpen)
-                || (DialogueController.Instance != null
-                    && DialogueController.Instance.IsOpen)
-                || party == null
-                || party.ActiveCharacter == null)
-            {
-                return;
-            }
-
-            if (currentTarget == null && optionalTarget == null)
-            {
-                return;
-            }
-
-            float scale = UiTheme.Scale;
-            float width = 430f * scale;
-            float y = 84f * scale;
-            if (currentTarget != null)
-            {
-                DrawNavigationPanel(
-                    currentTarget,
-                    navigationHint,
-                    false,
-                    new Rect(
-                        (Screen.width - width) * 0.5f,
-                        y,
-                        width,
-                        46f * scale
-                    )
-                );
-                y += 52f * scale;
-            }
-            if (optionalTarget != null
-                && optionalTarget != currentTarget)
-            {
-                DrawNavigationPanel(
-                    optionalTarget,
-                    optionalHint,
-                    true,
-                    new Rect(
-                        (Screen.width - width) * 0.5f,
-                        y,
-                        width,
-                        42f * scale
-                    )
-                );
-            }
-        }
-
-        private void DrawNavigationPanel(
+        private string BuildNavigationText(
             Transform target,
             string hint,
-            bool optional,
-            Rect panel)
+            bool optional)
         {
+            if (target == null || party?.ActiveCharacter == null)
+            {
+                return string.Empty;
+            }
             Camera currentCamera = Camera.main;
-            Vector3 offset = target.position - party.ActiveCharacter.position;
+            Vector3 offset =
+                target.position - party.ActiveCharacter.position;
             offset.y = 0f;
             float distance = offset.magnitude;
             string direction = string.Empty;
             if (currentCamera != null && distance > 0.1f)
             {
-                Vector3 flatForward = currentCamera.transform.forward;
+                Vector3 flatForward =
+                    currentCamera.transform.forward;
                 flatForward.y = 0f;
                 float angle = Vector3.SignedAngle(
                     flatForward,
@@ -291,31 +418,66 @@ namespace Demo02.UI
             {
                 text += $"    {hint}";
             }
+            return text;
+        }
 
-            UiTheme.DrawRect(panel, UiTheme.Panel);
-            UiTheme.DrawRect(
-                new Rect(panel.x, panel.y, panel.width, 2f),
-                optional ? new Color(0.72f, 0.58f, 0.3f) : UiTheme.Accent
-            );
-            UiTheme.DrawBorder(panel, new Color(1f, 1f, 1f, 0.12f));
-            GUIStyle style = UiTheme.Label(
-                optional ? 12 : 15,
-                TextAnchor.MiddleCenter,
-                bold: true
-            );
-            style.normal.textColor = optional
-                ? new Color(0.82f, 0.7f, 0.45f)
-                : new Color(0.92f, 0.82f, 0.62f);
-            GUI.Label(panel, text, style);
+        private static void SetText(
+            Text target,
+            string value,
+            ref string cached)
+        {
+            if (cached == value)
+            {
+                return;
+            }
+            cached = value;
+            target.text = value;
+        }
+
+        private void OnStageChanged(ChapterStage stage)
+        {
+            RefreshNavigationTarget();
+        }
+
+        private void OnProgressChanged(int current, int required)
+        {
+            RefreshNavigationTarget();
+        }
+
+        private void OnStoryFactAdded(string factId)
+        {
+            RefreshNavigationTarget();
+        }
+
+        private void OnLayerChanged(TimeLayer layer)
+        {
+            RefreshNavigationTarget();
         }
 
         private static string GetDirectionLabel(float angle)
         {
             float absolute = Mathf.Abs(angle);
-            if (absolute <= 22.5f) return "前方";
-            if (absolute >= 157.5f) return "后方";
-            if (angle > 0f) return angle < 67.5f ? "右前" : (angle < 112.5f ? "右侧" : "右后");
-            return angle > -67.5f ? "左前" : (angle > -112.5f ? "左侧" : "左后");
+            if (absolute <= 22.5f)
+            {
+                return "前方";
+            }
+            if (absolute >= 157.5f)
+            {
+                return "后方";
+            }
+            if (angle > 0f)
+            {
+                return angle < 67.5f
+                    ? "右前"
+                    : angle < 112.5f
+                        ? "右侧"
+                        : "右后";
+            }
+            return angle > -67.5f
+                ? "左前"
+                : angle > -112.5f
+                    ? "左侧"
+                    : "左后";
         }
     }
 }

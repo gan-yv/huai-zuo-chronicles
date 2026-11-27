@@ -7,7 +7,6 @@ using Demo02.Player;
 using Demo02.UI;
 using Demo02.WorldState;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace Demo02.Core
@@ -19,6 +18,10 @@ namespace Demo02.Core
         public const int ManualSlotCount = 3;
         private const string LegacySaveFileName = "demo02-save.json";
         private const string AutoSaveFileName = "demo02-save-auto.json";
+        private const float StateCheckInterval = 1f;
+
+        [SerializeField, Min(0f)] private float autoSaveDebounce = 2f;
+        [SerializeField, Min(1f)] private float autoSaveMinInterval = 8f;
 
         public static int ActiveManualSlot { get; private set; }
 
@@ -28,6 +31,18 @@ namespace Demo02.Core
         public static string GetSlotPathForTests(int slotIndex)
         {
             return GetSlotPath(slotIndex);
+        }
+
+        public static string GetSlotBackupPathForTests(int slotIndex)
+        {
+            return SaveFileCodec.GetBackupPath(GetSlotPath(slotIndex));
+        }
+
+        public static void WriteSaveFileForTests(
+            string path,
+            WorldSaveData data)
+        {
+            SaveFileCodec.WriteFile(path, data);
         }
 #endif
 
@@ -39,6 +54,9 @@ namespace Demo02.Core
         private float statusMessageUntil;
         private string lastStateSignature;
         private float nextStateCheck;
+        private float nextAutoSaveAt;
+        private float lastAutoSaveAt = float.NegativeInfinity;
+        private bool autoSavePending;
         private bool isPreviewMode;
 
         public static bool HasSave()
@@ -106,25 +124,20 @@ namespace Demo02.Core
 
             try
             {
-                string legacyJson = File.ReadAllText(legacyPath);
-                WorldSaveData legacyData = JsonUtility.FromJson<WorldSaveData>(
-                    legacyJson
-                );
-                if (legacyData != null
-                    && string.IsNullOrWhiteSpace(legacyData.SavedAtUtc))
+                if (!SaveFileCodec.TryReadFile(
+                        legacyPath,
+                        out WorldSaveData legacyData,
+                        out string error))
+                {
+                    throw new InvalidDataException(error);
+                }
+                if (string.IsNullOrWhiteSpace(legacyData.SavedAtUtc))
                 {
                     legacyData.SavedAtUtc = File
                         .GetLastWriteTimeUtc(legacyPath)
                         .ToString("O");
-                    File.WriteAllText(
-                        autoPath,
-                        JsonUtility.ToJson(legacyData, prettyPrint: true)
-                    );
                 }
-                else
-                {
-                    File.Copy(legacyPath, autoPath);
-                }
+                SaveFileCodec.WriteFile(autoPath, legacyData);
 
                 Debug.Log($"Migrated legacy save to {autoPath}");
             }
@@ -157,12 +170,12 @@ namespace Demo02.Core
 
         private void Update()
         {
-            if (isPreviewMode || Keyboard.current == null)
+            if (isPreviewMode)
             {
                 return;
             }
 
-            if (Keyboard.current.f5Key.wasPressedThisFrame)
+            if (Demo02Input.QuickSavePressed)
             {
                 if (IsExclusiveUiOpen())
                 {
@@ -172,7 +185,7 @@ namespace Demo02.Core
                 int quickSlot = ActiveManualSlot > 0 ? ActiveManualSlot : 1;
                 SaveCurrentState(announce: true, slotIndex: quickSlot);
             }
-            else if (Keyboard.current.f9Key.wasPressedThisFrame)
+            else if (Demo02Input.QuickLoadPressed)
             {
                 if (IsExclusiveUiOpen())
                 {
@@ -184,15 +197,27 @@ namespace Demo02.Core
 
             if (Time.unscaledTime >= nextStateCheck)
             {
-                nextStateCheck = Time.unscaledTime + 1f;
+                nextStateCheck = Time.unscaledTime + StateCheckInterval;
                 string signature = BuildStateSignature();
                 if (!string.IsNullOrWhiteSpace(lastStateSignature)
                     && signature != lastStateSignature)
                 {
-                    SaveCurrentState(announce: false, slotIndex: AutoSlot);
+                    autoSavePending = true;
+                    nextAutoSaveAt = Time.unscaledTime
+                        + Mathf.Max(0f, autoSaveDebounce);
                 }
 
                 lastStateSignature = signature;
+            }
+
+            if (autoSavePending
+                && Time.unscaledTime >= nextAutoSaveAt
+                && Time.unscaledTime >= lastAutoSaveAt
+                    + autoSaveMinInterval)
+            {
+                autoSavePending = false;
+                lastAutoSaveAt = Time.unscaledTime;
+                SaveCurrentState(announce: false, slotIndex: AutoSlot);
             }
         }
 
@@ -241,9 +266,15 @@ namespace Demo02.Core
             WorldRuntime runtime = WorldRuntime.Instance;
             WorldSaveData data = new()
             {
-                Version = 1,
+                Version = WorldSaveData.CurrentVersion,
                 SavedAtUtc = DateTime.UtcNow.ToString("O"),
                 SceneName = SceneManager.GetActiveScene().name,
+                ChapterId = runtime != null
+                    ? runtime.CurrentChapterId
+                    : string.Empty,
+                CaseId = runtime != null
+                    ? runtime.CurrentCaseId
+                    : string.Empty,
                 PlayerX = activeCharacter.position.x,
                 PlayerY = activeCharacter.position.y,
                 PlayerZ = activeCharacter.position.z,
@@ -307,6 +338,7 @@ namespace Demo02.Core
             {
                 data.Combatants.Add(new CombatantSaveData
                 {
+                    PersistentId = combatant.PersistentId,
                     ObjectName = combatant.gameObject.name,
                     Health = combatant.CurrentHealth,
                     Active = combatant.gameObject.activeSelf
@@ -315,9 +347,8 @@ namespace Demo02.Core
 
             try
             {
-                string json = JsonUtility.ToJson(data, prettyPrint: true);
                 string savePath = GetSlotPath(slotIndex);
-                File.WriteAllText(savePath, json);
+                SaveFileCodec.WriteFile(savePath, data);
                 if (slotIndex > AutoSlot)
                 {
                     ActiveManualSlot = slotIndex;
@@ -358,7 +389,7 @@ namespace Demo02.Core
 
         private static bool HasPreviewArgument()
         {
-            foreach (string argument in Environment.GetCommandLineArgs())
+            foreach (string argument in Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
                 if (argument.StartsWith(
                     "--preview-",
@@ -425,22 +456,9 @@ namespace Demo02.Core
 
         private static bool IsExclusiveUiOpen()
         {
-            return (SettingsController.Instance != null
-                    && SettingsController.Instance.IsOpen)
-                || (WorldMapController.Instance != null
-                    && WorldMapController.Instance.IsOpen)
-                || (InvestigationJournalController.Instance != null
-                    && InvestigationJournalController.Instance.IsOpen)
-                || (InventoryController.Instance != null
-                    && InventoryController.Instance.IsOpen)
-                || (DialogueController.Instance != null
-                    && DialogueController.Instance.IsOpen)
-                || (TestimonyBoardController.Instance != null
-                    && TestimonyBoardController.Instance.IsOpen)
-                || (SaveSlotController.Instance != null
-                    && SaveSlotController.Instance.IsOpen)
-                || (GameFlowController.Instance != null
-                    && GameFlowController.Instance.IsPaused);
+            return GameplayUiState.IsModalOpen
+                || GameServices.GetOrNull<IGameFlowState>() is { } flow
+                    && flow.IsPaused;
         }
 
         private void ApplySave(WorldSaveData data)
@@ -480,21 +498,10 @@ namespace Demo02.Core
                 data.CollectedPickupIds
             );
 
-            Combatant[] sceneCombatants = FindObjectsByType<Combatant>(FindObjectsInactive.Include);
-            Dictionary<string, Combatant> byName = new();
-            foreach (Combatant combatant in sceneCombatants)
-            {
-                byName[combatant.gameObject.name] = combatant;
-            }
-
-            foreach (CombatantSaveData savedCombatant in data.Combatants)
-            {
-                if (byName.TryGetValue(savedCombatant.ObjectName, out Combatant combatant))
-                {
-                    combatant.RestoreHealth(savedCombatant.Health);
-                    combatant.gameObject.SetActive(savedCombatant.Active);
-                }
-            }
+            RestoreCombatantStates(
+                FindObjectsByType<Combatant>(FindObjectsInactive.Include),
+                data.Combatants
+            );
 
             Transform activeCharacter = party.ActiveCharacter;
             if (activeCharacter != null)
@@ -516,8 +523,94 @@ namespace Demo02.Core
                 }
             }
 
+            WorldRuntime.Instance?.RestoreChapterIdentity(
+                data.ChapterId,
+                data.CaseId
+            );
             WorldRuntime.Instance?.SetCurrentArea(data.AreaId, data.AreaName);
         }
+
+        private static void RestoreCombatantStates(
+            IReadOnlyList<Combatant> sceneCombatants,
+            IReadOnlyList<CombatantSaveData> savedCombatants)
+        {
+            Dictionary<string, Combatant> byPersistentId =
+                new(StringComparer.Ordinal);
+            Dictionary<string, Combatant> byLegacyName =
+                new(StringComparer.Ordinal);
+            foreach (Combatant combatant in sceneCombatants)
+            {
+                if (combatant == null)
+                {
+                    continue;
+                }
+
+                if (!byPersistentId.TryAdd(
+                        combatant.PersistentId,
+                        combatant
+                    ))
+                {
+                    Debug.LogWarning(
+                        "Duplicate combatant persistent ID: "
+                        + combatant.PersistentId
+                    );
+                }
+                if (!string.IsNullOrWhiteSpace(combatant.gameObject.name))
+                {
+                    byLegacyName.TryAdd(
+                        combatant.gameObject.name,
+                        combatant
+                    );
+                }
+            }
+
+            if (savedCombatants == null)
+            {
+                return;
+            }
+            foreach (CombatantSaveData savedCombatant in savedCombatants)
+            {
+                if (savedCombatant == null)
+                {
+                    continue;
+                }
+
+                Combatant combatant = null;
+                bool matched = !string.IsNullOrWhiteSpace(
+                        savedCombatant.PersistentId
+                    )
+                    && byPersistentId.TryGetValue(
+                        savedCombatant.PersistentId,
+                        out combatant
+                    );
+                if (!matched
+                    && !string.IsNullOrWhiteSpace(
+                        savedCombatant.ObjectName
+                    ))
+                {
+                    matched = byLegacyName.TryGetValue(
+                        savedCombatant.ObjectName,
+                        out combatant
+                    );
+                }
+                if (!matched)
+                {
+                    continue;
+                }
+
+                combatant.RestoreHealth(savedCombatant.Health);
+                combatant.gameObject.SetActive(savedCombatant.Active);
+            }
+        }
+
+#if UNITY_EDITOR
+        public static void RestoreCombatantStatesForTests(
+            IReadOnlyList<Combatant> sceneCombatants,
+            IReadOnlyList<CombatantSaveData> savedCombatants)
+        {
+            RestoreCombatantStates(sceneCombatants, savedCombatants);
+        }
+#endif
 
         private bool RefreshReferences()
         {
@@ -539,53 +632,144 @@ namespace Demo02.Core
             }
 
             WorldRuntime runtime = WorldRuntime.Instance;
-            Combatant[] combatants = FindObjectsByType<Combatant>(FindObjectsInactive.Include);
-            int enemyHealth = 0;
-            foreach (Combatant combatant in combatants)
+            List<string> state = new()
             {
-                if (combatant.Team == CombatTeam.Enemy)
-                {
-                    enemyHealth += Mathf.CeilToInt(combatant.CurrentHealth);
-                }
+                "scene:" + SceneManager.GetActiveScene().name,
+                "chapter:"
+                    + (runtime != null
+                        ? runtime.CurrentChapterId
+                        : string.Empty),
+                "case:"
+                    + (runtime != null
+                        ? runtime.CurrentCaseId
+                        : string.Empty),
+                "party:" + party.ActiveIndex,
+                "stage:" + investigationState.Stage,
+                "solved:"
+                    + investigationState.TestimonyContradictionSolved,
+                "attempts:" + investigationState.ContradictionAttempts,
+                "stance:" + investigationState.Stance,
+                "plan:" + investigationState.Plan,
+                "repaired:" + investigationState.IsRepaired,
+                "conclusion:" + investigationState.SelectedConclusion,
+                "layer:" + timeLayerController.CurrentLayer,
+                "area:"
+                    + (runtime != null ? runtime.CurrentAreaId : string.Empty),
+                "inventory:"
+                    + (inventoryState != null
+                        ? inventoryState.BuildSignature()
+                        : string.Empty)
+            };
+            AppendSortedIds(
+                state,
+                "clue",
+                investigationState.ExportClueIds()
+            );
+            AppendSortedIds(
+                state,
+                "anchor",
+                investigationState.ExportTimeAnchorIds()
+            );
+            AppendSortedIds(
+                state,
+                "echo",
+                investigationState.ExportEchoIds()
+            );
+            AppendSortedIds(
+                state,
+                "fact",
+                investigationState.ExportStoryFactIds()
+            );
+            if (inventoryState != null)
+            {
+                AppendSortedIds(
+                    state,
+                    "pickup",
+                    inventoryState.ExportCollectedPickupIds()
+                );
+            }
+            if (runtime != null)
+            {
+                AppendSortedIds(
+                    state,
+                    "fast-travel",
+                    runtime.ExportUnlockedAnchorIds()
+                );
+                AppendSortedIds(
+                    state,
+                    "stream",
+                    runtime.ExportCompletedStreamingRegionIds()
+                );
+                AppendSortedIds(
+                    state,
+                    "encounter",
+                    runtime.ExportCompletedEncounterIds()
+                );
+                AppendSortedIds(
+                    state,
+                    "content",
+                    runtime.ExportCompletedWorldContentIds()
+                );
+                AppendSortedIds(
+                    state,
+                    "started",
+                    runtime.ExportStartedWorldContentIds()
+                );
+            }
+            AppendCombatantState(state);
+            return string.Join("|", state);
+        }
+
+        private static void AppendSortedIds(
+            List<string> state,
+            string prefix,
+            IEnumerable<string> ids)
+        {
+            if (ids == null)
+            {
+                return;
             }
 
-            return string.Join(
-                "|",
-                SceneManager.GetActiveScene().name,
-                party.ActiveIndex,
-                investigationState.CollectedClueCount,
-                investigationState.StabilizedTimeAnchorCount,
-                investigationState.DiscoveredEchoCount,
-                investigationState.Stage,
-                investigationState.TestimonyContradictionSolved,
-                investigationState.ContradictionAttempts,
-                investigationState.StoryFactCount,
-                inventoryState != null
-                    ? inventoryState.BuildSignature()
-                    : string.Empty,
-                investigationState.Stance,
-                investigationState.Plan,
-                investigationState.IsRepaired,
-                investigationState.SelectedConclusion,
-                timeLayerController.CurrentLayer,
-                runtime != null ? runtime.CurrentAreaId : string.Empty,
-                runtime != null
-                    ? runtime.ExportUnlockedAnchorIds().Count
-                    : 0,
-                runtime != null
-                    ? runtime.ExportCompletedStreamingRegionIds().Count
-                    : 0,
-                runtime != null
-                    ? runtime.ExportCompletedEncounterIds().Count
-                    : 0,
-                runtime != null
-                    ? runtime.ExportCompletedWorldContentIds().Count
-                    : 0,
-                runtime != null
-                    ? runtime.ExportStartedWorldContentIds().Count
-                    : 0,
-                enemyHealth
+            List<string> sorted = new();
+            foreach (string id in ids)
+            {
+                if (!string.IsNullOrWhiteSpace(id))
+                {
+                    sorted.Add(id);
+                }
+            }
+            sorted.Sort(StringComparer.Ordinal);
+            foreach (string id in sorted)
+            {
+                state.Add(prefix + ":" + id);
+            }
+        }
+
+        private static void AppendCombatantState(List<string> state)
+        {
+            Combatant[] combatants = FindObjectsByType<Combatant>(
+                FindObjectsInactive.Include
             );
+            List<string> identities = new(combatants.Length);
+            foreach (Combatant combatant in combatants)
+            {
+                if (combatant == null)
+                {
+                    continue;
+                }
+                identities.Add(
+                    combatant.PersistentId
+                    + ":"
+                    + Mathf.CeilToInt(combatant.CurrentHealth)
+                    + ":"
+                    + combatant.gameObject.activeSelf
+                );
+            }
+            identities.Sort(StringComparer.Ordinal);
+            foreach (string identity in identities)
+            {
+                state.Add("combatant:" + identity);
+            }
         }
 
         public static bool TryReadSave(int slotIndex, out WorldSaveData data)
@@ -602,20 +786,24 @@ namespace Demo02.Core
                 return false;
             }
 
-            try
+            if (SaveFileCodec.TryReadWithRecovery(
+                    savePath,
+                    out data,
+                    out bool recovered,
+                    out string error))
             {
-                string json = File.ReadAllText(savePath);
-                data = JsonUtility.FromJson<WorldSaveData>(json);
-                return data != null
-                    && data.Version == 1
-                    && !string.IsNullOrWhiteSpace(data.SceneName);
+                if (recovered)
+                {
+                    Debug.LogWarning(
+                        $"Recovered damaged save from backup: {savePath}"
+                    );
+                }
+                return true;
             }
-            catch (Exception exception)
-            {
-                Debug.LogException(exception);
-                data = null;
-                return false;
-            }
+
+            Debug.LogWarning($"Ignoring invalid save {savePath}: {error}");
+            data = null;
+            return false;
         }
 
         public static bool TryReadLatestSave(
@@ -666,6 +854,12 @@ namespace Demo02.Core
             try
             {
                 File.Delete(savePath);
+                string backupPath =
+                    SaveFileCodec.GetBackupPath(savePath);
+                if (File.Exists(backupPath))
+                {
+                    File.Delete(backupPath);
+                }
                 if (ActiveManualSlot == slotIndex)
                 {
                     ActiveManualSlot = 0;

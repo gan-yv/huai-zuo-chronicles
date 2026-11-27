@@ -5,6 +5,8 @@
 - Source files: 上班鱼_by_木子恶魔_f2d5f0024ae8b34c6543bb82896791ac
 - Imported runtime copy: `VIS_WorkFish.glb`
 - Original VRM format: VRM 1.0
+- Animation clips: idle, walk, run and talking, retargeted from the
+  Quaternius Universal Animation Library onto the fish skeleton.
 
 The project owner confirmed that the author permits non-video uses of this
 character. Retain the author attribution in project and release credits.

@@ -1,21 +1,60 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Demo02.Core;
 using Demo02.Interaction;
 using Demo02.Narrative;
 using Demo02.WorldState;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace Demo02.UI
 {
     public sealed class WorldMapController : MonoBehaviour
     {
+        private sealed class MapNodeView
+        {
+            public Button Button;
+            public Image Fill;
+            public Outline Border;
+            public Text Number;
+            public Text Label;
+            public string AreaId;
+            public string SpawnName;
+            public string DisplayName;
+        }
+
+        private sealed class AreaCardView
+        {
+            public Button Button;
+            public Image Top;
+            public Outline Border;
+            public Text Label;
+            public string AreaId;
+            public string SpawnName;
+            public string DisplayName;
+        }
+
+        private sealed class MarkerView
+        {
+            public GameObject Root;
+            public Image Dot;
+            public Text Label;
+        }
+
         private bool isOpen;
         private float previousTimeScale = 1f;
         private string statusMessage;
         private ScreenFade screenFade;
         private InvestigationState investigationState;
+        private GameObject canvasObject;
+        private Canvas canvas;
+        private Text footerProgress;
+        private Text statusText;
+        private Text currentPosition;
+        private readonly MapNodeView[] nodes = new MapNodeView[3];
+        private readonly AreaCardView[] cards = new AreaCardView[3];
+        private readonly List<MarkerView> markers = new();
 
         public static WorldMapController Instance { get; private set; }
         public bool IsOpen => isOpen;
@@ -27,21 +66,23 @@ namespace Demo02.UI
                 Destroy(gameObject);
                 return;
             }
-
             Instance = this;
+            EnsureUi();
         }
 
         private void Start()
         {
             screenFade = FindAnyObjectByType<ScreenFade>();
-            investigationState = FindAnyObjectByType<InvestigationState>();
+            investigationState =
+                FindAnyObjectByType<InvestigationState>();
             if (System.Array.IndexOf(
-                System.Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-map"
             ) >= 0)
             {
                 ToggleMap();
-                string capturePath = GetArgumentValue("--capture-map=");
+                string capturePath =
+                    GetArgumentValue("--capture-map=");
                 if (!string.IsNullOrWhiteSpace(capturePath))
                 {
                     StartCoroutine(CaptureMapPreview(capturePath));
@@ -49,71 +90,28 @@ namespace Demo02.UI
             }
         }
 
-        private static string GetArgumentValue(string prefix)
-        {
-            foreach (string argument in System.Environment.GetCommandLineArgs())
-            {
-                if (argument.StartsWith(prefix, System.StringComparison.Ordinal))
-                {
-                    return argument.Substring(prefix.Length);
-                }
-            }
-
-            return string.Empty;
-        }
-
-        private IEnumerator CaptureMapPreview(string path)
-        {
-            yield return new WaitForSecondsRealtime(0.6f);
-            yield return new WaitForEndOfFrame();
-            string directory = Path.GetDirectoryName(path);
-            if (!string.IsNullOrWhiteSpace(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            ScreenCapture.CaptureScreenshot(path);
-            Debug.Log($"World map preview captured to {path}");
-            yield return null;
-            if (System.Array.IndexOf(
-                    System.Environment.GetCommandLineArgs(),
-                    "--capture-exit"
-                ) >= 0)
-            {
-                Application.Quit();
-            }
-        }
-
         private void Update()
         {
-            if (Keyboard.current == null)
-            {
-                return;
-            }
-
-            if (isOpen && Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (isOpen && Demo02Input.CancelPressed)
             {
                 ToggleMap();
                 return;
             }
-
-            if (!Keyboard.current.mKey.wasPressedThisFrame)
+            if (!Demo02Input.MapPressed)
             {
                 return;
             }
-
-            if (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+            if (GameplayUiState.HasOpenModalExcept(this))
             {
                 return;
             }
-
             if (!isOpen
                 && (Time.timeScale <= 0f
-                    || (screenFade != null && screenFade.IsTransitioning)))
+                    || (screenFade != null
+                        && screenFade.IsTransitioning)))
             {
                 return;
             }
-
             ToggleMap();
         }
 
@@ -122,487 +120,467 @@ namespace Demo02.UI
             if (isOpen)
             {
                 Time.timeScale = previousTimeScale;
+                isOpen = false;
             }
+            if (canvas != null)
+            {
+                canvas.enabled = false;
+            }
+            GameplayUiState.UnregisterModal(this);
         }
 
         private void OnDestroy()
         {
+            GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
                 Instance = null;
             }
-        }
-
-        private void OnGUI()
-        {
-            if (!isOpen)
+            if (canvasObject == null)
             {
                 return;
             }
+            if (Application.isPlaying)
+            {
+                Destroy(canvasObject);
+            }
+            else
+            {
+                DestroyImmediate(canvasObject);
+            }
+            canvasObject = null;
+        }
 
-            GUI.depth = -100;
-            UiTheme.DrawRect(
-                new Rect(0f, 0f, Screen.width, Screen.height),
+        public void ToggleMap()
+        {
+            if (!isOpen
+                && (Time.timeScale <= 0f
+                    || GameplayUiState.HasOpenModalExcept(this)))
+            {
+                return;
+            }
+            isOpen = !isOpen;
+            statusMessage = string.Empty;
+            canvas.enabled = isOpen;
+            if (isOpen)
+            {
+                previousTimeScale = Time.timeScale;
+                Time.timeScale = 0f;
+                GameplayUiState.RegisterModal(this);
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                RefreshMap();
+            }
+            else
+            {
+                Time.timeScale = previousTimeScale;
+                GameplayUiState.UnregisterModal(this);
+            }
+        }
+
+        private void EnsureUi()
+        {
+            if (canvasObject != null)
+            {
+                return;
+            }
+            RectTransform root = HudUiFactory.CreateCanvas(
+                transform,
+                "WorldMapCanvas",
+                101
+            );
+            canvasObject = root.gameObject;
+            canvas = root.GetComponent<Canvas>();
+            canvas.enabled = false;
+            Image background = HudUiFactory.CreateImage(
+                root,
+                "Background",
                 UiTheme.Ink
             );
+            HudUiFactory.Stretch(background.rectTransform);
 
-            float scale = UiTheme.Scale;
-            GUIStyle eyebrowStyle = UiTheme.Label(
+            Text eyebrow = CreateText(
+                root,
+                "Eyebrow",
+                "GUANGLING · DISTRICT ROUTE",
                 12,
+                new Vector2(0f, -38f),
+                new Vector2(1920f, 24f),
                 TextAnchor.MiddleCenter,
                 bold: true
             );
-            eyebrowStyle.normal.textColor = UiTheme.Accent;
-            GUI.Label(
-                new Rect(0f, 38f * scale, Screen.width, 24f * scale),
-                "GUANGLING · DISTRICT ROUTE",
-                eyebrowStyle
-            );
-            GUI.Label(
-                new Rect(0f, 66f * scale, Screen.width, 52f * scale),
+            eyebrow.color = UiTheme.Accent;
+            CreateText(
+                root,
+                "Title",
                 "广陵街区图",
-                UiTheme.Label(34, TextAnchor.MiddleCenter, bold: true)
+                34,
+                new Vector2(0f, -66f),
+                new Vector2(1920f, 52f),
+                TextAnchor.MiddleCenter,
+                bold: true
             );
-            GUI.Label(
-                new Rect(0f, 116f * scale, Screen.width, 32f * scale),
+            CreateText(
+                root,
+                "Subtitle",
                 "选择落脚点，调查、队伍与时间层状态都会保留",
-                UiTheme.Label(15, TextAnchor.MiddleCenter)
+                15,
+                new Vector2(0f, -116f),
+                new Vector2(1920f, 32f),
+                TextAnchor.MiddleCenter
             );
 
-            string currentAreaId = WorldRuntime.Instance != null
-                ? WorldRuntime.Instance.CurrentAreaId
-                : string.Empty;
-            float contentTop = 166f * scale;
-            float gap = 24f * scale;
-            float margin = 44f * scale;
-            float rightWidth = Mathf.Min(360f * scale, Screen.width * 0.29f);
-            float mapWidth = Mathf.Min(
-                Screen.width * 0.61f,
-                Screen.width - margin * 2f - gap - rightWidth
+            RectTransform map = HudUiFactory.CreatePanel(
+                root,
+                "MapPanel",
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(218f, -166f),
+                new Vector2(1120f, 440f),
+                new Color(0.045f, 0.055f, 0.07f, 0.96f)
             );
-            float contentWidth = mapWidth + gap + rightWidth;
-            float startX = (Screen.width - contentWidth) * 0.5f;
-            float mapHeight = Mathf.Clamp(
-                Screen.height - contentTop - 176f * scale,
-                330f * scale,
-                440f * scale
+            Outline mapOutline = map.gameObject.AddComponent<Outline>();
+            mapOutline.effectDistance = new Vector2(1f, -1f);
+            mapOutline.effectColor =
+                new Color(0.82f, 0.74f, 0.56f, 0.2f);
+            CreateText(
+                map,
+                "RouteLabel",
+                "街区路线 / ROUTE",
+                12,
+                new Vector2(18f, -12f),
+                new Vector2(180f, 24f),
+                TextAnchor.MiddleLeft,
+                bold: true
             );
-            Rect mapRect = new(startX, contentTop, mapWidth, mapHeight);
-            DrawSchematicMap(mapRect, currentAreaId);
+            Text north = CreateText(
+                map,
+                "North",
+                "N  ↑",
+                11,
+                new Vector2(1028f, -12f),
+                new Vector2(72f, 24f),
+                TextAnchor.MiddleRight
+            );
+            north.color = UiTheme.Muted;
 
-            float cardX = mapRect.xMax + gap;
-            float cardHeight = 95f * scale;
-            float cardGap = 10f * scale;
-            DrawAreaCard(
-                new Rect(cardX, contentTop, rightWidth, cardHeight),
+            CreateRouteLine(
+                map,
+                new Vector2(294f, 326f),
+                new Vector2(581f, 227f)
+            );
+            CreateRouteLine(
+                map,
+                new Vector2(581f, 227f),
+                new Vector2(837f, 129f)
+            );
+            CreateRouteLine(
+                map,
+                new Vector2(294f, 326f),
+                new Vector2(145f, 224f)
+            );
+            CreateText(
+                map,
+                "WarehouseLabel",
+                "旧仓内院",
+                11,
+                new Vector2(124f, -242f),
+                new Vector2(132f, 28f),
+                TextAnchor.MiddleLeft
+            ).color = UiTheme.Muted;
+
+            nodes[0] = CreateNode(
+                map,
                 "01",
-                "官署前街",
-                "调查起点 · 旧仓入口",
+                new Vector2(254f, -303f),
+                new Vector2(274f, -326f),
                 "official-street",
-                currentAreaId,
                 "PlayerSpawn",
                 "官署前街"
             );
-            DrawAreaCard(
-                new Rect(
-                    cardX,
-                    contentTop + cardHeight + cardGap,
-                    rightWidth,
-                    cardHeight
-                ),
+            nodes[1] = CreateNode(
+                map,
                 "02",
-                "东关街",
-                "市集主轴 · 茶肆与商铺",
+                new Vector2(541f, -204f),
+                new Vector2(569f, -227f),
                 "dongguan-street",
-                currentAreaId,
                 "DongguanSpawn",
                 "东关街"
             );
-            DrawAreaCard(
-                new Rect(
-                    cardX,
-                    contentTop + (cardHeight + cardGap) * 2f,
-                    rightWidth,
-                    cardHeight
-                ),
+            nodes[2] = CreateNode(
+                map,
+                "03",
+                new Vector2(797f, -106f),
+                new Vector2(825f, -129f),
+                "caiyi-street",
+                "CaiyiSpawn",
+                "彩衣街"
+            );
+            currentPosition = CreateText(
+                map,
+                "CurrentPosition",
+                string.Empty,
+                11,
+                new Vector2(28f, -394f),
+                new Vector2(1064f, 22f),
+                TextAnchor.MiddleLeft
+            );
+            currentPosition.color = UiTheme.Muted;
+
+            cards[0] = CreateAreaCard(
+                root,
+                "01",
+                "官署前街",
+                "调查起点 · 旧仓入口",
+                new Vector2(1362f, -166f),
+                "official-street",
+                "PlayerSpawn",
+                "官署前街"
+            );
+            cards[1] = CreateAreaCard(
+                root,
+                "02",
+                "东关街",
+                "市集主轴 · 茶肆与商铺",
+                new Vector2(1362f, -271f),
+                "dongguan-street",
+                "DongguanSpawn",
+                "东关街"
+            );
+            cards[2] = CreateAreaCard(
+                root,
                 "03",
                 "彩衣街",
                 "生活商街 · 裁衣与小吃",
+                new Vector2(1362f, -376f),
                 "caiyi-street",
-                currentAreaId,
                 "CaiyiSpawn",
                 "彩衣街"
             );
 
-            float footerY = mapRect.yMax + 18f * scale;
-            Rect footer = new(
-                mapRect.x,
-                footerY,
-                contentWidth,
-                58f * scale
+            RectTransform footer = HudUiFactory.CreatePanel(
+                root,
+                "Footer",
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(218f, -624f),
+                new Vector2(1484f, 58f),
+                UiTheme.Panel
             );
-            UiTheme.DrawRect(footer, UiTheme.Panel);
-            UiTheme.DrawBorder(footer, new Color(1f, 1f, 1f, 0.12f));
-
-            string progress = investigationState != null
-                ? $"线索 {investigationState.CollectedClueCount}/{investigationState.RequiredClueCount}"
-                    + $"    时间锚点 {investigationState.StabilizedTimeAnchorCount}/{investigationState.RequiredTimeAnchorCount}"
-                : "调查状态不可用";
-            GUI.Label(
-                new Rect(
-                    footer.x + 18f * scale,
-                    footer.y,
-                    footer.width * 0.62f,
-                    footer.height
-                ),
-                progress,
-                UiTheme.Label(14)
+            Outline footerOutline =
+                footer.gameObject.AddComponent<Outline>();
+            footerOutline.effectDistance = new Vector2(1f, -1f);
+            footerOutline.effectColor =
+                new Color(1f, 1f, 1f, 0.12f);
+            footerProgress = CreateText(
+                footer,
+                "Progress",
+                string.Empty,
+                14,
+                new Vector2(18f, 0f),
+                new Vector2(920f, 58f),
+                TextAnchor.MiddleLeft
             );
-            GUI.Label(
-                new Rect(
-                    footer.x + footer.width * 0.62f,
-                    footer.y,
-                    footer.width * 0.38f - 18f * scale,
-                    footer.height
-                ),
+            Text returnHint = CreateText(
+                footer,
+                "ReturnHint",
                 "[ M / Esc ]  返回探索",
-                UiTheme.Label(14, TextAnchor.MiddleRight, bold: true)
+                14,
+                new Vector2(940f, 0f),
+                new Vector2(526f, 58f),
+                TextAnchor.MiddleRight,
+                bold: true
             );
+            returnHint.color = UiTheme.Muted;
 
-            float closeY = footerY + footer.height + 18f * scale;
-            if (GUI.Button(
-                new Rect(
-                    (Screen.width - 260f * scale) * 0.5f,
-                    closeY,
-                    260f * scale,
-                    44f * scale
-                ),
+            CreateButton(
+                root,
+                "CloseButton",
                 "关闭地图  [M / Esc]",
-                UiTheme.Button(15)
-            ))
-            {
-                ToggleMap();
-            }
-
-            if (!string.IsNullOrWhiteSpace(statusMessage))
-            {
-                GUI.Label(
-                    new Rect(0f, Screen.height - 72f, Screen.width, 32f),
-                    statusMessage,
-                    UiTheme.Label(15, TextAnchor.MiddleCenter)
-                );
-            }
-        }
-
-        private void DrawSchematicMap(Rect rect, string currentAreaId)
-        {
-            float scale = UiTheme.Scale;
-            UiTheme.DrawRect(rect, new Color(0.045f, 0.055f, 0.07f, 0.96f));
-            UiTheme.DrawBorder(
-                rect,
-                new Color(0.82f, 0.74f, 0.56f, 0.2f)
+                new Vector2(830f, -700f),
+                new Vector2(260f, 44f),
+                ToggleMap
             );
-
-            GUI.Label(
-                new Rect(
-                    rect.x + 18f * scale,
-                    rect.y + 12f * scale,
-                    180f * scale,
-                    24f * scale
-                ),
-                "街区路线 / ROUTE",
-                UiTheme.Label(12, TextAnchor.MiddleLeft, bold: true)
-            );
-            GUIStyle north = UiTheme.Label(11, TextAnchor.MiddleRight);
-            north.normal.textColor = UiTheme.Muted;
-            GUI.Label(
-                new Rect(
-                    rect.xMax - 92f * scale,
-                    rect.y + 12f * scale,
-                    72f * scale,
-                    24f * scale
-                ),
-                "N  ↑",
-                north
-            );
-
-            Rect draw = new(
-                rect.x + 28f * scale,
-                rect.y + 48f * scale,
-                rect.width - 56f * scale,
-                rect.height - 74f * scale
-            );
-            Vector2 official = new(
-                draw.x + draw.width * 0.25f,
-                draw.y + draw.height * 0.76f
-            );
-            Vector2 dongguan = new(
-                draw.x + draw.width * 0.52f,
-                draw.y + draw.height * 0.49f
-            );
-            Vector2 caiyi = new(
-                draw.x + draw.width * 0.76f,
-                draw.y + draw.height * 0.22f
-            );
-            Vector2 warehouse = new(
-                draw.x + draw.width * 0.11f,
-                draw.y + draw.height * 0.48f
-            );
-
-            DrawRouteLine(official, dongguan, 24f * scale);
-            DrawRouteLine(dongguan, caiyi, 22f * scale);
-            DrawRouteLine(official, warehouse, 16f * scale);
-            DrawLine(
-                warehouse,
-                new Vector2(warehouse.x - 26f * scale, warehouse.y),
-                new Color(0.78f, 0.7f, 0.48f, 0.34f),
-                2f * scale
-            );
-
-            GUIStyle warehouseLabel = UiTheme.Label(11, TextAnchor.MiddleLeft);
-            warehouseLabel.normal.textColor = UiTheme.Muted;
-            GUI.Label(
-                new Rect(
-                    warehouse.x - 20f * scale,
-                    warehouse.y + 18f * scale,
-                    132f * scale,
-                    28f * scale
-                ),
-                "旧仓内院",
-                warehouseLabel
-            );
-
-            DrawMapNode(
-                official,
-                "01",
-                "官署前街",
-                "official-street",
-                currentAreaId,
-                "PlayerSpawn",
-                "官署前街",
-                new Vector2(-20f * scale, 23f * scale)
-            );
-            DrawMapNode(
-                dongguan,
-                "02",
-                "东关街",
-                "dongguan-street",
-                currentAreaId,
-                "DongguanSpawn",
-                "东关街",
-                new Vector2(-12f * scale, 23f * scale)
-            );
-            DrawMapNode(
-                caiyi,
-                "03",
-                "彩衣街",
-                "caiyi-street",
-                currentAreaId,
-                "CaiyiSpawn",
-                "彩衣街",
-                new Vector2(-12f * scale, 23f * scale)
-            );
-            DrawWorldContentMarkers(draw, scale);
-
-            string currentName = currentAreaId switch
-            {
-                "official-street" => "官署前街",
-                "dongguan-street" => "东关街",
-                "caiyi-street" => "彩衣街",
-                _ => "广陵"
-            };
-            GUIStyle legend = UiTheme.Label(11, TextAnchor.MiddleLeft);
-            legend.normal.textColor = UiTheme.Muted;
-            GUI.Label(
-                new Rect(
-                    draw.x,
-                    draw.yMax - 22f * scale,
-                    draw.width,
-                    22f * scale
-                ),
-                $"当前位置：{currentName}    点击地图节点可快速旅行",
-                legend
+            statusText = CreateText(
+                root,
+                "Status",
+                string.Empty,
+                15,
+                new Vector2(0f, -1000f),
+                new Vector2(1920f, 32f),
+                TextAnchor.MiddleCenter
             );
         }
 
-        private void DrawMapNode(
-            Vector2 position,
+        private MapNodeView CreateNode(
+            Transform parent,
             string number,
-            string areaName,
+            Vector2 labelPosition,
+            Vector2 nodePosition,
             string areaId,
-            string currentAreaId,
             string spawnName,
-            string displayName,
-            Vector2 labelOffset)
+            string displayName)
         {
-            float scale = UiTheme.Scale;
-            bool isCurrent = areaId == currentAreaId;
-            bool unlocked = IsSpawnUnlocked(spawnName);
-            float size = 28f * scale;
-            Rect hit = new(
-                position.x - size * 0.5f,
-                position.y - size * 0.5f,
-                size,
-                size
+            RectTransform hit = HudUiFactory.CreatePanel(
+                parent,
+                "MapNode" + number,
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                nodePosition,
+                new Vector2(28f, 28f),
+                new Color(0.2f, 0.24f, 0.27f),
+                raycastTarget: true
             );
-
-            GUI.enabled = isCurrent || unlocked;
-            if (GUI.Button(hit, GUIContent.none, GUIStyle.none))
-            {
-                if (isCurrent)
-                {
-                    statusMessage = $"你已经位于{displayName}。";
-                }
-                else
-                {
-                    TravelTo(spawnName, areaId, displayName);
-                }
-            }
-            GUI.enabled = true;
-
-            UiTheme.DrawRect(
-                new Rect(
-                    hit.x - 4f * scale,
-                    hit.y - 4f * scale,
-                    hit.width + 8f * scale,
-                    hit.height + 8f * scale
-                ),
-                new Color(0.04f, 0.05f, 0.065f, 0.9f)
-            );
-            UiTheme.DrawRect(
+            Button button = hit.gameObject.AddComponent<Button>();
+            button.targetGraphic = hit.GetComponent<Image>();
+            Outline border = hit.gameObject.AddComponent<Outline>();
+            border.effectDistance = new Vector2(1f, -1f);
+            border.useGraphicAlpha = true;
+            border.effectColor =
+                new Color(0.8f, 0.75f, 0.65f, 0.4f);
+            Text count = HudUiFactory.CreateText(
                 hit,
-                isCurrent
-                    ? UiTheme.Accent
-                    : unlocked
-                        ? new Color(0.2f, 0.24f, 0.27f)
-                        : new Color(0.1f, 0.11f, 0.12f)
-            );
-            UiTheme.DrawBorder(
-                hit,
-                isCurrent ? Color.white : new Color(0.8f, 0.75f, 0.65f, 0.4f),
-                isCurrent ? 2f : 1f
-            );
-            GUIStyle numberStyle = UiTheme.Label(
+                "Number",
+                number,
                 10,
+                Vector2.zero,
+                Vector2.one,
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                Vector2.zero,
                 TextAnchor.MiddleCenter,
                 bold: true
             );
-            numberStyle.normal.textColor = isCurrent ? UiTheme.Ink : UiTheme.Text;
-            GUI.Label(hit, number, numberStyle);
-
-            Rect label = new(
-                position.x + labelOffset.x,
-                position.y + labelOffset.y,
-                120f * scale,
-                24f * scale
-            );
-            GUIStyle areaStyle = UiTheme.Label(
+            Text label = CreateText(
+                parent,
+                "NodeLabel" + number,
+                displayName,
                 13,
+                labelPosition,
+                new Vector2(120f, 24f),
                 TextAnchor.MiddleCenter,
-                bold: isCurrent
+                bold: true
             );
-            areaStyle.normal.textColor = isCurrent
-                ? UiTheme.Accent
-                : unlocked
-                    ? UiTheme.Text
-                    : UiTheme.Muted;
-            GUI.Label(
-                label,
-                unlocked || isCurrent ? areaName : $"{areaName} · 未记录",
-                areaStyle
-            );
-
-            if (isCurrent)
+            MapNodeView view = new()
             {
-                UiTheme.DrawRect(
-                    new Rect(
-                        position.x + labelOffset.x + 46f * scale,
-                        label.yMax,
-                        28f * scale,
-                        2f * scale
-                    ),
-                    UiTheme.Accent
-                );
-            }
+                Button = button,
+                Fill = hit.GetComponent<Image>(),
+                Border = border,
+                Number = count,
+                Label = label,
+                AreaId = areaId,
+                SpawnName = spawnName,
+                DisplayName = displayName
+            };
+            button.onClick.AddListener(
+                () => ActivateArea(
+                    view.SpawnName,
+                    view.AreaId,
+                    view.DisplayName
+                )
+            );
+            return view;
         }
 
-        private static void DrawWorldContentMarkers(Rect draw, float scale)
+        private AreaCardView CreateAreaCard(
+            Transform parent,
+            string number,
+            string name,
+            string description,
+            Vector2 position,
+            string areaId,
+            string spawnName,
+            string displayName)
         {
-            WorldContentTracker tracker = WorldContentTracker.Instance;
-            if (tracker == null)
+            RectTransform card = HudUiFactory.CreatePanel(
+                parent,
+                "AreaCard" + number,
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                position,
+                new Vector2(340f, 95f),
+                UiTheme.Ink,
+                raycastTarget: true
+            );
+            Button button = card.gameObject.AddComponent<Button>();
+            button.targetGraphic = card.GetComponent<Image>();
+            Outline border = card.gameObject.AddComponent<Outline>();
+            border.effectDistance = new Vector2(1f, -1f);
+            border.useGraphicAlpha = true;
+            Image top = HudUiFactory.CreateImage(
+                card,
+                "Top",
+                UiTheme.PanelHover
+            );
+            top.rectTransform.anchorMin = new Vector2(0f, 1f);
+            top.rectTransform.anchorMax = new Vector2(1f, 1f);
+            top.rectTransform.pivot = new Vector2(0.5f, 1f);
+            top.rectTransform.anchoredPosition = Vector2.zero;
+            top.rectTransform.sizeDelta = new Vector2(0f, 4f);
+            Text label = CreateText(
+                card,
+                "Label",
+                $"{number}   {name}\n{description}\n点击快速旅行",
+                16,
+                new Vector2(16f, 10f),
+                new Vector2(308f, 75f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            AreaCardView view = new()
             {
-                return;
-            }
-
-            foreach (WorldContentEntry entry in tracker.Entries)
-            {
-                WorldContentStatus status = tracker.GetStatus(entry);
-                Color color = status switch
-                {
-                    WorldContentStatus.InProgress =>
-                        new Color(0.94f, 0.72f, 0.28f),
-                    WorldContentStatus.ReadyToTurnIn =>
-                        new Color(0.42f, 0.82f, 0.58f),
-                    WorldContentStatus.Completed =>
-                        new Color(0.42f, 0.55f, 0.5f),
-                    _ => new Color(0.55f, 0.58f, 0.6f)
-                };
-                Vector2 position = new(
-                    draw.x + draw.width * entry.MapX,
-                    draw.y + draw.height * entry.MapY
-                );
-                float size = 12f * scale;
-                Rect marker = new(
-                    position.x - size * 0.5f,
-                    position.y - size * 0.5f,
-                    size,
-                    size
-                );
-                UiTheme.DrawRect(marker, color);
-                UiTheme.DrawBorder(
-                    marker,
-                    new Color(1f, 1f, 1f, 0.65f)
-                );
-
-                GUI.Label(
-                    new Rect(
-                        position.x + 8f * scale,
-                        position.y - 10f * scale,
-                        132f * scale,
-                        22f * scale
-                    ),
-                    entry.Title,
-                    UiTheme.Label(10)
-                );
-            }
+                Button = button,
+                Top = top,
+                Border = border,
+                Label = label,
+                AreaId = areaId,
+                SpawnName = spawnName,
+                DisplayName = displayName
+            };
+            button.onClick.AddListener(
+                () => ActivateArea(
+                    view.SpawnName,
+                    view.AreaId,
+                    view.DisplayName
+                )
+            );
+            return view;
         }
 
-        private static void DrawRouteLine(
+        private void CreateRouteLine(
+            Transform parent,
             Vector2 start,
-            Vector2 end,
-            float width)
+            Vector2 end)
         {
-            DrawLine(
+            CreateLine(
+                parent,
                 start,
                 end,
                 new Color(0.66f, 0.6f, 0.48f, 0.2f),
-                width
+                24f
             );
-            DrawLine(
+            CreateLine(
+                parent,
                 start,
                 end,
                 new Color(0.21f, 0.23f, 0.24f, 0.95f),
-                width - 5f * UiTheme.Scale
+                19f
             );
-            DrawLine(
+            CreateLine(
+                parent,
                 start,
                 end,
                 new Color(0.58f, 0.53f, 0.43f, 0.3f),
-                1.5f * UiTheme.Scale
+                2f
             );
         }
 
-        private static void DrawLine(
+        private static void CreateLine(
+            Transform parent,
             Vector2 start,
             Vector2 end,
             Color color,
@@ -614,80 +592,256 @@ namespace Demo02.UI
             {
                 return;
             }
-
-            Matrix4x4 previous = GUI.matrix;
-            float angle = Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg;
-            GUIUtility.RotateAroundPivot(angle, start);
-            UiTheme.DrawRect(
-                new Rect(
-                    start.x,
-                    start.y - thickness * 0.5f,
-                    length,
-                    thickness
-                ),
+            RectTransform line = HudUiFactory.CreatePanel(
+                parent,
+                "Route",
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 0.5f),
+                start,
+                new Vector2(length, thickness),
                 color
             );
-            GUI.matrix = previous;
+            line.localRotation = Quaternion.Euler(
+                0f,
+                0f,
+                -Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg
+            );
         }
 
-        private void DrawAreaCard(
-            Rect rect,
-            string number,
-            string areaName,
-            string description,
-            string areaId,
-            string currentAreaId,
-            string spawnName,
-            string displayName)
+        private static Text CreateText(
+            Transform parent,
+            string name,
+            string value,
+            int size,
+            Vector2 position,
+            Vector2 dimensions,
+            TextAnchor alignment,
+            bool bold = false)
         {
-            bool isCurrent = areaId == currentAreaId;
-            float scale = UiTheme.Scale;
-            bool unlocked = IsSpawnUnlocked(spawnName);
-
-            string buttonText =
-                $"{number}   {areaName}\n{description}\n"
-                + (isCurrent
-                    ? "当前所在"
-                    : unlocked
-                        ? "点击快速旅行  →"
-                        : "尚未记录地区锚点");
-            GUI.enabled = isCurrent || unlocked;
-            if (GUI.Button(rect, buttonText, UiTheme.Button(16)))
-            {
-                if (isCurrent)
-                {
-                    statusMessage = $"你已经位于{displayName}。";
-                }
-                else
-                {
-                    TravelTo(spawnName, areaId, displayName);
-                }
-            }
-            GUI.enabled = true;
-
-            UiTheme.DrawRect(
-                new Rect(rect.x, rect.y, rect.width, 4f * scale),
-                isCurrent ? UiTheme.Accent : UiTheme.PanelHover
+            return HudUiFactory.CreateText(
+                parent,
+                name,
+                value,
+                size,
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                position,
+                dimensions,
+                alignment,
+                bold
             );
-            UiTheme.DrawBorder(
+        }
+
+        private static Button CreateButton(
+            Transform parent,
+            string name,
+            string value,
+            Vector2 position,
+            Vector2 dimensions,
+            UnityEngine.Events.UnityAction action)
+        {
+            RectTransform rect = HudUiFactory.CreatePanel(
+                parent,
+                name,
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                position,
+                dimensions,
+                UiTheme.Panel,
+                raycastTarget: true
+            );
+            Button button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = rect.GetComponent<Image>();
+            button.onClick.AddListener(action);
+            HudUiFactory.CreateText(
                 rect,
-                isCurrent
+                "Label",
+                value,
+                15,
+                Vector2.zero,
+                Vector2.one,
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                Vector2.zero,
+                TextAnchor.MiddleCenter,
+                true
+            );
+            return button;
+        }
+
+        private void RefreshMap()
+        {
+            string currentAreaId = WorldRuntime.Instance != null
+                ? WorldRuntime.Instance.CurrentAreaId
+                : string.Empty;
+            foreach (MapNodeView node in nodes)
+            {
+                bool current = node.AreaId == currentAreaId;
+                bool unlocked = IsSpawnUnlocked(node.SpawnName);
+                node.Button.interactable = current || unlocked;
+                node.Fill.color = current
+                    ? UiTheme.Accent
+                    : unlocked
+                        ? new Color(0.2f, 0.24f, 0.27f)
+                        : new Color(0.1f, 0.11f, 0.12f);
+                node.Border.effectColor = current
+                    ? Color.white
+                    : new Color(0.8f, 0.75f, 0.65f, 0.4f);
+                node.Number.color = current
+                    ? UiTheme.Ink
+                    : UiTheme.Text;
+                node.Label.text = unlocked || current
+                    ? node.DisplayName
+                    : node.DisplayName + " · 未记录";
+                node.Label.color = current
+                    ? UiTheme.Accent
+                    : unlocked
+                        ? UiTheme.Text
+                        : UiTheme.Muted;
+            }
+
+            foreach (AreaCardView card in cards)
+            {
+                bool current = card.AreaId == currentAreaId;
+                bool unlocked = IsSpawnUnlocked(card.SpawnName);
+                card.Button.interactable = current || unlocked;
+                card.Top.color = current
+                    ? UiTheme.Accent
+                    : UiTheme.PanelHover;
+                card.Border.effectColor = current
                     ? UiTheme.Accent
                     : unlocked
                         ? new Color(1f, 1f, 1f, 0.14f)
-                        : new Color(1f, 1f, 1f, 0.06f),
-                isCurrent ? 2f : 1f
-            );
+                        : new Color(1f, 1f, 1f, 0.06f);
+                card.Label.text = current
+                    ? card.Label.text.Split('\n')[0] + "\n"
+                        + card.Label.text.Split('\n')[1]
+                        + "\n当前所在"
+                    : unlocked
+                        ? card.Label.text.Split('\n')[0] + "\n"
+                            + card.Label.text.Split('\n')[1]
+                            + "\n点击快速旅行  →"
+                        : card.Label.text.Split('\n')[0] + "\n"
+                            + card.Label.text.Split('\n')[1]
+                            + "\n尚未记录地区锚点";
+            }
+
+            string currentName = currentAreaId switch
+            {
+                "official-street" => "官署前街",
+                "dongguan-street" => "东关街",
+                "caiyi-street" => "彩衣街",
+                _ => "广陵"
+            };
+            currentPosition.text =
+                $"当前位置：{currentName}    点击地图节点可快速旅行";
+            footerProgress.text = investigationState != null
+                ? $"线索 {investigationState.CollectedClueCount}/"
+                    + $"{investigationState.RequiredClueCount}"
+                    + $"    时间锚点 "
+                    + $"{investigationState.StabilizedTimeAnchorCount}/"
+                    + $"{investigationState.RequiredTimeAnchorCount}"
+                : "调查状态不可用";
+            RefreshWorldMarkers();
         }
 
-        private void TravelTo(string spawnName, string areaId, string areaName)
+        private void RefreshWorldMarkers()
+        {
+            WorldContentTracker tracker = WorldContentTracker.Instance;
+            IReadOnlyList<WorldContentEntry> entries =
+                tracker != null ? tracker.Entries : null;
+            int count = entries?.Count ?? 0;
+            while (markers.Count < count)
+            {
+                RectTransform dot = HudUiFactory.CreatePanel(
+                    canvasObject.transform,
+                    "WorldMarker" + markers.Count,
+                    new Vector2(0f, 1f),
+                    new Vector2(0f, 1f),
+                    new Vector2(0.5f, 0.5f),
+                    Vector2.zero,
+                    new Vector2(12f, 12f),
+                    new Color(0.55f, 0.58f, 0.6f)
+                );
+                Text label = CreateText(
+                    dot,
+                    "Label",
+                    string.Empty,
+                    10,
+                    new Vector2(20f, -11f),
+                    new Vector2(132f, 22f),
+                    TextAnchor.MiddleLeft
+                );
+                markers.Add(new MarkerView
+                {
+                    Root = dot.gameObject,
+                    Dot = dot.GetComponent<Image>(),
+                    Label = label
+                });
+            }
+            for (int index = 0; index < markers.Count; index++)
+            {
+                MarkerView marker = markers[index];
+                marker.Root.SetActive(index < count);
+                if (index >= count)
+                {
+                    continue;
+                }
+                WorldContentEntry entry = entries[index];
+                WorldContentStatus status =
+                    tracker.GetStatus(entry);
+                marker.Dot.color = status switch
+                {
+                    WorldContentStatus.InProgress =>
+                        new Color(0.94f, 0.72f, 0.28f),
+                    WorldContentStatus.ReadyToTurnIn =>
+                        new Color(0.42f, 0.82f, 0.58f),
+                    WorldContentStatus.Completed =>
+                        new Color(0.42f, 0.55f, 0.5f),
+                    _ => new Color(0.55f, 0.58f, 0.6f)
+                };
+                marker.Root.transform.position = new Vector3(
+                    218f + 28f + (1120f - 56f) * entry.MapX,
+                    1080f - 166f - 48f
+                        - (440f - 74f) * entry.MapY,
+                    0f
+                );
+                marker.Label.text = entry.Title;
+            }
+        }
+
+        private void ActivateArea(
+            string spawnName,
+            string areaId,
+            string displayName)
+        {
+            string currentAreaId = WorldRuntime.Instance != null
+                ? WorldRuntime.Instance.CurrentAreaId
+                : string.Empty;
+            if (areaId == currentAreaId)
+            {
+                statusMessage = $"你已经位于{displayName}。";
+            }
+            else
+            {
+                TravelTo(spawnName, areaId, displayName);
+            }
+            HudUiFactory.SetText(statusText, statusMessage);
+        }
+
+        private void TravelTo(
+            string spawnName,
+            string areaId,
+            string areaName)
         {
             if (!IsSpawnUnlocked(spawnName))
             {
                 statusMessage = $"{areaName}尚未记录锚点。";
                 return;
             }
-
             GameAudio.PlayPortal();
             GameObject spawn = GameObject.Find(spawnName);
             if (spawn == null)
@@ -711,15 +865,14 @@ namespace Demo02.UI
                 {
                     statusMessage = "当前正在转场，请稍候。";
                 }
-
                 return;
             }
-
             if (!LocalWorldPortal.TeleportParty(
                 spawn.transform,
                 areaId,
                 areaName,
-                out string message))
+                out _
+            ))
             {
                 statusMessage = "当前没有可传送的角色。";
             }
@@ -735,32 +888,46 @@ namespace Demo02.UI
             {
                 return true;
             }
-
             return WorldRuntime.Instance == null
                 || WorldRuntime.Instance.IsAnchorUnlocked(
                     spawnPoint.SpawnId
                 );
         }
 
-        public void ToggleMap()
+        private static string GetArgumentValue(string prefix)
         {
-            if (!isOpen && Time.timeScale <= 0f)
+            foreach (string argument in
+                     Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
-                return;
+                if (argument.StartsWith(
+                        prefix,
+                        System.StringComparison.Ordinal
+                    ))
+                {
+                    return argument.Substring(prefix.Length);
+                }
             }
+            return string.Empty;
+        }
 
-            isOpen = !isOpen;
-            statusMessage = string.Empty;
-            if (isOpen)
+        private IEnumerator CaptureMapPreview(string path)
+        {
+            yield return new WaitForSecondsRealtime(0.6f);
+            yield return new WaitForEndOfFrame();
+            string directory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrWhiteSpace(directory))
             {
-                previousTimeScale = Time.timeScale;
-                Time.timeScale = 0f;
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+                Directory.CreateDirectory(directory);
             }
-            else
+            ScreenCapture.CaptureScreenshot(path);
+            Debug.Log($"World map preview captured to {path}");
+            yield return null;
+            if (System.Array.IndexOf(
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
+                    "--capture-exit"
+                ) >= 0)
             {
-                Time.timeScale = previousTimeScale;
+                Application.Quit();
             }
         }
     }

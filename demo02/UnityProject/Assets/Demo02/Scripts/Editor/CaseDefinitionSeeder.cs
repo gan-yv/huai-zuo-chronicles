@@ -8,7 +8,10 @@ namespace Demo02.Editor
 {
     public static class CaseDefinitionSeeder
     {
+        public const string CaseFolder = "Assets/Demo02/Data/Cases";
         public const string Chapter01AssetPath =
+            "Assets/Demo02/Data/Cases/Chapter01_Case.asset";
+        private const string LegacyChapter01AssetPath =
             "Assets/Demo02/Data/Quests/Chapter01_Case.asset";
 
         [MenuItem("Demo02/Validate Case Content")]
@@ -27,13 +30,15 @@ namespace Demo02.Editor
 
         public static CaseDefinition LoadOrCreateChapter01()
         {
+            EnsureFolder(CaseFolder);
+            MigrateLegacyCaseAsset();
             CaseDefinition existing = AssetDatabase.LoadAssetAtPath<CaseDefinition>(
                 Chapter01AssetPath
             );
             if (existing != null)
             {
                 if (existing.DialogueScripts.Count == 0
-                    || existing.ContentVersion < 9)
+                    || existing.ContentVersion < 16)
                 {
                     existing.ConfigureOptionalContentForEditor(
                         CreateDialogueScripts(),
@@ -43,7 +48,7 @@ namespace Demo02.Editor
                     );
                     EditorUtility.SetDirty(existing);
                     AssetDatabase.SaveAssets();
-                    Debug.Log("Upgraded chapter asset to content version 9.");
+                    Debug.Log("Upgraded chapter asset to content version 16.");
                 }
                 return existing;
             }
@@ -69,6 +74,69 @@ namespace Demo02.Editor
             AssetDatabase.SaveAssets();
             Debug.Log($"Created chapter content asset at {Chapter01AssetPath}");
             return definition;
+        }
+
+        private static void MigrateLegacyCaseAsset()
+        {
+            CaseDefinition legacy =
+                AssetDatabase.LoadAssetAtPath<CaseDefinition>(
+                    LegacyChapter01AssetPath
+                );
+            if (legacy == null)
+            {
+                return;
+            }
+            if (AssetDatabase.LoadAssetAtPath<CaseDefinition>(
+                    Chapter01AssetPath
+                ) != null)
+            {
+                throw new System.InvalidOperationException(
+                    $"Both legacy and target case assets exist: " +
+                    $"{LegacyChapter01AssetPath} and " +
+                    $"{Chapter01AssetPath}"
+                );
+            }
+            string error = AssetDatabase.MoveAsset(
+                LegacyChapter01AssetPath,
+                Chapter01AssetPath
+            );
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                throw new System.InvalidOperationException(
+                    $"Could not migrate case asset: {error}"
+                );
+            }
+            AssetDatabase.Refresh();
+            const string legacyFolder = "Assets/Demo02/Data/Quests";
+            if (AssetDatabase.IsValidFolder(legacyFolder)
+                && AssetDatabase.FindAssets(
+                    string.Empty,
+                    new[] { legacyFolder }
+                ).Length == 0)
+            {
+                AssetDatabase.DeleteAsset(legacyFolder);
+                AssetDatabase.Refresh();
+            }
+        }
+
+        private static void EnsureFolder(string path)
+        {
+            if (AssetDatabase.IsValidFolder(path))
+            {
+                return;
+            }
+            string parent = System.IO.Path.GetDirectoryName(path)
+                ?.Replace('\\', '/');
+            string name = System.IO.Path.GetFileName(path);
+            if (string.IsNullOrEmpty(parent)
+                || string.IsNullOrEmpty(name))
+            {
+                throw new System.InvalidOperationException(
+                    $"Invalid folder: {path}"
+                );
+            }
+            EnsureFolder(parent);
+            AssetDatabase.CreateFolder(parent, name);
         }
 
         public static void ValidateOrThrow()
@@ -280,6 +348,86 @@ namespace Demo02.Editor
             {
                 new()
                 {
+                    Id = "warehouse-night-shift",
+                    Title = "盐仓夜班记录",
+                    Detail =
+                        "搬运工记得七辆车、四十二袋盐。"
+                        + "工头让他把夜班和沈砚一起从点名单上说成从未存在。"
+                },
+                new()
+                {
+                    Id = "warehouse-second-meal",
+                    Title = "第二份干粮",
+                    Detail =
+                        "搬运工每天多带一份炊饼，留给女儿阿禾。"
+                        + "阿禾的名字已从工册和户册消失，但饭每天都会少一份。"
+                },
+                new()
+                {
+                    Id = "warehouse-daughter-public",
+                    Title = "阿禾写回公开名册",
+                    Detail =
+                        "你决定把阿禾的名字写进公开记录。"
+                        + "她重新成为官府无法随口否认的人，也会引来陆崇的注意。"
+                },
+                new()
+                {
+                    Id = "warehouse-daughter-private",
+                    Title = "阿禾留在私人案卷",
+                    Detail =
+                        "你没有公开阿禾的名字，只把她写进自己的修复记录。"
+                        + "这保护了父女二人，也让她的存在再次依赖少数人的记忆。"
+                },
+                new()
+                {
+                    Id = "warehouse-daughter-remembered",
+                    Title = "有人记得阿禾",
+                    Detail =
+                        "你听完搬运工与阿禾的故事，并决定把她的名字保存在"
+                        + "公开名册或私人案卷。"
+                },
+                new()
+                {
+                    Id = "archive-clerk-ink-record",
+                    Title = "新浆下的空白",
+                    Detail =
+                        "抄书吏严槐发现，被抹掉的名字处会留下新浆。"
+                        + "纸张知道那里曾经写过什么，只是官府不肯承认。"
+                },
+                new()
+                {
+                    Id = "archive-clerk-father-name",
+                    Title = "严复留在装订线里的名字",
+                    Detail =
+                        "严槐的父亲严复也曾守盐仓，并在十年前的旧册中消失。"
+                        + "严槐一直保存着一张写着父亲名字的装订残页。"
+                },
+                new()
+                {
+                    Id = "archive-clerk-recruited",
+                    Title = "严槐加入抄录",
+                    Detail =
+                        "你让严槐参与证据抄录，并同意把父亲严复的名字写在边栏。"
+                        + "他愿意承担被发现的风险。"
+                },
+                new()
+                {
+                    Id = "archive-clerk-sheltered",
+                    Title = "严槐留在局外",
+                    Detail =
+                        "你没有让严槐参与抄录，只让他收好父亲留下的拓页。"
+                        + "他没有暴露，但仍把一份空白抄本留在抽屉里。"
+                },
+                new()
+                {
+                    Id = "lu-chong-threat",
+                    Title = "陆崇的空白秩序",
+                    Detail =
+                        "陆崇当面承认，他需要让一些街和一些人从册页上消失，"
+                        + "以维持自己能够控制的秩序。他并未把修复者视作真正的对手。"
+                },
+                new()
+                {
                     Id = "teahouse-cart-testimony",
                     Title = "茶肆盐车旁证",
                     Detail =
@@ -471,6 +619,53 @@ namespace Demo02.Editor
                     {
                         HasFactCondition("teahouse-written-record")
                     }
+                },
+                new()
+                {
+                    Id = "optional-warehouse-night-shift",
+                    Title = "夜班搬运工",
+                    Description =
+                        "账牌写着七车盐，工头却让搬运工改口说六车。"
+                        + "回旧仓内院问问那双记得四十二袋盐的肩膀。",
+                    TrackerHint = "旧仓内院 · 盐仓搬运工",
+                    TargetObjectName = "NPC_WarehouseWorker",
+                    ActivationConditions =
+                        new List<DialogueConditionDefinition>
+                        {
+                            StageAtLeastCondition(ChapterStage.Investigate),
+                            StageBeforeCondition(ChapterStage.FinalDecision),
+                            HasEvidenceCondition("salt-ledger")
+                        },
+                    CompletionConditions =
+                        new List<DialogueConditionDefinition>
+                        {
+                            HasFactCondition("warehouse-night-shift")
+                        }
+                },
+                new()
+                {
+                    Id = "optional-warehouse-second-meal",
+                    Title = "第二份干粮",
+                    Description =
+                        "搬运工每天多带一份饭，却从不说是给谁。"
+                        + "再回旧仓内院问问他，那份干粮究竟留给谁。",
+                    TrackerHint = "旧仓内院 · 搬运工的第二份饭",
+                    TargetObjectName = "NPC_WarehouseWorker",
+                    ActivationConditions =
+                        new List<DialogueConditionDefinition>
+                        {
+                            StageAtLeastCondition(ChapterStage.Investigate),
+                            StageBeforeCondition(ChapterStage.Resolved),
+                            HasFactCondition("warehouse-night-shift"),
+                            LacksFactCondition("warehouse-second-meal")
+                        },
+                    CompletionConditions =
+                        new List<DialogueConditionDefinition>
+                        {
+                            HasFactCondition(
+                                "warehouse-daughter-remembered"
+                            )
+                        }
                 }
             };
         }
@@ -479,6 +674,871 @@ namespace Demo02.Editor
         {
             return new List<DialogueScriptDefinition>
             {
+                Script(
+                    "lu-chong-preserve",
+                    "E  质问陆崇为何留下盐引巷",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "转运副使 陆崇",
+                            "你把街写回册里，很好。可册页归官署保管，"
+                            + "今日多出一巷，明日就能多出一条罪名。"
+                        ),
+                        Line(
+                            "转运副使 陆崇",
+                            "我会暂时放过这些百姓。不是因为你修好了时缝，"
+                            + "而是因为一条活街比一条死巷更容易重新封起来。"
+                        )
+                    },
+                    choices: null,
+                    completionEffects: new[]
+                    {
+                        SetFactEffect("lu-chong-threat")
+                    },
+                    npcId: "lu-chong"
+                ),
+                Script(
+                    "lu-chong-seal",
+                    "E  质问陆崇封街的代价",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Seal)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "转运副使 陆崇",
+                            "你替广陵做了正确的选择。少一条街，多一夜安宁，"
+                            + "这笔账在官署里永远划得平。"
+                        ),
+                        Line(
+                            "转运副使 陆崇",
+                            "至于你记得的那几个人，不必担心。"
+                            + "等下一本册子重抄时，连你也会忘记他们为何重要。"
+                        )
+                    },
+                    choices: null,
+                    completionEffects: new[]
+                    {
+                        SetFactEffect("lu-chong-threat")
+                    },
+                    npcId: "lu-chong"
+                ),
+                Script(
+                    "lu-chong-final",
+                    "E  质问陆崇要封住谁的嘴",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.FinalDecision)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "转运副使 陆崇",
+                            "你终于把那条不存在的街修回来了。"
+                            + "现在只要再选一次，七车盐就可以重新变成从未发生。"
+                        ),
+                        Line(
+                            "主角",
+                            "你提前写好除名封条，不是为了稳定，"
+                            + "是为了让所有知情人都变成没人认识的人。"
+                        ),
+                        Line(
+                            "转运副使 陆崇",
+                            "秩序总得留一点空白。街活着，我还能给它一条巷；"
+                            + "街进册，我就得让记得它的人一起消失。"
+                        ),
+                        Line(
+                            "途印向导",
+                            "他怕的不是这份账。他怕沈砚已经把最后一页交给了别人。"
+                        ),
+                        Line(
+                            "转运副使 陆崇",
+                            "选吧。保留，你要替这条街承担陆家的追查；"
+                            + "封存，我可以让今夜没人死。"
+                        )
+                    },
+                    choices: null,
+                    completionEffects: new[]
+                    {
+                        SetFactEffect("lu-chong-threat")
+                    },
+                    npcId: "lu-chong"
+                ),
+                Script(
+                    "ahe-preserve-private",
+                    "E  和阿禾说话",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve),
+                        HasFactCondition("warehouse-daughter-private")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "阿禾",
+                            "爹说不能大声说自己叫什么。那我小声告诉你："
+                            + "我叫阿禾，禾苗的禾。"
+                        ),
+                        Line(
+                            "盐仓搬运工",
+                            "她今天终于肯坐到桌边。以前我总怕一抬头，"
+                            + "对面又只剩一只空碗。"
+                        ),
+                        Line(
+                            "途印向导",
+                            "名册可以晚一点补。先让她把这一顿饭吃完。"
+                        )
+                    },
+                    npcId: "ahe"
+                ),
+                Script(
+                    "ahe-preserve-public",
+                    "E  和阿禾说话",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve),
+                        HasFactCondition("warehouse-daughter-public")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "阿禾",
+                            "官署的人来问话时，把我的姓念错了。"
+                            + "不过没关系，我知道他们念的是我。"
+                        ),
+                        Line(
+                            "盐仓搬运工",
+                            "她今天敢自己走到门口了。街上有人认得她，"
+                            + "比册子上那一个名字更要紧。"
+                        )
+                    },
+                    npcId: "ahe"
+                ),
+                Script(
+                    "archive-clerk-preserve",
+                    "E  问严槐旧街是否进入新册",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "抄书吏 严槐",
+                            "新册送进来时，墨还没干。我照着原来的行距抄了一遍，"
+                            + "沈砚和盐引巷都在。只是陆崇的名字被人刮掉了半笔。"
+                        ),
+                        Line(
+                            "抄书吏 严槐",
+                            "我没补那一笔。少半笔的人，让后来的人自己猜吧。"
+                        )
+                    },
+                    npcId: "archive-clerk"
+                ),
+                Script(
+                    "archive-clerk-seal",
+                    "E  问严槐封街后册页如何处理",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Seal)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "抄书吏 严槐",
+                            "封条送来时，我的笔还没洗。他们让我把旧街写进废册，"
+                            + "可废册也要留底。纸不会因为被锁起来，就忘记写过什么。"
+                        )
+                    },
+                    npcId: "archive-clerk"
+                ),
+                Script(
+                    "archive-clerk-final",
+                    "E  问严槐两本册子会留下什么",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.FinalDecision)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "抄书吏 严槐",
+                            "公开会让很多人看见，也会让很多人来抢着改。"
+                            + "私藏能保住眼前的人，可下一次重抄时，谁替你记得？"
+                        ),
+                        Line(
+                            "抄书吏 严槐",
+                            "我只管纸。哪一种后果更像一条能住人的街，得由你决定。"
+                        )
+                    },
+                    npcId: "archive-clerk"
+                ),
+                Script(
+                    "archive-clerk-investigate",
+                    "E  问严槐名字被抹去后会留下什么",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.Investigate),
+                        StageBeforeCondition(ChapterStage.FinalDecision),
+                        LacksFactCondition("archive-clerk-ink-record")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "抄书吏 严槐",
+                            "被刮掉的名字不会完全消失。墨掉了，纸面会起一层新浆，"
+                            + "摸上去像一道没有愈合的疤。"
+                        ),
+                        Line(
+                            "抄书吏 严槐",
+                            "账牌、封条和旧街招牌都是这样。你若去找搬运工，"
+                            + "别只问他看见什么，也问问他每天仍重复做什么。"
+                        )
+                    },
+                    choices: null,
+                    completionEffects: new[]
+                    {
+                        SetFactEffect("archive-clerk-ink-record")
+                    },
+                    npcId: "archive-clerk"
+                ),
+                Script(
+                    "archive-clerk-father-recruited",
+                    "E  问严复的拓页是否还在",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.Investigate),
+                        StageBeforeCondition(ChapterStage.FinalDecision),
+                        HasFactCondition("archive-clerk-recruited")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "抄书吏 严槐",
+                            "我把证据抄了三份，父亲的拓页夹在最后一份里。"
+                            + "若官署看见边栏上的严复，至少会知道有人记得这十年。"
+                        )
+                    },
+                    npcId: "archive-clerk"
+                ),
+                Script(
+                    "archive-clerk-father-sheltered",
+                    "E  问严复的拓页是否还在",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.Investigate),
+                        StageBeforeCondition(ChapterStage.FinalDecision),
+                        HasFactCondition("archive-clerk-sheltered")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "抄书吏 严槐",
+                            "拓页锁在抽屉里。我每天照旧磨墨，也会给父亲留一格空白。"
+                            + "不写出来，不代表我忘了。"
+                        )
+                    },
+                    npcId: "archive-clerk"
+                ),
+                Script(
+                    "archive-clerk-father-choice",
+                    "E  问严槐为何总在册边留白",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.Investigate),
+                        StageBeforeCondition(ChapterStage.FinalDecision),
+                        HasFactCondition("archive-clerk-ink-record"),
+                        LacksFactCondition("archive-clerk-father-name")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "抄书吏 严槐",
+                            "我父亲严复也守过盐仓。十年前他的名字从册上消失，"
+                            + "只在装订线里留下一张残页。我一直把它压在墨匣底下。"
+                        ),
+                        Line(
+                            "主角",
+                            "你一直在等一个能把残页夹进正式记录的机会。"
+                        ),
+                        Line(
+                            "抄书吏 严槐",
+                            "是。可抄录的人总会先被查到。"
+                            + "你可以让我冒险，也可以让我继续留在册边留白。"
+                        )
+                    },
+                    new[]
+                    {
+                        Choice(
+                            "让严槐抄录证据，在边栏写下父亲严复的名字。",
+                            SetFactEffect("archive-clerk-recruited")
+                        ),
+                        Choice(
+                            "不让严槐冒险，先保住父亲留下的拓页。",
+                            SetFactEffect("archive-clerk-sheltered")
+                        )
+                    },
+                    new[]
+                    {
+                        SetFactEffect("archive-clerk-father-name")
+                    },
+                    npcId: "archive-clerk"
+                ),
+                Script(
+                    "archive-clerk-arrival",
+                    "E  问抄书吏官署在抄什么",
+                    new[]
+                    {
+                        StageBeforeCondition(ChapterStage.Investigate)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "抄书吏 严槐",
+                            "别在官署门口念沈砚的名字。今早我抄完三页册子，"
+                            + "回头再看，装订线里多了一层新浆。"
+                        ),
+                        Line(
+                            "抄书吏 严槐",
+                            "纸上原本写过字。只是有人要它看起来，从来都是空白。"
+                        )
+                    },
+                    npcId: "archive-clerk"
+                ),
+                Script(
+                    "caiyi-snack-preserve-daughter",
+                    "E  问摊主为何多留一碗热汤",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve),
+                        HasFactCondition("warehouse-daughter-remembered")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "小吃摊主",
+                            "盐引巷回来后，搬运工每天来买两碗热汤。"
+                            + "以前他只买一碗，另一只碗总装进随身的炊饼篮。"
+                        ),
+                        Line(
+                            "小吃摊主",
+                            "今早有个小姑娘坐在摊边，把汤喝完了。"
+                            + "她说自己叫阿禾，我记住了。"
+                        )
+                    },
+                    npcId: "caiyi-snack-vendor"
+                ),
+                Script(
+                    "caiyi-snack-preserve",
+                    "E  问摊主旧街客人是否回来",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "小吃摊主",
+                            "盐引巷的客人今早又来了，热汤多卖了好几碗。"
+                            + "他们说话时，已经不必先看看街口有没有官差。"
+                        )
+                    },
+                    npcId: "caiyi-snack-vendor"
+                ),
+                Script(
+                    "caiyi-snack-seal",
+                    "E  问摊主盐引巷的客人去了哪里",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Seal)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "小吃摊主",
+                            "盐引巷的客人又不见了。"
+                            + "有个搬运工每天还买一碗汤，端着走到街口，再原样端回去。"
+                        )
+                    },
+                    npcId: "caiyi-snack-vendor"
+                ),
+                Script(
+                    "caiyi-snack-default",
+                    "E  与小吃摊主交谈",
+                    new[]
+                    {
+                        StageBeforeCondition(ChapterStage.Resolved)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "小吃摊主",
+                            "以前盐船靠岸，搬运工会来我这儿买热汤。"
+                            + "最近少了盐引巷的客人，生意都冷清了。"
+                        )
+                    },
+                    npcId: "caiyi-snack-vendor"
+                ),
+                Script(
+                    "caiyi-tailor-preserve",
+                    "E  问裁衣铺旧街生意是否恢复",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "裁衣铺掌柜",
+                            "今早有人拿着盐引巷的门牌来配窗帘，"
+                            + "说那条街终于又能在册上找到。"
+                        ),
+                        Line(
+                            "裁衣铺掌柜",
+                            "我量了尺寸。一个地方能不能住人，"
+                            + "看有没有人肯为窗户挑布就知道了。"
+                        )
+                    },
+                    npcId: "caiyi-tailor"
+                ),
+                Script(
+                    "caiyi-tailor-seal",
+                    "E  问裁衣铺旧街客人去了哪里",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Seal)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "裁衣铺掌柜",
+                            "前些日子还有媳妇来挑青布，今天再问，她们连盐引巷在哪都说不清。"
+                            + "街没少一块砖，倒像少了一截尺寸。"
+                        )
+                    },
+                    npcId: "caiyi-tailor"
+                ),
+                Script(
+                    "caiyi-tailor-default",
+                    "E  与裁衣铺掌柜交谈",
+                    new[]
+                    {
+                        StageBeforeCondition(ChapterStage.Resolved)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "裁衣铺掌柜",
+                            "盐引巷从前就在旧仓后面。那里的媳妇常来我这儿挑青布，"
+                            + "说盐灰落上去也不显脏。"
+                        ),
+                        Line(
+                            "裁衣铺掌柜",
+                            "街和衣裳一样。少了一段，旁人未必看得出来，"
+                            + "住在这里的人却知道。"
+                        )
+                    },
+                    npcId: "caiyi-tailor"
+                ),
+                Script(
+                    "cloth-merchant-preserve",
+                    "E  问绸缎商那笔青布买卖",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "绸缎商",
+                            "沈砚那笔青布买卖今早重新出现在账上了。"
+                            + "我不在乎一尺布的银子，只在乎收钱的人没被当成没来过。"
+                        )
+                    },
+                    npcId: "cloth-merchant"
+                ),
+                Script(
+                    "cloth-merchant-seal",
+                    "E  问绸缎商那笔青布买卖",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Seal)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "绸缎商",
+                            "那尺青布还压在柜台底下，账上仍没有那笔买卖。"
+                            + "有人拿走了布，有人拿走了名字，官署说两者都没发生。"
+                        )
+                    },
+                    npcId: "cloth-merchant"
+                ),
+                Script(
+                    "cloth-merchant-default",
+                    "E  与绸缎商交谈",
+                    new[]
+                    {
+                        StageBeforeCondition(ChapterStage.Resolved)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "绸缎商",
+                            "沈砚前日来扯过一尺青布，说要给父亲缝个新账袋。"
+                            + "钱是我亲手收的，账上却找不到这笔买卖。"
+                        ),
+                        Line(
+                            "绸缎商",
+                            "若连买卖都能被改，东关街还算得上是谁的街？"
+                            + "去旧仓看看吧，他父亲一直守在那里。"
+                        )
+                    },
+                    npcId: "cloth-merchant"
+                ),
+                Script(
+                    "warehouse-worker-preserve-public",
+                    "E  问阿禾是否还认得住这条街",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve),
+                        HasFactCondition("warehouse-daughter-public")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "盐引巷回来后，有人拿着旧户册来认门。"
+                            + "阿禾的名字排在最后一页，字很丑，可没人再问那是谁。"
+                        ),
+                        Line(
+                            "盐仓搬运工",
+                            "她还是不敢去官署。不过今天收工时，她先喊了我一声。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-preserve-private",
+                    "E  问阿禾是否还认得住这条街",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve),
+                        HasFactCondition("warehouse-daughter-private")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "新街没有阿禾的户册，我还是每天多带一份饭。"
+                            + "现在我不用对空凳解释，因为你和阿禾都听见了。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-seal-public",
+                    "E  问封街后阿禾去了哪里",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Seal),
+                        HasFactCondition("warehouse-daughter-public")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "街又封了。官署收走公开名册时，我把阿禾那一页"
+                            + "藏进了炊饼篮。至少这一次，不是他们决定她存不存在。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-seal-private",
+                    "E  问封街后阿禾去了哪里",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Seal),
+                        HasFactCondition("warehouse-daughter-private")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "街没了，阿禾的名字也没写出去。可她昨晚坐到我对面。"
+                            + "我没告诉别人，怕一开口，她又被当成一条错记录。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-final-public",
+                    "E  问阿禾的名字会落到谁手里",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.FinalDecision),
+                        HasFactCondition("warehouse-daughter-public")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "你让官署看见了阿禾。陆崇若还掌着册，就能再抹她一次。"
+                            + "最后一个选择，别只保住一条街，也别只保住一份名单。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-final-private",
+                    "E  问阿禾的名字会落到谁手里",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.FinalDecision),
+                        HasFactCondition("warehouse-daughter-private")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "你替阿禾藏了一次名字，也替我背了一次风险。"
+                            + "最后一个选择，别让更多人像我一样只能靠肩膀记住。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-daughter-public-repeat",
+                    "E  问阿禾的近况",
+                    new[]
+                    {
+                        StageBeforeCondition(ChapterStage.FinalDecision),
+                        HasFactCondition("warehouse-daughter-public")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "我把阿禾写在点名单背面，工头看见也没敢擦。"
+                            + "晚上她坐过的板凳，还是只我一个人收拾。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-daughter-private-repeat",
+                    "E  问阿禾的近况",
+                    new[]
+                    {
+                        StageBeforeCondition(ChapterStage.FinalDecision),
+                        HasFactCondition("warehouse-daughter-private")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "只有你的私人案卷写着阿禾。没人找我们麻烦，"
+                            + "可我每天收工，还是会先喊她一声。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-daughter-choice",
+                    "E  问搬运工为何多带一份干粮",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.Investigate),
+                        StageBeforeCondition(ChapterStage.FinalDecision),
+                        HasFactCondition("warehouse-night-shift"),
+                        LacksFactCondition("warehouse-second-meal")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "你注意到我每顿都多拿一份炊饼吗？"
+                            + "阿禾吃不了这么多，可我还是每天都带。"
+                        ),
+                        Line("主角", "阿禾是谁？"),
+                        Line(
+                            "盐仓搬运工",
+                            "我女儿。工册和户册里没有她。"
+                            + "街坊说我对着空凳子说话，可每天收工，饭还是会少一份。"
+                        ),
+                        Line(
+                            "途印向导",
+                            "被抹掉的是她在城里的位置，不是你对她的记忆。"
+                            + "名字若没人敢写，就会一直空着。"
+                        ),
+                        Line(
+                            "盐仓搬运工",
+                            "别急着替我作证。先告诉我，阿禾的名字该给官署看，"
+                            + "还是只留给还认得她的人。"
+                        )
+                    },
+                    new[]
+                    {
+                        Choice(
+                            "把阿禾写进公开记录，让官署不能再装作没有她。",
+                            SetFactEffect("warehouse-daughter-public")
+                        ),
+                        Choice(
+                            "先把阿禾写进私人案卷，保护她和你的证人。",
+                            SetFactEffect("warehouse-daughter-private")
+                        )
+                    },
+                    new[]
+                    {
+                        SetFactEffect("warehouse-second-meal"),
+                        SetFactEffect("warehouse-daughter-remembered")
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-preserve",
+                    "E  问搬运工盐引巷的夜班",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Preserve)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "盐引巷回来了，工头今早第一次没敢让我改口。"
+                            + "七车盐、四十二袋，我都还能一件件数出来。"
+                        ),
+                        Line(
+                            "盐仓搬运工",
+                            "你若要查陆崇，就来问我。我的肩膀比点名单记得清楚。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-seal",
+                    "E  问搬运工盐引巷的夜班",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.Resolved),
+                        ConclusionCondition(ConclusionChoice.Seal)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "工头又说昨夜没人搬盐。我明明还记得肩膀磨破的地方，"
+                            + "可没有人肯听一个苦力说什么。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-final",
+                    "E  问搬运工是否愿意作证",
+                    new[]
+                    {
+                        StageCondition(ChapterStage.FinalDecision)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "我可以作证，但你得先决定让谁听见。"
+                            + "官署会问我姓名，商帮会问我下一顿饭在哪里。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-repeat",
+                    "E  复核盐仓夜班",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.ReviewEvidence),
+                        StageBeforeCondition(ChapterStage.FinalDecision),
+                        HasFactCondition("warehouse-night-shift")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "七辆车，四十二袋。沈砚亲手在最后一袋上画了记号，"
+                            + "说若少一袋，就把账翻过来看。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-testimony",
+                    "E  问搬运工初七夜里的盐车",
+                    new[]
+                    {
+                        StageAtLeastCondition(ChapterStage.Investigate),
+                        StageBeforeCondition(ChapterStage.FinalDecision),
+                        LacksFactCondition("warehouse-night-shift")
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "沈砚昨夜问我盐仓少了几车。我说七车，"
+                            + "工头当场让我改口，说只进过六车。"
+                        ),
+                        Line(
+                            "盐仓搬运工",
+                            "一辆车七袋，七辆就是四十二袋。"
+                            + "今早的点名单上没有夜班，也没有沈砚，可我的肩膀记得。"
+                        )
+                    },
+                    completionEffects: new[]
+                    {
+                        SetFactEffect("warehouse-night-shift")
+                    },
+                    npcId: "warehouse-worker"
+                ),
+                Script(
+                    "warehouse-worker-arrival",
+                    "E  问搬运工沈砚去了哪里",
+                    new[]
+                    {
+                        StageBeforeCondition(ChapterStage.Investigate)
+                    },
+                    new[]
+                    {
+                        Line(
+                            "盐仓搬运工",
+                            "守仓人若是问你沈砚，你先听他说完。"
+                            + "我们这些搬货的，名字最容易从纸上少一笔。"
+                        )
+                    },
+                    npcId: "warehouse-worker"
+                ),
                 Script(
                     "shenbo-arrival",
                     "E  询问沈砚失踪的事",
@@ -499,6 +1559,11 @@ namespace Demo02.Editor
                             "守仓人 沈伯",
                             "盐引巷就是这条旧街从前的名字。我儿子沈砚守着盐仓账。"
                             + "昨夜他带走了七页账簿，再没回来。"
+                        ),
+                        Line(
+                            "途印向导",
+                            "官署不是没找到沈砚。他们是在把“沈砚”两个字"
+                            + "从每一页上擦掉。名字一没，人就像从未站在这里。"
                         ),
                         Line(
                             "主角",
@@ -587,6 +1652,11 @@ namespace Demo02.Editor
                             "主角",
                             "封条是转运副使陆崇的，日期却在旧街消失前一天。"
                             + "他不是事后掩盖，而是提前写好了结局。"
+                        ),
+                        Line(
+                            "途印向导",
+                            "这三张纸能证明有人改过册。可只要送出去，"
+                            + "写纸的人也会立刻知道是谁先发现了。"
                         ),
                         Line(
                             "守仓人 沈伯",
@@ -692,6 +1762,11 @@ namespace Demo02.Editor
                             "可账牌写着七车盐初七夜才入城。"
                             + "封条比私盐早了两天，他们要除掉的不是"
                             + "已经被抓住的把柄，而是预定的知情人。"
+                        ),
+                        Line(
+                            "途印向导",
+                            "初五写除名，初七才运盐。顺序反过来就说明，"
+                            + "陆崇不是追着案子走，他是在案子发生前先清掉人。"
                         ),
                         Line(
                             "守仓人 沈伯",
@@ -1045,6 +2120,11 @@ namespace Demo02.Editor
                     + "会多出一排本不存在的门。"
                 ),
                 Line(
+                    "途印向导",
+                    "旧时层会把路改得像另一条街。别跟着新出现的门走，"
+                    + "认门牌背面的铜钉。那才是这座城真正的次序。"
+                ),
+                Line(
                     "主角",
                     "那是旧时层留下的影子。门牌上写着“西仓、东验、中册”。"
                     + "按这个顺序稳定锚点，错序会让已经稳定的部分重新漂移。"
@@ -1082,6 +2162,11 @@ namespace Demo02.Editor
                     + "你若封存这里，阿砚也许再也回不来。"
                 ),
                 Line(
+                    "途印向导",
+                    "你想找回家的路，沈伯只想再叫一声儿子的名字。"
+                    + "这一次，纸外的人和纸上的人，只能先保住一边。"
+                ),
+                Line(
                     "主角",
                     "记录不会替我们选。要保住一个人、一条街，"
                     + "总得有人承担它重新出现后的代价。"
@@ -1116,7 +2201,15 @@ namespace Demo02.Editor
                 conditions.ToArray(),
                 new[]
                 {
-                    Line("守仓人 沈伯", response)
+                    Line("守仓人 沈伯", response),
+                    Line(
+                        "途印向导",
+                        conclusion == ConclusionChoice.Preserve
+                            ? "地图上会多出一条街。以后有人再想把它抹掉，"
+                                + "至少得先经过一群记得这个名字的人。"
+                            : "官署的册页今天没有多出一条街。"
+                                + "但走过这里的人会记得，我们曾经看见过它。"
+                    )
                 }
             );
         }

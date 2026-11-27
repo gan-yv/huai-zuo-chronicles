@@ -181,6 +181,39 @@ namespace Demo02.Core
             }
         }
 
+        public bool TryUseFirstHealingItem(
+            Combatant target,
+            InvestigationState investigation,
+            out string message)
+        {
+            if (caseContent == null)
+            {
+                message = "案件物品数据尚未加载。";
+                return false;
+            }
+
+            IReadOnlyList<InventoryItemDefinition> items =
+                caseContent.InventoryItems;
+            for (int index = 0; index < items.Count; index++)
+            {
+                InventoryItemDefinition item = items[index];
+                if (item != null
+                    && item.Effect == InventoryItemEffect.RestoreHealth
+                    && GetCount(item.Id) > 0)
+                {
+                    return TryUseItem(
+                        item.Id,
+                        target,
+                        investigation,
+                        out message
+                    );
+                }
+            }
+
+            message = "没有可用的恢复物品。";
+            return false;
+        }
+
         public List<InventoryItemSaveData> ExportItems()
         {
             List<InventoryItemSaveData> result = new();

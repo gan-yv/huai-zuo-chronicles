@@ -1,0 +1,2370 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7a824fa490c4e68b47aa81ab533c610, type: 3}
+  m_Name: Chapter01_Case
+  m_EditorClassIdentifier: Assembly-CSharp::Demo02.Narrative.CaseDefinition
+  contentVersion: 16
+  caseId: chapter-01
+  title: "\u6D88\u5931\u7684\u76D0\u5F15"
+  chapterLabel: CHAPTER 01
+  culpritEvidenceId: official-seal
+  evidence:
+  - Id: old-street-sign
+    Title: "\u76D0\u5F15\u5DF7\u95E8\u724C"
+    Detail: "\u65E7\u6F06\u4E0B\u85CF\u7740\u201C\u76D0\u5F15\u5DF7\u201D\u4E09\u5B57\u3002\u8FD9\u91CC\u662F\u76D0\u8239\u5165\u57CE\u540E\u7684\u7B2C\u4E00\u5904\u9A8C\u5F15\u70B9\u3002"
+    InteractionPrompt: "E  \u8C03\u67E5\u65E7\u8857\u95E8\u724C"
+    DiscoveredText: "\u95E8\u724C\u80CC\u9762\u522E\u7740\u4E00\u5C42\u65E7\u6F06\u3002\u5BF9\u7740\u5149\u80FD\u8BA4\u51FA\u201C\u76D0\u5F15\u5DF7\u201D\uFF0C\u4E09\u679A\u94DC\u9489\u4E0B\u8FD8\u523B\u7740\uFF1A\u897F\u4ED3\u3001\u4E1C\u9A8C\u3001\u4E2D\u518C\u3002"
+  - Id: salt-ledger
+    Title: "\u4E03\u8F66\u76D0\u8D26\u724C"
+    Detail: "\u4E03\u8F66\u79C1\u76D0\u4E8E\u521D\u4E03\u540E\u534A\u591C\u5165\u57CE\uFF0C\u590D\u6838\u7B7E\u5B57\u4E3A\u6C88\u781A\u3002"
+    InteractionPrompt: "E  \u8C03\u67E5\u76D0\u4ED3\u8D26\u724C"
+    DiscoveredText: "\u8D26\u724C\u80CC\u9762\u6B8B\u7559\u4E03\u8F66\u76D0\u7684\u62BC\u8FD0\u7F16\u53F7\u3002\u590D\u6838\u7B7E\u5B57\u662F\u201C\u6C88\u781A\u201D\uFF0C\u5165\u57CE\u65E5\u671F\u4E3A\u521D\u4E03\u540E\u534A\u591C\u3002"
+  - Id: official-seal
+    Title: "\u9646\u5D07\u9664\u540D\u5C01\u6761"
+    Detail: "\u5C01\u6761\u65E5\u671F\u65E9\u4E8E\u65E7\u8857\u6D88\u5931\u4E00\u5929\uFF0C\u80CC\u9762\u5199\u7740\u201C\u77E5\u60C5\u4EBA\u6C88\u781A\uFF0C\u5B9C\u9664\u540D\u201D\u3002"
+    InteractionPrompt: "E  \u8C03\u67E5\u5B98\u5E9C\u5C01\u6761"
+    DiscoveredText: "\u5C01\u6761\u5C5E\u4E8E\u8F6C\u8FD0\u526F\u4F7F\u9646\u5D07\uFF0C\u65E5\u671F\u6BD4\u76D0\u5F15\u5DF7\u4ECE\u5730\u56FE\u6D88\u5931\u65E9\u4E00\u5929\u3002\u80CC\u9762\u8FD8\u6709\u4E00\u884C\u5C0F\u5B57\uFF1A\u77E5\u60C5\u4EBA\u6C88\u781A\uFF0C\u5B9C\u9664\u540D\u3002"
+  testimonies:
+  - Id: shenbo-seal-date
+    Source: "\u6C88\u4F2F \xB7 \u5B88\u4ED3\u4EBA"
+    Text: "\u5C01\u6761\u662F\u521D\u4E94\u508D\u665A\u8D34\u4E0A\u7684\u3002\u90A3\u5929\u963F\u781A\u8FD8\u5728\u4ED3\u91CC\uFF0C\u95E8\u5916\u8FD8\u6CA1\u6709\u90A3\u4E03\u8F66\u76D0\u3002"
+  - Id: teahouse-salt-carts
+    Source: "\u8336\u94FA\u4F19\u8BA1 \xB7 \u8857\u53E3"
+    Text: "\u521D\u4E94\u5230\u521D\u516B\u90FD\u89C1\u8FC7\u76D0\u8F66\uFF0C\u6211\u8BB0\u4E0D\u6E05\u4E03\u8F66\u7A76\u7ADF\u662F\u5728\u54EA\u4E00\u591C\u5378\u4E0B\u7684\u3002"
+  - Id: clerk-removal-order
+    Source: "\u5B98\u7F72\u6284\u4E66\u540F \xB7 \u518C\u9875\u65C1\u8BC1"
+    Text: "\u65E7\u8857\u7684\u540D\u5B57\u662F\u5728\u5C01\u4ED3\u4E4B\u540E\uFF0C\u624D\u4ECE\u5B98\u7F72\u518C\u9875\u4E0A\u4E00\u8D77\u6D88\u5931\u7684\u3002"
+  contradiction:
+    StatementId: shenbo-seal-date
+    EvidenceId: salt-ledger
+    Explanation: "\u521D\u4E94\u7684\u5C01\u6761\u5DF2\u7ECF\u5199\u660E\u8981\u628A\u6C88\u781A\u9664\u540D\uFF0C\u4E03\u8F66\u76D0\u5374\u5728\u521D\u4E03\u591C\u91CC\u624D\u5165\u57CE\u3002\u9664\u540D\u53D1\u751F\u5728\u79C1\u76D0\u5165\u57CE\u4E4B\u524D\uFF0C\u8BF4\u660E\u9646\u5D07\u4E0D\u662F\u67E5\u6848\u540E\u5904\u7F6E\uFF0C\u800C\u662F\u63D0\u524D\u62B9\u6389\u77E5\u60C5\u4EBA\u3002"
+    FirstHint: "\u8FD9\u4E24\u4EFD\u8BB0\u5F55\u53EF\u4EE5\u540C\u65F6\u6210\u7ACB\u3002\u5BFB\u627E\u4E00\u4EFD\u5199\u6709\u5177\u4F53\u65E5\u671F\u3001\u53E6\u4E00\u4EFD\u8BB0\u5F55\u540C\u4E00\u4E8B\u4EF6\u5148\u540E\u7684\u5185\u5BB9\u3002"
+    RepeatedHint: "\u518D\u6BD4\u5BF9\u4E00\u6B21\u65F6\u95F4\u3002\u6C88\u4F2F\u8BF4\u7684\u662F\u5C01\u6761\u4F55\u65F6\u8D34\u4E0A\uFF0C\u8D26\u724C\u8BB0\u5F55\u7684\u662F\u4E03\u8F66\u76D0\u4F55\u65F6\u5165\u57CE\u3002"
+  stageCopy:
+  - Stage: 0
+    Objective: "\u524D\u5F80\u65E7\u4ED3\u5185\u9662\uFF0C\u8BE2\u95EE\u5B88\u4ED3\u4EBA\u6C88\u4F2F"
+    Reasoning: "\u6C88\u781A\u5931\u8E2A\u540E\uFF0C\u5B98\u7F72\u548C\u8857\u574A\u540C\u65F6\u5FD8\u8BB0\u4E86\u4ED6\u3002\u5148\u8BE2\u95EE\u6C88\u4F2F\uFF0C\u786E\u8BA4\u6700\u540E\u7559\u4E0B\u7684\u4E09\u5904\u8BB0\u5F55\u3002"
+  - Stage: 1
+    Objective: "\u8C03\u67E5\u76D0\u5F15\u5DF7\u7559\u4E0B\u7684\u8BB0\u5F55  {0}/{1}"
+    Reasoning: "\u6C88\u781A\u5E26\u8D70\u4E86\u4E03\u9875\u79C1\u76D0\u8D26\u7C3F\u3002\u95E8\u724C\u3001\u8D26\u724C\u4E0E\u5B98\u5E9C\u5C01\u6761\u5FC5\u987B\u4E92\u76F8\u5370\u8BC1\uFF0C\u624D\u80FD\u8BC1\u660E\u76D0\u5F15\u5DF7\u66FE\u7ECF\u5B58\u5728\u3002"
+  - Stage: 2
+    Objective: "\u628A\u4E09\u5904\u8BB0\u5F55\u5E26\u56DE\u65E7\u4ED3\uFF0C\u8BA9\u6C88\u4F2F\u8FA8\u8BA4\u7B14\u8FF9"
+    Reasoning: "\u4E09\u5904\u8BC1\u636E\u5DF2\u7ECF\u6307\u5411\u540C\u4E00\u4E2A\u591C\u665A\u3002\u6C88\u4F2F\u8BA4\u5F97\u513F\u5B50\u7684\u7B14\u8FF9\uFF0C\u4E0B\u4E00\u6B65\u5E94\u8BA9\u4ED6\u786E\u8BA4\u8D26\u724C\u7B7E\u540D\u3002"
+  - Stage: 3
+    Objective: "\u6309 T \u6253\u5F00\u8BC1\u8BCD\u5BF9\u7167\uFF0C\u627E\u51FA\u5C01\u6761\u4E0E\u76D0\u8F66\u8BB0\u5F55\u7684\u65F6\u95F4\u77DB\u76FE"
+    Reasoning: "\u6C88\u4F2F\u8BF4\u5C01\u6761\u5728\u521D\u4E94\u508D\u665A\u8D34\u4E0A\uFF0C\u8D26\u724C\u5374\u8BB0\u5F55\u4E03\u8F66\u76D0\u76F4\u5230\u521D\u4E03\u591C\u91CC\u624D\u5165\u57CE\u3002\u5982\u679C\u4E24\u53E5\u8BDD\u90FD\u6210\u7ACB\uFF0C\u9664\u540D\u5C31\u53D1\u751F\u5728\u79C1\u76D0\u5165\u57CE\u4E4B\u524D\u3002"
+  - Stage: 4
+    Objective: "\u6309\u8BB0\u5F55\u987A\u5E8F\u7A33\u5B9A\u951A\u70B9\uFF1A{0} /
+      {1}/{2}"
+    Reasoning: "\u9646\u5D07\u7684\u5C01\u6761\u6BD4\u76D0\u5F15\u5DF7\u6D88\u5931\u65E9\u4E00\u5929\uFF0C\u8BF4\u660E\u9664\u540D\u662F\u9884\u8C0B\u3002\u95E8\u724C\u80CC\u9762\u7684\u94DC\u9489\u987A\u5E8F\u662F\u201C\u897F\u4ED3\u3001\u4E1C\u9A8C\u3001\u4E2D\u518C\u201D\uFF0C\u9519\u5E8F\u4F1A\u91CD\u7F6E\u951A\u70B9\u3002"
+  - Stage: 5
+    Objective: "\u524D\u5F80\u8857\u5C3E\uFF0C\u538B\u4E0B\u88AB\u6495\u5F00\u7684\u8BB0\u5F55"
+    Reasoning: "\u5B8C\u6574\u8BC1\u636E\u94FE\u5DF2\u7ECF\u5F62\u6210\u3002\u8857\u5C3E\u65F6\u7F1D\u662F\u76D0\u5F15\u5DF7\u88AB\u6495\u6389\u7684\u7F3A\u53E3\uFF0C\u538B\u4E0B\u5B83\u624D\u80FD\u8BFB\u53D6\u6700\u540E\u4E00\u9875\u3002"
+  - Stage: 6
+    Objective: "\u5728\u8857\u5C3E\u51B3\u5B9A\u76D0\u5F15\u5DF7\u4E0E\u6C88\u781A\u7684\u547D\u8FD0"
+    Reasoning: "\u6062\u590D\u65E7\u8857\u4F1A\u8BA9\u771F\u76F8\u91CD\u65B0\u8FDB\u5165\u5B98\u518C\uFF0C\u4E5F\u4F1A\u5F15\u6765\u9646\u5D07\u7684\u52BF\u529B\uFF1B\u5C01\u5B58\u65E7\u8857\u80FD\u6362\u6765\u7A33\u5B9A\uFF0C\u5374\u4F1A\u518D\u6B21\u62B9\u53BB\u6C88\u781A\u3002"
+  - Stage: 7
+    Objective: "\u8C03\u67E5\u5DF2\u7ECF\u7ED3\u675F"
+    Reasoning: "\u76D0\u5F15\u5DF7\u7684\u547D\u8FD0\u5DF2\u7ECF\u786E\u5B9A\u3002"
+  conclusionCopy:
+  - Conclusion: 1
+    Objective: "\u76D0\u5F15\u5DF7\u91CD\u65B0\u5165\u518C\uFF0C\u6C88\u781A\u7684\u540D\u5B57\u56DE\u5230\u57CE\u5E02\u8BB0\u5F55\u4E2D"
+    Reasoning: "\u76D0\u5F15\u5DF7\u91CD\u65B0\u5165\u518C\uFF0C\u6C88\u781A\u7684\u540D\u5B57\u6062\u590D\u3002\u9646\u5D07\u79C1\u76D0\u6848\u5C06\u6210\u4E3A\u4E0B\u4E00\u573A\u51B2\u7A81\u7684\u5165\u53E3\u3002"
+  - Conclusion: 2
+    Objective: "\u76D0\u5F15\u5DF7\u88AB\u6C38\u4E45\u5C01\u5B58\uFF0C\u6C88\u781A\u53EA\u7559\u5728\u4F60\u7684\u4FEE\u590D\u8BB0\u5F55\u91CC"
+    Reasoning: "\u76D0\u5F15\u5DF7\u88AB\u5C01\u5B58\uFF0C\u57CE\u5E02\u8BB0\u5F55\u6062\u590D\u7A33\u5B9A\u3002\u6C88\u781A\u4ECD\u53EA\u5B58\u5728\u4E8E\u4F60\u7684\u79C1\u4EBA\u4FEE\u590D\u8BB0\u5F55\u4E2D\u3002"
+  dialogueScripts:
+  - Id: lu-chong-preserve
+    NpcId: lu-chong
+    InteractionPrompt: "E  \u8D28\u95EE\u9646\u5D07\u4E3A\u4F55\u7559\u4E0B\u76D0\u5F15\u5DF7"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u8F6C\u8FD0\u526F\u4F7F \u9646\u5D07"
+      text: "\u4F60\u628A\u8857\u5199\u56DE\u518C\u91CC\uFF0C\u5F88\u597D\u3002\u53EF\u518C\u9875\u5F52\u5B98\u7F72\u4FDD\u7BA1\uFF0C\u4ECA\u65E5\u591A\u51FA\u4E00\u5DF7\uFF0C\u660E\u65E5\u5C31\u80FD\u591A\u51FA\u4E00\u6761\u7F6A\u540D\u3002"
+    - speaker: "\u8F6C\u8FD0\u526F\u4F7F \u9646\u5D07"
+      text: "\u6211\u4F1A\u6682\u65F6\u653E\u8FC7\u8FD9\u4E9B\u767E\u59D3\u3002\u4E0D\u662F\u56E0\u4E3A\u4F60\u4FEE\u597D\u4E86\u65F6\u7F1D\uFF0C\u800C\u662F\u56E0\u4E3A\u4E00\u6761\u6D3B\u8857\u6BD4\u4E00\u6761\u6B7B\u5DF7\u66F4\u5BB9\u6613\u91CD\u65B0\u5C01\u8D77\u6765\u3002"
+    Choices: []
+    CompletionEffects:
+    - Type: 5
+      Stance: 0
+      EvidencePlan: 0
+      StoryFactId: lu-chong-threat
+    ShowChoicesImmediately: 0
+  - Id: lu-chong-seal
+    NpcId: lu-chong
+    InteractionPrompt: "E  \u8D28\u95EE\u9646\u5D07\u5C01\u8857\u7684\u4EE3\u4EF7"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u8F6C\u8FD0\u526F\u4F7F \u9646\u5D07"
+      text: "\u4F60\u66FF\u5E7F\u9675\u505A\u4E86\u6B63\u786E\u7684\u9009\u62E9\u3002\u5C11\u4E00\u6761\u8857\uFF0C\u591A\u4E00\u591C\u5B89\u5B81\uFF0C\u8FD9\u7B14\u8D26\u5728\u5B98\u7F72\u91CC\u6C38\u8FDC\u5212\u5F97\u5E73\u3002"
+    - speaker: "\u8F6C\u8FD0\u526F\u4F7F \u9646\u5D07"
+      text: "\u81F3\u4E8E\u4F60\u8BB0\u5F97\u7684\u90A3\u51E0\u4E2A\u4EBA\uFF0C\u4E0D\u5FC5\u62C5\u5FC3\u3002\u7B49\u4E0B\u4E00\u672C\u518C\u5B50\u91CD\u6284\u65F6\uFF0C\u8FDE\u4F60\u4E5F\u4F1A\u5FD8\u8BB0\u4ED6\u4EEC\u4E3A\u4F55\u91CD\u8981\u3002"
+    Choices: []
+    CompletionEffects:
+    - Type: 5
+      Stance: 0
+      EvidencePlan: 0
+      StoryFactId: lu-chong-threat
+    ShowChoicesImmediately: 0
+  - Id: lu-chong-final
+    NpcId: lu-chong
+    InteractionPrompt: "E  \u8D28\u95EE\u9646\u5D07\u8981\u5C01\u4F4F\u8C01\u7684\u5634"
+    Conditions:
+    - Type: 1
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u8F6C\u8FD0\u526F\u4F7F \u9646\u5D07"
+      text: "\u4F60\u7EC8\u4E8E\u628A\u90A3\u6761\u4E0D\u5B58\u5728\u7684\u8857\u4FEE\u56DE\u6765\u4E86\u3002\u73B0\u5728\u53EA\u8981\u518D\u9009\u4E00\u6B21\uFF0C\u4E03\u8F66\u76D0\u5C31\u53EF\u4EE5\u91CD\u65B0\u53D8\u6210\u4ECE\u672A\u53D1\u751F\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u4F60\u63D0\u524D\u5199\u597D\u9664\u540D\u5C01\u6761\uFF0C\u4E0D\u662F\u4E3A\u4E86\u7A33\u5B9A\uFF0C\u662F\u4E3A\u4E86\u8BA9\u6240\u6709\u77E5\u60C5\u4EBA\u90FD\u53D8\u6210\u6CA1\u4EBA\u8BA4\u8BC6\u7684\u4EBA\u3002"
+    - speaker: "\u8F6C\u8FD0\u526F\u4F7F \u9646\u5D07"
+      text: "\u79E9\u5E8F\u603B\u5F97\u7559\u4E00\u70B9\u7A7A\u767D\u3002\u8857\u6D3B\u7740\uFF0C\u6211\u8FD8\u80FD\u7ED9\u5B83\u4E00\u6761\u5DF7\uFF1B\u8857\u8FDB\u518C\uFF0C\u6211\u5C31\u5F97\u8BA9\u8BB0\u5F97\u5B83\u7684\u4EBA\u4E00\u8D77\u6D88\u5931\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u4ED6\u6015\u7684\u4E0D\u662F\u8FD9\u4EFD\u8D26\u3002\u4ED6\u6015\u6C88\u781A\u5DF2\u7ECF\u628A\u6700\u540E\u4E00\u9875\u4EA4\u7ED9\u4E86\u522B\u4EBA\u3002"
+    - speaker: "\u8F6C\u8FD0\u526F\u4F7F \u9646\u5D07"
+      text: "\u9009\u5427\u3002\u4FDD\u7559\uFF0C\u4F60\u8981\u66FF\u8FD9\u6761\u8857\u627F\u62C5\u9646\u5BB6\u7684\u8FFD\u67E5\uFF1B\u5C01\u5B58\uFF0C\u6211\u53EF\u4EE5\u8BA9\u4ECA\u591C\u6CA1\u4EBA\u6B7B\u3002"
+    Choices: []
+    CompletionEffects:
+    - Type: 5
+      Stance: 0
+      EvidencePlan: 0
+      StoryFactId: lu-chong-threat
+    ShowChoicesImmediately: 0
+  - Id: ahe-preserve-private
+    NpcId: ahe
+    InteractionPrompt: "E  \u548C\u963F\u79BE\u8BF4\u8BDD"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-private
+      Negate: 0
+    Lines:
+    - speaker: "\u963F\u79BE"
+      text: "\u7239\u8BF4\u4E0D\u80FD\u5927\u58F0\u8BF4\u81EA\u5DF1\u53EB\u4EC0\u4E48\u3002\u90A3\u6211\u5C0F\u58F0\u544A\u8BC9\u4F60\uFF1A\u6211\u53EB\u963F\u79BE\uFF0C\u79BE\u82D7\u7684\u79BE\u3002"
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u5979\u4ECA\u5929\u7EC8\u4E8E\u80AF\u5750\u5230\u684C\u8FB9\u3002\u4EE5\u524D\u6211\u603B\u6015\u4E00\u62AC\u5934\uFF0C\u5BF9\u9762\u53C8\u53EA\u5269\u4E00\u53EA\u7A7A\u7897\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u540D\u518C\u53EF\u4EE5\u665A\u4E00\u70B9\u8865\u3002\u5148\u8BA9\u5979\u628A\u8FD9\u4E00\u987F\u996D\u5403\u5B8C\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: ahe-preserve-public
+    NpcId: ahe
+    InteractionPrompt: "E  \u548C\u963F\u79BE\u8BF4\u8BDD"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-public
+      Negate: 0
+    Lines:
+    - speaker: "\u963F\u79BE"
+      text: "\u5B98\u7F72\u7684\u4EBA\u6765\u95EE\u8BDD\u65F6\uFF0C\u628A\u6211\u7684\u59D3\u5FF5\u9519\u4E86\u3002\u4E0D\u8FC7\u6CA1\u5173\u7CFB\uFF0C\u6211\u77E5\u9053\u4ED6\u4EEC\u5FF5\u7684\u662F\u6211\u3002"
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u5979\u4ECA\u5929\u6562\u81EA\u5DF1\u8D70\u5230\u95E8\u53E3\u4E86\u3002\u8857\u4E0A\u6709\u4EBA\u8BA4\u5F97\u5979\uFF0C\u6BD4\u518C\u5B50\u4E0A\u90A3\u4E00\u4E2A\u540D\u5B57\u66F4\u8981\u7D27\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: archive-clerk-preserve
+    NpcId: archive-clerk
+    InteractionPrompt: "E  \u95EE\u4E25\u69D0\u65E7\u8857\u662F\u5426\u8FDB\u5165\u65B0\u518C"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u65B0\u518C\u9001\u8FDB\u6765\u65F6\uFF0C\u58A8\u8FD8\u6CA1\u5E72\u3002\u6211\u7167\u7740\u539F\u6765\u7684\u884C\u8DDD\u6284\u4E86\u4E00\u904D\uFF0C\u6C88\u781A\u548C\u76D0\u5F15\u5DF7\u90FD\u5728\u3002\u53EA\u662F\u9646\u5D07\u7684\u540D\u5B57\u88AB\u4EBA\u522E\u6389\u4E86\u534A\u7B14\u3002"
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u6211\u6CA1\u8865\u90A3\u4E00\u7B14\u3002\u5C11\u534A\u7B14\u7684\u4EBA\uFF0C\u8BA9\u540E\u6765\u7684\u4EBA\u81EA\u5DF1\u731C\u5427\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: archive-clerk-seal
+    NpcId: archive-clerk
+    InteractionPrompt: "E  \u95EE\u4E25\u69D0\u5C01\u8857\u540E\u518C\u9875\u5982\u4F55\u5904\u7406"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u5C01\u6761\u9001\u6765\u65F6\uFF0C\u6211\u7684\u7B14\u8FD8\u6CA1\u6D17\u3002\u4ED6\u4EEC\u8BA9\u6211\u628A\u65E7\u8857\u5199\u8FDB\u5E9F\u518C\uFF0C\u53EF\u5E9F\u518C\u4E5F\u8981\u7559\u5E95\u3002\u7EB8\u4E0D\u4F1A\u56E0\u4E3A\u88AB\u9501\u8D77\u6765\uFF0C\u5C31\u5FD8\u8BB0\u5199\u8FC7\u4EC0\u4E48\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: archive-clerk-final
+    NpcId: archive-clerk
+    InteractionPrompt: "E  \u95EE\u4E25\u69D0\u4E24\u672C\u518C\u5B50\u4F1A\u7559\u4E0B\u4EC0\u4E48"
+    Conditions:
+    - Type: 1
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u516C\u5F00\u4F1A\u8BA9\u5F88\u591A\u4EBA\u770B\u89C1\uFF0C\u4E5F\u4F1A\u8BA9\u5F88\u591A\u4EBA\u6765\u62A2\u7740\u6539\u3002\u79C1\u85CF\u80FD\u4FDD\u4F4F\u773C\u524D\u7684\u4EBA\uFF0C\u53EF\u4E0B\u4E00\u6B21\u91CD\u6284\u65F6\uFF0C\u8C01\u66FF\u4F60\u8BB0\u5F97\uFF1F"
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u6211\u53EA\u7BA1\u7EB8\u3002\u54EA\u4E00\u79CD\u540E\u679C\u66F4\u50CF\u4E00\u6761\u80FD\u4F4F\u4EBA\u7684\u8857\uFF0C\u5F97\u7531\u4F60\u51B3\u5B9A\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: archive-clerk-investigate
+    NpcId: archive-clerk
+    InteractionPrompt: "E  \u95EE\u4E25\u69D0\u540D\u5B57\u88AB\u62B9\u53BB\u540E\u4F1A\u7559\u4E0B\u4EC0\u4E48"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: archive-clerk-ink-record
+      Negate: 1
+    Lines:
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u88AB\u522E\u6389\u7684\u540D\u5B57\u4E0D\u4F1A\u5B8C\u5168\u6D88\u5931\u3002\u58A8\u6389\u4E86\uFF0C\u7EB8\u9762\u4F1A\u8D77\u4E00\u5C42\u65B0\u6D46\uFF0C\u6478\u4E0A\u53BB\u50CF\u4E00\u9053\u6CA1\u6709\u6108\u5408\u7684\u75A4\u3002"
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u8D26\u724C\u3001\u5C01\u6761\u548C\u65E7\u8857\u62DB\u724C\u90FD\u662F\u8FD9\u6837\u3002\u4F60\u82E5\u53BB\u627E\u642C\u8FD0\u5DE5\uFF0C\u522B\u53EA\u95EE\u4ED6\u770B\u89C1\u4EC0\u4E48\uFF0C\u4E5F\u95EE\u95EE\u4ED6\u6BCF\u5929\u4ECD\u91CD\u590D\u505A\u4EC0\u4E48\u3002"
+    Choices: []
+    CompletionEffects:
+    - Type: 5
+      Stance: 0
+      EvidencePlan: 0
+      StoryFactId: archive-clerk-ink-record
+    ShowChoicesImmediately: 0
+  - Id: archive-clerk-father-recruited
+    NpcId: archive-clerk
+    InteractionPrompt: "E  \u95EE\u4E25\u590D\u7684\u62D3\u9875\u662F\u5426\u8FD8\u5728"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: archive-clerk-recruited
+      Negate: 0
+    Lines:
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u6211\u628A\u8BC1\u636E\u6284\u4E86\u4E09\u4EFD\uFF0C\u7236\u4EB2\u7684\u62D3\u9875\u5939\u5728\u6700\u540E\u4E00\u4EFD\u91CC\u3002\u82E5\u5B98\u7F72\u770B\u89C1\u8FB9\u680F\u4E0A\u7684\u4E25\u590D\uFF0C\u81F3\u5C11\u4F1A\u77E5\u9053\u6709\u4EBA\u8BB0\u5F97\u8FD9\u5341\u5E74\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: archive-clerk-father-sheltered
+    NpcId: archive-clerk
+    InteractionPrompt: "E  \u95EE\u4E25\u590D\u7684\u62D3\u9875\u662F\u5426\u8FD8\u5728"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: archive-clerk-sheltered
+      Negate: 0
+    Lines:
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u62D3\u9875\u9501\u5728\u62BD\u5C49\u91CC\u3002\u6211\u6BCF\u5929\u7167\u65E7\u78E8\u58A8\uFF0C\u4E5F\u4F1A\u7ED9\u7236\u4EB2\u7559\u4E00\u683C\u7A7A\u767D\u3002\u4E0D\u5199\u51FA\u6765\uFF0C\u4E0D\u4EE3\u8868\u6211\u5FD8\u4E86\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: archive-clerk-father-choice
+    NpcId: archive-clerk
+    InteractionPrompt: "E  \u95EE\u4E25\u69D0\u4E3A\u4F55\u603B\u5728\u518C\u8FB9\u7559\u767D"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: archive-clerk-ink-record
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: archive-clerk-father-name
+      Negate: 1
+    Lines:
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u6211\u7236\u4EB2\u4E25\u590D\u4E5F\u5B88\u8FC7\u76D0\u4ED3\u3002\u5341\u5E74\u524D\u4ED6\u7684\u540D\u5B57\u4ECE\u518C\u4E0A\u6D88\u5931\uFF0C\u53EA\u5728\u88C5\u8BA2\u7EBF\u91CC\u7559\u4E0B\u4E00\u5F20\u6B8B\u9875\u3002\u6211\u4E00\u76F4\u628A\u5B83\u538B\u5728\u58A8\u5323\u5E95\u4E0B\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u4F60\u4E00\u76F4\u5728\u7B49\u4E00\u4E2A\u80FD\u628A\u6B8B\u9875\u5939\u8FDB\u6B63\u5F0F\u8BB0\u5F55\u7684\u673A\u4F1A\u3002"
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u662F\u3002\u53EF\u6284\u5F55\u7684\u4EBA\u603B\u4F1A\u5148\u88AB\u67E5\u5230\u3002\u4F60\u53EF\u4EE5\u8BA9\u6211\u5192\u9669\uFF0C\u4E5F\u53EF\u4EE5\u8BA9\u6211\u7EE7\u7EED\u7559\u5728\u518C\u8FB9\u7559\u767D\u3002"
+    Choices:
+    - Text: "\u8BA9\u4E25\u69D0\u6284\u5F55\u8BC1\u636E\uFF0C\u5728\u8FB9\u680F\u5199\u4E0B\u7236\u4EB2\u4E25\u590D\u7684\u540D\u5B57\u3002"
+      Conditions: []
+      Effects:
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: archive-clerk-recruited
+    - Text: "\u4E0D\u8BA9\u4E25\u69D0\u5192\u9669\uFF0C\u5148\u4FDD\u4F4F\u7236\u4EB2\u7559\u4E0B\u7684\u62D3\u9875\u3002"
+      Conditions: []
+      Effects:
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: archive-clerk-sheltered
+    CompletionEffects:
+    - Type: 5
+      Stance: 0
+      EvidencePlan: 0
+      StoryFactId: archive-clerk-father-name
+    ShowChoicesImmediately: 0
+  - Id: archive-clerk-arrival
+    NpcId: archive-clerk
+    InteractionPrompt: "E  \u95EE\u6284\u4E66\u540F\u5B98\u7F72\u5728\u6284\u4EC0\u4E48"
+    Conditions:
+    - Type: 6
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u522B\u5728\u5B98\u7F72\u95E8\u53E3\u5FF5\u6C88\u781A\u7684\u540D\u5B57\u3002\u4ECA\u65E9\u6211\u6284\u5B8C\u4E09\u9875\u518C\u5B50\uFF0C\u56DE\u5934\u518D\u770B\uFF0C\u88C5\u8BA2\u7EBF\u91CC\u591A\u4E86\u4E00\u5C42\u65B0\u6D46\u3002"
+    - speaker: "\u6284\u4E66\u540F \u4E25\u69D0"
+      text: "\u7EB8\u4E0A\u539F\u672C\u5199\u8FC7\u5B57\u3002\u53EA\u662F\u6709\u4EBA\u8981\u5B83\u770B\u8D77\u6765\uFF0C\u4ECE\u6765\u90FD\u662F\u7A7A\u767D\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: caiyi-snack-preserve-daughter
+    NpcId: caiyi-snack-vendor
+    InteractionPrompt: "E  \u95EE\u644A\u4E3B\u4E3A\u4F55\u591A\u7559\u4E00\u7897\u70ED\u6C64"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-remembered
+      Negate: 0
+    Lines:
+    - speaker: "\u5C0F\u5403\u644A\u4E3B"
+      text: "\u76D0\u5F15\u5DF7\u56DE\u6765\u540E\uFF0C\u642C\u8FD0\u5DE5\u6BCF\u5929\u6765\u4E70\u4E24\u7897\u70ED\u6C64\u3002\u4EE5\u524D\u4ED6\u53EA\u4E70\u4E00\u7897\uFF0C\u53E6\u4E00\u53EA\u7897\u603B\u88C5\u8FDB\u968F\u8EAB\u7684\u708A\u997C\u7BEE\u3002"
+    - speaker: "\u5C0F\u5403\u644A\u4E3B"
+      text: "\u4ECA\u65E9\u6709\u4E2A\u5C0F\u59D1\u5A18\u5750\u5728\u644A\u8FB9\uFF0C\u628A\u6C64\u559D\u5B8C\u4E86\u3002\u5979\u8BF4\u81EA\u5DF1\u53EB\u963F\u79BE\uFF0C\u6211\u8BB0\u4F4F\u4E86\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: caiyi-snack-preserve
+    NpcId: caiyi-snack-vendor
+    InteractionPrompt: "E  \u95EE\u644A\u4E3B\u65E7\u8857\u5BA2\u4EBA\u662F\u5426\u56DE\u6765"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5C0F\u5403\u644A\u4E3B"
+      text: "\u76D0\u5F15\u5DF7\u7684\u5BA2\u4EBA\u4ECA\u65E9\u53C8\u6765\u4E86\uFF0C\u70ED\u6C64\u591A\u5356\u4E86\u597D\u51E0\u7897\u3002\u4ED6\u4EEC\u8BF4\u8BDD\u65F6\uFF0C\u5DF2\u7ECF\u4E0D\u5FC5\u5148\u770B\u770B\u8857\u53E3\u6709\u6CA1\u6709\u5B98\u5DEE\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: caiyi-snack-seal
+    NpcId: caiyi-snack-vendor
+    InteractionPrompt: "E  \u95EE\u644A\u4E3B\u76D0\u5F15\u5DF7\u7684\u5BA2\u4EBA\u53BB\u4E86\u54EA\u91CC"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5C0F\u5403\u644A\u4E3B"
+      text: "\u76D0\u5F15\u5DF7\u7684\u5BA2\u4EBA\u53C8\u4E0D\u89C1\u4E86\u3002\u6709\u4E2A\u642C\u8FD0\u5DE5\u6BCF\u5929\u8FD8\u4E70\u4E00\u7897\u6C64\uFF0C\u7AEF\u7740\u8D70\u5230\u8857\u53E3\uFF0C\u518D\u539F\u6837\u7AEF\u56DE\u53BB\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: caiyi-snack-default
+    NpcId: caiyi-snack-vendor
+    InteractionPrompt: "E  \u4E0E\u5C0F\u5403\u644A\u4E3B\u4EA4\u8C08"
+    Conditions:
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5C0F\u5403\u644A\u4E3B"
+      text: "\u4EE5\u524D\u76D0\u8239\u9760\u5CB8\uFF0C\u642C\u8FD0\u5DE5\u4F1A\u6765\u6211\u8FD9\u513F\u4E70\u70ED\u6C64\u3002\u6700\u8FD1\u5C11\u4E86\u76D0\u5F15\u5DF7\u7684\u5BA2\u4EBA\uFF0C\u751F\u610F\u90FD\u51B7\u6E05\u4E86\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: caiyi-tailor-preserve
+    NpcId: caiyi-tailor
+    InteractionPrompt: "E  \u95EE\u88C1\u8863\u94FA\u65E7\u8857\u751F\u610F\u662F\u5426\u6062\u590D"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u88C1\u8863\u94FA\u638C\u67DC"
+      text: "\u4ECA\u65E9\u6709\u4EBA\u62FF\u7740\u76D0\u5F15\u5DF7\u7684\u95E8\u724C\u6765\u914D\u7A97\u5E18\uFF0C\u8BF4\u90A3\u6761\u8857\u7EC8\u4E8E\u53C8\u80FD\u5728\u518C\u4E0A\u627E\u5230\u3002"
+    - speaker: "\u88C1\u8863\u94FA\u638C\u67DC"
+      text: "\u6211\u91CF\u4E86\u5C3A\u5BF8\u3002\u4E00\u4E2A\u5730\u65B9\u80FD\u4E0D\u80FD\u4F4F\u4EBA\uFF0C\u770B\u6709\u6CA1\u6709\u4EBA\u80AF\u4E3A\u7A97\u6237\u6311\u5E03\u5C31\u77E5\u9053\u4E86\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: caiyi-tailor-seal
+    NpcId: caiyi-tailor
+    InteractionPrompt: "E  \u95EE\u88C1\u8863\u94FA\u65E7\u8857\u5BA2\u4EBA\u53BB\u4E86\u54EA\u91CC"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u88C1\u8863\u94FA\u638C\u67DC"
+      text: "\u524D\u4E9B\u65E5\u5B50\u8FD8\u6709\u5AB3\u5987\u6765\u6311\u9752\u5E03\uFF0C\u4ECA\u5929\u518D\u95EE\uFF0C\u5979\u4EEC\u8FDE\u76D0\u5F15\u5DF7\u5728\u54EA\u90FD\u8BF4\u4E0D\u6E05\u3002\u8857\u6CA1\u5C11\u4E00\u5757\u7816\uFF0C\u5012\u50CF\u5C11\u4E86\u4E00\u622A\u5C3A\u5BF8\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: caiyi-tailor-default
+    NpcId: caiyi-tailor
+    InteractionPrompt: "E  \u4E0E\u88C1\u8863\u94FA\u638C\u67DC\u4EA4\u8C08"
+    Conditions:
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u88C1\u8863\u94FA\u638C\u67DC"
+      text: "\u76D0\u5F15\u5DF7\u4ECE\u524D\u5C31\u5728\u65E7\u4ED3\u540E\u9762\u3002\u90A3\u91CC\u7684\u5AB3\u5987\u5E38\u6765\u6211\u8FD9\u513F\u6311\u9752\u5E03\uFF0C\u8BF4\u76D0\u7070\u843D\u4E0A\u53BB\u4E5F\u4E0D\u663E\u810F\u3002"
+    - speaker: "\u88C1\u8863\u94FA\u638C\u67DC"
+      text: "\u8857\u548C\u8863\u88F3\u4E00\u6837\u3002\u5C11\u4E86\u4E00\u6BB5\uFF0C\u65C1\u4EBA\u672A\u5FC5\u770B\u5F97\u51FA\u6765\uFF0C\u4F4F\u5728\u8FD9\u91CC\u7684\u4EBA\u5374\u77E5\u9053\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: cloth-merchant-preserve
+    NpcId: cloth-merchant
+    InteractionPrompt: "E  \u95EE\u7EF8\u7F0E\u5546\u90A3\u7B14\u9752\u5E03\u4E70\u5356"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u7EF8\u7F0E\u5546"
+      text: "\u6C88\u781A\u90A3\u7B14\u9752\u5E03\u4E70\u5356\u4ECA\u65E9\u91CD\u65B0\u51FA\u73B0\u5728\u8D26\u4E0A\u4E86\u3002\u6211\u4E0D\u5728\u4E4E\u4E00\u5C3A\u5E03\u7684\u94F6\u5B50\uFF0C\u53EA\u5728\u4E4E\u6536\u94B1\u7684\u4EBA\u6CA1\u88AB\u5F53\u6210\u6CA1\u6765\u8FC7\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: cloth-merchant-seal
+    NpcId: cloth-merchant
+    InteractionPrompt: "E  \u95EE\u7EF8\u7F0E\u5546\u90A3\u7B14\u9752\u5E03\u4E70\u5356"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u7EF8\u7F0E\u5546"
+      text: "\u90A3\u5C3A\u9752\u5E03\u8FD8\u538B\u5728\u67DC\u53F0\u5E95\u4E0B\uFF0C\u8D26\u4E0A\u4ECD\u6CA1\u6709\u90A3\u7B14\u4E70\u5356\u3002\u6709\u4EBA\u62FF\u8D70\u4E86\u5E03\uFF0C\u6709\u4EBA\u62FF\u8D70\u4E86\u540D\u5B57\uFF0C\u5B98\u7F72\u8BF4\u4E24\u8005\u90FD\u6CA1\u53D1\u751F\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: cloth-merchant-default
+    NpcId: cloth-merchant
+    InteractionPrompt: "E  \u4E0E\u7EF8\u7F0E\u5546\u4EA4\u8C08"
+    Conditions:
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u7EF8\u7F0E\u5546"
+      text: "\u6C88\u781A\u524D\u65E5\u6765\u626F\u8FC7\u4E00\u5C3A\u9752\u5E03\uFF0C\u8BF4\u8981\u7ED9\u7236\u4EB2\u7F1D\u4E2A\u65B0\u8D26\u888B\u3002\u94B1\u662F\u6211\u4EB2\u624B\u6536\u7684\uFF0C\u8D26\u4E0A\u5374\u627E\u4E0D\u5230\u8FD9\u7B14\u4E70\u5356\u3002"
+    - speaker: "\u7EF8\u7F0E\u5546"
+      text: "\u82E5\u8FDE\u4E70\u5356\u90FD\u80FD\u88AB\u6539\uFF0C\u4E1C\u5173\u8857\u8FD8\u7B97\u5F97\u4E0A\u662F\u8C01\u7684\u8857\uFF1F\u53BB\u65E7\u4ED3\u770B\u770B\u5427\uFF0C\u4ED6\u7236\u4EB2\u4E00\u76F4\u5B88\u5728\u90A3\u91CC\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-preserve-public
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u963F\u79BE\u662F\u5426\u8FD8\u8BA4\u5F97\u4F4F\u8FD9\u6761\u8857"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-public
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u76D0\u5F15\u5DF7\u56DE\u6765\u540E\uFF0C\u6709\u4EBA\u62FF\u7740\u65E7\u6237\u518C\u6765\u8BA4\u95E8\u3002\u963F\u79BE\u7684\u540D\u5B57\u6392\u5728\u6700\u540E\u4E00\u9875\uFF0C\u5B57\u5F88\u4E11\uFF0C\u53EF\u6CA1\u4EBA\u518D\u95EE\u90A3\u662F\u8C01\u3002"
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u5979\u8FD8\u662F\u4E0D\u6562\u53BB\u5B98\u7F72\u3002\u4E0D\u8FC7\u4ECA\u5929\u6536\u5DE5\u65F6\uFF0C\u5979\u5148\u558A\u4E86\u6211\u4E00\u58F0\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-preserve-private
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u963F\u79BE\u662F\u5426\u8FD8\u8BA4\u5F97\u4F4F\u8FD9\u6761\u8857"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-private
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u65B0\u8857\u6CA1\u6709\u963F\u79BE\u7684\u6237\u518C\uFF0C\u6211\u8FD8\u662F\u6BCF\u5929\u591A\u5E26\u4E00\u4EFD\u996D\u3002\u73B0\u5728\u6211\u4E0D\u7528\u5BF9\u7A7A\u51F3\u89E3\u91CA\uFF0C\u56E0\u4E3A\u4F60\u548C\u963F\u79BE\u90FD\u542C\u89C1\u4E86\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-seal-public
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u5C01\u8857\u540E\u963F\u79BE\u53BB\u4E86\u54EA\u91CC"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-public
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u8857\u53C8\u5C01\u4E86\u3002\u5B98\u7F72\u6536\u8D70\u516C\u5F00\u540D\u518C\u65F6\uFF0C\u6211\u628A\u963F\u79BE\u90A3\u4E00\u9875\u85CF\u8FDB\u4E86\u708A\u997C\u7BEE\u3002\u81F3\u5C11\u8FD9\u4E00\u6B21\uFF0C\u4E0D\u662F\u4ED6\u4EEC\u51B3\u5B9A\u5979\u5B58\u4E0D\u5B58\u5728\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-seal-private
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u5C01\u8857\u540E\u963F\u79BE\u53BB\u4E86\u54EA\u91CC"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-private
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u8857\u6CA1\u4E86\uFF0C\u963F\u79BE\u7684\u540D\u5B57\u4E5F\u6CA1\u5199\u51FA\u53BB\u3002\u53EF\u5979\u6628\u665A\u5750\u5230\u6211\u5BF9\u9762\u3002\u6211\u6CA1\u544A\u8BC9\u522B\u4EBA\uFF0C\u6015\u4E00\u5F00\u53E3\uFF0C\u5979\u53C8\u88AB\u5F53\u6210\u4E00\u6761\u9519\u8BB0\u5F55\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-final-public
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u963F\u79BE\u7684\u540D\u5B57\u4F1A\u843D\u5230\u8C01\u624B\u91CC"
+    Conditions:
+    - Type: 1
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-public
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u4F60\u8BA9\u5B98\u7F72\u770B\u89C1\u4E86\u963F\u79BE\u3002\u9646\u5D07\u82E5\u8FD8\u638C\u7740\u518C\uFF0C\u5C31\u80FD\u518D\u62B9\u5979\u4E00\u6B21\u3002\u6700\u540E\u4E00\u4E2A\u9009\u62E9\uFF0C\u522B\u53EA\u4FDD\u4F4F\u4E00\u6761\u8857\uFF0C\u4E5F\u522B\u53EA\u4FDD\u4F4F\u4E00\u4EFD\u540D\u5355\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-final-private
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u963F\u79BE\u7684\u540D\u5B57\u4F1A\u843D\u5230\u8C01\u624B\u91CC"
+    Conditions:
+    - Type: 1
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-private
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u4F60\u66FF\u963F\u79BE\u85CF\u4E86\u4E00\u6B21\u540D\u5B57\uFF0C\u4E5F\u66FF\u6211\u80CC\u4E86\u4E00\u6B21\u98CE\u9669\u3002\u6700\u540E\u4E00\u4E2A\u9009\u62E9\uFF0C\u522B\u8BA9\u66F4\u591A\u4EBA\u50CF\u6211\u4E00\u6837\u53EA\u80FD\u9760\u80A9\u8180\u8BB0\u4F4F\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-daughter-public-repeat
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u963F\u79BE\u7684\u8FD1\u51B5"
+    Conditions:
+    - Type: 6
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-public
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u6211\u628A\u963F\u79BE\u5199\u5728\u70B9\u540D\u5355\u80CC\u9762\uFF0C\u5DE5\u5934\u770B\u89C1\u4E5F\u6CA1\u6562\u64E6\u3002\u665A\u4E0A\u5979\u5750\u8FC7\u7684\u677F\u51F3\uFF0C\u8FD8\u662F\u53EA\u6211\u4E00\u4E2A\u4EBA\u6536\u62FE\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-daughter-private-repeat
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u963F\u79BE\u7684\u8FD1\u51B5"
+    Conditions:
+    - Type: 6
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-private
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u53EA\u6709\u4F60\u7684\u79C1\u4EBA\u6848\u5377\u5199\u7740\u963F\u79BE\u3002\u6CA1\u4EBA\u627E\u6211\u4EEC\u9EBB\u70E6\uFF0C\u53EF\u6211\u6BCF\u5929\u6536\u5DE5\uFF0C\u8FD8\u662F\u4F1A\u5148\u558A\u5979\u4E00\u58F0\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-daughter-choice
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u642C\u8FD0\u5DE5\u4E3A\u4F55\u591A\u5E26\u4E00\u4EFD\u5E72\u7CAE"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-night-shift
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-second-meal
+      Negate: 1
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u4F60\u6CE8\u610F\u5230\u6211\u6BCF\u987F\u90FD\u591A\u62FF\u4E00\u4EFD\u708A\u997C\u5417\uFF1F\u963F\u79BE\u5403\u4E0D\u4E86\u8FD9\u4E48\u591A\uFF0C\u53EF\u6211\u8FD8\u662F\u6BCF\u5929\u90FD\u5E26\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u963F\u79BE\u662F\u8C01\uFF1F"
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u6211\u5973\u513F\u3002\u5DE5\u518C\u548C\u6237\u518C\u91CC\u6CA1\u6709\u5979\u3002\u8857\u574A\u8BF4\u6211\u5BF9\u7740\u7A7A\u51F3\u5B50\u8BF4\u8BDD\uFF0C\u53EF\u6BCF\u5929\u6536\u5DE5\uFF0C\u996D\u8FD8\u662F\u4F1A\u5C11\u4E00\u4EFD\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u88AB\u62B9\u6389\u7684\u662F\u5979\u5728\u57CE\u91CC\u7684\u4F4D\u7F6E\uFF0C\u4E0D\u662F\u4F60\u5BF9\u5979\u7684\u8BB0\u5FC6\u3002\u540D\u5B57\u82E5\u6CA1\u4EBA\u6562\u5199\uFF0C\u5C31\u4F1A\u4E00\u76F4\u7A7A\u7740\u3002"
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u522B\u6025\u7740\u66FF\u6211\u4F5C\u8BC1\u3002\u5148\u544A\u8BC9\u6211\uFF0C\u963F\u79BE\u7684\u540D\u5B57\u8BE5\u7ED9\u5B98\u7F72\u770B\uFF0C\u8FD8\u662F\u53EA\u7559\u7ED9\u8FD8\u8BA4\u5F97\u5979\u7684\u4EBA\u3002"
+    Choices:
+    - Text: "\u628A\u963F\u79BE\u5199\u8FDB\u516C\u5F00\u8BB0\u5F55\uFF0C\u8BA9\u5B98\u7F72\u4E0D\u80FD\u518D\u88C5\u4F5C\u6CA1\u6709\u5979\u3002"
+      Conditions: []
+      Effects:
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: warehouse-daughter-public
+    - Text: "\u5148\u628A\u963F\u79BE\u5199\u8FDB\u79C1\u4EBA\u6848\u5377\uFF0C\u4FDD\u62A4\u5979\u548C\u4F60\u7684\u8BC1\u4EBA\u3002"
+      Conditions: []
+      Effects:
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: warehouse-daughter-private
+    CompletionEffects:
+    - Type: 5
+      Stance: 0
+      EvidencePlan: 0
+      StoryFactId: warehouse-second-meal
+    - Type: 5
+      Stance: 0
+      EvidencePlan: 0
+      StoryFactId: warehouse-daughter-remembered
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-preserve
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u642C\u8FD0\u5DE5\u76D0\u5F15\u5DF7\u7684\u591C\u73ED"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u76D0\u5F15\u5DF7\u56DE\u6765\u4E86\uFF0C\u5DE5\u5934\u4ECA\u65E9\u7B2C\u4E00\u6B21\u6CA1\u6562\u8BA9\u6211\u6539\u53E3\u3002\u4E03\u8F66\u76D0\u3001\u56DB\u5341\u4E8C\u888B\uFF0C\u6211\u90FD\u8FD8\u80FD\u4E00\u4EF6\u4EF6\u6570\u51FA\u6765\u3002"
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u4F60\u82E5\u8981\u67E5\u9646\u5D07\uFF0C\u5C31\u6765\u95EE\u6211\u3002\u6211\u7684\u80A9\u8180\u6BD4\u70B9\u540D\u5355\u8BB0\u5F97\u6E05\u695A\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-seal
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u642C\u8FD0\u5DE5\u76D0\u5F15\u5DF7\u7684\u591C\u73ED"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u5DE5\u5934\u53C8\u8BF4\u6628\u591C\u6CA1\u4EBA\u642C\u76D0\u3002\u6211\u660E\u660E\u8FD8\u8BB0\u5F97\u80A9\u8180\u78E8\u7834\u7684\u5730\u65B9\uFF0C\u53EF\u6CA1\u6709\u4EBA\u80AF\u542C\u4E00\u4E2A\u82E6\u529B\u8BF4\u4EC0\u4E48\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-final
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u642C\u8FD0\u5DE5\u662F\u5426\u613F\u610F\u4F5C\u8BC1"
+    Conditions:
+    - Type: 1
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u6211\u53EF\u4EE5\u4F5C\u8BC1\uFF0C\u4F46\u4F60\u5F97\u5148\u51B3\u5B9A\u8BA9\u8C01\u542C\u89C1\u3002\u5B98\u7F72\u4F1A\u95EE\u6211\u59D3\u540D\uFF0C\u5546\u5E2E\u4F1A\u95EE\u6211\u4E0B\u4E00\u987F\u996D\u5728\u54EA\u91CC\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-repeat
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u590D\u6838\u76D0\u4ED3\u591C\u73ED"
+    Conditions:
+    - Type: 5
+      Stage: 2
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-night-shift
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u4E03\u8F86\u8F66\uFF0C\u56DB\u5341\u4E8C\u888B\u3002\u6C88\u781A\u4EB2\u624B\u5728\u6700\u540E\u4E00\u888B\u4E0A\u753B\u4E86\u8BB0\u53F7\uFF0C\u8BF4\u82E5\u5C11\u4E00\u888B\uFF0C\u5C31\u628A\u8D26\u7FFB\u8FC7\u6765\u770B\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-testimony
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u642C\u8FD0\u5DE5\u521D\u4E03\u591C\u91CC\u7684\u76D0\u8F66"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-night-shift
+      Negate: 1
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u6C88\u781A\u6628\u591C\u95EE\u6211\u76D0\u4ED3\u5C11\u4E86\u51E0\u8F66\u3002\u6211\u8BF4\u4E03\u8F66\uFF0C\u5DE5\u5934\u5F53\u573A\u8BA9\u6211\u6539\u53E3\uFF0C\u8BF4\u53EA\u8FDB\u8FC7\u516D\u8F66\u3002"
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u4E00\u8F86\u8F66\u4E03\u888B\uFF0C\u4E03\u8F86\u5C31\u662F\u56DB\u5341\u4E8C\u888B\u3002\u4ECA\u65E9\u7684\u70B9\u540D\u5355\u4E0A\u6CA1\u6709\u591C\u73ED\uFF0C\u4E5F\u6CA1\u6709\u6C88\u781A\uFF0C\u53EF\u6211\u7684\u80A9\u8180\u8BB0\u5F97\u3002"
+    Choices: []
+    CompletionEffects:
+    - Type: 5
+      Stance: 0
+      EvidencePlan: 0
+      StoryFactId: warehouse-night-shift
+    ShowChoicesImmediately: 0
+  - Id: warehouse-worker-arrival
+    NpcId: warehouse-worker
+    InteractionPrompt: "E  \u95EE\u642C\u8FD0\u5DE5\u6C88\u781A\u53BB\u4E86\u54EA\u91CC"
+    Conditions:
+    - Type: 6
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u76D0\u4ED3\u642C\u8FD0\u5DE5"
+      text: "\u5B88\u4ED3\u4EBA\u82E5\u662F\u95EE\u4F60\u6C88\u781A\uFF0C\u4F60\u5148\u542C\u4ED6\u8BF4\u5B8C\u3002\u6211\u4EEC\u8FD9\u4E9B\u642C\u8D27\u7684\uFF0C\u540D\u5B57\u6700\u5BB9\u6613\u4ECE\u7EB8\u4E0A\u5C11\u4E00\u7B14\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-arrival
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u6C88\u781A\u5931\u8E2A\u7684\u4E8B"
+    Conditions:
+    - Type: 1
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u4E5F\u662F\u4E3A\u90A3\u6761\u4E0D\u5B58\u5728\u7684\u8857\u6765\u7684\uFF1F\u4ECA\u65E9\u6211\u53BB\u5B98\u7F72\u62A5\u5B98\uFF0C\u4ED6\u4EEC\u8BF4\u6211\u4ECE\u6765\u6CA1\u6709\u513F\u5B50\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u5B98\u7F72\u6536\u5230\u4E00\u6279\u76D0\u5F15\uFF0C\u4EA4\u8D27\u5730\u70B9\u5199\u7740\u2018\u76D0\u5F15\u5DF7\u2019\u3002\u6211\u5728\u5E7F\u9675\u5730\u56FE\u4E0A\u627E\u4E0D\u5230\u8FD9\u4E2A\u540D\u5B57\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u76D0\u5F15\u5DF7\u5C31\u662F\u8FD9\u6761\u65E7\u8857\u4ECE\u524D\u7684\u540D\u5B57\u3002\u6211\u513F\u5B50\u6C88\u781A\u5B88\u7740\u76D0\u4ED3\u8D26\u3002\u6628\u591C\u4ED6\u5E26\u8D70\u4E86\u4E03\u9875\u8D26\u7C3F\uFF0C\u518D\u6CA1\u56DE\u6765\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u5B98\u7F72\u4E0D\u662F\u6CA1\u627E\u5230\u6C88\u781A\u3002\u4ED6\u4EEC\u662F\u5728\u628A\u201C\u6C88\u781A\u201D\u4E24\u4E2A\u5B57\u4ECE\u6BCF\u4E00\u9875\u4E0A\u64E6\u6389\u3002\u540D\u5B57\u4E00\u6CA1\uFF0C\u4EBA\u5C31\u50CF\u4ECE\u672A\u7AD9\u5728\u8FD9\u91CC\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u5E26\u6211\u53BB\u770B\u4ED6\u6700\u540E\u7559\u4E0B\u7684\u4E1C\u897F\u3002\u65E7\u8857\u62DB\u724C\u3001\u76D0\u4ED3\u8D26\u724C\u3001\u5B98\u5E9C\u5C01\u6761\u2014\u2014\u4E09\u5904\u8BB0\u5F55\u82E5\u6307\u5411\u540C\u4E00\u4E2A\u4EBA\uFF0C\u5C31\u80FD\u628A\u4ED6\u627E\u56DE\u6765\u3002"
+    Choices:
+    - Text: "\u6211\u6309\u8BB0\u5F55\u529E\u4E8B\u3002\u8BC1\u636E\u9F50\u4E86\uFF0C\u624D\u6709\u8D44\u683C\u8C08\u6551\u4EBA\u3002"
+      Conditions: []
+      Effects:
+      - Type: 1
+        Stance: 1
+        EvidencePlan: 0
+        StoryFactId: 
+    - Text: "\u5982\u679C\u6C88\u781A\u8FD8\u6D3B\u7740\uFF0C\u6211\u4F1A\u5148\u628A\u4ED6\u5E26\u56DE\u6765\u3002"
+      Conditions: []
+      Effects:
+      - Type: 1
+        Stance: 2
+        EvidencePlan: 0
+        StoryFactId: 
+    CompletionEffects:
+    - Type: 3
+      Stance: 0
+      EvidencePlan: 0
+      StoryFactId: 
+    ShowChoicesImmediately: 0
+  - Id: shenbo-investigate-person
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u6C88\u781A\u6700\u540E\u7559\u4E0B\u7684\u8BB0\u5F55"
+    Conditions:
+    - Type: 1
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 2
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u80AF\u5148\u60F3\u7740\u963F\u781A\uFF0C\u6211\u5C31\u628A\u77E5\u9053\u7684\u90FD\u544A\u8BC9\u4F60\u3002\u540E\u5899\u4E0A\u7684\u65E7\u6F06\u3001\u8D26\u53F0\u7684\u80CC\u9762\uFF0C\u8FD8\u6709\u5B98\u7F72\u90A3\u679A\u5C01\u6761\uFF0C\u90FD\u522B\u6F0F\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6C88\u781A\u4E0D\u4F1A\u65E0\u7F18\u65E0\u6545\u5E26\u8D70\u8D26\u9875\u3002\u53BB\u627E\u65E7\u8857\u62DB\u724C\u3001\u76D0\u4ED3\u8D26\u724C\u548C\u5B98\u5E9C\u5C01\u6761\u3002\u4E09\u5F20\u7EB8\u653E\u5728\u4E00\u8D77\uFF0C\u624D\u6709\u4EBA\u80AF\u4FE1\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-investigate-evidence
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u6C88\u781A\u6700\u540E\u7559\u4E0B\u7684\u8BB0\u5F55"
+    Conditions:
+    - Type: 1
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 1
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u8BF4\u5F97\u5BF9\uFF0C\u5148\u8BA9\u4E09\u5F20\u7EB8\u5F7C\u6B64\u5370\u8BC1\u3002\u5B98\u7F72\u4E0D\u4F1A\u4FE1\u4E00\u4E2A\u7236\u4EB2\u7684\u8BDD\uFF0C\u4F46\u4F1A\u6015\u4E00\u4EFD\u5B8C\u6574\u7684\u8D26\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6C88\u781A\u4E0D\u4F1A\u65E0\u7F18\u65E0\u6545\u5E26\u8D70\u8D26\u9875\u3002\u53BB\u627E\u65E7\u8857\u62DB\u724C\u3001\u76D0\u4ED3\u8D26\u724C\u548C\u5B98\u5E9C\u5C01\u6761\u3002\u4E09\u5F20\u7EB8\u653E\u5728\u4E00\u8D77\uFF0C\u624D\u6709\u4EBA\u80AF\u4FE1\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-evidence-review
+    NpcId: shenbo
+    InteractionPrompt: "E  \u628A\u4E09\u5904\u8BB0\u5F55\u4EA4\u7ED9\u6C88\u4F2F\u8FA8\u8BA4"
+    Conditions:
+    - Type: 1
+      Stage: 2
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u8FD9\u4E09\u7B14\u2026\u2026\u90FD\u662F\u963F\u781A\u7684\u5B57\u3002\u4E03\u8F66\u76D0\u4ECE\u76D0\u5F15\u5DF7\u5165\u57CE\uFF0C\u590D\u6838\u7B7E\u5B57\u4E5F\u662F\u4ED6\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u5C01\u6761\u662F\u8F6C\u8FD0\u526F\u4F7F\u9646\u5D07\u7684\uFF0C\u65E5\u671F\u5374\u5728\u65E7\u8857\u6D88\u5931\u524D\u4E00\u5929\u3002\u4ED6\u4E0D\u662F\u4E8B\u540E\u63A9\u76D6\uFF0C\u800C\u662F\u63D0\u524D\u5199\u597D\u4E86\u7ED3\u5C40\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u8FD9\u4E09\u5F20\u7EB8\u80FD\u8BC1\u660E\u6709\u4EBA\u6539\u8FC7\u518C\u3002\u53EF\u53EA\u8981\u9001\u51FA\u53BB\uFF0C\u5199\u7EB8\u7684\u4EBA\u4E5F\u4F1A\u7ACB\u523B\u77E5\u9053\u662F\u8C01\u5148\u53D1\u73B0\u4E86\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6240\u4EE5\u963F\u781A\u4E0D\u662F\u9003\u4E86\u3002\u662F\u6709\u4EBA\u628A\u79C1\u76D0\u7684\u8D26\u3001\u76D0\u5F15\u5DF7\uFF0C\u8FD8\u6709\u77E5\u60C5\u7684\u963F\u781A\u4E00\u8D77\u4ECE\u7EB8\u4E0A\u62B9\u6389\u4E86\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u7B49\u7B49\u3002\u5C01\u6761\u548C\u8D26\u724C\u7684\u65E5\u671F\u5BF9\u4E0D\u4E0A\u3002\u628A\u6C88\u4F2F\u7684\u8BF4\u6CD5\u4E0E\u4E03\u8F66\u76D0\u8D26\u724C\u653E\u5728\u4E00\u8D77\uFF0C\u5E94\u8BE5\u80FD\u770B\u51FA\u9646\u5D07\u7A76\u7ADF\u5728\u4EC0\u4E48\u65F6\u5019\u51B3\u5B9A\u62B9\u6389\u963F\u781A\u3002"
+    Choices:
+    - Text: "\u628A\u590D\u5236\u8BB0\u5F55\u9001\u5165\u5B98\u7F72\uFF0C\u8BA9\u6240\u6709\u4EBA\u90FD\u770B\u89C1\u3002"
+      Conditions: []
+      Effects:
+      - Type: 2
+        Stance: 0
+        EvidencePlan: 1
+        StoryFactId: 
+    - Text: "\u5148\u85CF\u4F4F\u8BC1\u636E\uFF0C\u4FDD\u62A4\u6C88\u4F2F\u548C\u5269\u4F59\u8BC1\u4EBA\u3002"
+      Conditions: []
+      Effects:
+      - Type: 2
+        Stance: 0
+        EvidencePlan: 2
+        StoryFactId: 
+    CompletionEffects:
+    - Type: 4
+      Stance: 0
+      EvidencePlan: 0
+      StoryFactId: 
+    ShowChoicesImmediately: 0
+  - Id: shenbo-cross-examine-teahouse
+    NpcId: shenbo
+    InteractionPrompt: "E  \u628A\u8336\u8086\u65C1\u8BC1\u544A\u8BC9\u6C88\u4F2F"
+    Conditions:
+    - Type: 1
+      Stage: 3
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: teahouse-cart-testimony
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u8336\u8086\u638C\u67DC\u4E5F\u770B\u89C1\u4E86\uFF1F\u521D\u4E94\u5C01\u4ED3\u65F6\u95E8\u5916\u6CA1\u6709\u8F66\uFF0C\u521D\u4E03\u540E\u534A\u591C\u90A3\u4E03\u8F86\u8F66\u624D\u4ECE\u540E\u5DF7\u8FC7\u53BB\u2026\u2026"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u4E24\u5904\u8BC1\u8BCD\u5BF9\u4E0A\u4E86\u3002\u5C01\u6761\u5148\u5199\u597D\uFF0C\u76D0\u8F66\u540E\u5165\u57CE\u3002\u73B0\u5728\u53EA\u9700\u8981\u8BA9\u6C88\u4F2F\u7684\u8BF4\u6CD5\u548C\u8D26\u724C\u5E76\u6392\u51FA\u73B0\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6309 T\u3002\u522B\u8BA9\u90A3\u4E24\u4E2A\u4EBA\u53EA\u662F\u5404\u81EA\u8BF4\u4E86\u4E00\u6BB5\u8BDD\uFF0C\u8981\u8BA9\u4ED6\u4EEC\u5728\u65F6\u95F4\u4E0A\u4E92\u76F8\u649E\u7834\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-cross-examine-protected
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BF7\u6C88\u4F2F\u91CD\u8FF0\u5C01\u6761\u8D34\u4E0A\u7684\u65F6\u95F4"
+    Conditions:
+    - Type: 1
+      Stage: 3
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: teahouse-keeper-protected
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u8336\u8086\u90A3\u8FB9\u4F60\u6CA1\u7EE7\u7EED\u8FFD\u95EE\uFF1F\u505A\u5F97\u5BF9\u3002\u9646\u5D07\u7684\u4EBA\u5DF2\u7ECF\u5728\u8857\u53E3\u6253\u542C\u8C01\u8FD8\u8BB0\u5F97\u6C88\u781A\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u638C\u67DC\u77E5\u9053\u7684\u5DF2\u7ECF\u591F\u591A\u4E86\u3002\u73B0\u5728\u628A\u4F60\u8BF4\u7684\u5C01\u6761\u65E5\u671F\u548C\u8D26\u724C\u4E0A\u7684\u5165\u57CE\u65E5\u671F\u653E\u5728\u4E00\u8D77\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u521D\u4E94\u508D\u665A\u8D34\u7684\u5C01\u6761\uFF0C\u521D\u4E03\u540E\u534A\u591C\u624D\u5230\u7684\u76D0\u8F66\u3002\u6309
+        T\uFF0C\u8BA9\u4ED6\u4EEC\u5E76\u6392\u649E\u4E00\u6B21\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-cross-examine
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BF7\u6C88\u4F2F\u91CD\u8FF0\u5C01\u6761\u8D34\u4E0A\u7684\u65F6\u95F4"
+    Conditions:
+    - Type: 1
+      Stage: 3
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u5C01\u6761\u662F\u521D\u4E94\u508D\u665A\u8D34\u4E0A\u7684\u3002\u90A3\u5929\u963F\u781A\u8FD8\u5728\u4ED3\u91CC\uFF0C\u4ED6\u4EB2\u624B\u6570\u8FC7\u95E8\u5916\u7684\u7A7A\u76D0\u8F66\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u53EF\u8D26\u724C\u5199\u7740\u4E03\u8F66\u76D0\u521D\u4E03\u591C\u624D\u5165\u57CE\u3002\u5C01\u6761\u6BD4\u79C1\u76D0\u65E9\u4E86\u4E24\u5929\uFF0C\u4ED6\u4EEC\u8981\u9664\u6389\u7684\u4E0D\u662F\u5DF2\u7ECF\u88AB\u6293\u4F4F\u7684\u628A\u67C4\uFF0C\u800C\u662F\u9884\u5B9A\u7684\u77E5\u60C5\u4EBA\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u521D\u4E94\u5199\u9664\u540D\uFF0C\u521D\u4E03\u624D\u8FD0\u76D0\u3002\u987A\u5E8F\u53CD\u8FC7\u6765\u5C31\u8BF4\u660E\uFF0C\u9646\u5D07\u4E0D\u662F\u8FFD\u7740\u6848\u5B50\u8D70\uFF0C\u4ED6\u662F\u5728\u6848\u5B50\u53D1\u751F\u524D\u5148\u6E05\u6389\u4EBA\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6309 T\uFF0C\u628A\u8FD9\u4E24\u53E5\u8BDD\u5E76\u6392\u653E\u5728\u6848\u5377\u4E0A\u3002\u522B\u53EA\u770B\u5B83\u4EEC\u5404\u81EA\u5199\u4E86\u4EC0\u4E48\uFF0C\u8981\u770B\u54EA\u4E00\u53E5\u5148\u53D1\u751F\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-anchor-person
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u5982\u4F55\u7A33\u5B9A\u65F6\u95F4\u951A\u70B9"
+    Conditions:
+    - Type: 1
+      Stage: 4
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 2
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u963F\u781A\u82E5\u8FD8\u542C\u5F97\u89C1\uFF0C\u4ED6\u4F1A\u8BB0\u5F97\u4F60\u521A\u624D\u7684\u8BDD\u3002\u53BB\u628A\u90A3\u4E9B\u95E8\u4E00\u6247\u6247\u627E\u51FA\u6765\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u963F\u781A\u5C0F\u65F6\u5019\u8BF4\uFF0C\u76D0\u4ED3\u7684\u706B\u5149\u7167\u5230\u65E7\u5899\u4E0A\uFF0C\u4F1A\u591A\u51FA\u4E00\u6392\u672C\u4E0D\u5B58\u5728\u7684\u95E8\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u65E7\u65F6\u5C42\u4F1A\u628A\u8DEF\u6539\u5F97\u50CF\u53E6\u4E00\u6761\u8857\u3002\u522B\u8DDF\u7740\u65B0\u51FA\u73B0\u7684\u95E8\u8D70\uFF0C\u8BA4\u95E8\u724C\u80CC\u9762\u7684\u94DC\u9489\u3002\u90A3\u624D\u662F\u8FD9\u5EA7\u57CE\u771F\u6B63\u7684\u6B21\u5E8F\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u90A3\u662F\u65E7\u65F6\u5C42\u7559\u4E0B\u7684\u5F71\u5B50\u3002\u95E8\u724C\u4E0A\u5199\u7740\u201C\u897F\u4ED3\u3001\u4E1C\u9A8C\u3001\u4E2D\u518C\u201D\u3002\u6309\u8FD9\u4E2A\u987A\u5E8F\u7A33\u5B9A\u951A\u70B9\uFF0C\u9519\u5E8F\u4F1A\u8BA9\u5DF2\u7ECF\u7A33\u5B9A\u7684\u90E8\u5206\u91CD\u65B0\u6F02\u79FB\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-anchor-evidence
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u5982\u4F55\u7A33\u5B9A\u65F6\u95F4\u951A\u70B9"
+    Conditions:
+    - Type: 1
+      Stage: 4
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 1
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u5148\u628A\u65E7\u65F6\u7684\u8DEF\u9489\u4F4F\u3002\u53EA\u6709\u4EB2\u773C\u770B\u89C1\u90A3\u4E00\u591C\uFF0C\u4F60\u624D\u77E5\u9053\u8FD9\u6848\u5B50\u7A76\u7ADF\u88AB\u8C01\u5199\u4E0B\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u963F\u781A\u5C0F\u65F6\u5019\u8BF4\uFF0C\u76D0\u4ED3\u7684\u706B\u5149\u7167\u5230\u65E7\u5899\u4E0A\uFF0C\u4F1A\u591A\u51FA\u4E00\u6392\u672C\u4E0D\u5B58\u5728\u7684\u95E8\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u65E7\u65F6\u5C42\u4F1A\u628A\u8DEF\u6539\u5F97\u50CF\u53E6\u4E00\u6761\u8857\u3002\u522B\u8DDF\u7740\u65B0\u51FA\u73B0\u7684\u95E8\u8D70\uFF0C\u8BA4\u95E8\u724C\u80CC\u9762\u7684\u94DC\u9489\u3002\u90A3\u624D\u662F\u8FD9\u5EA7\u57CE\u771F\u6B63\u7684\u6B21\u5E8F\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u90A3\u662F\u65E7\u65F6\u5C42\u7559\u4E0B\u7684\u5F71\u5B50\u3002\u95E8\u724C\u4E0A\u5199\u7740\u201C\u897F\u4ED3\u3001\u4E1C\u9A8C\u3001\u4E2D\u518C\u201D\u3002\u6309\u8FD9\u4E2A\u987A\u5E8F\u7A33\u5B9A\u951A\u70B9\uFF0C\u9519\u5E8F\u4F1A\u8BA9\u5DF2\u7ECF\u7A33\u5B9A\u7684\u90E8\u5206\u91CD\u65B0\u6F02\u79FB\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-repair-private
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u8857\u5C3E\u88AB\u6495\u5F00\u7684\u8BB0\u5F55"
+    Conditions:
+    - Type: 1
+      Stage: 5
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 3
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 2
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u6CA1\u628A\u8D26\u9875\u7ACB\u523B\u4EA4\u51FA\u53BB\uFF0C\u9646\u5D07\u7684\u4EBA\u5C31\u8FD8\u4E0D\u77E5\u9053\u6211\u4EEC\u5DF2\u7ECF\u8D70\u5230\u54EA\u4E00\u6B65\u3002\u5C0F\u5FC3\u4E9B\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u951A\u70B9\u5B89\u9759\u4E0B\u6765\u4E86\u3002\u53EF\u8857\u5C3E\u90A3\u5757\u5730\u65B9\u2026\u2026\u50CF\u88AB\u4EBA\u4ECE\u7EB8\u4E0A\u786C\u751F\u751F\u6495\u5F00\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u6C88\u781A\u7684\u540D\u5B57\u8FD8\u5728\u88C2\u7F1D\u53E6\u4E00\u4FA7\u3002\u538B\u4E0B\u65F6\u7F1D\uFF0C\u6211\u5C31\u80FD\u770B\u89C1\u6700\u540E\u90A3\u4E00\u9875\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-repair-public
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BE2\u95EE\u8857\u5C3E\u88AB\u6495\u5F00\u7684\u8BB0\u5F55"
+    Conditions:
+    - Type: 1
+      Stage: 5
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 3
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 1
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u5B98\u7F72\u90A3\u8FB9\u8FDF\u65E9\u4F1A\u542C\u89C1\u98CE\u58F0\u3002\u4F60\u65E2\u7136\u9009\u62E9\u4E86\u516C\u5F00\uFF0C\u5C31\u4E0D\u80FD\u53EA\u62FF\u5230\u4E00\u534A\u771F\u76F8\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u951A\u70B9\u5B89\u9759\u4E0B\u6765\u4E86\u3002\u53EF\u8857\u5C3E\u90A3\u5757\u5730\u65B9\u2026\u2026\u50CF\u88AB\u4EBA\u4ECE\u7EB8\u4E0A\u786C\u751F\u751F\u6495\u5F00\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u6C88\u781A\u7684\u540D\u5B57\u8FD8\u5728\u88C2\u7F1D\u53E6\u4E00\u4FA7\u3002\u538B\u4E0B\u65F6\u7F1D\uFF0C\u6211\u5C31\u80FD\u770B\u89C1\u6700\u540E\u90A3\u4E00\u9875\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-final-person
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BF7\u6C88\u4F2F\u8BF4\u51FA\u4ED6\u7684\u9009\u62E9"
+    Conditions:
+    - Type: 1
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 2
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u4ECE\u4E00\u5F00\u59CB\u5C31\u8BF4\u4F1A\u5148\u6551\u963F\u781A\u3002\u73B0\u5728\u8F6E\u5230\u4F60\u51B3\u5B9A\uFF0C\u662F\u8BA9\u4ED6\u56DE\u6765\uFF0C\u8FD8\u662F\u8BA9\u6574\u6761\u8857\u7EE7\u7EED\u5B89\u9759\u4E0B\u53BB\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6211\u5DF2\u7ECF\u5F88\u591A\u5E74\u6CA1\u542C\u89C1\u6709\u4EBA\u53EB\u963F\u781A\u4E86\u3002\u4F60\u82E5\u6062\u590D\u76D0\u5F15\u5DF7\uFF0C\u9646\u5D07\u7684\u4EBA\u4F1A\u77E5\u9053\uFF1B\u4F60\u82E5\u5C01\u5B58\u8FD9\u91CC\uFF0C\u963F\u781A\u4E5F\u8BB8\u518D\u4E5F\u56DE\u4E0D\u6765\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u4F60\u60F3\u627E\u56DE\u5BB6\u7684\u8DEF\uFF0C\u6C88\u4F2F\u53EA\u60F3\u518D\u53EB\u4E00\u58F0\u513F\u5B50\u7684\u540D\u5B57\u3002\u8FD9\u4E00\u6B21\uFF0C\u7EB8\u5916\u7684\u4EBA\u548C\u7EB8\u4E0A\u7684\u4EBA\uFF0C\u53EA\u80FD\u5148\u4FDD\u4F4F\u4E00\u8FB9\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u8BB0\u5F55\u4E0D\u4F1A\u66FF\u6211\u4EEC\u9009\u3002\u8981\u4FDD\u4F4F\u4E00\u4E2A\u4EBA\u3001\u4E00\u6761\u8857\uFF0C\u603B\u5F97\u6709\u4EBA\u627F\u62C5\u5B83\u91CD\u65B0\u51FA\u73B0\u540E\u7684\u4EE3\u4EF7\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-final-evidence
+    NpcId: shenbo
+    InteractionPrompt: "E  \u8BF7\u6C88\u4F2F\u8BF4\u51FA\u4ED6\u7684\u9009\u62E9"
+    Conditions:
+    - Type: 1
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 1
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u4F60\u8BF4\u8FC7\u8BB0\u5F55\u8981\u5148\u8BF4\u8BDD\u3002\u73B0\u5728\u8BB0\u5F55\u5DF2\u7ECF\u8BF4\u5B8C\u4E86\uFF0C\u5269\u4E0B\u7684\u4E0D\u662F\u8BC1\u636E\uFF0C\u662F\u4EBA\u7684\u9009\u62E9\u3002"
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u6211\u5DF2\u7ECF\u5F88\u591A\u5E74\u6CA1\u542C\u89C1\u6709\u4EBA\u53EB\u963F\u781A\u4E86\u3002\u4F60\u82E5\u6062\u590D\u76D0\u5F15\u5DF7\uFF0C\u9646\u5D07\u7684\u4EBA\u4F1A\u77E5\u9053\uFF1B\u4F60\u82E5\u5C01\u5B58\u8FD9\u91CC\uFF0C\u963F\u781A\u4E5F\u8BB8\u518D\u4E5F\u56DE\u4E0D\u6765\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u4F60\u60F3\u627E\u56DE\u5BB6\u7684\u8DEF\uFF0C\u6C88\u4F2F\u53EA\u60F3\u518D\u53EB\u4E00\u58F0\u513F\u5B50\u7684\u540D\u5B57\u3002\u8FD9\u4E00\u6B21\uFF0C\u7EB8\u5916\u7684\u4EBA\u548C\u7EB8\u4E0A\u7684\u4EBA\uFF0C\u53EA\u80FD\u5148\u4FDD\u4F4F\u4E00\u8FB9\u3002"
+    - speaker: "\u4E3B\u89D2"
+      text: "\u8BB0\u5F55\u4E0D\u4F1A\u66FF\u6211\u4EEC\u9009\u3002\u8981\u4FDD\u4F4F\u4E00\u4E2A\u4EBA\u3001\u4E00\u6761\u8857\uFF0C\u603B\u5F97\u6709\u4EBA\u627F\u62C5\u5B83\u91CD\u65B0\u51FA\u73B0\u540E\u7684\u4EE3\u4EF7\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-epilogue-preserve-public
+    NpcId: shenbo
+    InteractionPrompt: "E  \u4E0E\u6C88\u4F2F\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 3
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 1
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u95E8\u53E3\u7684\u76D0\u5F15\u65D7\u5347\u8D77\u6765\u4E86\u3002\u4F60\u628A\u8D26\u9875\u9001\u8FDB\u5B98\u7F72\uFF0C\u8FD9\u56DE\u6574\u6761\u8857\u90FD\u542C\u5F97\u89C1\u963F\u781A\u7684\u7B97\u76D8\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u5730\u56FE\u4E0A\u4F1A\u591A\u51FA\u4E00\u6761\u8857\u3002\u4EE5\u540E\u6709\u4EBA\u518D\u60F3\u628A\u5B83\u62B9\u6389\uFF0C\u81F3\u5C11\u5F97\u5148\u7ECF\u8FC7\u4E00\u7FA4\u8BB0\u5F97\u8FD9\u4E2A\u540D\u5B57\u7684\u4EBA\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-epilogue-preserve-private
+    NpcId: shenbo
+    InteractionPrompt: "E  \u4E0E\u6C88\u4F2F\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 3
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 2
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u95E8\u53E3\u7684\u76D0\u5F15\u65D7\u5347\u8D77\u6765\u4E86\u3002\u8D26\u9875\u4ECD\u85CF\u5728\u6697\u5904\uFF0C\u4F46\u81F3\u5C11\u963F\u781A\u7684\u540D\u5B57\u56DE\u5230\u4E86\u8857\u4E0A\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u5730\u56FE\u4E0A\u4F1A\u591A\u51FA\u4E00\u6761\u8857\u3002\u4EE5\u540E\u6709\u4EBA\u518D\u60F3\u628A\u5B83\u62B9\u6389\uFF0C\u81F3\u5C11\u5F97\u5148\u7ECF\u8FC7\u4E00\u7FA4\u8BB0\u5F97\u8FD9\u4E2A\u540D\u5B57\u7684\u4EBA\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-epilogue-seal-person
+    NpcId: shenbo
+    InteractionPrompt: "E  \u4E0E\u6C88\u4F2F\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 2
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u8857\u53E3\u53C8\u7A7A\u4E86\u3002\u6211\u77E5\u9053\u4F60\u5DF2\u7ECF\u5C3D\u529B\uFF0C\u53EF\u963F\u781A\u8FD8\u662F\u6CA1\u80FD\u56DE\u6765\u3002\u81F3\u5C11\u522B\u5FD8\u8BB0\u4ED6\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u5B98\u7F72\u7684\u518C\u9875\u4ECA\u5929\u6CA1\u6709\u591A\u51FA\u4E00\u6761\u8857\u3002\u4F46\u8D70\u8FC7\u8FD9\u91CC\u7684\u4EBA\u4F1A\u8BB0\u5F97\uFF0C\u6211\u4EEC\u66FE\u7ECF\u770B\u89C1\u8FC7\u5B83\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-epilogue-seal-evidence
+    NpcId: shenbo
+    InteractionPrompt: "E  \u4E0E\u6C88\u4F2F\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 2
+      Stage: 0
+      Stance: 1
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u8857\u53E3\u53C8\u7A7A\u4E86\u3002\u8BB0\u5F55\u7A33\u5B9A\u4E86\uFF0C\u963F\u781A\u5374\u4ECD\u4E0D\u5728\u518C\u3002\u6216\u8BB8\u8FD9\u5C31\u662F\u53EA\u76F8\u4FE1\u7EB8\u5F20\u7684\u4EE3\u4EF7\u3002"
+    - speaker: "\u9014\u5370\u5411\u5BFC"
+      text: "\u5B98\u7F72\u7684\u518C\u9875\u4ECA\u5929\u6CA1\u6709\u591A\u51FA\u4E00\u6761\u8857\u3002\u4F46\u8D70\u8FC7\u8FD9\u91CC\u7684\u4EBA\u4F1A\u8BB0\u5F97\uFF0C\u6211\u4EEC\u66FE\u7ECF\u770B\u89C1\u8FC7\u5B83\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: shenbo-epilogue-fallback
+    NpcId: shenbo
+    InteractionPrompt: "E  \u4E0E\u6C88\u4F2F\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u5B88\u4ED3\u4EBA \u6C88\u4F2F"
+      text: "\u76D0\u5F15\u5DF7\u53C8\u5B89\u9759\u4E0B\u6765\u4E86\u3002\u65E0\u8BBA\u8BB0\u5F55\u600E\u4E48\u5199\uFF0C\u6211\u90FD\u4F1A\u8BB0\u5F97\u963F\u781A\u66FE\u7ECF\u5728\u8FD9\u91CC\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: teahouse-epilogue-preserve-public
+    NpcId: teahouse
+    InteractionPrompt: "E  \u5411\u638C\u67DC\u6253\u542C\u76D0\u5F15\u65D7"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 3
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 1
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u4ECA\u65E9\u76D0\u5F15\u65D7\u4E00\u5347\uFF0C\u6574\u6761\u8857\u90FD\u5728\u8C08\u4E03\u8F66\u76D0\u3002\u5B98\u7F72\u7684\u4EBA\u6765\u8FC7\u53C8\u8D70\u4E86\uFF0C\u8FD9\u56DE\u4ED6\u4EEC\u6CA1\u6CD5\u53EA\u5F53\u6CA1\u542C\u89C1\u3002"
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u6C88\u781A\u90A3\u5F20\u9760\u7A97\u7684\u684C\u5B50\u6211\u7559\u7740\u3002\u7B49\u8336\u5BA2\u518D\u63D0\u8D77\u4ED6\u7684\u540D\u5B57\uFF0C\u6211\u4E0D\u4F1A\u518D\u5FD8\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: teahouse-epilogue-preserve-private
+    NpcId: teahouse
+    InteractionPrompt: "E  \u5411\u638C\u67DC\u6253\u542C\u76D0\u5F15\u65D7"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 1
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 3
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 2
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u76D0\u5F15\u65D7\u5347\u8D77\u6765\u4E86\uFF0C\u53EF\u4F60\u77E5\u9053\u8D26\u9875\u8FD8\u5728\u6697\u5904\u3002\u6211\u4F1A\u8BA9\u4F19\u8BA1\u6536\u597D\u8336\u7089\uFF0C\u771F\u6709\u4EBA\u6765\u95EE\uFF0C\u8FD9\u91CC\u4EC0\u4E48\u90FD\u6CA1\u770B\u89C1\u3002"
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u6C88\u781A\u7684\u540D\u5B57\u56DE\u6765\u4E86\u3002\u53EA\u8981\u540D\u5B57\u8FD8\u5728\uFF0C\u5C31\u603B\u6709\u80FD\u8BF4\u51FA\u53E3\u7684\u4E00\u5929\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: teahouse-epilogue-seal
+    NpcId: teahouse
+    InteractionPrompt: "E  \u4E0E\u638C\u67DC\u544A\u522B"
+    Conditions:
+    - Type: 1
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 4
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 2
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u8857\u53E3\u5B89\u9759\u5F97\u50CF\u4EC0\u4E48\u90FD\u6CA1\u53D1\u751F\u8FC7\u3002\u53EA\u662F\u90A3\u5F20\u9760\u7A97\u7684\u684C\u5B50\uFF0C\u6211\u8FD8\u662F\u4E0D\u6562\u8BA9\u522B\u4EBA\u5750\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: teahouse-after-cart-testimony
+    NpcId: teahouse
+    InteractionPrompt: "E  \u4E0E\u638C\u67DC\u6838\u5BF9\u76D0\u8F66\u65C1\u8BC1"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: teahouse-cart-testimony
+      Negate: 0
+    Lines:
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u6211\u628A\u80FD\u8BB0\u4F4F\u7684\u90FD\u8BF4\u4E86\uFF1A\u521D\u4E94\u5C01\u4ED3\u65F6\u6CA1\u6709\u8F66\uFF0C\u521D\u4E03\u540E\u534A\u591C\u4E03\u8F86\u8F66\u4ECE\u540E\u5DF7\u8FC7\u53BB\u3002"
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u6C88\u781A\u5750\u5728\u90A3\u5F20\u684C\u65C1\u6570\u8D26\u9875\uFF0C\u6570\u5230\u7B2C\u4E03\u5F20\u65F6\u624B\u4E00\u76F4\u5728\u6296\u3002\u8981\u662F\u8FD9\u4E9B\u80FD\u7ED9\u6C88\u4F2F\u4E00\u4E2A\u4EA4\u4EE3\uFF0C\u4F60\u5C31\u53BB\u8BF4\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: teahouse-after-protected
+    NpcId: teahouse
+    InteractionPrompt: "E  \u4E0E\u638C\u67DC\u4EA4\u6362\u4E00\u4E2A\u773C\u795E"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: teahouse-keeper-protected
+      Negate: 0
+    Lines:
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u4F60\u6CA1\u7EE7\u7EED\u95EE\uFF0C\u662F\u5BF9\u7684\u3002\u4ECA\u5929\u5DF2\u7ECF\u6709\u4E24\u62E8\u4EBA\u6765\u95EE\u8FC7\u76D0\u8F66\uFF0C\u6211\u4E0D\u60F3\u8BA9\u4F19\u8BA1\u8BB0\u4F4F\u4ED6\u4EEC\u7684\u8138\u3002"
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u8BE5\u8BF4\u7684\u8BDD\u6211\u8BB0\u5728\u5FC3\u91CC\u3002\u7B49\u9646\u5D07\u7684\u4EBA\u4E0D\u518D\u76EF\u7740\u8FD9\u91CC\uFF0C\u4F60\u518D\u6765\u542C\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: teahouse-rumor-seal
+    NpcId: teahouse
+    InteractionPrompt: "E  \u8BE2\u95EE\u521D\u4E03\u591C\u91CC\u7684\u76D0\u8F66"
+    Conditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 7
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: official-seal
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: teahouse-cart-testimony
+      Negate: 1
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: teahouse-keeper-protected
+      Negate: 1
+    Lines:
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u4F60\u627E\u5230\u90A3\u679A\u5C01\u6761\u4E86\uFF1F\u521D\u4E94\u508D\u665A\u4ED6\u4EEC\u5C01\u7684\u662F\u7A7A\u4ED3\uFF0C\u95E8\u53E3\u8FDE\u4E00\u8F86\u76D0\u8F66\u90FD\u6CA1\u6709\u3002"
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u521D\u4E03\u540E\u534A\u591C\uFF0C\u4E03\u8F86\u8F66\u624D\u4ECE\u540E\u5DF7\u8FC7\u53BB\u3002\u6C88\u781A\u90A3\u665A\u5750\u5728\u8FD9\u91CC\uFF0C\u53CD\u590D\u6570\u4E03\u5F20\u8D26\u9875\u3002\u4ED6\u8D70\u65F6\u8138\u767D\u5F97\u5389\u5BB3\u3002"
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u5C01\u6761\u6BD4\u76D0\u8F66\u65E9\u4E24\u5929\uFF0C\u8FD9\u8D26\u600E\u4E48\u7B97\u90FD\u4E0D\u5BF9\u3002\u4F60\u82E5\u8FD8\u80FD\u627E\u5230\u6C88\u781A\uFF0C\u66FF\u6211\u628A\u8FD9\u58F6\u51C9\u8336\u70ED\u4E0A\u3002"
+    Choices:
+    - Text: "\u8BF7\u638C\u67DC\u7EC6\u8BF4\u90A3\u4E03\u8F86\u8F66\u7ECF\u8FC7\u7684\u7ECF\u8FC7\u3002"
+      Conditions: []
+      Effects:
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: teahouse-cart-testimony
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: teahouse-event-completed
+    - Text: "\u5230\u6B64\u4E3A\u6B62\uFF0C\u522B\u8BA9\u8336\u8086\u5377\u8FDB\u9646\u5D07\u7684\u89C6\u7EBF\u3002"
+      Conditions: []
+      Effects:
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: teahouse-keeper-protected
+      - Type: 5
+        Stance: 0
+        EvidencePlan: 0
+        StoryFactId: teahouse-event-completed
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  - Id: teahouse-early
+    NpcId: teahouse
+    InteractionPrompt: "E  \u4E0E\u8336\u8086\u638C\u67DC\u4EA4\u8C08"
+    Conditions:
+    - Type: 5
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 2
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    Lines:
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u6628\u591C\u6253\u70CA\u524D\uFF0C\u6C88\u781A\u5750\u5728\u9760\u7A97\u90A3\u5F20\u684C\uFF0C\u53CD\u590D\u6570\u4E03\u5F20\u8D26\u9875\u3002\u4ED6\u8D70\u65F6\u628A\u4E00\u679A\u76D0\u5F15\u94DC\u94B1\u843D\u5728\u684C\u4E0A\u3002"
+    - speaker: "\u8336\u8086\u638C\u67DC"
+      text: "\u4ECA\u65E9\u4F19\u8BA1\u95EE\u6211\u94DC\u94B1\u662F\u54EA\u6765\u7684\u3002\u6211\u7ADF\u4E00\u65F6\u60F3\u4E0D\u8D77\u6C88\u781A\u662F\u8C01\u3002\u8336\u51C9\u4E86\u8FD8\u80FD\u7EED\uFF0C\u4EBA\u4ECE\u7EB8\u4E0A\u6D88\u5931\uFF0C\u53EF\u5C31\u7EED\u4E0D\u56DE\u6765\u4E86\u3002"
+    Choices: []
+    CompletionEffects: []
+    ShowChoicesImmediately: 0
+  storyFacts:
+  - Id: warehouse-night-shift
+    Title: "\u76D0\u4ED3\u591C\u73ED\u8BB0\u5F55"
+    Detail: "\u642C\u8FD0\u5DE5\u8BB0\u5F97\u4E03\u8F86\u8F66\u3001\u56DB\u5341\u4E8C\u888B\u76D0\u3002\u5DE5\u5934\u8BA9\u4ED6\u628A\u591C\u73ED\u548C\u6C88\u781A\u4E00\u8D77\u4ECE\u70B9\u540D\u5355\u4E0A\u8BF4\u6210\u4ECE\u672A\u5B58\u5728\u3002"
+  - Id: warehouse-second-meal
+    Title: "\u7B2C\u4E8C\u4EFD\u5E72\u7CAE"
+    Detail: "\u642C\u8FD0\u5DE5\u6BCF\u5929\u591A\u5E26\u4E00\u4EFD\u708A\u997C\uFF0C\u7559\u7ED9\u5973\u513F\u963F\u79BE\u3002\u963F\u79BE\u7684\u540D\u5B57\u5DF2\u4ECE\u5DE5\u518C\u548C\u6237\u518C\u6D88\u5931\uFF0C\u4F46\u996D\u6BCF\u5929\u90FD\u4F1A\u5C11\u4E00\u4EFD\u3002"
+  - Id: warehouse-daughter-public
+    Title: "\u963F\u79BE\u5199\u56DE\u516C\u5F00\u540D\u518C"
+    Detail: "\u4F60\u51B3\u5B9A\u628A\u963F\u79BE\u7684\u540D\u5B57\u5199\u8FDB\u516C\u5F00\u8BB0\u5F55\u3002\u5979\u91CD\u65B0\u6210\u4E3A\u5B98\u5E9C\u65E0\u6CD5\u968F\u53E3\u5426\u8BA4\u7684\u4EBA\uFF0C\u4E5F\u4F1A\u5F15\u6765\u9646\u5D07\u7684\u6CE8\u610F\u3002"
+  - Id: warehouse-daughter-private
+    Title: "\u963F\u79BE\u7559\u5728\u79C1\u4EBA\u6848\u5377"
+    Detail: "\u4F60\u6CA1\u6709\u516C\u5F00\u963F\u79BE\u7684\u540D\u5B57\uFF0C\u53EA\u628A\u5979\u5199\u8FDB\u81EA\u5DF1\u7684\u4FEE\u590D\u8BB0\u5F55\u3002\u8FD9\u4FDD\u62A4\u4E86\u7236\u5973\u4E8C\u4EBA\uFF0C\u4E5F\u8BA9\u5979\u7684\u5B58\u5728\u518D\u6B21\u4F9D\u8D56\u5C11\u6570\u4EBA\u7684\u8BB0\u5FC6\u3002"
+  - Id: warehouse-daughter-remembered
+    Title: "\u6709\u4EBA\u8BB0\u5F97\u963F\u79BE"
+    Detail: "\u4F60\u542C\u5B8C\u642C\u8FD0\u5DE5\u4E0E\u963F\u79BE\u7684\u6545\u4E8B\uFF0C\u5E76\u51B3\u5B9A\u628A\u5979\u7684\u540D\u5B57\u4FDD\u5B58\u5728\u516C\u5F00\u540D\u518C\u6216\u79C1\u4EBA\u6848\u5377\u3002"
+  - Id: archive-clerk-ink-record
+    Title: "\u65B0\u6D46\u4E0B\u7684\u7A7A\u767D"
+    Detail: "\u6284\u4E66\u540F\u4E25\u69D0\u53D1\u73B0\uFF0C\u88AB\u62B9\u6389\u7684\u540D\u5B57\u5904\u4F1A\u7559\u4E0B\u65B0\u6D46\u3002\u7EB8\u5F20\u77E5\u9053\u90A3\u91CC\u66FE\u7ECF\u5199\u8FC7\u4EC0\u4E48\uFF0C\u53EA\u662F\u5B98\u5E9C\u4E0D\u80AF\u627F\u8BA4\u3002"
+  - Id: archive-clerk-father-name
+    Title: "\u4E25\u590D\u7559\u5728\u88C5\u8BA2\u7EBF\u91CC\u7684\u540D\u5B57"
+    Detail: "\u4E25\u69D0\u7684\u7236\u4EB2\u4E25\u590D\u4E5F\u66FE\u5B88\u76D0\u4ED3\uFF0C\u5E76\u5728\u5341\u5E74\u524D\u7684\u65E7\u518C\u4E2D\u6D88\u5931\u3002\u4E25\u69D0\u4E00\u76F4\u4FDD\u5B58\u7740\u4E00\u5F20\u5199\u7740\u7236\u4EB2\u540D\u5B57\u7684\u88C5\u8BA2\u6B8B\u9875\u3002"
+  - Id: archive-clerk-recruited
+    Title: "\u4E25\u69D0\u52A0\u5165\u6284\u5F55"
+    Detail: "\u4F60\u8BA9\u4E25\u69D0\u53C2\u4E0E\u8BC1\u636E\u6284\u5F55\uFF0C\u5E76\u540C\u610F\u628A\u7236\u4EB2\u4E25\u590D\u7684\u540D\u5B57\u5199\u5728\u8FB9\u680F\u3002\u4ED6\u613F\u610F\u627F\u62C5\u88AB\u53D1\u73B0\u7684\u98CE\u9669\u3002"
+  - Id: archive-clerk-sheltered
+    Title: "\u4E25\u69D0\u7559\u5728\u5C40\u5916"
+    Detail: "\u4F60\u6CA1\u6709\u8BA9\u4E25\u69D0\u53C2\u4E0E\u6284\u5F55\uFF0C\u53EA\u8BA9\u4ED6\u6536\u597D\u7236\u4EB2\u7559\u4E0B\u7684\u62D3\u9875\u3002\u4ED6\u6CA1\u6709\u66B4\u9732\uFF0C\u4F46\u4ECD\u628A\u4E00\u4EFD\u7A7A\u767D\u6284\u672C\u7559\u5728\u62BD\u5C49\u91CC\u3002"
+  - Id: lu-chong-threat
+    Title: "\u9646\u5D07\u7684\u7A7A\u767D\u79E9\u5E8F"
+    Detail: "\u9646\u5D07\u5F53\u9762\u627F\u8BA4\uFF0C\u4ED6\u9700\u8981\u8BA9\u4E00\u4E9B\u8857\u548C\u4E00\u4E9B\u4EBA\u4ECE\u518C\u9875\u4E0A\u6D88\u5931\uFF0C\u4EE5\u7EF4\u6301\u81EA\u5DF1\u80FD\u591F\u63A7\u5236\u7684\u79E9\u5E8F\u3002\u4ED6\u5E76\u672A\u628A\u4FEE\u590D\u8005\u89C6\u4F5C\u771F\u6B63\u7684\u5BF9\u624B\u3002"
+  - Id: teahouse-cart-testimony
+    Title: "\u8336\u8086\u76D0\u8F66\u65C1\u8BC1"
+    Detail: "\u8336\u8086\u638C\u67DC\u786E\u8BA4\uFF0C\u521D\u4E94\u5C01\u4ED3\u65F6\u95E8\u5916\u6CA1\u6709\u76D0\u8F66\uFF0C\u4E03\u8F86\u8F66\u76F4\u5230\u521D\u4E03\u540E\u534A\u591C\u624D\u4ECE\u540E\u5DF7\u7ECF\u8FC7\u3002"
+  - Id: teahouse-keeper-protected
+    Title: "\u8336\u8086\u638C\u67DC\u4FDD\u6301\u6C89\u9ED8"
+    Detail: "\u4F60\u6CA1\u6709\u7EE7\u7EED\u8FFD\u95EE\u76D0\u8F66\u7EC6\u8282\uFF0C\u907F\u514D\u9646\u5D07\u7684\u4EBA\u5BDF\u89C9\u8336\u8086\u4E5F\u638C\u63E1\u4E86\u5173\u952E\u65C1\u8BC1\u3002\u638C\u67DC\u4F1A\u8BB0\u4F4F\u8FD9\u4EFD\u514B\u5236\u3002"
+  - Id: salt-token-identified
+    Title: "\u76D0\u5F15\u94DC\u94B1\u6697\u7EB9"
+    Detail: "\u94DC\u94B1\u8FB9\u7F18\u7684\u6697\u7EB9\u4E0E\u76D0\u5F15\u65E7\u5370\u543B\u5408\uFF0C\u8BF4\u660E\u5B83\u4E0D\u4EC5\u662F\u4FE1\u7269\uFF0C\u4E5F\u53EF\u80FD\u662F\u4E00\u679A\u65E7\u65F6\u9A8C\u5F15\u51ED\u8BC1\u3002"
+  - Id: teahouse-written-record
+    Title: "\u8336\u8086\u65C1\u8BC1\u6284\u5F55"
+    Detail: "\u4F60\u628A\u8336\u8086\u638C\u67DC\u5173\u4E8E\u521D\u4E94\u7A7A\u4ED3\u548C\u521D\u4E03\u76D0\u8F66\u7684\u8BF4\u6CD5\u6284\u5728\u7A7A\u767D\u8D26\u9875\u4E0A\uFF0C\u5F62\u6210\u4E00\u4EFD\u53EF\u968F\u65F6\u590D\u67E5\u7684\u65C1\u8BC1\u8BB0\u5F55\u3002"
+  - Id: teahouse-event-completed
+    Title: "\u8336\u8086\u76D0\u8F66\u4E8B\u4EF6\u7ED3\u675F"
+    Detail: "\u4F60\u5DF2\u7ECF\u51B3\u5B9A\u662F\u8FFD\u95EE\u76D0\u8F66\u7EC6\u8282\uFF0C\u8FD8\u662F\u4FDD\u62A4\u8336\u8086\u4E0D\u88AB\u5377\u5165\u3002"
+  - Id: paper-kite-present-cord
+    Title: "\u8336\u8086\u95E8\u6846\u4E0A\u7684\u7EB8\u9E22\u7EBF"
+    Detail: "\u4E00\u6BB5\u9752\u8272\u7EB8\u9E22\u7EBF\u4ECA\u65E9\u7F20\u5728\u4E1C\u5173\u8857\u8336\u8086\u95E8\u6846\u4E0A\uFF0C\u7EBF\u5C3E\u6253\u7740\u65E7\u65F6\u624D\u4F1A\u7528\u7684\u7ED3\u3002"
+  - Id: paper-kite-past-bell
+    Title: "\u65E7\u65F6\u98CE\u94C3\u91CC\u7684\u540D\u5B57"
+    Detail: "\u65E7\u65F6\u98CE\u94C3\u5185\u4FA7\u523B\u7740\u201C\u6C88\u963F\u7EEB\uFF0C\u5341\u4E8C\u5C81\u201D\u3002\u5979\u66FE\u66FF\u7236\u4EB2\u5B88\u98CE\u94C3\uFF0C\u4E5F\u628A\u7EB8\u9E22\u653E\u4E0A\u4E1C\u5173\u8857\u7684\u5C4B\u9876\u3002"
+  - Id: paper-kite-trail-secured
+    Title: "\u9014\u5370\u8FFD\u4F4F\u7684\u98CE\u7EBF"
+    Detail: "\u9014\u5370\u5411\u5BFC\u5728\u5C4B\u9876\u822A\u7EBF\u7684\u5C3D\u5934\u7F1A\u4F4F\u4E86\u65E7\u98CE\u7EBF\uFF0C\u7EB8\u9E22\u7559\u4E0B\u7684\u540D\u5B57\u7EC8\u4E8E\u80FD\u591F\u88AB\u4FEE\u590D\u8005\u7A33\u5B9A\u3002"
+  - Id: paper-kite-public-name
+    Title: "\u6C88\u963F\u7EEB\u91CD\u65B0\u5165\u518C"
+    Detail: "\u4F60\u9009\u62E9\u628A\u6C88\u963F\u7EEB\u5199\u56DE\u516C\u5F00\u6237\u518C\u3002\u4E1C\u5173\u8857\u591A\u4E86\u4E00\u6BB5\u80FD\u88AB\u5B98\u5E9C\u67E5\u5230\u7684\u5F80\u4E8B\uFF0C\u4E5F\u591A\u4E86\u4E00\u6279\u8FFD\u95EE\u65E7\u8D26\u7684\u4EBA\u3002"
+  - Id: paper-kite-private-name
+    Title: "\u540D\u5B57\u7559\u5728\u8857\u574A\u8BB0\u5FC6\u91CC"
+    Detail: "\u4F60\u6CA1\u6709\u628A\u6C88\u963F\u7EEB\u5199\u56DE\u5B98\u518C\uFF0C\u800C\u662F\u8BA9\u8FD9\u4E2A\u540D\u5B57\u7EE7\u7EED\u7559\u5728\u4E1C\u5173\u8857\u574A\u548C\u8BF4\u4E66\u4EBA\u7684\u6545\u4E8B\u4E2D\u3002"
+  inventoryItems:
+  - Id: salt-token-charm
+    DisplayName: "\u76D0\u5F15\u94DC\u94B1"
+    Category: "\u4FE1\u7269"
+    Description: "\u6C88\u781A\u5931\u8E2A\u524D\u7559\u5728\u8336\u684C\u4E0A\u7684\u94DC\u94B1\uFF0C\u8FB9\u7F18\u523B\u7740\u4ED6\u7684\u540D\u5B57\u3002\u5B83\u4E0D\u80FD\u76F4\u63A5\u4F7F\u7528\uFF0C\u4F46\u53EF\u80FD\u4E0E\u65E7\u65F6\u76D0\u5F15\u6709\u5173\u3002"
+    MaxStack: 1
+    Effect: 2
+    EffectAmount: 0
+    UseLabel: "\u8FA8\u8BA4\u94DC\u94B1\u4E0A\u7684\u523B\u5B57"
+    UseResultText: "\u94DC\u94B1\u8FB9\u7F18\u7684\u6697\u7EB9\u4E0E\u76D0\u5F15\u65E7\u5370\u543B\u5408\u3002\u8FD9\u679A\u94DC\u94B1\u4E0E\u65E7\u65F6\u76D0\u5F15\u5236\u5EA6\u6709\u5173\u3002"
+    RequiredStoryFactId: 
+    ResultStoryFactId: salt-token-identified
+    ConsumeOnUse: 0
+  - Id: ginger-tea
+    DisplayName: "\u70ED\u59DC\u6C64"
+    Category: "\u6D88\u8017\u54C1"
+    Description: "\u8336\u8086\u638C\u67DC\u7528\u65E7\u94DC\u58F6\u6E29\u7740\u7684\u59DC\u6C64\u3002\u996E\u7528\u540E\u6062\u590D
+      25 \u70B9\u751F\u547D\u3002"
+    MaxStack: 5
+    Effect: 1
+    EffectAmount: 25
+    UseLabel: "\u996E\u7528"
+    UseResultText: "\u59DC\u6C64\u9A71\u6563\u4E86\u65E7\u4ED3\u7684\u5BD2\u610F\u3002"
+    RequiredStoryFactId: 
+    ResultStoryFactId: 
+    ConsumeOnUse: 1
+  - Id: blank-ledger-page
+    DisplayName: "\u7A7A\u767D\u8D26\u9875"
+    Category: "\u8C03\u67E5\u7528\u54C1"
+    Description: "\u4ECE\u65E7\u4ED3\u8D26\u518C\u4E0A\u62C6\u4E0B\u7684\u7A7A\u767D\u9875\u3002\u53EF\u4EE5\u5728\u540E\u7EED\u8C03\u67E5\u4E2D\u6284\u5F55\u4E0D\u613F\u7559\u5728\u539F\u518C\u91CC\u7684\u8BC1\u8BCD\u3002"
+    MaxStack: 3
+    Effect: 2
+    EffectAmount: 0
+    UseLabel: "\u6284\u5F55\u8336\u8086\u76D0\u8F66\u65C1\u8BC1"
+    UseResultText: "\u4F60\u628A\u8336\u8086\u638C\u67DC\u7684\u8BC1\u8BCD\u6284\u5230\u7A7A\u767D\u8D26\u9875\u4E0A\uFF0C\u8FD9\u4EFD\u8BB0\u5F55\u5DF2\u7ECF\u8FDB\u5165\u652F\u7EBF\u65C1\u8BC1\u3002"
+    RequiredStoryFactId: teahouse-cart-testimony
+    ResultStoryFactId: teahouse-written-record
+    ConsumeOnUse: 1
+  - Id: paper-kite-letter
+    DisplayName: "\u7EB8\u9E22\u65E7\u4FE1"
+    Category: "\u4FE1\u7269"
+    Description: "\u4E00\u5C0F\u6BB5\u9752\u8272\u7EB8\u9E22\u7EBF\u548C\u98CE\u94C3\u4E0A\u62D3\u4E0B\u7684\u540D\u5B57\u3002\u5B83\u8BB0\u5F55\u4E86\u6C88\u963F\u7EEB\u7559\u7ED9\u4E1C\u5173\u8857\u7684\u6700\u540E\u4E00\u58F0\u98CE\u54CD\u3002"
+    MaxStack: 1
+    Effect: 0
+    EffectAmount: 0
+    UseLabel: 
+    UseResultText: 
+    RequiredStoryFactId: 
+    ResultStoryFactId: 
+    ConsumeOnUse: 0
+  optionalObjectives:
+  - Id: optional-teahouse-cart-rumor
+    Title: "\u4E1C\u5173\u8857\u7684\u76D0\u8F66\u65C1\u8BC1"
+    Description: "\u5C01\u6761\u65E5\u671F\u4E0E\u8D26\u724C\u8BB0\u5F55\u5BF9\u4E0D\u4E0A\u3002\u53BB\u4E1C\u5173\u8857\u627E\u8336\u8086\u638C\u67DC\uFF0C\u95EE\u95EE\u521D\u4E03\u591C\u91CC\u662F\u5426\u6709\u76D0\u8F66\u7ECF\u8FC7\u3002"
+    TrackerHint: "\u4E1C\u5173\u8857\u8336\u8086"
+    TargetObjectName: NPC_TeaMaster
+    ActivationConditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 7
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: official-seal
+      StoryFactId: 
+      Negate: 0
+    CompletionConditions:
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: teahouse-event-completed
+      Negate: 0
+  - Id: optional-record-teahouse-testimony
+    Title: "\u628A\u8336\u8086\u65C1\u8BC1\u6284\u8FDB\u8D26\u9875"
+    Description: "\u4F60\u5DF2\u542C\u5230\u8336\u8086\u638C\u67DC\u5173\u4E8E\u76D0\u8F66\u65F6\u95F4\u7684\u8BC1\u8BCD\u3002\u6253\u5F00\u80CC\u5305\uFF0C\u7528\u7A7A\u767D\u8D26\u9875\u6284\u5F55\u8FD9\u6BB5\u65C1\u8BC1\u3002"
+    TrackerHint: "\u6253\u5F00\u80CC\u5305 [B]"
+    TargetObjectName: 
+    ActivationConditions:
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: teahouse-cart-testimony
+      Negate: 0
+    CompletionConditions:
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: teahouse-written-record
+      Negate: 0
+  - Id: optional-warehouse-night-shift
+    Title: "\u591C\u73ED\u642C\u8FD0\u5DE5"
+    Description: "\u8D26\u724C\u5199\u7740\u4E03\u8F66\u76D0\uFF0C\u5DE5\u5934\u5374\u8BA9\u642C\u8FD0\u5DE5\u6539\u53E3\u8BF4\u516D\u8F66\u3002\u56DE\u65E7\u4ED3\u5185\u9662\u95EE\u95EE\u90A3\u53CC\u8BB0\u5F97\u56DB\u5341\u4E8C\u888B\u76D0\u7684\u80A9\u8180\u3002"
+    TrackerHint: "\u65E7\u4ED3\u5185\u9662 \xB7 \u76D0\u4ED3\u642C\u8FD0\u5DE5"
+    TargetObjectName: NPC_WarehouseWorker
+    ActivationConditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 6
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 7
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: salt-ledger
+      StoryFactId: 
+      Negate: 0
+    CompletionConditions:
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-night-shift
+      Negate: 0
+  - Id: optional-warehouse-second-meal
+    Title: "\u7B2C\u4E8C\u4EFD\u5E72\u7CAE"
+    Description: "\u642C\u8FD0\u5DE5\u6BCF\u5929\u591A\u5E26\u4E00\u4EFD\u996D\uFF0C\u5374\u4ECE\u4E0D\u8BF4\u662F\u7ED9\u8C01\u3002\u518D\u56DE\u65E7\u4ED3\u5185\u9662\u95EE\u95EE\u4ED6\uFF0C\u90A3\u4EFD\u5E72\u7CAE\u7A76\u7ADF\u7559\u7ED9\u8C01\u3002"
+    TrackerHint: "\u65E7\u4ED3\u5185\u9662 \xB7 \u642C\u8FD0\u5DE5\u7684\u7B2C\u4E8C\u4EFD\u996D"
+    TargetObjectName: NPC_WarehouseWorker
+    ActivationConditions:
+    - Type: 5
+      Stage: 1
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 6
+      Stage: 7
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: 
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-night-shift
+      Negate: 0
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-second-meal
+      Negate: 1
+    CompletionConditions:
+    - Type: 8
+      Stage: 0
+      Stance: 0
+      EvidencePlan: 0
+      Conclusion: 0
+      EvidenceId: 
+      StoryFactId: warehouse-daughter-remembered
+      Negate: 0

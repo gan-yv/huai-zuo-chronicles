@@ -1,8 +1,9 @@
-using System;
 using System.Collections.Generic;
+using Demo02.Combat;
 using Demo02.Core;
 using Demo02.Narrative;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Demo02.UI
 {
@@ -16,20 +17,32 @@ namespace Demo02.UI
 
         private InvestigationState investigationState;
         private InventoryState inventoryState;
+        private GameObject canvasObject;
+        private Canvas canvas;
+        private CanvasGroup group;
+        private Text hintText;
         private string currentHint;
+        private string displayedHint;
         private float shownAt;
         private float nextContextCheck;
 
+        private void Awake()
+        {
+            EnsureUi();
+        }
+
         private void Start()
         {
-            investigationState = FindAnyObjectByType<InvestigationState>();
+            investigationState =
+                FindAnyObjectByType<InvestigationState>();
             inventoryState = InventoryState.Instance != null
                 ? InventoryState.Instance
                 : FindAnyObjectByType<InventoryState>();
 
             if (investigationState != null)
             {
-                investigationState.ClueCountChanged += OnClueCountChanged;
+                investigationState.ClueCountChanged +=
+                    OnClueCountChanged;
                 investigationState.StageChanged += OnStageChanged;
             }
             if (inventoryState != null)
@@ -44,13 +57,15 @@ namespace Demo02.UI
         {
             if (investigationState != null)
             {
-                investigationState.ClueCountChanged -= OnClueCountChanged;
+                investigationState.ClueCountChanged -=
+                    OnClueCountChanged;
                 investigationState.StageChanged -= OnStageChanged;
             }
             if (inventoryState != null)
             {
                 inventoryState.Changed -= OnInventoryChanged;
             }
+            DestroyCanvas();
         }
 
         private void OnClueCountChanged(int count, int required)
@@ -83,11 +98,68 @@ namespace Demo02.UI
 
         private void Update()
         {
+            EnsureUi();
             if (Time.unscaledTime >= nextContextCheck)
             {
                 nextContextCheck = Time.unscaledTime + 0.7f;
                 EvaluateContext();
+                EvaluateCombatContext();
             }
+
+            if (GameplayUiState.IsGameplayBlocked)
+            {
+                group.alpha = 0f;
+                return;
+            }
+
+            if (currentHint == null && pendingHints.Count > 0)
+            {
+                currentHint = Demo02Input.ResolvePrompt(
+                    pendingHints.Dequeue()
+                );
+                shownAt = Time.unscaledTime;
+            }
+            if (currentHint == null)
+            {
+                group.alpha = 0f;
+                return;
+            }
+
+            float elapsed = Time.unscaledTime - shownAt;
+            float totalDuration = HoldDuration + FadeDuration * 2f;
+            if (elapsed >= totalDuration)
+            {
+                currentHint = null;
+                group.alpha = 0f;
+                return;
+            }
+
+            float alpha = Mathf.Clamp01(elapsed / FadeDuration);
+            if (elapsed > HoldDuration + FadeDuration)
+            {
+                alpha = Mathf.Clamp01(
+                    (totalDuration - elapsed) / FadeDuration
+                );
+            }
+            group.alpha = alpha;
+            if (currentHint != displayedHint)
+            {
+                displayedHint = currentHint;
+                hintText.text = currentHint;
+            }
+        }
+
+        private void EvaluateCombatContext()
+        {
+            if (CombatRegistry.Enemies.Count == 0)
+            {
+                return;
+            }
+
+            Enqueue(
+                "melee-combo",
+                "左键三段连击；橙黄预警是普攻，暗红重击需要更早闪避。成功闪避触发“见隙”，H 快捷恢复。"
+            );
         }
 
         private void EvaluateContext()
@@ -163,99 +235,114 @@ namespace Demo02.UI
             pendingHints.Enqueue(text);
         }
 
-        private void OnGUI()
+        private void EnsureUi()
         {
-            if (IsBlockedByOtherUi())
+            if (canvasObject != null)
             {
                 return;
             }
 
-            if (currentHint == null && pendingHints.Count > 0)
-            {
-                currentHint = pendingHints.Dequeue();
-                shownAt = Time.unscaledTime;
-            }
-            if (currentHint == null)
-            {
-                return;
-            }
-
-            float elapsed = Time.unscaledTime - shownAt;
-            float totalDuration = HoldDuration + FadeDuration * 2f;
-            if (elapsed >= totalDuration)
-            {
-                currentHint = null;
-                return;
-            }
-
-            float alpha = Mathf.Clamp01(elapsed / FadeDuration);
-            if (elapsed > HoldDuration + FadeDuration)
-            {
-                alpha = Mathf.Clamp01(
-                    (totalDuration - elapsed) / FadeDuration
-                );
-            }
-
-            float scale = UiTheme.Scale;
-            float width = Mathf.Min(620f * scale, Screen.width - 50f);
-            Rect panel = new(
-                (Screen.width - width) * 0.5f,
-                Screen.height - 232f * scale,
-                width,
-                54f * scale
+            RectTransform root = HudUiFactory.CreateCanvas(
+                transform,
+                "ContextHintCanvas",
+                22
             );
+            canvasObject = root.gameObject;
+            canvas = root.GetComponent<Canvas>();
+            group = canvasObject.AddComponent<CanvasGroup>();
+            group.blocksRaycasts = false;
+            group.interactable = false;
+            group.alpha = 0f;
 
-            Color previous = GUI.color;
-            GUI.color = new Color(1f, 1f, 1f, alpha);
-            UiTheme.DrawRect(panel, new Color(0.025f, 0.033f, 0.045f, 0.97f));
-            UiTheme.DrawBorder(panel, new Color(1f, 1f, 1f, 0.12f));
-            UiTheme.DrawRect(
-                new Rect(panel.x, panel.y, 3f * scale, panel.height),
+            RectTransform panel = HudUiFactory.CreatePanel(
+                root,
+                "HintPanel",
+                new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f),
+                new Vector2(0f, 178f),
+                new Vector2(620f, 54f),
+                new Color(0.025f, 0.033f, 0.045f, 0.97f)
+            );
+            Outline outline = panel.gameObject.AddComponent<Outline>();
+            outline.effectDistance = new Vector2(1f, -1f);
+            outline.useGraphicAlpha = true;
+            outline.effectColor = new Color(1f, 1f, 1f, 0.12f);
+
+            Image accent = HudUiFactory.CreateImage(
+                panel,
+                "Accent",
                 UiTheme.Accent
             );
-            GUIStyle eyebrow = UiTheme.Label(9, TextAnchor.MiddleLeft, bold: true);
-            eyebrow.normal.textColor = UiTheme.Accent;
-            GUI.Label(
-                new Rect(
-                    panel.x + 14f * scale,
-                    panel.y + 3f * scale,
-                    panel.width - 28f * scale,
-                    17f * scale
-                ),
+            RectTransform accentRect = accent.rectTransform;
+            accentRect.anchorMin = new Vector2(0f, 0f);
+            accentRect.anchorMax = new Vector2(0f, 1f);
+            accentRect.pivot = new Vector2(0f, 0.5f);
+            accentRect.anchoredPosition = Vector2.zero;
+            accentRect.sizeDelta = new Vector2(3f, 0f);
+
+            Text eyebrow = HudUiFactory.CreateText(
+                panel,
+                "Eyebrow",
                 "GUIDE · 下一步",
-                eyebrow
+                9,
+                new Vector2(0f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f),
+                new Vector2(14f, -3f),
+                new Vector2(592f, 17f),
+                TextAnchor.MiddleLeft,
+                bold: true
             );
-            GUI.Label(
-                new Rect(
-                    panel.x + 14f * scale,
-                    panel.y + 19f * scale,
-                    panel.width - 28f * scale,
-                    31f * scale
-                ),
-                currentHint,
-                UiTheme.Label(13)
+            eyebrow.color = UiTheme.Accent;
+
+            hintText = HudUiFactory.CreateText(
+                panel,
+                "HintText",
+                string.Empty,
+                13,
+                new Vector2(0f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(0.5f, 1f),
+                new Vector2(14f, -19f),
+                new Vector2(592f, 31f),
+                TextAnchor.MiddleLeft
             );
-            GUI.color = previous;
+            hintText.horizontalOverflow =
+                HorizontalWrapMode.Wrap;
         }
 
-        private static bool IsBlockedByOtherUi()
+        private void OnDisable()
         {
-            return (DialogueController.Instance != null
-                    && DialogueController.Instance.IsOpen)
-                || (WorldMapController.Instance != null
-                    && WorldMapController.Instance.IsOpen)
-                || (InvestigationJournalController.Instance != null
-                    && InvestigationJournalController.Instance.IsOpen)
-                || (InventoryController.Instance != null
-                    && InventoryController.Instance.IsOpen)
-                || (SettingsController.Instance != null
-                    && SettingsController.Instance.IsOpen)
-                || (TestimonyBoardController.Instance != null
-                    && TestimonyBoardController.Instance.IsOpen)
-                || (SaveSlotController.Instance != null
-                    && SaveSlotController.Instance.IsOpen)
-                || (GameFlowController.Instance != null
-                    && GameFlowController.Instance.IsGameEnding);
+            if (canvas != null)
+            {
+                canvas.enabled = false;
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (canvas != null)
+            {
+                canvas.enabled = true;
+            }
+        }
+
+        private void DestroyCanvas()
+        {
+            if (canvasObject == null)
+            {
+                return;
+            }
+            if (Application.isPlaying)
+            {
+                Destroy(canvasObject);
+            }
+            else
+            {
+                DestroyImmediate(canvasObject);
+            }
+            canvasObject = null;
         }
     }
 }

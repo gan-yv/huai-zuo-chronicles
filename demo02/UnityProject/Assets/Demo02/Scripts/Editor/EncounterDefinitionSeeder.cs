@@ -27,6 +27,7 @@ namespace Demo02.Editor
                 10f,
                 2.2f,
                 12f,
+                EnemyArchetype.Shield,
                 false,
                 new[] { "salt-street-support" }
             );
@@ -39,6 +40,7 @@ namespace Demo02.Editor
                 10f,
                 2.2f,
                 12f,
+                EnemyArchetype.Ranged,
                 false,
                 null
             );
@@ -51,6 +53,7 @@ namespace Demo02.Editor
                 10f,
                 2.2f,
                 12f,
+                EnemyArchetype.Shield,
                 false,
                 null
             );
@@ -63,6 +66,7 @@ namespace Demo02.Editor
                 10f,
                 2.2f,
                 12f,
+                EnemyArchetype.Chaser,
                 false,
                 null
             );
@@ -146,6 +150,7 @@ namespace Demo02.Editor
             float damage,
             float moveSpeed,
             float aggroDistance,
+            EnemyArchetype archetype,
             bool startsActive,
             string[] supportIds)
         {
@@ -159,19 +164,20 @@ namespace Demo02.Editor
                 definition.name =
                     System.IO.Path.GetFileNameWithoutExtension(path);
                 AssetDatabase.CreateAsset(definition, path);
-                definition.ConfigureForEditor(
-                    id,
-                    displayName,
-                    activationRadius,
-                    health,
-                    damage,
-                    moveSpeed,
-                    aggroDistance,
-                    startsActive,
-                    supportIds
-                );
-                EditorUtility.SetDirty(definition);
             }
+            definition.ConfigureForEditor(
+                id,
+                displayName,
+                activationRadius,
+                health,
+                damage,
+                moveSpeed,
+                aggroDistance,
+                archetype,
+                startsActive,
+                supportIds
+            );
+            EditorUtility.SetDirty(definition);
         }
     }
 }

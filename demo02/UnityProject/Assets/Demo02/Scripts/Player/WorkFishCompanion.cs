@@ -20,6 +20,7 @@ namespace Demo02.Player
         private Quaternion tailBase;
         private Vector3 lastPosition;
         private bool enemiesNearby;
+        private bool previousEnemiesNearby;
         private float nextCombatCheck;
 
         public Transform FollowTarget =>
@@ -51,6 +52,12 @@ namespace Demo02.Player
                     target.position,
                     combatCheckRadius
                 ) > 0;
+                if (enemiesNearby && !previousEnemiesNearby)
+                {
+                    GetComponentInChildren<ReadyMadeCharacterAnimator>()
+                        ?.PlayAlert();
+                }
+                previousEnemiesNearby = enemiesNearby;
             }
 
             float lateralOffset = sideOffset

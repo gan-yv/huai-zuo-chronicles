@@ -15,6 +15,7 @@ MonoBehaviour:
   encounterId: caiyi-lookout
   displayName: "\u5F69\u8863\u8857\u671B\u98CE"
   activationRadius: 15
+  enemyArchetype: 0
   enemyHealth: 60
   enemyDamage: 10
   enemyMoveSpeed: 2.2

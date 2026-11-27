@@ -23,11 +23,18 @@ namespace Demo02.Player
             Animator.StringToHash("Jump");
         private static readonly int TalkingParameter =
             Animator.StringToHash("Talking");
+        private static readonly int GroundedParameter =
+            Animator.StringToHash("Grounded");
+        private static readonly int VerticalSpeedParameter =
+            Animator.StringToHash("VerticalSpeed");
+        private static readonly int AlertParameter =
+            Animator.StringToHash("Alert");
 
         [SerializeField, Min(0.1f)] private float fullSpeed = 7.2f;
 
         private Animator animator;
         private Combatant combatant;
+        private ThirdPersonController thirdPersonController;
         private Vector3 lastPosition;
         private bool hasSpeed;
         private bool hasAttack;
@@ -37,6 +44,9 @@ namespace Demo02.Player
         private bool hasDie;
         private bool hasJump;
         private bool hasTalking;
+        private bool hasGrounded;
+        private bool hasVerticalSpeed;
+        private bool hasAlert;
         private bool deathPlayed;
         private float nextJumpTime;
         private float previousHealth;
@@ -55,6 +65,10 @@ namespace Demo02.Player
             if (animator != null && hasTalking)
             {
                 animator.SetBool(TalkingParameter, false);
+            }
+            if (animator != null && hasAlert)
+            {
+                animator.ResetTrigger(AlertParameter);
             }
             if (combatant != null)
             {
@@ -95,8 +109,28 @@ namespace Demo02.Player
                 return;
             }
 
+            if (animator != null && hasGrounded)
+            {
+                animator.SetBool(
+                    GroundedParameter,
+                    thirdPersonController == null ||
+                    thirdPersonController.IsGrounded
+                );
+            }
+            if (animator != null && hasVerticalSpeed)
+            {
+                animator.SetFloat(
+                    VerticalSpeedParameter,
+                    thirdPersonController != null
+                        ? thirdPersonController.VerticalSpeed
+                        : 0f
+                );
+            }
+
             Vector3 delta = transform.position - lastPosition;
-            if (delta.y > 0.04f && Time.time >= nextJumpTime)
+            if (!hasGrounded
+                && delta.y > 0.04f
+                && Time.time >= nextJumpTime)
             {
                 nextJumpTime = Time.time + 0.5f;
                 Trigger(JumpParameter, hasJump);
@@ -160,10 +194,17 @@ namespace Demo02.Player
             }
         }
 
+        public void PlayAlert()
+        {
+            Trigger(AlertParameter, hasAlert);
+        }
+
         private void CacheComponents()
         {
             animator ??= GetComponentInChildren<Animator>(true);
             combatant ??= GetComponentInParent<Combatant>();
+            thirdPersonController ??=
+                GetComponentInParent<ThirdPersonController>();
             if (animator == null)
             {
                 return;
@@ -196,6 +237,15 @@ namespace Demo02.Player
                         break;
                     case "Talking":
                         hasTalking = true;
+                        break;
+                    case "Grounded":
+                        hasGrounded = true;
+                        break;
+                    case "VerticalSpeed":
+                        hasVerticalSpeed = true;
+                        break;
+                    case "Alert":
+                        hasAlert = true;
                         break;
                 }
             }

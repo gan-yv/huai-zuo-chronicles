@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea53a5799ab2525419e0c7f1483eb4e9, type: 3}
+  m_Name: Demo02ContentCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::Demo02.Narrative.GameContentCatalog
+  defaultChapterId: chapter-01
+  chapters:
+  - {fileID: 11400000, guid: 33a874a3b6362134d86eba1d5f9a5ecf, type: 2}
+  characters:
+  - {fileID: 11400000, guid: aa56b52e4e3f9c846b400bb67f5bbd03, type: 2}
+  - {fileID: 11400000, guid: e57a5edac510a4947a4fcb4cfce2dd0f, type: 2}
+  encounters:
+  - {fileID: 11400000, guid: cb8db91de7c5b3e46b55beb12cfa5170, type: 2}
+  - {fileID: 11400000, guid: 7708240896f821845bc65698fdabf609, type: 2}
+  - {fileID: 11400000, guid: 9d9c591b64ed95142a523950a6c42f28, type: 2}
+  - {fileID: 11400000, guid: e0263d78bde718c47a94b2e47872610c, type: 2}
+  streamingRegions:
+  - {fileID: 11400000, guid: 64628b0f5182b534098fe5086ddae47e, type: 2}
+  - {fileID: 11400000, guid: 8b64fe29b6f003b4db3b6c302c5321ab, type: 2}
+  - {fileID: 11400000, guid: a781f21e2529b6348b5c318809c22984, type: 2}

@@ -124,5 +124,31 @@ namespace Demo02.Narrative
 
             return "你尚未决定证据的去向，旧街的命运仍悬在记录之外。";
         }
+
+        public static string GetEndingEpilogue(InvestigationState state)
+        {
+            if (state == null
+                || !state.HasFact("warehouse-daughter-remembered"))
+            {
+                return string.Empty;
+            }
+
+            bool publicName = state.HasFact(
+                "warehouse-daughter-public"
+            );
+            if (state.SelectedConclusion == ConclusionChoice.Preserve)
+            {
+                return publicName
+                    ? " 阿禾的名字随盐引巷一起回到公开名册，旧仓门前第一次有人叫出她的名字。"
+                    : " 阿禾仍只存在于私人案卷，但搬运工终于不必独自留着第二份干粮。";
+            }
+            if (state.SelectedConclusion == ConclusionChoice.Seal)
+            {
+                return publicName
+                    ? " 封街后，阿禾的公开页被搬运工藏进炊饼篮，成为官府废册之外的一份私证。"
+                    : " 阿禾没有被写进官册，父女二人的名字仍在封条之外由少数人守着。";
+            }
+            return string.Empty;
+        }
     }
 }

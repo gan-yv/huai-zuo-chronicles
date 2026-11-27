@@ -1,365 +1,558 @@
 using Demo02.Combat;
 using Demo02.Core;
-using Demo02.Narrative;
 using Demo02.Player;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Demo02.UI
 {
     public sealed class PartyHud : MonoBehaviour
     {
+        private sealed class SlotView
+        {
+            public GameObject Root;
+            public Image Background;
+            public Outline Border;
+            public Image Accent;
+            public Text Index;
+            public Text Name;
+            public Text Locked;
+            public RectTransform HealthFill;
+            public RectTransform EnergyFill;
+            public Button Button;
+            public string CachedName;
+        }
+
+        private static readonly Color ActiveCardColor =
+            new(0.075f, 0.09f, 0.105f, 0.97f);
+        private static readonly Color MutedCardColor =
+            new(0.03f, 0.04f, 0.055f, 0.9f);
+        private static readonly Color HealthColor =
+            new(0.38f, 0.72f, 0.42f);
+        private static readonly Color CompanionColor =
+            new(0.32f, 0.74f, 0.78f);
+
         private PlayerPartyController party;
         private WorkFishCompanion companion;
-        private float cachedScale = -1f;
-        private GUIStyle activeSlotStyle;
-        private GUIStyle mutedSlotStyle;
-        private GUIStyle lockedSlotStyle;
-        private GUIStyle memberNameStyle;
-        private GUIStyle staminaStyle;
-        private GUIStyle lowStaminaStyle;
-        private GUIStyle companionNameStyle;
-        private GUIStyle companionStateStyle;
+        private GameObject canvasObject;
+        private Canvas canvas;
+        private SlotView[] slots;
+        private GameObject companionCard;
+        private Text companionPrompt;
+        private GameObject staminaPanel;
+        private RectTransform staminaFill;
+        private Text staminaText;
+        private string cachedStaminaText;
 
         private void Awake()
         {
             party = FindAnyObjectByType<PlayerPartyController>();
             companion = FindAnyObjectByType<WorkFishCompanion>();
+            EnsureUi();
         }
 
-        private void OnGUI()
+        private void Update()
         {
-            if (party == null || IsBlockedByOtherUi())
+            EnsureUi();
+            bool blocked = party == null
+                || GameplayUiState.IsGameplayBlocked;
+            canvas.enabled = !blocked;
+            if (blocked)
             {
                 return;
             }
 
-            EnsureStyles();
-            DrawPartyCards();
-            DrawCompanionCard();
-            DrawStamina();
+            RefreshPartyCards();
+            RefreshCompanion();
+            RefreshStamina();
         }
 
-        private void DrawPartyCards()
+        private void OnDisable()
         {
-            float scale = UiTheme.Scale;
-            float width = 172f * scale;
-            float height = 46f * scale;
-            float gap = 6f * scale;
-            float right = Screen.width - 18f * scale;
-            float top = 88f * scale;
-
-            for (int index = 0; index < party.PartySlotCount; index++)
+            if (canvas != null)
             {
-                Rect card = new(
-                    right - width,
-                    top + index * (height + gap),
-                    width,
-                    height
+                canvas.enabled = false;
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (canvas != null)
+            {
+                canvas.enabled = true;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (canvasObject == null)
+            {
+                return;
+            }
+            if (Application.isPlaying)
+            {
+                Destroy(canvasObject);
+            }
+            else
+            {
+                DestroyImmediate(canvasObject);
+            }
+            canvasObject = null;
+        }
+
+        private void EnsureUi()
+        {
+            if (canvasObject != null)
+            {
+                return;
+            }
+
+            RectTransform root = HudUiFactory.CreateCanvas(
+                transform,
+                "PartyHudCanvas",
+                19
+            );
+            canvasObject = root.gameObject;
+            canvas = root.GetComponent<Canvas>();
+
+            slots = new SlotView[PlayerPartyController.MaxPartySlots];
+            for (int index = 0; index < slots.Length; index++)
+            {
+                slots[index] = CreateSlot(root, index);
+            }
+            CreateCompanionCard(root);
+            CreateStamina(root);
+        }
+
+        private SlotView CreateSlot(Transform root, int index)
+        {
+            float top = 88f + index * 52f;
+            RectTransform card = HudUiFactory.CreatePanel(
+                root,
+                $"PartySlot{index + 1}",
+                new Vector2(1f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(-18f, -top),
+                new Vector2(172f, 46f),
+                MutedCardColor,
+                raycastTarget: true
+            );
+            SlotView view = new()
+            {
+                Root = card.gameObject,
+                Background = card.GetComponent<Image>()
+            };
+            view.Border = card.gameObject.AddComponent<Outline>();
+            view.Border.effectDistance = new Vector2(1f, -1f);
+            view.Border.useGraphicAlpha = true;
+
+            view.Accent = HudUiFactory.CreateImage(
+                card,
+                "Accent",
+                new Color(1f, 1f, 1f, 0.1f)
+            );
+            RectTransform accentRect = view.Accent.rectTransform;
+            accentRect.anchorMin = new Vector2(0f, 0f);
+            accentRect.anchorMax = new Vector2(0f, 1f);
+            accentRect.pivot = new Vector2(0f, 0.5f);
+            accentRect.anchoredPosition = Vector2.zero;
+            accentRect.sizeDelta = new Vector2(3f, 0f);
+
+            view.Index = HudUiFactory.CreateText(
+                card,
+                "Index",
+                (index + 1).ToString(),
+                10,
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 0.5f),
+                new Vector2(7f, -23f),
+                new Vector2(26f, 46f),
+                TextAnchor.MiddleCenter,
+                bold: true
+            );
+
+            view.Name = HudUiFactory.CreateText(
+                card,
+                "Name",
+                string.Empty,
+                12,
+                new Vector2(0f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(34f, -3f),
+                new Vector2(0f, 21f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            view.Name.rectTransform.offsetMin =
+                new Vector2(34f, view.Name.rectTransform.offsetMin.y);
+            view.Name.rectTransform.offsetMax =
+                new Vector2(-8f, -3f);
+
+            view.Locked = HudUiFactory.CreateText(
+                card,
+                "Locked",
+                "席 位 待 解 锁",
+                11,
+                new Vector2(0f, 0f),
+                new Vector2(1f, 1f),
+                new Vector2(0f, 0.5f),
+                new Vector2(34f, 0f),
+                new Vector2(0f, 0f),
+                TextAnchor.MiddleLeft
+            );
+            view.Locked.rectTransform.offsetMin =
+                new Vector2(34f, 0f);
+            view.Locked.rectTransform.offsetMax =
+                new Vector2(-8f, 0f);
+
+            RectTransform healthBackground =
+                HudUiFactory.CreatePanel(
+                    card,
+                    "HealthBackground",
+                    new Vector2(0f, 0f),
+                    new Vector2(0f, 0f),
+                    new Vector2(0f, 0f),
+                    new Vector2(35f, 17f),
+                    new Vector2(127f, 5f),
+                    new Color(0f, 0f, 0f, 0.45f)
                 );
-                Transform character = party.GetCharacter(index);
+            Image health = HudUiFactory.CreateImage(
+                healthBackground,
+                "HealthFill",
+                HealthColor
+            );
+            view.HealthFill = health.rectTransform;
+            view.HealthFill.anchorMin = Vector2.zero;
+            view.HealthFill.anchorMax = Vector2.one;
+            view.HealthFill.pivot = new Vector2(0f, 0.5f);
+            view.HealthFill.offsetMin = Vector2.zero;
+            view.HealthFill.offsetMax = Vector2.zero;
+
+            RectTransform energyBackground =
+                HudUiFactory.CreatePanel(
+                    card,
+                    "EnergyBackground",
+                    new Vector2(0f, 0f),
+                    new Vector2(0f, 0f),
+                    new Vector2(0f, 0f),
+                    new Vector2(35f, 14f),
+                    new Vector2(127f, 2f),
+                    new Color(0f, 0f, 0f, 0.3f)
+                );
+            Image energy = HudUiFactory.CreateImage(
+                energyBackground,
+                "EnergyFill",
+                UiTheme.Accent
+            );
+            view.EnergyFill = energy.rectTransform;
+            view.EnergyFill.anchorMin = Vector2.zero;
+            view.EnergyFill.anchorMax = Vector2.one;
+            view.EnergyFill.pivot = new Vector2(0f, 0.5f);
+            view.EnergyFill.offsetMin = Vector2.zero;
+            view.EnergyFill.offsetMax = Vector2.zero;
+
+            int slotIndex = index;
+            view.Button = card.gameObject.AddComponent<Button>();
+            view.Button.targetGraphic = view.Background;
+            view.Button.transition = Selectable.Transition.None;
+            view.Button.onClick.AddListener(
+                () => SwitchCharacter(slotIndex)
+            );
+            return view;
+        }
+
+        private void CreateCompanionCard(Transform root)
+        {
+            RectTransform card = HudUiFactory.CreatePanel(
+                root,
+                "CompanionCard",
+                new Vector2(1f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(-18f, -302f),
+                new Vector2(172f, 42f),
+                new Color(0.025f, 0.055f, 0.075f, 0.92f)
+            );
+            companionCard = card.gameObject;
+            Outline outline = card.gameObject.AddComponent<Outline>();
+            outline.effectDistance = new Vector2(1f, -1f);
+            outline.useGraphicAlpha = true;
+            outline.effectColor =
+                new Color(0.32f, 0.74f, 0.78f, 0.72f);
+
+            Image accent = HudUiFactory.CreateImage(
+                card,
+                "Accent",
+                CompanionColor
+            );
+            RectTransform accentRect = accent.rectTransform;
+            accentRect.anchorMin = new Vector2(0f, 0f);
+            accentRect.anchorMax = new Vector2(0f, 1f);
+            accentRect.pivot = new Vector2(0f, 0.5f);
+            accentRect.anchoredPosition = Vector2.zero;
+            accentRect.sizeDelta = new Vector2(3f, 0f);
+
+            Text name = HudUiFactory.CreateText(
+                card,
+                "CompanionName",
+                "随行 · 阿鱼",
+                12,
+                new Vector2(0f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(12f, -4f),
+                new Vector2(0f, 20f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            name.color = new Color(0.62f, 0.9f, 0.9f);
+            name.rectTransform.offsetMin =
+                new Vector2(12f, name.rectTransform.offsetMin.y);
+            name.rectTransform.offsetMax = new Vector2(-8f, -4f);
+
+            companionPrompt = HudUiFactory.CreateText(
+                card,
+                "CompanionState",
+                string.Empty,
+                9,
+                new Vector2(0f, 0f),
+                new Vector2(1f, 1f),
+                new Vector2(0f, 0.5f),
+                new Vector2(12f, 0f),
+                new Vector2(0f, 0f),
+                TextAnchor.MiddleLeft
+            );
+            companionPrompt.color =
+                new Color(0.62f, 0.7f, 0.74f);
+            companionPrompt.rectTransform.offsetMin =
+                new Vector2(12f, 0f);
+            companionPrompt.rectTransform.offsetMax =
+                new Vector2(-8f, 0f);
+        }
+
+        private void CreateStamina(Transform root)
+        {
+            RectTransform panel = HudUiFactory.CreatePanel(
+                root,
+                "StaminaPanel",
+                new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f),
+                new Vector2(0.5f, 0f),
+                new Vector2(0f, 190f),
+                new Vector2(310f, 24f),
+                new Color(0.02f, 0.027f, 0.038f, 0.88f)
+            );
+            staminaPanel = panel.gameObject;
+            RectTransform bar = HudUiFactory.CreatePanel(
+                panel,
+                "StaminaBackground",
+                new Vector2(0f, 0f),
+                new Vector2(0f, 0f),
+                new Vector2(0f, 0f),
+                new Vector2(10f, 6f),
+                new Vector2(290f, 5f),
+                new Color(0f, 0f, 0f, 0.5f)
+            );
+            Image fill = HudUiFactory.CreateImage(
+                bar,
+                "StaminaFill",
+                new Color(0.88f, 0.75f, 0.38f)
+            );
+            staminaFill = fill.rectTransform;
+            staminaFill.anchorMin = Vector2.zero;
+            staminaFill.anchorMax = Vector2.one;
+            staminaFill.pivot = new Vector2(0f, 0.5f);
+            staminaFill.offsetMin = Vector2.zero;
+            staminaFill.offsetMax = Vector2.zero;
+
+            staminaText = HudUiFactory.CreateText(
+                panel,
+                "StaminaText",
+                string.Empty,
+                9,
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(10f, -1f),
+                new Vector2(180f, 14f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            staminaText.color =
+                new Color(0.88f, 0.75f, 0.38f);
+        }
+
+        private void RefreshPartyCards()
+        {
+            for (int index = 0; index < slots.Length; index++)
+            {
+                SlotView view = slots[index];
+                Transform character = index < party.PartySlotCount
+                    ? party.GetCharacter(index)
+                    : null;
                 CharacterRuntime runtime = character != null
                     ? character.GetComponent<CharacterRuntime>()
                     : null;
-                CharacterDefinition definition = runtime != null
-                    ? runtime.Definition
-                    : null;
-                bool active = index == party.ActiveIndex;
+                CharacterDefinition definition =
+                    runtime != null ? runtime.Definition : null;
                 bool available = character != null;
-                if (active)
-                {
-                    activeSlotStyle.normal.textColor = GetAccent(definition);
-                }
+                bool active = index == party.ActiveIndex;
+                Color accent = GetAccent(definition);
 
-                if (available
-                    && GUI.Button(card, GUIContent.none, GUIStyle.none))
-                {
-                    party.SwitchCharacter(index);
-                }
-
-                UiTheme.DrawRect(
-                    card,
-                    active
-                        ? new Color(0.075f, 0.09f, 0.105f, 0.97f)
-                        : new Color(0.03f, 0.04f, 0.055f, 0.9f)
-                );
-                UiTheme.DrawBorder(
-                    card,
-                    active
-                        ? GetAccent(definition)
-                        : new Color(1f, 1f, 1f, available ? 0.12f : 0.06f)
-                );
-                UiTheme.DrawRect(
-                    new Rect(card.x, card.y, 3f * scale, card.height),
-                    active
-                        ? GetAccent(definition)
-                        : new Color(1f, 1f, 1f, 0.1f)
-                );
-
-                GUI.Label(
-                    new Rect(
-                        card.x + 7f * scale,
-                        card.y,
-                        26f * scale,
-                        card.height
-                    ),
-                    $"{index + 1}",
-                    active ? activeSlotStyle : mutedSlotStyle
-                );
-
+                view.Button.interactable = available;
+                view.Background.color = active
+                    ? ActiveCardColor
+                    : MutedCardColor;
+                view.Border.effectColor = active
+                    ? accent
+                    : new Color(
+                        1f,
+                        1f,
+                        1f,
+                        available ? 0.12f : 0.06f
+                    );
+                view.Accent.color = active
+                    ? accent
+                    : new Color(1f, 1f, 1f, 0.1f);
+                view.Index.color = active ? accent : UiTheme.Muted;
+                view.Locked.gameObject.SetActive(!available);
+                view.Name.gameObject.SetActive(available);
                 if (!available)
                 {
-                    GUI.Label(
-                        new Rect(
-                            card.x + 34f * scale,
-                            card.y,
-                            card.width - 42f * scale,
-                            card.height
-                        ),
-                        "席 位 待 解 锁",
-                        lockedSlotStyle
-                    );
+                    view.HealthFill.parent.gameObject.SetActive(false);
+                    view.EnergyFill.parent.gameObject.SetActive(false);
                     continue;
                 }
 
-                string markLabel = definition != null
-                    ? GetMarkLabel(definition.ResonanceMark)
-                    : "印";
-                string nameLabel = definition != null
-                    ? definition.DisplayName
-                    : character.name;
-                GUI.Label(
-                    new Rect(
-                        card.x + 34f * scale,
-                        card.y + 3f * scale,
-                        card.width - 42f * scale,
-                        21f * scale
-                    ),
-                    $"{markLabel} · {nameLabel}",
-                    memberNameStyle
-                );
-
-                Combatant combatant = character.GetComponent<Combatant>();
+                view.HealthFill.parent.gameObject.SetActive(true);
+                view.EnergyFill.parent.gameObject.SetActive(true);
+                Combatant combatant =
+                    character.GetComponent<Combatant>();
                 float health = combatant != null
-                    ? Mathf.Clamp01(combatant.CurrentHealth / combatant.MaxHealth)
+                    ? Mathf.Clamp01(
+                        combatant.CurrentHealth
+                            / combatant.MaxHealth
+                    )
                     : 1f;
-                Rect healthBack = new(
-                    card.x + 35f * scale,
-                    card.yMax - 17f * scale,
-                    card.width - 45f * scale,
-                    5f * scale
-                );
-                UiTheme.DrawRect(healthBack, new Color(0f, 0f, 0f, 0.45f));
-                UiTheme.DrawRect(
-                    new Rect(
-                        healthBack.x,
-                        healthBack.y,
-                        healthBack.width * health,
-                        healthBack.height
-                    ),
-                    new Color(0.38f, 0.72f, 0.42f)
+                RectTransform healthParent =
+                    view.HealthFill.parent as RectTransform;
+                if (healthParent != null)
+                {
+                    healthParent.sizeDelta = new Vector2(
+                        Mathf.Lerp(
+                            healthParent.sizeDelta.x,
+                            127f * health,
+                            0.3f
+                        ),
+                        healthParent.sizeDelta.y
+                    );
+                }
+                view.EnergyFill.localScale = new Vector3(
+                    runtime != null
+                        ? Mathf.Clamp01(runtime.EnergyRatio)
+                        : 0f,
+                    1f,
+                    1f
                 );
 
-                if (runtime != null)
+                string name = definition != null
+                    ? GetMarkLabel(definition.ResonanceMark)
+                        + " · "
+                        + definition.DisplayName
+                    : character.name;
+                if (view.CachedName != name)
                 {
-                    UiTheme.DrawRect(
-                        new Rect(
-                            healthBack.x,
-                            healthBack.yMax + 2f * scale,
-                            healthBack.width * runtime.EnergyRatio,
-                            2f * scale
-                        ),
-                        GetAccent(definition)
-                    );
+                    view.CachedName = name;
+                    view.Name.text = name;
                 }
             }
         }
 
-        private void DrawCompanionCard()
+        private void RefreshCompanion()
         {
+            companionCard.SetActive(companion != null);
             if (companion == null)
             {
                 return;
             }
-
-            float scale = UiTheme.Scale;
-            float width = 172f * scale;
-            float height = 42f * scale;
-            float gap = 6f * scale;
-            float right = Screen.width - 18f * scale;
-            float top = 88f * scale
-                + 4f * (46f * scale + gap)
-                + 6f * scale;
-            Rect card = new(right - width, top, width, height);
-            UiTheme.DrawRect(
-                card,
-                new Color(0.025f, 0.055f, 0.075f, 0.92f)
-            );
-            UiTheme.DrawBorder(
-                card,
-                new Color(0.32f, 0.74f, 0.78f, 0.72f)
-            );
-            UiTheme.DrawRect(
-                new Rect(card.x, card.y, 3f * scale, card.height),
-                new Color(0.32f, 0.74f, 0.78f)
-            );
-            GUI.Label(
-                new Rect(
-                    card.x + 12f * scale,
-                    card.y + 4f * scale,
-                    card.width - 20f * scale,
-                    20f * scale
-                ),
-                "随行 · 阿鱼",
-                companionNameStyle
-            );
-            GUI.Label(
-                new Rect(
-                    card.x + 12f * scale,
-                    card.y + 22f * scale,
-                    card.width - 20f * scale,
-                    16f * scale
-                ),
-                "非战斗伙伴 · 靠近按 E 交谈",
-                companionStateStyle
+            string interact =
+                Demo02Input.GetPreferredBindingDisplay("Interact");
+            HudUiFactory.SetText(
+                companionPrompt,
+                $"非战斗伙伴 · 靠近按 {interact} 交谈"
             );
         }
 
-        private void DrawStamina()
+        private void RefreshStamina()
         {
-            Transform character = party.ActiveCharacter;
-            CharacterRuntime runtime = character != null
-                ? character.GetComponent<CharacterRuntime>()
+            Transform active = party.ActiveCharacter;
+            CharacterRuntime runtime = active != null
+                ? active.GetComponent<CharacterRuntime>()
                 : null;
-            ThirdPersonController controller = character != null
-                ? character.GetComponent<ThirdPersonController>()
+            ThirdPersonController controller = active != null
+                ? active.GetComponent<ThirdPersonController>()
                 : null;
             if (runtime == null)
             {
+                staminaPanel.SetActive(false);
                 return;
             }
 
             bool moving = controller != null
                 && (controller.IsSprinting || controller.IsGliding);
-            if (!moving && runtime.StaminaRatio >= 0.999f)
+            bool visible = moving || runtime.StaminaRatio < 0.999f;
+            staminaPanel.SetActive(visible);
+            if (!visible)
             {
                 return;
             }
 
-            float scale = UiTheme.Scale;
-            float width = 310f * scale;
-            Rect panel = new(
-                Screen.width * 0.5f - width * 0.5f,
-                Screen.height - 166f * scale,
-                width,
-                24f * scale
+            staminaFill.localScale = new Vector3(
+                Mathf.Clamp01(runtime.StaminaRatio),
+                1f,
+                1f
             );
-            UiTheme.DrawRect(panel, new Color(0.02f, 0.027f, 0.038f, 0.88f));
-            Rect bar = new(
-                panel.x + 10f * scale,
-                panel.y + 13f * scale,
-                panel.width - 20f * scale,
-                5f * scale
-            );
-            UiTheme.DrawRect(bar, new Color(0f, 0f, 0f, 0.5f));
-            Color staminaColor = runtime.StaminaRatio < 0.22f
+            bool low = runtime.StaminaRatio < 0.22f;
+            Color color = low
                 ? new Color(0.94f, 0.42f, 0.22f)
                 : new Color(0.88f, 0.75f, 0.38f);
-            UiTheme.DrawRect(
-                new Rect(
-                    bar.x,
-                    bar.y,
-                    bar.width * runtime.StaminaRatio,
-                    bar.height
-                ),
-                staminaColor
-            );
+            ((Image)staminaFill.GetComponent<Image>()).color = color;
+            staminaText.color = color;
 
-            GUIStyle style = runtime.StaminaRatio < 0.22f
-                ? lowStaminaStyle
-                : staminaStyle;
-            string state = controller != null && controller.IsGliding
-                ? "滑翔"
-                : controller != null && controller.IsSprinting
-                    ? "冲刺"
-                    : "体力";
-            GUI.Label(
-                new Rect(
-                    panel.x + 10f * scale,
-                    panel.y - 1f * scale,
-                    140f * scale,
-                    14f * scale
-                ),
-                $"{state}  {Mathf.CeilToInt(runtime.CurrentStamina)}",
-                style
-            );
-        }
-
-        private void EnsureStyles()
-        {
-            float scale = UiTheme.Scale;
-            if (Mathf.Approximately(cachedScale, scale)
-                && activeSlotStyle != null)
+            string state = controller != null
+                && controller.IsGliding
+                    ? "滑翔"
+                    : controller != null
+                        && controller.IsSprinting
+                        ? "冲刺"
+                        : "体力";
+            string value =
+                $"{state}  {Mathf.CeilToInt(runtime.CurrentStamina)}";
+            if (value != cachedStaminaText)
             {
-                return;
+                cachedStaminaText = value;
+                staminaText.text = value;
             }
-
-            cachedScale = scale;
-            activeSlotStyle = UiTheme.Label(
-                10,
-                TextAnchor.MiddleCenter,
-                bold: true
-            );
-            activeSlotStyle.normal.textColor = UiTheme.Accent;
-            mutedSlotStyle = UiTheme.Label(
-                10,
-                TextAnchor.MiddleCenter,
-                bold: true
-            );
-            mutedSlotStyle.normal.textColor = UiTheme.Muted;
-            lockedSlotStyle = UiTheme.Label(11);
-            memberNameStyle = UiTheme.Label(
-                12,
-                TextAnchor.MiddleLeft,
-                bold: true
-            );
-            staminaStyle = UiTheme.Label(
-                9,
-                TextAnchor.MiddleLeft,
-                bold: true
-            );
-            staminaStyle.normal.textColor = new Color(0.88f, 0.75f, 0.38f);
-            lowStaminaStyle = UiTheme.Label(
-                9,
-                TextAnchor.MiddleLeft,
-                bold: true
-            );
-            lowStaminaStyle.normal.textColor =
-                new Color(0.94f, 0.42f, 0.22f);
-            companionNameStyle = UiTheme.Label(
-                12,
-                TextAnchor.MiddleLeft,
-                bold: true
-            );
-            companionNameStyle.normal.textColor =
-                new Color(0.62f, 0.9f, 0.9f);
-            companionStateStyle = UiTheme.Label(
-                9,
-                TextAnchor.MiddleLeft
-            );
-            companionStateStyle.normal.textColor =
-                new Color(0.62f, 0.7f, 0.74f);
         }
 
-        private static bool IsBlockedByOtherUi()
+        private void SwitchCharacter(int index)
         {
-            return GameplayUiState.IsGameplayBlocked;
+            if (!GameplayUiState.IsGameplayBlocked)
+            {
+                party.SwitchCharacter(index);
+            }
         }
 
-        private static Color GetAccent(CharacterDefinition definition)
+        private static Color GetAccent(
+            CharacterDefinition definition)
         {
-            return definition != null && definition.AccentColor.a > 0f
-                ? definition.AccentColor
-                : UiTheme.Accent;
+            return definition != null
+                && definition.AccentColor.a > 0f
+                    ? definition.AccentColor
+                    : UiTheme.Accent;
         }
 
         private static string GetMarkLabel(ResonanceMark mark)

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Demo02.Core;
 using Demo02.Narrative;
 using Demo02.Player;
@@ -23,6 +22,7 @@ namespace Demo02.Interaction
         private void Update()
         {
             if (Time.timeScale <= 0f
+                || GameplayUiState.IsGameplayBlocked
                 || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
             {
                 ClearInteraction();
@@ -40,8 +40,7 @@ namespace Demo02.Interaction
             currentInteractable = FindClosestInteractable();
             UpdateInteractionHighlight();
 
-            bool interactPressed = Keyboard.current != null
-                && Keyboard.current.eKey.wasPressedThisFrame;
+            bool interactPressed = Demo02Input.InteractPressed;
 
             if (!interactPressed || currentInteractable == null || !currentInteractable.CanInteract)
             {
@@ -72,9 +71,7 @@ namespace Demo02.Interaction
 
         private void OnGUI()
         {
-            if ((GameFlowController.Instance != null
-                    && GameFlowController.Instance.IsGameEnding)
-                || (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+            if (GameplayUiState.IsGameplayBlocked
                 || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
             {
                 return;
@@ -84,7 +81,9 @@ namespace Demo02.Interaction
             {
                 float scale = UiTheme.Scale;
                 DrawCenteredLabel(
-                    currentInteractable.Prompt,
+                    Demo02Input.ResolvePrompt(
+                        currentInteractable.Prompt
+                    ),
                     Screen.height - 104f * scale,
                     15,
                     true

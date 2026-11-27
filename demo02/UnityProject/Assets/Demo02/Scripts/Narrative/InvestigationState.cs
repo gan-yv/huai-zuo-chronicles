@@ -356,35 +356,46 @@ namespace Demo02.Narrative
             SelectedConclusion = repaired ? conclusion : ConclusionChoice.None;
             Stance = stance;
             Plan = plan;
-            Stage = stage;
             ContradictionAttempts = Mathf.Max(0, contradictionAttempts);
             TestimonyContradictionSolved = testimonyContradictionSolved
-                || Stage >= ChapterStage.StabilizeAnchors;
-            if (collectedClueIds.Count > 0 && Stage < ChapterStage.Investigate)
+                || stage >= ChapterStage.StabilizeAnchors;
+            ChapterStage restoredStage = stage;
+            if (collectedClueIds.Count > 0
+                && restoredStage < ChapterStage.Investigate)
             {
-                Stage = HasAllClues
+                restoredStage = HasAllClues
                     ? ChapterStage.ReviewEvidence
                     : ChapterStage.Investigate;
             }
-            else if (HasAllClues && Stage == ChapterStage.Investigate)
+            else if (HasAllClues
+                && restoredStage == ChapterStage.Investigate)
             {
-                Stage = ChapterStage.ReviewEvidence;
+                restoredStage = ChapterStage.ReviewEvidence;
+            }
+            if (TestimonyContradictionSolved
+                && restoredStage < ChapterStage.StabilizeAnchors)
+            {
+                restoredStage = ChapterStage.StabilizeAnchors;
+            }
+            if (!repaired
+                && stabilizedTimeAnchorIds.Count > 0
+                && restoredStage < ChapterStage.StabilizeAnchors)
+            {
+                restoredStage = ChapterStage.StabilizeAnchors;
+            }
+            if (!repaired
+                && HasAllTimeAnchors
+                && restoredStage < ChapterStage.RepairRift)
+            {
+                restoredStage = ChapterStage.RepairRift;
             }
             if (repaired)
             {
-                Stage = conclusion == ConclusionChoice.None
+                restoredStage = conclusion == ConclusionChoice.None
                     ? ChapterStage.FinalDecision
                     : ChapterStage.Resolved;
             }
-            else if (stabilizedTimeAnchorIds.Count > 0)
-            {
-                Stage = ChapterStage.StabilizeAnchors;
-            }
-            if (TestimonyContradictionSolved
-                && Stage < ChapterStage.StabilizeAnchors)
-            {
-                Stage = ChapterStage.StabilizeAnchors;
-            }
+            Stage = restoredStage;
 
             ClueCountChanged?.Invoke(CollectedClueCount, requiredClueCount);
             AnchorCountChanged?.Invoke(

@@ -7,7 +7,6 @@ using Demo02.Narrative;
 using Demo02.Player;
 using Demo02.WorldState;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Demo02.UI
 {
@@ -33,7 +32,7 @@ namespace Demo02.UI
         private void Start()
         {
             if (System.Array.IndexOf(
-                System.Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-vision"
             ) >= 0)
             {
@@ -48,23 +47,13 @@ namespace Demo02.UI
 
         private void Update()
         {
-            if (Keyboard.current == null || !Keyboard.current.vKey.wasPressedThisFrame)
+            if (!Demo02Input.VisionPressed)
             {
                 return;
             }
 
             if (Time.timeScale <= 0f
-                || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
-                || (InvestigationJournalController.Instance != null
-                    && InvestigationJournalController.Instance.IsOpen)
-                || (InventoryController.Instance != null
-                    && InventoryController.Instance.IsOpen)
-                || (SettingsController.Instance != null
-                    && SettingsController.Instance.IsOpen)
-                || (TestimonyBoardController.Instance != null
-                    && TestimonyBoardController.Instance.IsOpen)
-                || (DialogueController.Instance != null
-                    && DialogueController.Instance.IsOpen)
+                || GameplayUiState.IsGameplayBlocked
                 || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
             {
                 return;
@@ -115,14 +104,7 @@ namespace Demo02.UI
         private void OnGUI()
         {
             if (!IsActive
-                || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
-                || (InvestigationJournalController.Instance != null
-                    && InvestigationJournalController.Instance.IsOpen)
-                || (InventoryController.Instance != null
-                    && InventoryController.Instance.IsOpen)
-                || (TestimonyBoardController.Instance != null
-                    && TestimonyBoardController.Instance.IsOpen)
-                || (DialogueController.Instance != null && DialogueController.Instance.IsOpen))
+                || GameplayUiState.IsGameplayBlocked)
             {
                 return;
             }
@@ -284,7 +266,7 @@ namespace Demo02.UI
 
         private static string GetArgumentValue(string prefix)
         {
-            foreach (string argument in System.Environment.GetCommandLineArgs())
+            foreach (string argument in Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
                 if (argument.StartsWith(prefix, System.StringComparison.Ordinal))
                 {

@@ -15,6 +15,7 @@ MonoBehaviour:
   encounterId: salt-street-support
   displayName: "\u76D0\u4ED3\u6A2A\u8857\u589E\u63F4"
   activationRadius: 14
+  enemyArchetype: 2
   enemyHealth: 60
   enemyDamage: 10
   enemyMoveSpeed: 2.2

@@ -5,7 +5,6 @@ using Demo02.Narrative;
 using Demo02.Player;
 using Demo02.WorldState;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Demo02.UI
 {
@@ -14,6 +13,8 @@ namespace Demo02.UI
         private InvestigationState investigationState;
         private bool isOpen;
         private float previousTimeScale = 1f;
+        private readonly string[] peopleNames = new string[6];
+        private readonly string[] peopleRoles = new string[6];
 
         public static InvestigationJournalController Instance { get; private set; }
         public bool IsOpen => isOpen;
@@ -33,7 +34,7 @@ namespace Demo02.UI
         {
             investigationState = FindAnyObjectByType<InvestigationState>();
             if (System.Array.IndexOf(
-                System.Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-journal"
             ) >= 0)
             {
@@ -48,15 +49,10 @@ namespace Demo02.UI
 
         private void Update()
         {
-            if (Keyboard.current == null)
-            {
-                return;
-            }
-
             if (isOpen)
             {
-                if (Keyboard.current.escapeKey.wasPressedThisFrame
-                    || Keyboard.current.jKey.wasPressedThisFrame)
+                if (Demo02Input.CancelPressed
+                    || Demo02Input.JournalPressed)
                 {
                     ToggleJournal();
                 }
@@ -64,9 +60,8 @@ namespace Demo02.UI
                 return;
             }
 
-            if (!Keyboard.current.jKey.wasPressedThisFrame
-                || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
-                || (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+            if (!Demo02Input.JournalPressed
+                || GameplayUiState.HasOpenModalExcept(this)
                 || Time.timeScale <= 0f
                 || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
             {
@@ -78,7 +73,9 @@ namespace Demo02.UI
 
         public void ToggleJournal()
         {
-            if (!isOpen && Time.timeScale <= 0f)
+            if (!isOpen
+                && (Time.timeScale <= 0f
+                    || GameplayUiState.HasOpenModalExcept(this)))
             {
                 return;
             }
@@ -88,6 +85,7 @@ namespace Demo02.UI
             {
                 previousTimeScale = Time.timeScale;
                 Time.timeScale = 0f;
+                GameplayUiState.RegisterModal(this);
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
                 GameAudio.PlayInteraction();
@@ -95,6 +93,7 @@ namespace Demo02.UI
             else
             {
                 Time.timeScale = previousTimeScale;
+                GameplayUiState.UnregisterModal(this);
                 GameAudio.PlayInteraction();
             }
         }
@@ -106,10 +105,12 @@ namespace Demo02.UI
                 Time.timeScale = previousTimeScale;
                 isOpen = false;
             }
+            GameplayUiState.UnregisterModal(this);
         }
 
         private void OnDestroy()
         {
+            GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
                 Instance = null;
@@ -377,22 +378,69 @@ namespace Demo02.UI
                 && investigationState.HasClue(
                     investigationState.CaseContent.CulpritEvidenceId
                 );
-            string[] names =
-            {
+            int count = 0;
+            AddPerson(
+                ref count,
                 "沈伯",
+                "失踪者之父 · 记得官署已经忘记的人"
+            );
+            AddPerson(
+                ref count,
                 "沈砚",
-                knowsLuChong ? "陆崇" : "未确认人物"
-            };
-            string[] roles =
-            {
-                "失踪者之父 · 记得官署已经忘记的人",
-                "盐仓账房 · 带走七页私账簿后失踪",
+                "盐仓账房 · 带走七页私账簿后失踪"
+            );
+            AddPerson(
+                ref count,
+                knowsLuChong ? "陆崇" : "未确认人物",
                 knowsLuChong
-                    ? "转运副使 · 提前写下除名封条"
+                    ? investigationState.HasFact("lu-chong-threat")
+                        ? "转运副使 · 当面以空白秩序威胁证人"
+                        : "转运副使 · 提前写下除名封条"
                     : "封条上的署名仍未查明"
-            };
+            );
+            if (investigationState.Stage >= ChapterStage.Investigate)
+            {
+                string clerkRole = investigationState.HasFact(
+                    "archive-clerk-recruited"
+                )
+                    ? "抄录同盟 · 在册边写下父亲严复"
+                    : investigationState.HasFact(
+                        "archive-clerk-sheltered"
+                    )
+                        ? "留在局外 · 保存父亲留下的拓页"
+                        : "官署抄书吏 · 发现被刮名字下的新浆";
+                AddPerson(
+                    ref count,
+                    "抄书吏 严槐",
+                    clerkRole
+                );
+            }
+            if (investigationState.HasFact("warehouse-night-shift"))
+            {
+                AddPerson(
+                    ref count,
+                    "盐仓搬运工",
+                    "夜班证人 · 身体记得四十二袋盐"
+                );
+            }
+            if (investigationState.HasFact(
+                    "warehouse-daughter-remembered"
+                )
+                && investigationState.SelectedConclusion
+                    == ConclusionChoice.Preserve)
+            {
+                AddPerson(
+                    ref count,
+                    "阿禾",
+                    investigationState.HasFact(
+                        "warehouse-daughter-public"
+                    )
+                        ? "搬运工之女 · 名字已写回公开名册"
+                        : "搬运工之女 · 名字留在私人案卷"
+                );
+            }
             float cardHeight = 58f * scale;
-            for (int index = 0; index < names.Length; index++)
+            for (int index = 0; index < count; index++)
             {
                 Rect card = new(
                     column.x,
@@ -409,7 +457,7 @@ namespace Demo02.UI
                         card.width - 24f * scale,
                         20f * scale
                     ),
-                    names[index],
+                    peopleNames[index],
                     UiTheme.Label(13, TextAnchor.MiddleLeft, bold: true)
                 );
                 GUI.Label(
@@ -419,10 +467,24 @@ namespace Demo02.UI
                         card.width - 24f * scale,
                         28f * scale
                     ),
-                    roles[index],
+                    peopleRoles[index],
                     UiTheme.Label(11)
                 );
             }
+        }
+
+        private void AddPerson(
+            ref int count,
+            string displayName,
+            string role)
+        {
+            if (count >= peopleNames.Length)
+            {
+                return;
+            }
+            peopleNames[count] = displayName;
+            peopleRoles[count] = role;
+            count++;
         }
 
         private void DrawReasoning(Rect column, float scale)
@@ -507,7 +569,7 @@ namespace Demo02.UI
 
         private static string GetArgumentValue(string prefix)
         {
-            foreach (string argument in System.Environment.GetCommandLineArgs())
+            foreach (string argument in Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
                 if (argument.StartsWith(prefix, System.StringComparison.Ordinal))
                 {
@@ -532,7 +594,7 @@ namespace Demo02.UI
             Debug.Log($"Investigation journal preview captured to {path}");
             yield return null;
             if (System.Array.IndexOf(
-                    System.Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--capture-exit"
                 ) >= 0)
             {

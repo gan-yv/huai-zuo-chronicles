@@ -1,0 +1,23 @@
+{
+    "Version": "1.60.0",
+    "CompletedAtUtc": "2026-11-24T12:35:40.1509153Z",
+    "Width": 1920,
+    "Height": 1080,
+    "SampledFrames": 6317,
+    "DurationSeconds": 30.00267791748047,
+    "AverageFps": 210.54786682128907,
+    "OnePercentLowFps": 131.8495330810547,
+    "MinimumFps": 22.337432861328126,
+    "AverageFrameMs": 4.749513626098633,
+    "WorstFrameMs": 44.76790237426758,
+    "ManagedMemoryBytes": 5111808,
+    "TotalAllocatedBytes": 242395573,
+    "TotalReservedBytes": 360693760,
+    "MonoHeapBytes": 6688768,
+    "MonoUsedBytes": 5111808,
+    "TempAllocatorBytes": 4194304,
+    "GcGen0Collections": 121,
+    "GcGen1Collections": 121,
+    "GcGen2Collections": 121,
+    "GraphicsDevice": "NVIDIA GeForce RTX 3060 Laptop GPU"
+}

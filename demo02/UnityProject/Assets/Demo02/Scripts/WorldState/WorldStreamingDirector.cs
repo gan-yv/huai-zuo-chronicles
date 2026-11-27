@@ -13,6 +13,7 @@ namespace Demo02.WorldState
         private readonly HashSet<WorldAdditiveSceneRegion> urgentRequests =
             new();
         private WorldAdditiveSceneRegion activeRegion;
+        private PlayerPartyController party;
         private float nextLoadTime;
 
         public static WorldStreamingDirector Instance { get; private set; }
@@ -20,6 +21,17 @@ namespace Demo02.WorldState
         public string ActiveRegionId =>
             activeRegion != null ? activeRegion.RegionId : string.Empty;
         public int PendingRequestCount => requests.Count;
+        public Transform PlayerTransform
+        {
+            get
+            {
+                if (party == null)
+                {
+                    party = FindAnyObjectByType<PlayerPartyController>();
+                }
+                return party != null ? party.ActiveCharacter : null;
+            }
+        }
 
         private void Awake()
         {
@@ -103,8 +115,7 @@ namespace Demo02.WorldState
 
         private WorldAdditiveSceneRegion FindNextRegion()
         {
-            Transform player = FindAnyObjectByType<PlayerPartyController>()
-                ?.ActiveCharacter;
+            Transform player = PlayerTransform;
             if (player == null)
             {
                 return null;

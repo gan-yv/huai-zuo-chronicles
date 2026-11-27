@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5268a8bb2483d24491382aef8c9fcd8, type: 3}
+  m_Name: STREAM_DongguanPatrol
+  m_EditorClassIdentifier: Assembly-CSharp::Demo02.WorldState.WorldStreamingRegionDefinition
+  regionId: dongguan-patrol
+  sceneName: DongguanPatrol
+  displayName: "\u4E1C\u5173\u8857\u5DE1\u54E8"
+  buildOrder: 10
+  worldPosition: {x: 60, y: 0.9, z: 44}
+  enemyPosition: {x: 60, y: 0.9, z: 44}
+  loadRadius: 18
+  preloadRadius: 34
+  unloadRadius: 44
+  preloadOnStart: 0
+  streamingRootName: Streaming_DongguanPatrol
+  encounterObjectName: Encounter_DongguanPatrol
+  enemyObjectName: Enemy_DongguanPatrol
+  encounterContent: {fileID: 11400000, guid: 9d9c591b64ed95142a523950a6c42f28, type: 2}
+  contentEventId: dongguan-apprentice-ledger

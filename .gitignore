@@ -64,6 +64,12 @@ secrets/
 !/demo02/Builds/README.md
 /demo02/docs/*.log
 
+# Local verification artifacts and launcher.
+/demo02/Playtests/*.log
+/demo02/Playtests/*.xml
+/demo02/Playtests/*.json
+/demo02/ksolaunch.exe
+
 # Raw character downloads and duplicate source formats.
 /demo02.rar
 /demo02/*.rar

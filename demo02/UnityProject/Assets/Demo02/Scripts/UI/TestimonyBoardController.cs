@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Demo02.Core;
 using Demo02.Narrative;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Demo02.UI
 {
@@ -17,6 +17,7 @@ namespace Demo02.UI
         private float previousTimeScale = 1f;
         private string selectedStatementId;
         private string selectedEvidenceId;
+        private bool selectingEvidenceColumn;
         private string feedback;
         private Color feedbackColor = new(0.62f, 0.65f, 0.68f, 1f);
 
@@ -37,7 +38,7 @@ namespace Demo02.UI
         {
             investigationState = FindAnyObjectByType<InvestigationState>();
             if (Array.IndexOf(
-                Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-testimony"
             ) >= 0)
             {
@@ -53,22 +54,30 @@ namespace Demo02.UI
 
         private void Update()
         {
-            if (Keyboard.current == null)
-            {
-                return;
-            }
-
             if (isOpen)
             {
-                if (Keyboard.current.escapeKey.wasPressedThisFrame
-                    || Keyboard.current.tKey.wasPressedThisFrame)
+                if (Demo02Input.CancelPressed
+                    || Demo02Input.TestimonyPressed)
                 {
                     ToggleBoard();
                     return;
                 }
 
-                if (Keyboard.current.enterKey.wasPressedThisFrame
-                    || Keyboard.current.numpadEnterKey.wasPressedThisFrame)
+                if (Demo02Input.NavigateLeftPressed
+                    || Demo02Input.NavigateRightPressed)
+                {
+                    selectingEvidenceColumn = !selectingEvidenceColumn;
+                    GameAudio.PlayInteraction();
+                }
+                if (Demo02Input.NavigateUpPressed
+                    || Demo02Input.NavigateDownPressed)
+                {
+                    MoveSelection(
+                        Demo02Input.NavigateDownPressed ? 1 : -1
+                    );
+                }
+
+                if (Demo02Input.SubmitPressed)
                 {
                     SubmitSelection();
                 }
@@ -76,7 +85,7 @@ namespace Demo02.UI
                 return;
             }
 
-            if (!Keyboard.current.tKey.wasPressedThisFrame
+            if (!Demo02Input.TestimonyPressed
                 || investigationState == null
                 || !investigationState.CanOpenTestimonyBoard
                 || Time.timeScale <= 0f
@@ -91,6 +100,7 @@ namespace Demo02.UI
         public void ToggleBoard()
         {
             if (!isOpen && (Time.timeScale <= 0f
+                || GameplayUiState.HasOpenModalExcept(this)
                 || investigationState == null
                 || !investigationState.CanOpenTestimonyBoard))
             {
@@ -102,6 +112,7 @@ namespace Demo02.UI
             {
                 previousTimeScale = Time.timeScale;
                 Time.timeScale = 0f;
+                GameplayUiState.RegisterModal(this);
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
                 if (investigationState.TestimonyContradictionSolved)
@@ -126,11 +137,13 @@ namespace Demo02.UI
                     );
                 }
 
+                SyncSelectionFromIds();
                 GameAudio.PlayInteraction();
             }
             else
             {
                 Time.timeScale = previousTimeScale;
+                GameplayUiState.UnregisterModal(this);
                 GameAudio.PlayInteraction();
             }
         }
@@ -142,10 +155,12 @@ namespace Demo02.UI
                 Time.timeScale = previousTimeScale;
                 isOpen = false;
             }
+            GameplayUiState.UnregisterModal(this);
         }
 
         private void OnDestroy()
         {
+            GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
                 Instance = null;
@@ -203,6 +218,106 @@ namespace Demo02.UI
                     );
                     break;
             }
+        }
+
+        private void MoveSelection(int direction)
+        {
+            CaseDefinition content = investigationState?.CaseContent;
+            if (content == null)
+            {
+                return;
+            }
+
+            if (selectingEvidenceColumn)
+            {
+                int current = FindIndex(
+                    content.Evidence,
+                    item => item.Id,
+                    selectedEvidenceId
+                );
+                int next = WrapIndex(
+                    current + direction,
+                    content.Evidence.Count
+                );
+                if (next >= 0)
+                {
+                    selectedEvidenceId =
+                        content.Evidence[next].Id;
+                }
+            }
+            else
+            {
+                int current = FindIndex(
+                    content.Testimonies,
+                    item => item.Id,
+                    selectedStatementId
+                );
+                int next = WrapIndex(
+                    current + direction,
+                    content.Testimonies.Count
+                );
+                if (next >= 0)
+                {
+                    selectedStatementId =
+                        content.Testimonies[next].Id;
+                }
+            }
+            GameAudio.PlayInteraction();
+        }
+
+        private void SyncSelectionFromIds()
+        {
+            CaseDefinition content = investigationState?.CaseContent;
+            if (content == null)
+            {
+                return;
+            }
+
+            int statementIndex = FindIndex(
+                content.Testimonies,
+                item => item.Id,
+                selectedStatementId
+            );
+            if (statementIndex < 0 && content.Testimonies.Count > 0)
+            {
+                selectedStatementId = content.Testimonies[0].Id;
+            }
+            int evidenceIndex = FindIndex(
+                content.Evidence,
+                item => item.Id,
+                selectedEvidenceId
+            );
+            if (evidenceIndex < 0 && content.Evidence.Count > 0)
+            {
+                selectedEvidenceId = content.Evidence[0].Id;
+            }
+        }
+
+        private static int FindIndex<T>(
+            IReadOnlyList<T> items,
+            Func<T, string> getId,
+            string id)
+        {
+            for (int index = 0; index < items.Count; index++)
+            {
+                if (string.Equals(
+                        getId(items[index]),
+                        id,
+                        StringComparison.Ordinal))
+                {
+                    return index;
+                }
+            }
+            return -1;
+        }
+
+        private static int WrapIndex(int index, int count)
+        {
+            if (count <= 0)
+            {
+                return -1;
+            }
+            return (index % count + count) % count;
         }
 
         private void SetFeedback(string message, Color color)
@@ -539,16 +654,7 @@ namespace Demo02.UI
 
         private bool IsBlockedByOtherUi()
         {
-            return (WorldMapController.Instance != null
-                    && WorldMapController.Instance.IsOpen)
-                || (InvestigationJournalController.Instance != null
-                    && InvestigationJournalController.Instance.IsOpen)
-                || (SettingsController.Instance != null
-                    && SettingsController.Instance.IsOpen)
-                || (SaveSlotController.Instance != null
-                    && SaveSlotController.Instance.IsOpen)
-                || (DialogueController.Instance != null
-                    && DialogueController.Instance.IsOpen)
+            return GameplayUiState.HasOpenModalExcept(this)
                 || (ScreenFade.Instance != null
                     && ScreenFade.Instance.IsTransitioning);
         }
@@ -578,7 +684,7 @@ namespace Demo02.UI
 
         private static string GetArgumentValue(string prefix)
         {
-            foreach (string argument in Environment.GetCommandLineArgs())
+            foreach (string argument in Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
                 if (argument.StartsWith(prefix, StringComparison.Ordinal))
                 {

@@ -1,6 +1,5 @@
 using Demo02.Core;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Demo02.UI
 {
@@ -21,12 +20,14 @@ namespace Demo02.UI
 
         private void Update()
         {
-            Vector2 pointer = Mouse.current != null
-                ? Mouse.current.position.ReadValue()
-                : new Vector2(
+            Vector2 pointer = Demo02Input.PointerPosition;
+            if (pointer == Vector2.zero)
+            {
+                pointer = new Vector2(
                     Screen.width * 0.5f,
                     Screen.height * 0.5f
                 );
+            }
             float x = Mathf.Clamp(
                 pointer.x / Mathf.Max(1f, Screen.width),
                 0f,

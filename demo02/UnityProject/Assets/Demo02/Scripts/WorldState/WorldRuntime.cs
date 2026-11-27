@@ -23,6 +23,8 @@ namespace Demo02.WorldState
         public static WorldRuntime Instance { get; private set; }
 
         public string CurrentWorldId { get; private set; } = "huai-zuo";
+        public string CurrentChapterId { get; private set; } = "chapter-01";
+        public string CurrentCaseId { get; private set; } = "chapter-01";
         public string CurrentDistrictId { get; private set; }
         public string CurrentAreaId { get; private set; }
         public string CurrentAreaName { get; private set; }
@@ -299,6 +301,26 @@ namespace Demo02.WorldState
         {
             CurrentAreaId = areaId;
             CurrentAreaName = displayName;
+        }
+
+        public void BeginChapter(string chapterId, string caseId)
+        {
+            RestoreChapterIdentity(chapterId, caseId);
+            BeginNewSession();
+        }
+
+        public void RestoreChapterIdentity(
+            string chapterId,
+            string caseId)
+        {
+            if (!string.IsNullOrWhiteSpace(chapterId))
+            {
+                CurrentChapterId = chapterId;
+            }
+            if (!string.IsNullOrWhiteSpace(caseId))
+            {
+                CurrentCaseId = caseId;
+            }
         }
 
         public void BeginNewSession()

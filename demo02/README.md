@@ -1,145 +1,317 @@
-# Demo02
+# 淮左纪事 / Demo02
 
-当前开发中的 3D 城市开放区域冒险游戏。本轮只制作广陵“旧街回潮”垂直切片，目标时长 15～20 分钟。
+《淮左纪事》是一款本地单机 3D 动作冒险垂直切片。玩家在广陵旧街调查一起
+“名字被从册页抹去”的盐引案，通过战斗、时空调查、人物证词和最终选择决定
+盐引巷是否重新回到城市记录。
 
-## 必读入口
+当前版本：**1.74.0**
 
-- [设定总纲](docs/Demo02_Design_Bible.md)：世界规则、历史、城市、主线、能力与主角。
-- [制作文档](docs/Demo02_Production.md)：广陵 Demo 规格、制作顺序和 Unity 内容组织。
-- [广陵美术方向规范](docs/Guangling_Art_Bible.md)：色彩、建筑尺度、材质、角色、灯光和性能预算。
-- [美术替换指南](docs/Art_Replacement_Guide.md)：公开素材来源、授权、Unity 导入和灰盒替换流程。
-- [公开素材管线](docs/Public_Asset_Pipeline.md)：授权规则、自动下载、校验和署名流程。
-- [开放世界框架](docs/OpenWorld_Framework.md)：队伍、探索体力、区域锚点与长期内容结构。
-- [代码架构](docs/Architecture.md)：模块分层、共享服务、扩展规则和依赖边界。
-- [工程检查清单](docs/Engineering_Checklist.md)：稳定基线、发布和美术替换流程。
-- [Git 与工程规范](../CONTRIBUTING.md)：分支、提交、拉取请求、LFS 和提交前检查。
+引擎：**Unity 6000.5.7f1 / URP**
 
-## 当前状态
+目标平台：**Windows x64**
 
-- 世界设定和广陵 Demo 制作范围已整理。
-- Unity 6000.5.7f1 URP 工程和广陵灰盒已经建立。
-- 第三方美术样板、PBR 材质生成、独立预览场景和授权校验流程已经可用。
-- 官署前街 48 米美术试点、灰瓦坡顶、木构立面和完整主镜头已经生成。
-- 主角、途印伙伴和官差的角色比例与剪影代理已经进入美术试点街。
-- Kenney Animated Characters Protagonists 的风格化现成角色已接入可玩灰盒和美术试点。
-- 现成木构和坡顶建筑作为测试样板保留，默认场景暂时使用原灰盒以保证性能。
-- 首批 CC0 中式屏风、扶手椅、茶桌和柜子已下载并接入茶肆与旧仓。
-- 公开素材通过脚本下载，作者、来源、许可证和哈希进入自动校验。
-- 新增 OpenGameArt CC-BY 3.0 探索音乐，并在游戏与作品集署名中保留作者信息。
-- 战斗加入蓄力预警、受击硬直和击退；威胁提示只显示附近敌人。
-- 地图和 HUD 完成首轮降噪，时间层切换增加环境色温和过渡反馈。
-- 四席队伍框架、两名角色档案、冲刺体力与空中滑翔已经接入可玩场景。
-- 角色核心技能、终结技能量、双印错位反应和可解锁地区锚点已接入。
-- 统一战斗注册表和区域遭遇导演已经拆分，封锁可调度增援巡逻。
-- 首批增援遭遇已迁移到异步附加场景，复用现有角色资源完成加载与卸载。
-- 流式巡哨的清理状态已写入存档，东关街和彩衣街拥有独立内容层。
-- 流式区域加入集中预载队列，并按紧急程度和距离限制同时加载数量。
-- 启动窗口按当前显示器可用空间自动选择最大 16:9 分辨率。
-- 东关街和彩衣街加入“交谈、清剿、交付、领奖”的流式街区事件闭环。
-- 东关街加入利用风场与滑翔系统的五检查点屋顶航线，完成后记录世界进度。
-- 东关街说书人新增“纸鸢旧信”短支线，把时间层调查、屋顶风廊、双角色协作和街区选择串成完整流程。
-- 非战斗伙伴“阿鱼”会在广陵街区同行，可随队伍换人切换跟随目标并与其交谈。
-- 队伍 HUD 增加独立伙伴卡，明确阿鱼不占战斗席位。
-- 对话和界面接管时会立即复位交互高亮，不再留下偏转物体。
-- “减弱动态效果”已覆盖镜头震动、标题视差、交互摇摆与伙伴待机动作。
-- 阿鱼在现世与旧时拥有轮换交谈内容，连续对话不再完全重复。
-- 阿鱼遇到近处敌人时会自动退到玩家侧后方，战后恢复普通随行距离。
-- 开局引导依次说明移动、鼠标右键镜头与首次交谈，降低操作门槛。
-- 近战期间阿鱼不再提供交谈提示，避免用对话暂停规避战斗。
-- 时间锚点美术统一贴到街道侧立面，中央行走轴线保持清晰。
-- 新下载参考素材先在 `SourceAssets/References/Downloads` 核对授权，再决定是否导入。
-- 东关街末端接入优化后的现成凉亭地标，使用 1K 贴图和约 14.4 万面模型。
-- v1.57.0 在东关街凉亭前 1920×1080 实测平均约 182.9 FPS，1% Low 约 68.6 FPS。
-- 东关街围墙后接入五种现成树牌组成的远景树列，补足空旷天际线。
-- v1.58.0 在同一亭前镜头实测平均约 225.2 FPS，1% Low 约 129.4 FPS。
-- 官署前街新增可往返的“林间小屋”独立建筑区域，复用现成木屋与院落。
-- v1.59.0 林间小屋区域 1920×1080 实测平均约 188.1 FPS，1% Low 约 73.8 FPS。
+![荧在广陵正式场景中的主角视角](docs/screenshots/lumine-gameplay.png)
 
-![东关风廊屋顶航线](docs/screenshots/openworld-wind-course.png)
+## 快速开始
 
-![东关纸鸢旧信短支线](docs/screenshots/openworld-paper-kite.png)
+### 直接运行
 
-![纸鸢旧信最终选择](docs/screenshots/openworld-paper-kite-choice.png)
+本地 Windows 构建：
 
-![上班鱼角色美术试点](docs/screenshots/anime-fish-pilot.png)
+```text
+demo02/Builds/WindowsDemo/HuaiZuoChronicles.exe
+```
 
-![上班鱼标题角色展示](docs/screenshots/title-anime-fish.png)
+### 使用 Unity
 
-![阿鱼非战斗同行伙伴](docs/screenshots/work-fish-companion.png)
+1. 使用 Unity Hub 打开 `demo02/UnityProject`。
+2. 使用 Unity `6000.5.7f1`，等待首次导入和脚本编译完成。
+3. 打开 `Assets/Demo02/Scenes/Boot/Boot.unity`。
+4. 点击 Play。
+5. 从标题界面开始游戏。
 
-![阿鱼在近战发生时退到侧后方](docs/screenshots/work-fish-combat-retreat.png)
+不要在资源未完成导入时运行内容重建；首次打开项目应先等待 Unity 完成资源导入。
 
-![战斗期间隐藏伙伴交谈提示](docs/screenshots/work-fish-combat-no-chat.png)
+## 操作
 
-![开局镜头操作引导](docs/screenshots/camera-control-hint.png)
+| 按键 | 功能 |
+|---|---|
+| `WASD` | 移动 |
+| `Shift` | 冲刺，消耗体力 |
+| `Space` | 跳跃；空中再次按下展开滑翔 |
+| 鼠标右键按住 | 旋转第三人称镜头 |
+| 鼠标左键 | 三段普通攻击 |
+| `Ctrl` | 闪避；成功躲开橙色预警可触发见隙反击 |
+| `F` | 当前角色核心技能 |
+| `R` | 能量满时释放终结技 |
+| `H` | 快捷使用第一种可用恢复物品 |
+| `1` / `2` | 直接切换已解锁角色 |
+| `Tab` | 循环切换队伍成员 |
+| `E` | 调查、交谈、拾取、锚点与修复交互 |
+| `Q` | 切换现世 / 旧时层 |
+| `J` | 调查案卷 |
+| `B` | 背包 |
+| `T` | 证词对照 |
+| `M` | 地图与快速旅行 |
+| `F1` | 操作帮助 |
+| `F5` / `F9` | 快速保存 / 读取当前手动槽 |
+| `Esc` | 暂停或关闭当前界面 |
 
-![地图时间锚点贴墙整理](docs/screenshots/map-art-placement.png)
+## 当前可玩范围
 
-![东关街末端凉亭地标](docs/screenshots/dongguan-luming-pavilion.png)
+| 模块 | 当前内容 |
+|---|---|
+| 章节 | 第一章“消失的盐引” |
+| 地区 | 官署前街、盐仓横街、回潮巷、旧仓、东关街、彩衣街、林间小屋 |
+| 可玩角色 | 荧与途印向导，两席实际可玩、四席队伍框架 |
+| 伙伴 | 非战斗同行伙伴阿鱼 |
+| 战斗 | 三段连式、技能、终结技、闪避、见隙反击、敌人循环重击、韧性与破防 |
+| 调查 | 三处主线线索、时间锚点、证词矛盾、可选支线 |
+| 剧情人物 | 沈伯、沈砚、严槐、搬运工、阿禾、陆崇及街坊 NPC |
+| 流式场景 | 盐仓增援、东关巡哨、彩衣望风 |
+| 结局 | 保住盐引巷 / 封存盐引巷，并支持继续探索街区 |
+| 存档 | 自动存档、三个手动槽、章节与案件 ID、故事事实和世界状态 |
 
-![东关街末端远景树列](docs/screenshots/dongguan-tree-line.png)
-
-![林间小屋独立地图区域](docs/screenshots/cottage-courtyard-map.png)
-
-![林间小屋源场景检查](docs/screenshots/cottage-courtyard-source.png)
-
-![东关街流式街区事件](docs/screenshots/openworld-street-story.png)
-
-![街区事件地图标记](docs/screenshots/openworld-content-map.png)
-
-![案卷中的街区事件进度](docs/screenshots/openworld-content-journal.png)
-
-![彩衣街精英战](docs/screenshots/openworld-elite-encounter.png)
-
-![CC0 中式茶席素材接入](docs/screenshots/teahouse-public-assets.png)
-
-![四席队伍与滑翔探索框架](docs/screenshots/openworld-glide.png)
-
-![技能、终结技与地区锚点框架](docs/screenshots/openworld-abilities-anchors.png)
-
-![区域封锁与增援调度](docs/screenshots/openworld-encounter-support.png)
-
-![异步加载的增援区域](docs/screenshots/openworld-streaming-support.png)
-
-![流式预载与进入状态](docs/screenshots/openworld-streaming-budget.png)
-
-![自适应屏幕窗口](docs/screenshots/openworld-adaptive-window.png)
-
-![原生 1920×1080 无边框全屏](docs/screenshots/openworld-native-fullscreen.png)
-
-## 工程目录
+## 仓库结构
 
 ```text
 demo02/
 ├─ README.md
-├─ UnityProject/              # Unity 运行工程
+├─ CHANGELOG.md                  # 版本级变更记录
+├─ UnityProject/
 │  ├─ Assets/
-│  │  ├─ Demo02/             # 本项目运行资源
-│  │  │  ├─ Art/
-│  │  │  ├─ Audio/
-│  │  │  ├─ Data/
-│  │  │  ├─ Prefabs/
-│  │  │  ├─ Scenes/
-│  │  │  ├─ Scripts/
-│  │  │  ├─ Settings/
-│  │  │  ├─ Tests/
-│  │  │  └─ UI/
-│  │  └─ ThirdParty/         # 经许可使用的第三方资源
-│  ├─ Packages/              # Unity 包清单
-│  └─ ProjectSettings/       # Unity 项目设置
-├─ SourceAssets/              # 尚未进入 Unity 的源素材
-│  ├─ AnimationSource/
-│  ├─ ArtSource/
-│  ├─ AudioSource/
-│  └─ References/
-├─ Builds/                    # 本地构建产物，不提交
-├─ Playtests/                 # 试玩记录和模板
-├─ tools/                     # 构建与校验脚本
-├─ docs/
-│  ├─ Demo02_Design_Bible.md
-│  ├─ Demo02_Production.md
-│  └─ archive/        # 已废弃的早期草案
-└─ README.md
+│  │  ├─ Demo02/
+│  │  │  ├─ Art/                 # 角色、环境、道具和 UI 资源
+│  │  │  ├─ Audio/               # 音乐、音效与配音
+│  │  │  ├─ Data/                # ScriptableObject 内容资产
+│  │  │  ├─ Prefabs/             # 运行时预制体
+│  │  │  ├─ Resources/Data/      # 唯一运行时内容目录
+│  │  │  ├─ Scenes/              # Boot、广陵主场景与流式场景
+│  │  │  ├─ Scripts/             # 运行时和编辑器代码
+│  │  │  ├─ Settings/            # 输入与渲染配置
+│  │  │  ├─ Tests/               # EditMode / PlayMode 测试
+│  │  │  └─ UI/                  # UI 主题和样式资源
+│  │  └─ ThirdParty/             # 有授权记录的第三方资源
+│  ├─ Packages/                  # Unity 包清单
+│  └─ ProjectSettings/           # Unity 项目设置
+├─ Builds/                       # 本地构建产物
+├─ Playtests/                    # 构建、验证和性能日志
+├─ SourceAssets/                 # 未导入 Unity 的源素材
+├─ docs/                         # 设计、架构、资产和性能文档
+└─ tools/                        # 自动化脚本
 ```
 
-旧方向的 2D 原型位于 [`../demo01/`](../demo01/README.md)，不会迁入 Demo02。
+## 代码分层
+
+| 层 | 目录 | 职责 |
+|---|---|---|
+| 基础设施 | `Scripts/Core` | 启动、存档、设置、音频、诊断 |
+| 玩家 | `Scripts/Player` | 移动、镜头、队伍、角色运行时、快捷物品 |
+| 战斗 | `Scripts/Combat` | 伤害、能力、敌人、韧性、连式与反馈 |
+| 交互 | `Scripts/Interaction` | 调查、NPC、拾取、锚点、时间缝 |
+| 叙事 | `Scripts/Narrative` | 章节、案件、对白、事实和目标条件 |
+| 世界状态 | `Scripts/WorldState` | 区域、流式、遭遇、锚点和条件 NPC |
+| 界面 | `Scripts/UI` | HUD、案卷、地图、背包、设置和结局 |
+| 编辑器 | `Scripts/Editor` | Seeder、内容管线、构建与自动验证 |
+
+依赖方向应从 UI 和表现层指向领域数据，不应让数据资产反向依赖 UI 状态。
+
+## 数据模型
+
+运行时唯一入口：
+
+```text
+Assets/Demo02/Resources/Data/Demo02ContentCatalog.asset
+```
+
+`GameContentCatalog` 统一注册：
+
+- `ChapterDefinition`：章节入口、出生点、区域和案件。
+- `CharacterDefinition`：角色体力、能量、技能和残世印。
+- `WorldEncounterDefinition`：遭遇半径、敌人参数和增援关系。
+- `WorldStreamingRegionDefinition`：附加场景、位置、半径和内容。
+
+案件内的证据、证词、对白、事实、物品和可选目标由 `CaseDefinition` 持有，
+避免产生大量碎片化文本资产。
+
+完整目录、架构和迁移规则见：
+
+- [`UnityProject/Assets/Demo02/Data/README.md`](UnityProject/Assets/Demo02/Data/README.md)
+- [内容管线](docs/Content_Pipeline.md)
+- [代码架构](docs/Architecture.md)
+
+### 稳定 ID
+
+以下 ID 会进入场景、存档或跨资产引用：
+
+- `ChapterId`
+- `CaseId`
+- `CharacterId`
+- `EncounterId`
+- `RegionId`
+- 证据、事实、物品、对话和交互 ID
+
+显示名称可以修改，稳定 ID 不应在没有存档迁移的情况下修改。
+
+## 内容管线
+
+统一入口：
+
+```text
+Demo02/Content/Rebuild All Content Modules
+Demo02/Content/Validate All Content Modules
+```
+
+内置模块：
+
+| 顺序 | 模块 | 职责 |
+|---:|---|---|
+| 100 | `definitions` | 角色、遭遇、流式区域、章节与案件 |
+| 200 | `characters` | 模型、材质、骨骼、动画和角色预制体 |
+| 300 | `environment` | 城市环境、街景、音频和公共道具 |
+| 350 | `asset-budget` | 纹理分辨率、压缩和导入预算 |
+| 400 | `world-scenes` | 主场景、流式场景、Boot 与 Build Settings |
+| 500 | `mesh-budget` | 网格可读副本与最终网格预算 |
+| 600 | `data-audit` | 孤儿资产检测、目录校验和内容清单 |
+
+批量重建：
+
+```powershell
+& 'D:\Unity2\set\6000.5.7f1\Editor\Unity.exe' `
+  -batchmode `
+  -projectPath 'D:\GPTCODEX\CODEX\yangzhougame\demo02\UnityProject' `
+  -executeMethod Demo02.Editor.Demo02ContentPipeline.BuildAll `
+  -quit `
+  -logFile 'D:\GPTCODEX\CODEX\yangzhougame\demo02\Playtests\build.log'
+```
+
+## 构建
+
+菜单入口：
+
+```text
+Demo02/Build Windows Demo
+```
+
+批量构建：
+
+```powershell
+& 'D:\Unity2\set\6000.5.7f1\Editor\Unity.exe' `
+  -batchmode `
+  -projectPath 'D:\GPTCODEX\CODEX\yangzhougame\demo02\UnityProject' `
+  -executeMethod Demo02.Editor.Demo02Build.BuildWindowsDemo `
+  -quit `
+  -logFile 'D:\GPTCODEX\CODEX\yangzhougame\demo02\Playtests\build.log'
+```
+
+构建输出：
+
+```text
+demo02/Builds/WindowsDemo/
+├─ HuaiZuoChronicles.exe
+└─ BuildInfo.txt
+```
+
+## 验证
+
+全量验证：
+
+```powershell
+& 'D:\Unity2\set\6000.5.7f1\Editor\Unity.exe' `
+  -batchmode `
+  -projectPath 'D:\GPTCODEX\CODEX\yangzhougame\demo02\UnityProject' `
+  -executeMethod Demo02.Editor.Demo02GreyboxBuilder.VerifyAllForBatch `
+  -quit `
+  -logFile 'D:\GPTCODEX\CODEX\yangzhougame\demo02\Playtests\verify.log'
+```
+
+验证范围：
+
+- 内容目录、Resources 加载和跨资产引用。
+- 章节阶段、对白条件、选择和故事事实。
+- 背包、快捷恢复、存档槽和状态恢复。
+- 三段连式、完美闪避、技能和战斗伤害。
+- 主场景结构、时间锚点、NPC 和流式场景。
+- 区域预算、网格预算、材质与纹理导入设置。
+- 未注册数据资产、稳定 ID 解析和内容清单生成。
+
+内容清单：
+
+```text
+docs/generated/content-manifest.json
+```
+
+## 性能
+
+最近一轮 30 秒 Windows 基准：
+
+| 指标 | 数值 |
+|---|---:|
+| Windows 包体 | 约 728.6 MB |
+| 平均 FPS | 约 210.5 |
+| 1% Low FPS | 约 131.8 |
+| 原生总分配 | 约 242.4 MB |
+| 原生总保留 | 约 360.7 MB |
+
+详细方法和历史数据见 [`docs/Performance_Budget.md`](docs/Performance_Budget.md)。
+
+## 剧情扩展
+
+- [`docs/Story_Upgrade.md`](docs/Story_Upgrade.md)：第一章主题、人物支线和内容版本。
+- [`docs/OpenWorld_Framework.md`](docs/OpenWorld_Framework.md)：队伍、探索、遭遇和流式结构。
+- [`docs/Character_Animation_Pipeline.md`](docs/Character_Animation_Pipeline.md)：荧与阿鱼的动作管线。
+
+当前内容版本为 **第 16 版**，加入严槐家庭支线、陆崇当面对质、街坊结局反应和
+结局后自由探索。
+
+## 常见问题
+
+### 场景启动后没有变化
+
+确认运行的是最新构建，并完全退出旧进程。检查
+`Builds/WindowsDemo/BuildInfo.txt` 中的版本和构建时间。
+
+### 内容目录为空或引用丢失
+
+运行：
+
+```text
+Demo02/Content/Rebuild All Content Modules
+```
+
+随后运行 `Validate All Content Modules`。不要手工复制 `.asset` 文件，以免破坏
+GUID 引用。
+
+### 新增资产后场景看不到
+
+确认资产已加入 `GameContentCatalog`，再重建 `world-scenes` 模块和 Build
+Settings。只在磁盘上新增文件不会自动加入运行时目录。
+
+### 存档读取后角色或剧情状态不正确
+
+检查稳定 ID 是否被修改，运行全量验证，并确认存档中的 `ChapterId`、`CaseId`
+与故事事实仍存在于当前内容版本。
+
+## 授权
+
+- 第三方资源必须记录作者、来源、许可证和哈希。
+- `Assets/ThirdParty/CREDITS.md` 与各素材目录的 `SOURCE.md` 是发布前必查项。
+- 荧的角色素材存在商业使用和再配布限制，发布前必须重新确认授权。
+- 不把来源不明或仅允许个人使用的资源提交到公开构建。
+
+## 文档
+
+- [设定总纲](docs/Demo02_Design_Bible.md)
+- [制作文档](docs/Demo02_Production.md)
+- [代码架构](docs/Architecture.md)
+- [数据资产说明](UnityProject/Assets/Demo02/Data/README.md)
+- [内容管线](docs/Content_Pipeline.md)
+- [广陵美术方向](docs/Guangling_Art_Bible.md)
+- [美术替换指南](docs/Art_Replacement_Guide.md)
+- [公开素材管线](docs/Public_Asset_Pipeline.md)
+- [性能预算](docs/Performance_Budget.md)
+- [自动生成内容清单](docs/generated/content-manifest.json)
+- [工程检查清单](docs/Engineering_Checklist.md)
+- [Git 与工程规范](../CONTRIBUTING.md)
+
+旧 2D 原型位于 [`../demo01/`](../demo01/README.md)，不迁入 Demo02。

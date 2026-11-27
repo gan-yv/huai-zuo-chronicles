@@ -10,14 +10,14 @@ namespace Demo02.Editor
     public static class Demo02Build
     {
         private const string ProductName = "Huai-Zuo Chronicles";
-        private const string Version = "1.59.0";
         private const string OutputDirectory = "../Builds/WindowsDemo";
         private const string ExecutableName = "HuaiZuoChronicles.exe";
 
         [MenuItem("Demo02/Build Windows Demo")]
         public static void BuildWindowsDemo()
         {
-            CaseDefinitionSeeder.ValidateOrThrow();
+            Demo02VersionAudit.VerifyForBatch();
+            Demo02ContentPipeline.ValidateContent();
             Demo02GreyboxBuilder.RebuildForBatch();
             ConfigurePlayer();
 
@@ -55,9 +55,10 @@ namespace Demo02.Editor
 
             BuildReport report = BuildPipeline.BuildPlayer(options);
             BuildSummary summary = report.summary;
+            string version = Demo02VersionInfo.Version;
             string reportText =
                 $"Product: {ProductName}{Environment.NewLine}" +
-                $"Version: {Version}{Environment.NewLine}" +
+                $"Version: {version}{Environment.NewLine}" +
                 $"Built: {DateTime.Now:O}{Environment.NewLine}" +
                 $"Target: {summary.platform}{Environment.NewLine}" +
                 $"Result: {summary.result}{Environment.NewLine}" +
@@ -85,7 +86,7 @@ namespace Demo02.Editor
         {
             PlayerSettings.companyName = "gan-yv";
             PlayerSettings.productName = ProductName;
-            PlayerSettings.bundleVersion = Version;
+            PlayerSettings.bundleVersion = Demo02VersionInfo.Version;
             PlayerSettings.defaultScreenWidth = 1280;
             PlayerSettings.defaultScreenHeight = 720;
             PlayerSettings.fullScreenMode = FullScreenMode.FullScreenWindow;

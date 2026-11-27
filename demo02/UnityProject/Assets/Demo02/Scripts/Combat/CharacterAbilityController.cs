@@ -3,7 +3,6 @@ using Demo02.Core;
 using Demo02.Player;
 using Demo02.UI;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Demo02.Combat
 {
@@ -52,16 +51,16 @@ namespace Demo02.Combat
                 0f,
                 skillCooldownRemaining - Time.deltaTime
             );
-            if (!CanReadInput() || Keyboard.current == null)
+            if (!CanReadInput())
             {
                 return;
             }
 
-            if (Keyboard.current.fKey.wasPressedThisFrame)
+            if (Demo02Input.SkillPressed)
             {
                 TryUseSkill();
             }
-            if (Keyboard.current.rKey.wasPressedThisFrame)
+            if (Demo02Input.BurstPressed)
             {
                 TryUseBurst();
             }
@@ -220,6 +219,13 @@ namespace Demo02.Combat
                 );
                 float finalDamage = damage
                     * (breakStatus?.DamageMultiplier ?? 1f);
+                EnemyAI enemyAi = enemy.GetComponent<EnemyAI>();
+                finalDamage = enemyAi != null
+                    ? enemyAi.ModifyIncomingDamage(
+                        finalDamage,
+                        transform.position
+                    )
+                    : finalDamage;
                 float previousHealth = enemy.CurrentHealth;
                 enemy.TakeDamage(finalDamage);
                 CombatFeedback.ReportDamage(
@@ -235,7 +241,13 @@ namespace Demo02.Combat
                     ))
                 {
                     previousHealth = enemy.CurrentHealth;
-                    enemy.TakeDamage(20f);
+                    float reactionDamage = enemyAi != null
+                        ? enemyAi.ModifyIncomingDamage(
+                            20f,
+                            transform.position
+                        )
+                        : 20f;
+                    enemy.TakeDamage(reactionDamage);
                     CombatFeedback.ReportDamage(
                         enemy.transform.position,
                         previousHealth - enemy.CurrentHealth,
@@ -246,7 +258,7 @@ namespace Demo02.Combat
                         + $"{characterRuntime.Definition.ResonanceMark}."
                     );
                 }
-                enemy.GetComponent<EnemyAI>()?.ApplyHit(
+                enemyAi?.ApplyHit(
                     transform.position,
                     0.28f,
                     pushDistance

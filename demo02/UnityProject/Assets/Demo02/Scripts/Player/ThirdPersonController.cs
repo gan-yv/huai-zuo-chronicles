@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Demo02.Core;
 
 namespace Demo02.Player
@@ -56,6 +55,8 @@ namespace Demo02.Player
         public bool IsInvulnerable => dodgeRemaining > 0f;
         public bool IsGliding => isGliding;
         public bool IsSprinting => isSprinting;
+        public bool IsGrounded => motor == null || motor.isGrounded;
+        public float VerticalSpeed => verticalVelocity;
 
         private void Awake()
         {
@@ -108,8 +109,7 @@ namespace Demo02.Player
 
         private void UpdateCameraInput()
         {
-            Mouse mouse = Mouse.current;
-            bool isRotating = mouse != null && mouse.rightButton.isPressed;
+            bool isRotating = Demo02Input.CameraRotateHeld;
 
             Cursor.lockState = isRotating ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !isRotating;
@@ -119,7 +119,7 @@ namespace Demo02.Player
                 return;
             }
 
-            Vector2 delta = mouse.delta.ReadValue();
+            Vector2 delta = Demo02Input.Look;
             float sensitivity = mouseSensitivity * GameSettings.CameraSensitivity;
             cameraYaw += delta.x * sensitivity;
             cameraPitch = Mathf.Clamp(cameraPitch - delta.y * sensitivity, minPitch, maxPitch);
@@ -129,12 +129,10 @@ namespace Demo02.Player
         {
             Vector2 input = ReadMoveInput();
             Vector3 moveDirection = GetCameraRelativeDirection(input);
-            bool sprintRequested = Keyboard.current != null
-                && (Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed);
+            bool sprintRequested = Demo02Input.SprintHeld;
             sprintRequested &= moveDirection.sqrMagnitude > 0.001f;
 
-            bool wantsToJump = Keyboard.current != null
-                && Keyboard.current.spaceKey.wasPressedThisFrame;
+            bool wantsToJump = Demo02Input.JumpPressed;
             if (wantsToJump && motor.isGrounded)
             {
                 isSprinting = false;
@@ -216,9 +214,7 @@ namespace Demo02.Player
                 verticalVelocity += gravity * Time.deltaTime;
             }
 
-            bool dodgePressed = Keyboard.current != null
-                && (Keyboard.current.leftCtrlKey.wasPressedThisFrame
-                    || Keyboard.current.rightCtrlKey.wasPressedThisFrame);
+            bool dodgePressed = Demo02Input.DodgePressed;
             if (dodgePressed && motor.isGrounded && Time.time >= nextDodgeTime)
             {
                 dodgeDirection = moveDirection.sqrMagnitude > 0.001f
@@ -326,18 +322,7 @@ namespace Demo02.Player
 
         private static Vector2 ReadMoveInput()
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard == null)
-            {
-                return Vector2.zero;
-            }
-
-            Vector2 input = Vector2.zero;
-            if (keyboard.wKey.isPressed) input.y += 1f;
-            if (keyboard.sKey.isPressed) input.y -= 1f;
-            if (keyboard.dKey.isPressed) input.x += 1f;
-            if (keyboard.aKey.isPressed) input.x -= 1f;
-
+            Vector2 input = Demo02Input.Move;
             return input.sqrMagnitude > 1f ? input.normalized : input;
         }
 

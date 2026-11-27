@@ -1,9 +1,8 @@
 using System.Collections;
 using System.IO;
-using Demo02.Core;
-using Demo02.Narrative;
 using Demo02.WorldState;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Demo02.UI
 {
@@ -19,6 +18,16 @@ namespace Demo02.UI
         private float shownAt;
         private bool hasShownInitialArea;
         private bool captureRequested;
+        private GameObject canvasObject;
+        private Canvas canvas;
+        private CanvasGroup group;
+        private Text areaName;
+        private string cachedAreaName = string.Empty;
+
+        private void Awake()
+        {
+            EnsureUi();
+        }
 
         private void Start()
         {
@@ -29,40 +38,45 @@ namespace Demo02.UI
 
         private void Update()
         {
-            if (worldRuntime == null || string.IsNullOrWhiteSpace(worldRuntime.CurrentAreaName))
+            EnsureUi();
+            if (worldRuntime == null
+                || string.IsNullOrWhiteSpace(
+                    worldRuntime.CurrentAreaName
+                ))
             {
+                canvas.enabled = false;
                 return;
             }
 
             string currentArea = worldRuntime.CurrentAreaName;
             if (!hasShownInitialArea)
             {
-                if (DialogueController.Instance != null && DialogueController.Instance.IsOpen)
+                if (GameplayUiState.IsGameplayBlocked)
                 {
+                    canvas.enabled = false;
                     return;
                 }
-
                 hasShownInitialArea = true;
                 lastAreaName = currentArea;
-                return;
             }
-
-            if (currentArea != lastAreaName)
+            else if (currentArea != lastAreaName)
             {
                 lastAreaName = currentArea;
                 Show(currentArea);
             }
+
+            RefreshVisual();
         }
 
-        private void Show(string areaName)
+        private void Show(string name)
         {
-            shownAreaName = areaName;
+            shownAreaName = name;
             shownAt = Time.unscaledTime;
-
             if (!captureRequested)
             {
                 captureRequested = true;
-                string capturePath = GetArgumentValue("--capture-world=");
+                string capturePath =
+                    GetArgumentValue("--capture-world=");
                 if (!string.IsNullOrWhiteSpace(capturePath))
                 {
                     StartCoroutine(CaptureAreaCard(capturePath));
@@ -70,16 +84,180 @@ namespace Demo02.UI
             }
         }
 
+        private void RefreshVisual()
+        {
+            bool visible = !string.IsNullOrWhiteSpace(shownAreaName)
+                && !GameplayUiState.IsGameplayBlocked
+                && (InvestigationVisionController.Instance == null
+                    || !InvestigationVisionController.Instance.IsActive)
+                && (ScreenFade.Instance == null
+                    || !ScreenFade.Instance.IsTransitioning);
+            if (!visible)
+            {
+                canvas.enabled = false;
+                return;
+            }
+
+            float elapsed = Time.unscaledTime - shownAt;
+            float totalDuration = FadeDuration * 2f + HoldDuration;
+            if (elapsed >= totalDuration)
+            {
+                canvas.enabled = false;
+                return;
+            }
+
+            canvas.enabled = true;
+            float alpha = Mathf.Clamp01(elapsed / FadeDuration);
+            if (elapsed > FadeDuration + HoldDuration)
+            {
+                alpha = Mathf.Clamp01(
+                    (totalDuration - elapsed) / FadeDuration
+                );
+            }
+            group.alpha = alpha;
+            if (cachedAreaName != shownAreaName)
+            {
+                cachedAreaName = shownAreaName;
+                areaName.text = shownAreaName;
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (canvas != null)
+            {
+                canvas.enabled = false;
+            }
+        }
+
+        private void OnEnable()
+        {
+            if (canvas != null)
+            {
+                canvas.enabled = true;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (canvasObject == null)
+            {
+                return;
+            }
+            if (Application.isPlaying)
+            {
+                Destroy(canvasObject);
+            }
+            else
+            {
+                DestroyImmediate(canvasObject);
+            }
+            canvasObject = null;
+        }
+
+        private void EnsureUi()
+        {
+            if (canvasObject != null)
+            {
+                return;
+            }
+            RectTransform root = HudUiFactory.CreateCanvas(
+                transform,
+                "AreaBannerCanvas",
+                26
+            );
+            canvasObject = root.gameObject;
+            canvas = root.GetComponent<Canvas>();
+            group = canvasObject.AddComponent<CanvasGroup>();
+            group.blocksRaycasts = false;
+            group.interactable = false;
+            group.alpha = 0f;
+
+            RectTransform panel = HudUiFactory.CreatePanel(
+                root,
+                "AreaPanel",
+                new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f),
+                new Vector2(0f, -275f),
+                new Vector2(560f, 104f),
+                UiTheme.Ink
+            );
+            Image accent = HudUiFactory.CreateImage(
+                panel,
+                "Accent",
+                UiTheme.Accent
+            );
+            RectTransform accentRect = accent.rectTransform;
+            accentRect.anchorMin = new Vector2(0f, 0f);
+            accentRect.anchorMax = new Vector2(0f, 1f);
+            accentRect.pivot = new Vector2(0f, 0.5f);
+            accentRect.anchoredPosition = Vector2.zero;
+            accentRect.sizeDelta = new Vector2(4f, 0f);
+
+            Image line = HudUiFactory.CreateImage(
+                panel,
+                "Line",
+                UiTheme.Accent
+            );
+            RectTransform lineRect = line.rectTransform;
+            lineRect.anchorMin = new Vector2(0f, 1f);
+            lineRect.anchorMax = new Vector2(0f, 1f);
+            lineRect.pivot = new Vector2(0f, 1f);
+            lineRect.anchoredPosition = new Vector2(24f, -20f);
+            lineRect.sizeDelta = new Vector2(96f, 2f);
+
+            Text eyebrow = HudUiFactory.CreateText(
+                panel,
+                "Eyebrow",
+                "GUANGLING · 当前区域",
+                12,
+                new Vector2(0f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(24f, -28f),
+                new Vector2(-48f, 24f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            eyebrow.color = UiTheme.Accent;
+            eyebrow.rectTransform.offsetMin =
+                new Vector2(24f, -52f);
+            eyebrow.rectTransform.offsetMax =
+                new Vector2(-24f, -28f);
+
+            areaName = HudUiFactory.CreateText(
+                panel,
+                "AreaName",
+                string.Empty,
+                28,
+                new Vector2(0f, 1f),
+                new Vector2(1f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(24f, -52f),
+                new Vector2(-48f, 42f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            areaName.rectTransform.offsetMin =
+                new Vector2(24f, -94f);
+            areaName.rectTransform.offsetMax =
+                new Vector2(-24f, -52f);
+        }
+
         private static string GetArgumentValue(string prefix)
         {
-            foreach (string argument in System.Environment.GetCommandLineArgs())
+            foreach (string argument in
+                     Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
-                if (argument.StartsWith(prefix, System.StringComparison.Ordinal))
+                if (argument.StartsWith(
+                        prefix,
+                        System.StringComparison.Ordinal
+                    ))
                 {
                     return argument.Substring(prefix.Length);
                 }
             }
-
             return string.Empty;
         }
 
@@ -92,91 +270,8 @@ namespace Demo02.UI
             {
                 Directory.CreateDirectory(directory);
             }
-
             ScreenCapture.CaptureScreenshot(path);
             Debug.Log($"World preview captured to {path}");
-        }
-
-        private void OnGUI()
-        {
-            if (string.IsNullOrWhiteSpace(shownAreaName)
-                || (GameFlowController.Instance != null
-                    && GameFlowController.Instance.IsGameEnding)
-                || (WorldMapController.Instance != null && WorldMapController.Instance.IsOpen)
-                || (InvestigationJournalController.Instance != null
-                    && InvestigationJournalController.Instance.IsOpen)
-                || (InventoryController.Instance != null
-                    && InventoryController.Instance.IsOpen)
-                || (SettingsController.Instance != null
-                    && SettingsController.Instance.IsOpen)
-                || (TestimonyBoardController.Instance != null
-                    && TestimonyBoardController.Instance.IsOpen)
-                || (InvestigationVisionController.Instance != null
-                    && InvestigationVisionController.Instance.IsActive)
-                || (DialogueController.Instance != null
-                    && DialogueController.Instance.IsOpen)
-                || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
-            {
-                return;
-            }
-
-            float elapsed = Time.unscaledTime - shownAt;
-            float totalDuration = FadeDuration * 2f + HoldDuration;
-            if (elapsed >= totalDuration)
-            {
-                return;
-            }
-
-            float alpha = Mathf.Clamp01(elapsed / FadeDuration);
-            if (elapsed > FadeDuration + HoldDuration)
-            {
-                alpha = Mathf.Clamp01((totalDuration - elapsed) / FadeDuration);
-            }
-
-            float scale = UiTheme.Scale;
-            float width = Mathf.Min(560f * scale, Screen.width - 80f);
-            Rect panel = new(
-                (Screen.width - width) * 0.5f,
-                Screen.height * 0.255f,
-                width,
-                104f * scale
-            );
-
-            Color previousColor = GUI.color;
-            GUI.color = new Color(1f, 1f, 1f, alpha);
-            UiTheme.DrawRect(panel, UiTheme.Ink);
-            UiTheme.DrawRect(
-                new Rect(panel.x, panel.y, 4f * scale, panel.height),
-                UiTheme.Accent
-            );
-            UiTheme.DrawRect(
-                new Rect(panel.x + 24f * scale, panel.y + 20f * scale, 96f * scale, 2f),
-                UiTheme.Accent
-            );
-
-            GUIStyle eyebrow = UiTheme.Label(12, TextAnchor.MiddleLeft, bold: true);
-            eyebrow.normal.textColor = UiTheme.Accent;
-            GUI.Label(
-                new Rect(
-                    panel.x + 24f * scale,
-                    panel.y + 28f * scale,
-                    panel.width - 48f * scale,
-                    24f * scale
-                ),
-                "GUANGLING · 当前区域",
-                eyebrow
-            );
-            GUI.Label(
-                new Rect(
-                    panel.x + 24f * scale,
-                    panel.y + 52f * scale,
-                    panel.width - 48f * scale,
-                    42f * scale
-                ),
-                shownAreaName,
-                UiTheme.Label(28, TextAnchor.MiddleLeft, bold: true)
-            );
-            GUI.color = previousColor;
         }
     }
 }

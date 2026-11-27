@@ -68,6 +68,7 @@ namespace Demo02.Editor
                 -scaled.center.z
             );
             ApplyRelaxedPose(model);
+            AnimeFishAnimationSetup.Build(root, model);
 
             int rendererCount = 0;
             int texturedMaterialCount = 0;
@@ -146,6 +147,39 @@ namespace Demo02.Editor
                 );
             }
 
+            AnimationMode.StartAnimationMode();
+            try
+            {
+                SampleAtNormalizedTime(
+                    GameObject.Find("AnimeFish_Idle"),
+                    LoadClip("AC_AnimeFish_Idle"),
+                    0.45f
+                );
+                SampleAtNormalizedTime(
+                    GameObject.Find("AnimeFish_Walk"),
+                    LoadClip("AC_AnimeFish_Walk"),
+                    0.26f
+                );
+                SampleAtNormalizedTime(
+                    GameObject.Find("AnimeFish_Run"),
+                    LoadClip("AC_AnimeFish_Run"),
+                    0.18f
+                );
+                SampleAtNormalizedTime(
+                    GameObject.Find("AnimeFish_Talk"),
+                    LoadClip("AC_AnimeFish_Talk"),
+                    0.55f
+                );
+                CaptureCamera(camera);
+            }
+            finally
+            {
+                AnimationMode.StopAnimationMode();
+            }
+        }
+
+        private static void CaptureCamera(Camera camera)
+        {
             const int width = 1280;
             const int height = 720;
             RenderTexture target = new(
@@ -248,9 +282,9 @@ namespace Demo02.Editor
             camera.fieldOfView = 30f;
             camera.nearClipPlane = 0.05f;
             cameraObject.transform.position =
-                new Vector3(0f, 1.05f, 3.1f);
+                new Vector3(0f, 1.15f, 5.7f);
             cameraObject.transform.LookAt(
-                new Vector3(0f, 0.92f, 0f)
+                new Vector3(0f, 0.98f, 0f)
             );
             cameraObject.AddComponent<UniversalAdditionalCameraData>();
 
@@ -262,10 +296,30 @@ namespace Demo02.Editor
                     $"Anime fish prefab was not created: {PrefabPath}"
                 );
             }
-            GameObject instance =
-                (GameObject)PrefabUtility.InstantiatePrefab(prefab);
-            instance.name = "AnimeFish_Work";
-            instance.transform.position = Vector3.zero;
+            CreateShowcaseCharacter(
+                prefab,
+                "AnimeFish_Idle",
+                new Vector3(2.1f, 0f, 0f)
+            );
+            CreateShowcaseCharacter(
+                prefab,
+                "AnimeFish_Walk",
+                new Vector3(0.7f, 0f, 0f)
+            );
+            CreateShowcaseCharacter(
+                prefab,
+                "AnimeFish_Run",
+                new Vector3(-0.7f, 0f, 0f)
+            );
+            CreateShowcaseCharacter(
+                prefab,
+                "AnimeFish_Talk",
+                new Vector3(-2.1f, 0f, 0f)
+            );
+            CreateWorldLabel("IDLE", new Vector3(2.1f, 2.05f, 0f));
+            CreateWorldLabel("WALK", new Vector3(0.7f, 2.05f, 0f));
+            CreateWorldLabel("RUN", new Vector3(-0.7f, 2.05f, 0f));
+            CreateWorldLabel("TALK", new Vector3(-2.1f, 2.05f, 0f));
 
             EditorSceneManager.MarkSceneDirty(scene);
             if (!EditorSceneManager.SaveScene(scene, ScenePath))
@@ -275,6 +329,67 @@ namespace Demo02.Editor
                 );
             }
         }
+
+        private static void CreateShowcaseCharacter(
+            GameObject prefab,
+            string name,
+            Vector3 position)
+        {
+            GameObject instance =
+                (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+            instance.name = name;
+            instance.transform.position = position;
+            instance.transform.rotation = Quaternion.identity;
+        }
+
+        private static void CreateWorldLabel(
+            string text,
+            Vector3 position)
+        {
+            GameObject labelObject = new(text);
+            TextMesh textMesh = labelObject.AddComponent<TextMesh>();
+            textMesh.text = text;
+            textMesh.anchor = TextAnchor.MiddleCenter;
+            textMesh.alignment = TextAlignment.Center;
+            textMesh.fontSize = 64;
+            textMesh.characterSize = 0.045f;
+            textMesh.color = new Color(0.95f, 0.87f, 0.68f);
+            Font font = Resources.GetBuiltinResource<Font>(
+                "LegacyRuntime.ttf"
+            );
+            if (font != null)
+            {
+                textMesh.font = font;
+                labelObject.GetComponent<MeshRenderer>().sharedMaterial =
+                    font.material;
+            }
+            labelObject.transform.position = position;
+            labelObject.transform.rotation =
+                Quaternion.Euler(0f, 180f, 0f);
+        }
+
+        private static void SampleAtNormalizedTime(
+            GameObject character,
+            AnimationClip clip,
+            float normalizedTime)
+        {
+            if (character == null || clip == null)
+            {
+                return;
+            }
+            Animator animator =
+                character.GetComponentInChildren<Animator>(true);
+            AnimationMode.SampleAnimationClip(
+                animator.gameObject,
+                clip,
+                clip.length * normalizedTime
+            );
+        }
+
+        private static AnimationClip LoadClip(string name) =>
+            AssetDatabase.LoadAssetAtPath<AnimationClip>(
+                ArtRoot + "/Animations/" + name + ".anim"
+            );
 
         private static void CreateLight(
             string name,

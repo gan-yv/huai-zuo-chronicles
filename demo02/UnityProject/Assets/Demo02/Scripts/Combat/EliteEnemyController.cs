@@ -14,11 +14,17 @@ namespace Demo02.Combat
 
         public string DisplayName => displayName;
         public int Phase => phase;
+        public EnemyArchetype PhaseArchetype => phase switch
+        {
+            2 => EnemyArchetype.Shield,
+            3 => EnemyArchetype.Ranged,
+            _ => EnemyArchetype.Chaser
+        };
         public string PhaseLabel => phase switch
         {
-            2 => "第二阶段 · 压制",
-            3 => "第三阶段 · 狂怒",
-            _ => "第一阶段 · 巡守"
+            2 => "第二阶段 · 盾压冲锋",
+            3 => "第三阶段 · 远距压制",
+            _ => "第一阶段 · 追击"
         };
         public bool IsActive => health != null && health.IsAlive;
 
@@ -31,10 +37,18 @@ namespace Demo02.Combat
         {
             health = GetComponent<Combatant>();
             enemyAi = GetComponent<EnemyAI>();
+            enemyAi?.ConfigureArchetype(EnemyArchetype.Chaser);
         }
 
         private void Update()
         {
+            EvaluatePhase();
+        }
+
+        public void EvaluatePhase()
+        {
+            health ??= GetComponent<Combatant>();
+            enemyAi ??= GetComponent<EnemyAI>();
             if (health == null || !health.IsAlive)
             {
                 return;
@@ -44,8 +58,9 @@ namespace Demo02.Combat
             if (phase == 1 && ratio <= phaseTwoThreshold)
             {
                 phase = 2;
+                enemyAi?.ConfigureArchetype(EnemyArchetype.Shield);
                 enemyAi?.ConfigureCombatProfile(
-                    2.7f,
+                    1.9f,
                     12f,
                     0.9f,
                     0.3f
@@ -55,8 +70,9 @@ namespace Demo02.Combat
             else if (phase == 2 && ratio <= enragedThreshold)
             {
                 phase = 3;
+                enemyAi?.ConfigureArchetype(EnemyArchetype.Ranged);
                 enemyAi?.ConfigureCombatProfile(
-                    3.1f,
+                    2.8f,
                     16f,
                     0.72f,
                     0.22f

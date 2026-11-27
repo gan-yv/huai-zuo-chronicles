@@ -85,7 +85,8 @@ namespace Demo02.Editor
         {
             string visualName = characterName switch
             {
-                _ when characterName.Contains("Player") => "VIS_Stylized_Hero",
+                _ when characterName.Contains("Player") =>
+                    LumineCharacterSetup.PlayerPrefabPath,
                 _ when characterName.Contains("Partner") => "VIS_Stylized_Guide",
                 _ when characterName.Contains("Worker") => "VIS_Stylized_NPC_A",
                 _ when characterName.Contains("Keeper") => "VIS_Stylized_NPC_B",
@@ -96,7 +97,9 @@ namespace Demo02.Editor
                 _ when characterName.Contains("Snack") => "VIS_Stylized_Guide",
                 _ => "VIS_Stylized_NPC_A"
             };
-            return $"{PrefabRoot}/{visualName}.prefab";
+            return visualName.EndsWith(".prefab", StringComparison.Ordinal)
+                ? visualName
+                : $"{PrefabRoot}/{visualName}.prefab";
         }
 
         public static string EnemyPrefabPath =>

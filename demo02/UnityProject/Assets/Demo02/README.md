@@ -15,11 +15,10 @@
 | `Audio/SFX/` | 战斗、交互和环境音效 |
 | `Audio/Voice/` | 配音资源 |
 | `Data/Characters/` | 角色数据 |
-| `Data/Dialogue/` | 对话、旁白和本地化文本源 |
 | `Data/Encounters/` | 战斗和敌群配置 |
-| `Data/Items/` | 物品、线索和账册等数据 |
-| `Data/Quests/` | 任务、阶段和目标数据 |
-| `Data/WorldState/` | 街区状态、选择结果和持久变化 |
+| `Data/Cases/` | 案件、证据、证词、对白、物品和可选目标 |
+| `Data/Chapters/` | 章节入口、出生点、区域和案件引用 |
+| `Data/WorldStreaming/` | 附加场景、流式半径和遭遇引用 |
 | `Prefabs/Characters/` | 角色预制体 |
 | `Prefabs/Environment/` | 建筑、街道和场景预制体 |
 | `Prefabs/Gameplay/` | 交互点、敌人和玩法装置 |
@@ -47,3 +46,5 @@
 - 不把临时测试资源放进正式场景。
 - 不从 `SourceAssets/` 直接引用文件。
 - 第三方资源统一放在 `Assets/ThirdParty/` 并记录许可证。
+- 数据资产通过 `Assets/Demo02/Resources/Data/Demo02ContentCatalog.asset`
+  统一注册；详细规则见 [`Data/README.md`](Data/README.md)。

@@ -1,7 +1,6 @@
 using Demo02.Core;
 using Demo02.Narrative;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Demo02.UI
 {
@@ -13,24 +12,14 @@ namespace Demo02.UI
 
         private void Update()
         {
+            UnityEngine.Object activeModal =
+                GameplayUiState.ActiveModal;
             bool dialogueOpen =
-                DialogueController.Instance != null &&
-                DialogueController.Instance.IsOpen;
+                activeModal is DialogueController;
             bool bookOpen =
-                (InvestigationJournalController.Instance != null &&
-                 InvestigationJournalController.Instance.IsOpen) ||
-                (TestimonyBoardController.Instance != null &&
-                 TestimonyBoardController.Instance.IsOpen);
-            bool menuOpen =
-                (WorldMapController.Instance != null &&
-                 WorldMapController.Instance.IsOpen) ||
-                (InventoryController.Instance != null &&
-                 InventoryController.Instance.IsOpen) ||
-                (SettingsController.Instance != null &&
-                 SettingsController.Instance.IsOpen) ||
-                (SaveSlotController.Instance != null &&
-                 SaveSlotController.Instance.IsOpen);
-            bool overlayOpen = dialogueOpen || bookOpen || menuOpen;
+                activeModal is InvestigationJournalController
+                || activeModal is TestimonyBoardController;
+            bool overlayOpen = activeModal != null;
 
             if (overlayOpen && !anyOverlayOpen)
             {
@@ -60,8 +49,7 @@ namespace Demo02.UI
             }
 
             if (overlayOpen &&
-                Mouse.current != null &&
-                Mouse.current.leftButton.wasPressedThisFrame)
+                Demo02Input.ClickPressed)
             {
                 if (bookOpen)
                 {

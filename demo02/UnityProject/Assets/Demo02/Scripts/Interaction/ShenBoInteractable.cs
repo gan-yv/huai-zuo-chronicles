@@ -30,7 +30,7 @@ namespace Demo02.Interaction
         {
             investigationState = FindAnyObjectByType<InvestigationState>();
             if (System.Array.IndexOf(
-                System.Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-choice"
             ) >= 0)
             {
@@ -76,7 +76,7 @@ namespace Demo02.Interaction
 
         private static string GetArgumentValue(string prefix)
         {
-            foreach (string argument in System.Environment.GetCommandLineArgs())
+            foreach (string argument in Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
                 if (argument.StartsWith(prefix, System.StringComparison.Ordinal))
                 {

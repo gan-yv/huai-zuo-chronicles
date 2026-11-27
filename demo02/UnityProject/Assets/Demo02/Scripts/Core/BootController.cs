@@ -1,8 +1,8 @@
 using System.Collections;
 using System.IO;
+using Demo02.Narrative;
 using Demo02.WorldState;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace Demo02.Core
@@ -18,7 +18,7 @@ namespace Demo02.Core
 
         private void Update()
         {
-            if (Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame)
+            if (Demo02Input.SubmitPressed)
             {
                 StartGame();
             }
@@ -26,9 +26,10 @@ namespace Demo02.Core
 
         private void Start()
         {
+            RuntimeMemorySettings.Apply();
             DisplaySettings.Apply();
 
-            string[] arguments = System.Environment.GetCommandLineArgs();
+            string[] arguments = Demo02.Core.RuntimeLaunchOptions.Arguments;
             string capturePath = GetArgumentValue(arguments, "--capture-title=");
             if (!string.IsNullOrWhiteSpace(capturePath))
             {
@@ -118,7 +119,7 @@ namespace Demo02.Core
             Debug.Log($"Title preview captured to {path}");
             yield return null;
             if (System.Array.IndexOf(
-                    System.Environment.GetCommandLineArgs(),
+                    Demo02.Core.RuntimeLaunchOptions.Arguments,
                     "--capture-exit"
                 ) >= 0)
             {
@@ -270,7 +271,7 @@ namespace Demo02.Core
                     contentWidth,
                     28f * scale
                 ),
-                "WASD 移动   Shift 冲刺   Space 跳跃/滑翔   1/2/Tab 换人   F 技能   R 终结技   F1 帮助",
+                "WASD 移动   Shift 冲刺   Space 跳跃/滑翔   1/2/Tab 换人   F 技能   R 终结技   H 快捷恢复   F1 帮助",
                 subtitleStyle
             );
             GUI.Label(
@@ -304,20 +305,43 @@ namespace Demo02.Core
 
         private static void StartGame(bool showOpening = true)
         {
-            WorldRuntime.Instance?.BeginNewSession();
+            ChapterDefinition chapter =
+                GameContentRegistry.DefaultChapter;
+            string sceneName = chapter != null
+                ? chapter.SceneName
+                : SceneNames.Guangling;
+            string spawnId = chapter != null
+                ? chapter.EntrySpawnId
+                : "guangling_start";
+            string areaId = chapter != null
+                ? chapter.EntryAreaId
+                : "official-street";
+            string areaName = chapter != null
+                ? chapter.EntryAreaName
+                : "官署前街";
+            WorldRuntime runtime = WorldRuntime.Instance;
+            if (runtime != null)
+            {
+                runtime.BeginChapter(
+                    chapter != null ? chapter.ChapterId : "chapter-01",
+                    chapter?.CaseContent != null
+                        ? chapter.CaseContent.CaseId
+                        : "chapter-01"
+                );
+            }
             if (!showOpening)
             {
-                WorldRuntime.Instance?.ConsumeOpeningRequest();
+                runtime?.ConsumeOpeningRequest();
             }
 
-            WorldRuntime.Instance?.SetCurrentArea("official-street", "官署前街");
-            if (WorldRuntime.Instance != null)
+            runtime?.SetCurrentArea(areaId, areaName);
+            if (runtime != null)
             {
-                WorldRuntime.Instance.RequestSceneLoad(SceneNames.Guangling, "guangling_start");
+                runtime.RequestSceneLoad(sceneName, spawnId);
             }
             else
             {
-                SceneManager.LoadScene(SceneNames.Guangling);
+                SceneManager.LoadScene(sceneName);
             }
         }
 

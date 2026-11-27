@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Demo02.Core;
-using Demo02.Player;
 using Demo02.WorldState;
 using UnityEngine;
 
@@ -72,9 +71,8 @@ namespace Demo02.Combat
             }
 
             nextPlayerCheck = Time.time + 0.25f;
-            PlayerPartyController party =
-                FindAnyObjectByType<PlayerPartyController>();
-            Transform player = party != null ? party.ActiveCharacter : null;
+            Transform player =
+                WorldStreamingDirector.Instance?.PlayerTransform;
             if (player == null)
             {
                 return;

@@ -5,7 +5,7 @@ using System.IO;
 using Demo02.Core;
 using Demo02.Narrative;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace Demo02.UI
 {
@@ -19,6 +19,23 @@ namespace Demo02.UI
             Delete
         }
 
+        private sealed class SlotView
+        {
+            public GameObject Root;
+            public Outline Border;
+            public Image Accent;
+            public Text Title;
+            public Text Badge;
+            public Text Area;
+            public Text Progress;
+            public Text Time;
+            public Text Empty;
+            public Button Save;
+            public Text SaveLabel;
+            public Button Load;
+            public Button Delete;
+        }
+
         public static SaveSlotController Instance { get; private set; }
 
         private bool isOpen;
@@ -28,6 +45,13 @@ namespace Demo02.UI
         private string statusMessage;
         private float statusUntil;
         private SaveSystem saveSystem;
+        private GameObject canvasObject;
+        private Canvas canvas;
+        private SlotView[] slots;
+        private Text footerStatus;
+        private GameObject confirmationRoot;
+        private Text confirmationTitle;
+        private Text confirmationBody;
 
         public bool IsOpen => isOpen;
 
@@ -38,8 +62,8 @@ namespace Demo02.UI
                 Destroy(gameObject);
                 return;
             }
-
             Instance = this;
+            EnsureUi();
         }
 
         private void Start()
@@ -51,7 +75,7 @@ namespace Demo02.UI
                 : 1;
 
             if (Array.IndexOf(
-                Environment.GetCommandLineArgs(),
+                Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-saves"
             ) >= 0)
             {
@@ -66,12 +90,12 @@ namespace Demo02.UI
 
         private void Update()
         {
-            if (!isOpen || Keyboard.current == null)
+            if (!isOpen)
             {
                 return;
             }
 
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            if (Demo02Input.CancelPressed)
             {
                 if (pendingAction != PendingAction.None)
                 {
@@ -81,47 +105,105 @@ namespace Demo02.UI
                 {
                     Close();
                 }
-
                 return;
             }
 
             if (pendingAction != PendingAction.None)
             {
+                if (Demo02Input.SubmitPressed)
+                {
+                    ConfirmPending();
+                }
+                else
+                {
+                    RefreshStatus();
+                }
                 return;
             }
 
-            if (Keyboard.current.f5Key.wasPressedThisFrame)
+            if (Demo02Input.NavigateUpPressed)
+            {
+                selectedManualSlot = Mathf.Max(
+                    1,
+                    selectedManualSlot - 1
+                );
+                RefreshSelection();
+                RefreshStatus();
+            }
+            else if (Demo02Input.NavigateDownPressed)
+            {
+                selectedManualSlot = Mathf.Min(
+                    SaveSystem.ManualSlotCount,
+                    selectedManualSlot + 1
+                );
+                RefreshSelection();
+                RefreshStatus();
+            }
+            else if (Demo02Input.SubmitPressed)
+            {
+                RequestLoad(selectedManualSlot);
+                return;
+            }
+
+            if (Demo02Input.QuickSavePressed)
             {
                 RequestSave(selectedManualSlot);
             }
-            else if (Keyboard.current.f9Key.wasPressedThisFrame)
+            else if (Demo02Input.QuickLoadPressed)
             {
                 RequestLoad(selectedManualSlot);
             }
+            RefreshStatus();
+        }
+
+        private void OnDisable()
+        {
+            if (canvas != null)
+            {
+                canvas.enabled = false;
+            }
+            GameplayUiState.UnregisterModal(this);
         }
 
         private void OnDestroy()
         {
+            GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
                 Instance = null;
             }
+            if (canvasObject == null)
+            {
+                return;
+            }
+            if (Application.isPlaying)
+            {
+                Destroy(canvasObject);
+            }
+            else
+            {
+                DestroyImmediate(canvasObject);
+            }
+            canvasObject = null;
         }
 
         public void Open()
         {
-            if (isOpen)
+            if (isOpen || GameplayUiState.HasOpenModalExcept(this))
             {
                 return;
             }
-
             isOpen = true;
+            canvas.enabled = true;
+            GameplayUiState.RegisterModal(this);
             pendingAction = PendingAction.None;
+            confirmationRoot.SetActive(false);
             selectedManualSlot = SaveSystem.ActiveManualSlot > 0
                 ? SaveSystem.ActiveManualSlot
                 : selectedManualSlot;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            RefreshSlots();
             GameAudio.PlayInteraction();
         }
 
@@ -131,10 +213,493 @@ namespace Demo02.UI
             {
                 return;
             }
-
             isOpen = false;
+            canvas.enabled = false;
+            GameplayUiState.UnregisterModal(this);
             pendingAction = PendingAction.None;
+            confirmationRoot.SetActive(false);
             GameAudio.PlayInteraction();
+        }
+
+        private void EnsureUi()
+        {
+            if (canvasObject != null)
+            {
+                return;
+            }
+            RectTransform root = HudUiFactory.CreateCanvas(
+                transform,
+                "SaveSlotCanvas",
+                102
+            );
+            canvasObject = root.gameObject;
+            canvas = root.GetComponent<Canvas>();
+            canvas.enabled = false;
+            Image dim = HudUiFactory.CreateImage(
+                root,
+                "Dim",
+                new Color(0.015f, 0.02f, 0.03f, 0.94f)
+            );
+            HudUiFactory.Stretch(dim.rectTransform);
+
+            RectTransform panel = HudUiFactory.CreatePanel(
+                root,
+                "SavePanel",
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                new Vector2(1060f, 620f),
+                new Color(0.045f, 0.055f, 0.07f, 0.99f),
+                raycastTarget: true
+            );
+            Outline outline = panel.gameObject.AddComponent<Outline>();
+            outline.effectDistance = new Vector2(1f, -1f);
+            outline.useGraphicAlpha = true;
+            outline.effectColor = new Color(1f, 1f, 1f, 0.13f);
+            Image top = HudUiFactory.CreateImage(
+                panel,
+                "TopLine",
+                UiTheme.Accent
+            );
+            top.rectTransform.anchorMin = new Vector2(0f, 1f);
+            top.rectTransform.anchorMax = new Vector2(1f, 1f);
+            top.rectTransform.pivot = new Vector2(0.5f, 1f);
+            top.rectTransform.anchoredPosition = Vector2.zero;
+            top.rectTransform.sizeDelta = new Vector2(0f, 3f);
+
+            CreateText(
+                panel,
+                "Eyebrow",
+                "ARCHIVE · SAVE / LOAD",
+                11,
+                new Vector2(28f, -13f),
+                new Vector2(1004f, 20f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            ).color = UiTheme.Accent;
+            CreateText(
+                panel,
+                "Title",
+                "存档与读档",
+                27,
+                new Vector2(28f, -32f),
+                new Vector2(700f, 44f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            CreateText(
+                panel,
+                "Subtitle",
+                "自动存档 + 3 个手动槽位",
+                12,
+                new Vector2(810f, -38f),
+                new Vector2(220f, 34f),
+                TextAnchor.MiddleRight
+            );
+
+            slots = new SlotView[SaveSystem.ManualSlotCount + 1];
+            for (int index = 0; index < slots.Length; index++)
+            {
+                int column = index % 2;
+                int row = index / 2;
+                slots[index] = CreateSlotCard(
+                    panel,
+                    index,
+                    new Vector2(
+                        28f + column * 509f,
+                        -92f - row * 238f
+                    )
+                );
+            }
+
+            footerStatus = CreateText(
+                panel,
+                "FooterStatus",
+                string.Empty,
+                12,
+                new Vector2(28f, -558f),
+                new Vector2(850f, 50f),
+                TextAnchor.MiddleLeft
+            );
+            CreateButton(
+                panel,
+                "CloseButton",
+                "返回暂停  [Esc]",
+                new Vector2(876f, -558f),
+                new Vector2(156f, 50f),
+                Close
+            );
+            CreateConfirmation(root);
+        }
+
+        private SlotView CreateSlotCard(
+            Transform parent,
+            int slot,
+            Vector2 position)
+        {
+            RectTransform card = HudUiFactory.CreatePanel(
+                parent,
+                "SaveSlot" + slot,
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                position,
+                new Vector2(495f, 224f),
+                UiTheme.Ink,
+                raycastTarget: true
+            );
+            Outline border = card.gameObject.AddComponent<Outline>();
+            border.effectDistance = new Vector2(1f, -1f);
+            border.useGraphicAlpha = true;
+            border.effectColor = new Color(1f, 1f, 1f, 0.09f);
+            Image accent = HudUiFactory.CreateImage(
+                card,
+                "Accent",
+                UiTheme.Accent
+            );
+            accent.rectTransform.anchorMin = new Vector2(0f, 0f);
+            accent.rectTransform.anchorMax = new Vector2(0f, 1f);
+            accent.rectTransform.pivot = new Vector2(0f, 0.5f);
+            accent.rectTransform.anchoredPosition = Vector2.zero;
+            accent.rectTransform.sizeDelta = new Vector2(3f, 0f);
+            Text title = CreateText(
+                card,
+                "Title",
+                SaveSystem.GetSlotDisplayName(slot),
+                16,
+                new Vector2(16f, -5f),
+                new Vector2(370f, 28f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            Text badge = CreateText(
+                card,
+                "Badge",
+                slot == SaveSystem.AutoSlot ? "只读" : "手动",
+                10,
+                new Vector2(407f, -7f),
+                new Vector2(72f, 22f),
+                TextAnchor.MiddleCenter,
+                bold: true
+            );
+            Text area = CreateText(
+                card,
+                "Area",
+                string.Empty,
+                12,
+                new Vector2(16f, -34f),
+                new Vector2(463f, 22f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            Text progress = CreateText(
+                card,
+                "Progress",
+                string.Empty,
+                11,
+                new Vector2(16f, -55f),
+                new Vector2(463f, 22f),
+                TextAnchor.MiddleLeft
+            );
+            Text time = CreateText(
+                card,
+                "Time",
+                string.Empty,
+                10,
+                new Vector2(16f, -76f),
+                new Vector2(463f, 20f),
+                TextAnchor.MiddleLeft
+            );
+            Text empty = CreateText(
+                card,
+                "Empty",
+                "空槽位\n可保存当前调查进度",
+                12,
+                new Vector2(16f, -42f),
+                new Vector2(463f, 42f),
+                TextAnchor.MiddleCenter
+            );
+
+            Button save = null;
+            Text saveLabel = null;
+            if (slot != SaveSystem.AutoSlot)
+            {
+                save = CreateButton(
+                    card,
+                    "SaveButton",
+                    "保存",
+                    new Vector2(16f, -181f),
+                    new Vector2(181f, 32f),
+                    () => RequestSave(slot)
+                );
+                saveLabel = save.GetComponentInChildren<Text>(true);
+            }
+            Button load = CreateButton(
+                card,
+                "LoadButton",
+                slot == SaveSystem.AutoSlot
+                    ? "读取自动存档"
+                    : "读取",
+                new Vector2(
+                    slot == SaveSystem.AutoSlot ? 16f : 203f,
+                    -181f
+                ),
+                new Vector2(
+                    slot == SaveSystem.AutoSlot ? 463f : 140f,
+                    32f
+                ),
+                () => RequestLoad(slot)
+            );
+            Button delete = null;
+            if (slot != SaveSystem.AutoSlot)
+            {
+                delete = CreateButton(
+                    card,
+                    "DeleteButton",
+                    "删除",
+                    new Vector2(349f, -181f),
+                    new Vector2(130f, 32f),
+                    () => RequestDelete(slot)
+                );
+            }
+
+            SlotView view = new()
+            {
+                Root = card.gameObject,
+                Border = border,
+                Accent = accent,
+                Title = title,
+                Badge = badge,
+                Area = area,
+                Progress = progress,
+                Time = time,
+                Empty = empty,
+                Save = save,
+                SaveLabel = saveLabel,
+                Load = load,
+                Delete = delete
+            };
+            return view;
+        }
+
+        private void CreateConfirmation(Transform root)
+        {
+            RectTransform overlay = HudUiFactory.CreatePanel(
+                root,
+                "ConfirmationOverlay",
+                Vector2.zero,
+                Vector2.one,
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                Vector2.zero,
+                new Color(0f, 0f, 0f, 0.66f),
+                raycastTarget: true
+            );
+            confirmationRoot = overlay.gameObject;
+            RectTransform dialog = HudUiFactory.CreatePanel(
+                overlay,
+                "Dialog",
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                new Vector2(500f, 238f),
+                new Color(0.045f, 0.055f, 0.07f, 0.99f),
+                raycastTarget: true
+            );
+            Outline outline = dialog.gameObject.AddComponent<Outline>();
+            outline.effectDistance = new Vector2(1f, -1f);
+            outline.effectColor = new Color(1f, 1f, 1f, 0.14f);
+            confirmationTitle = CreateText(
+                dialog,
+                "Title",
+                string.Empty,
+                23,
+                new Vector2(26f, -18f),
+                new Vector2(448f, 42f),
+                TextAnchor.MiddleLeft,
+                bold: true
+            );
+            confirmationBody = CreateText(
+                dialog,
+                "Body",
+                string.Empty,
+                14,
+                new Vector2(26f, -66f),
+                new Vector2(448f, 76f),
+                TextAnchor.UpperLeft
+            );
+            confirmationBody.horizontalOverflow =
+                HorizontalWrapMode.Wrap;
+            CreateButton(
+                dialog,
+                "CancelButton",
+                "取消  [Esc]",
+                new Vector2(26f, -172f),
+                new Vector2(216f, 42f),
+                CancelPending
+            );
+            CreateButton(
+                dialog,
+                "ConfirmButton",
+                "确认",
+                new Vector2(258f, -172f),
+                new Vector2(216f, 42f),
+                ConfirmPending
+            );
+            confirmationRoot.SetActive(false);
+        }
+
+        private static Text CreateText(
+            Transform parent,
+            string name,
+            string value,
+            int size,
+            Vector2 position,
+            Vector2 dimensions,
+            TextAnchor alignment,
+            bool bold = false)
+        {
+            return HudUiFactory.CreateText(
+                parent,
+                name,
+                value,
+                size,
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                position,
+                dimensions,
+                alignment,
+                bold
+            );
+        }
+
+        private static Button CreateButton(
+            Transform parent,
+            string name,
+            string label,
+            Vector2 position,
+            Vector2 dimensions,
+            UnityEngine.Events.UnityAction action)
+        {
+            RectTransform rect = HudUiFactory.CreatePanel(
+                parent,
+                name,
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                new Vector2(0f, 1f),
+                position,
+                dimensions,
+                UiTheme.Panel,
+                raycastTarget: true
+            );
+            Button button = rect.gameObject.AddComponent<Button>();
+            button.targetGraphic = rect.GetComponent<Image>();
+            button.onClick.AddListener(action);
+            HudUiFactory.CreateText(
+                rect,
+                "Label",
+                label,
+                13,
+                Vector2.zero,
+                Vector2.one,
+                new Vector2(0.5f, 0.5f),
+                Vector2.zero,
+                Vector2.zero,
+                TextAnchor.MiddleCenter
+            );
+            return button;
+        }
+
+        private void RefreshSlots()
+        {
+            for (int slot = SaveSystem.AutoSlot;
+                 slot <= SaveSystem.ManualSlotCount;
+                 slot++)
+            {
+                SlotView view = slots[slot];
+                bool hasSave = SaveSystem.TryReadSave(
+                    slot,
+                    out WorldSaveData data
+                );
+                view.Badge.text = slot == SaveSystem.AutoSlot
+                    ? "只读"
+                    : slot == selectedManualSlot
+                        ? "快捷槽"
+                        : "手动";
+                view.Badge.color = slot == SaveSystem.AutoSlot
+                    ? UiTheme.Muted
+                    : UiTheme.Accent;
+                view.Area.gameObject.SetActive(hasSave);
+                view.Progress.gameObject.SetActive(hasSave);
+                view.Time.gameObject.SetActive(hasSave);
+                view.Empty.gameObject.SetActive(!hasSave);
+                view.Load.interactable = hasSave;
+                if (view.Save != null)
+                {
+                    view.Save.interactable = true;
+                    view.SaveLabel.text = hasSave ? "覆盖" : "保存";
+                }
+                if (view.Delete != null)
+                {
+                    view.Delete.interactable = hasSave;
+                }
+                if (hasSave)
+                {
+                    view.Area.text =
+                        $"{SafeArea(data.AreaName)} · "
+                        + StageLabel(data.ChapterStage);
+                    view.Progress.text =
+                        $"线索 {Count(data.ClueIds)}   "
+                        + $"时间锚 {Count(data.TimeAnchorIds)}   "
+                        + $"回声 {Count(data.EchoIds)}";
+                    view.Time.text =
+                        FormatSaveTime(data.SavedAtUtc, slot);
+                }
+            }
+            RefreshSelection();
+            RefreshStatus();
+        }
+
+        private void RefreshSelection()
+        {
+            for (int slot = SaveSystem.AutoSlot;
+                 slot <= SaveSystem.ManualSlotCount;
+                 slot++)
+            {
+                SlotView view = slots[slot];
+                bool selected = slot > SaveSystem.AutoSlot
+                    && slot == selectedManualSlot;
+                view.Badge.text = slot == SaveSystem.AutoSlot
+                    ? "只读"
+                    : selected
+                        ? "快捷槽"
+                        : "手动";
+                view.Badge.color = slot == SaveSystem.AutoSlot
+                    ? UiTheme.Muted
+                    : UiTheme.Accent;
+                view.Border.effectColor = selected
+                    ? new Color(
+                        UiTheme.Accent.r,
+                        UiTheme.Accent.g,
+                        UiTheme.Accent.b,
+                        0.72f
+                    )
+                    : new Color(1f, 1f, 1f, 0.09f);
+                view.Accent.enabled = selected;
+            }
+        }
+
+        private void RefreshStatus()
+        {
+            string value = string.IsNullOrWhiteSpace(statusMessage)
+                || Time.unscaledTime >= statusUntil
+                    ? $"F5 保存到快捷槽 {selectedManualSlot}   ·   "
+                        + $"F9 读取快捷槽 {selectedManualSlot}"
+                    : statusMessage;
+            HudUiFactory.SetText(footerStatus, value);
         }
 
         private void RequestSave(int slot)
@@ -143,14 +708,12 @@ namespace Demo02.UI
             {
                 return;
             }
-
             selectedManualSlot = slot;
             if (SaveSystem.TryReadSave(slot, out _))
             {
                 QueueAction(PendingAction.Save, slot);
                 return;
             }
-
             ExecuteSave(slot);
         }
 
@@ -158,15 +721,15 @@ namespace Demo02.UI
         {
             if (!SaveSystem.TryReadSave(slot, out _))
             {
-                ShowStatus($"{SaveSystem.GetSlotDisplayName(slot)}为空");
+                ShowStatus(
+                    $"{SaveSystem.GetSlotDisplayName(slot)}为空"
+                );
                 return;
             }
-
             if (slot > SaveSystem.AutoSlot)
             {
                 selectedManualSlot = slot;
             }
-
             QueueAction(PendingAction.Load, slot);
         }
 
@@ -177,7 +740,6 @@ namespace Demo02.UI
             {
                 return;
             }
-
             selectedManualSlot = slot;
             QueueAction(PendingAction.Delete, slot);
         }
@@ -186,12 +748,40 @@ namespace Demo02.UI
         {
             pendingAction = action;
             pendingSlot = slot;
+            UpdateConfirmation();
+            confirmationRoot.SetActive(true);
             GameAudio.PlayInteraction();
+        }
+
+        private void UpdateConfirmation()
+        {
+            switch (pendingAction)
+            {
+                case PendingAction.Save:
+                    confirmationTitle.text = "覆盖这个存档槽？";
+                    confirmationBody.text =
+                        $"{SaveSystem.GetSlotDisplayName(pendingSlot)}"
+                        + "已有进度。覆盖后，旧存档无法恢复。";
+                    break;
+                case PendingAction.Load:
+                    confirmationTitle.text = "读取这个存档？";
+                    confirmationBody.text =
+                        $"将载入{SaveSystem.GetSlotDisplayName(pendingSlot)}。"
+                        + "当前尚未保存的进度会丢失。";
+                    break;
+                default:
+                    confirmationTitle.text = "永久删除这个存档？";
+                    confirmationBody.text =
+                        $"{SaveSystem.GetSlotDisplayName(pendingSlot)}"
+                        + "删除后无法恢复。";
+                    break;
+            }
         }
 
         private void CancelPending()
         {
             pendingAction = PendingAction.None;
+            confirmationRoot.SetActive(false);
             GameAudio.PlayInteraction();
         }
 
@@ -200,7 +790,7 @@ namespace Demo02.UI
             PendingAction action = pendingAction;
             int slot = pendingSlot;
             pendingAction = PendingAction.None;
-
+            confirmationRoot.SetActive(false);
             switch (action)
             {
                 case PendingAction.Save:
@@ -223,10 +813,15 @@ namespace Demo02.UI
                 ShowStatus("存档系统尚未就绪");
                 return;
             }
-
             selectedManualSlot = slot;
-            saveSystem.SaveCurrentState(announce: true, slotIndex: slot);
-            ShowStatus($"已保存到{SaveSystem.GetSlotDisplayName(slot)}");
+            saveSystem.SaveCurrentState(
+                announce: true,
+                slotIndex: slot
+            );
+            ShowStatus(
+                $"已保存到{SaveSystem.GetSlotDisplayName(slot)}"
+            );
+            RefreshSlots();
         }
 
         private void ExecuteLoad(int slot)
@@ -234,9 +829,10 @@ namespace Demo02.UI
             if (SaveSystem.LoadSavedGame(slot, out _))
             {
                 isOpen = false;
+                canvas.enabled = false;
+                GameplayUiState.UnregisterModal(this);
                 return;
             }
-
             ShowStatus("读取失败，存档可能已损坏");
         }
 
@@ -244,8 +840,11 @@ namespace Demo02.UI
         {
             if (SaveSystem.DeleteSlot(slot))
             {
-                ShowStatus($"已删除{SaveSystem.GetSlotDisplayName(slot)}");
+                ShowStatus(
+                    $"已删除{SaveSystem.GetSlotDisplayName(slot)}"
+                );
                 GameAudio.PlayConfirm();
+                RefreshSlots();
             }
             else
             {
@@ -257,405 +856,14 @@ namespace Demo02.UI
         {
             statusMessage = message;
             statusUntil = Time.unscaledTime + 3f;
-        }
-
-        private void OnGUI()
-        {
-            if (!isOpen)
-            {
-                return;
-            }
-
-            GUI.depth = -130;
-            UiTheme.DrawRect(
-                new Rect(0f, 0f, Screen.width, Screen.height),
-                new Color(0.015f, 0.02f, 0.03f, 0.94f)
-            );
-
-            float scale = UiTheme.Scale;
-            float panelWidth = Mathf.Min(Screen.width - 48f, 1060f * scale);
-            float panelHeight = Mathf.Min(Screen.height - 48f, 620f * scale);
-            Rect panel = new(
-                (Screen.width - panelWidth) * 0.5f,
-                (Screen.height - panelHeight) * 0.5f,
-                panelWidth,
-                panelHeight
-            );
-            DrawPanel(panel);
-
-            GUIStyle eyebrow = UiTheme.Label(11, TextAnchor.MiddleLeft, bold: true);
-            eyebrow.normal.textColor = UiTheme.Accent;
-            GUI.Label(
-                new Rect(
-                    panel.x + 28f * scale,
-                    panel.y + 13f * scale,
-                    panel.width - 56f * scale,
-                    20f * scale
-                ),
-                "ARCHIVE · SAVE / LOAD",
-                eyebrow
-            );
-            GUI.Label(
-                new Rect(
-                    panel.x + 28f * scale,
-                    panel.y + 32f * scale,
-                    panel.width - 220f * scale,
-                    44f * scale
-                ),
-                "存档与读档",
-                UiTheme.Label(27, TextAnchor.MiddleLeft, bold: true)
-            );
-            GUI.Label(
-                new Rect(
-                    panel.x + panel.width - 250f * scale,
-                    panel.y + 38f * scale,
-                    220f * scale,
-                    34f * scale
-                ),
-                "自动存档 + 3 个手动槽位",
-                UiTheme.Label(12, TextAnchor.MiddleRight)
-            );
-
-            float padding = 28f * scale;
-            float gap = 14f * scale;
-            float headerHeight = 92f * scale;
-            float footerHeight = 66f * scale;
-            float gridWidth = panel.width - padding * 2f;
-            float cardWidth = (gridWidth - gap) * 0.5f;
-            float cardHeight = (
-                panel.height - headerHeight - footerHeight - gap
-            ) * 0.5f;
-            for (int slot = SaveSystem.AutoSlot;
-                slot <= SaveSystem.ManualSlotCount;
-                slot++)
-            {
-                int index = slot - SaveSystem.AutoSlot;
-                int column = index % 2;
-                int row = index / 2;
-                Rect card = new(
-                    panel.x + padding + column * (cardWidth + gap),
-                    panel.y + headerHeight + row * (cardHeight + gap),
-                    cardWidth,
-                    cardHeight
-                );
-                DrawSlotCard(card, slot);
-            }
-
-            Rect footer = new(
-                panel.x + padding,
-                panel.yMax - footerHeight + 8f * scale,
-                gridWidth,
-                footerHeight - 16f * scale
-            );
-            string status = string.IsNullOrWhiteSpace(statusMessage)
-                || Time.unscaledTime >= statusUntil
-                ? $"F5 保存到快捷槽 {selectedManualSlot}   ·   F9 读取快捷槽 {selectedManualSlot}"
-                : statusMessage;
-            GUI.Label(
-                new Rect(
-                    footer.x,
-                    footer.y,
-                    footer.width - 170f * scale,
-                    footer.height
-                ),
-                status,
-                UiTheme.Label(12)
-            );
-            if (GUI.Button(
-                new Rect(
-                    footer.xMax - 156f * scale,
-                    footer.y,
-                    156f * scale,
-                    footer.height
-                ),
-                "返回暂停  [Esc]",
-                UiTheme.Button(13)
-            ))
-            {
-                Close();
-            }
-
-            if (pendingAction != PendingAction.None)
-            {
-                DrawConfirmation();
-            }
-        }
-
-        private static void DrawPanel(Rect panel)
-        {
-            UiTheme.DrawRect(panel, new Color(0.045f, 0.055f, 0.07f, 0.99f));
-            UiTheme.DrawBorder(panel, new Color(1f, 1f, 1f, 0.13f));
-            UiTheme.DrawRect(
-                new Rect(panel.x, panel.y, panel.width, 3f),
-                UiTheme.Accent
-            );
-        }
-
-        private void DrawSlotCard(Rect card, int slot)
-        {
-            float scale = UiTheme.Scale;
-            bool hasSave = SaveSystem.TryReadSave(slot, out WorldSaveData data);
-            bool isQuickSlot = slot > SaveSystem.AutoSlot
-                && slot == selectedManualSlot;
-            Color background = isQuickSlot
-                ? new Color(0.105f, 0.105f, 0.09f, 0.98f)
-                : UiTheme.Ink;
-            UiTheme.DrawRect(card, background);
-            UiTheme.DrawBorder(
-                card,
-                isQuickSlot
-                    ? new Color(
-                        UiTheme.Accent.r,
-                        UiTheme.Accent.g,
-                        UiTheme.Accent.b,
-                        0.72f
-                    )
-                    : new Color(1f, 1f, 1f, 0.09f)
-            );
-            if (isQuickSlot)
-            {
-                UiTheme.DrawRect(
-                    new Rect(card.x, card.y, 3f * scale, card.height),
-                    UiTheme.Accent
-                );
-            }
-
-            GUI.Label(
-                new Rect(
-                    card.x + 16f * scale,
-                    card.y + 5f * scale,
-                    card.width - 100f * scale,
-                    28f * scale
-                ),
-                SaveSystem.GetSlotDisplayName(slot),
-                UiTheme.Label(16, TextAnchor.MiddleLeft, bold: true)
-            );
-
-            GUIStyle badge = UiTheme.Label(10, TextAnchor.MiddleCenter, bold: true);
-            badge.normal.textColor = slot == SaveSystem.AutoSlot
-                ? UiTheme.Muted
-                : UiTheme.Accent;
-            GUI.Label(
-                new Rect(
-                    card.xMax - 88f * scale,
-                    card.y + 7f * scale,
-                    72f * scale,
-                    22f * scale
-                ),
-                slot == SaveSystem.AutoSlot
-                    ? "只读"
-                    : isQuickSlot ? "快捷槽" : "手动",
-                badge
-            );
-
-            if (hasSave)
-            {
-                GUI.Label(
-                    new Rect(
-                        card.x + 16f * scale,
-                        card.y + 34f * scale,
-                        card.width - 32f * scale,
-                        22f * scale
-                    ),
-                    $"{SafeArea(data.AreaName)} · {StageLabel(data.ChapterStage)}",
-                    UiTheme.Label(12, bold: true)
-                );
-                GUI.Label(
-                    new Rect(
-                        card.x + 16f * scale,
-                        card.y + 55f * scale,
-                        card.width - 32f * scale,
-                        22f * scale
-                    ),
-                    $"线索 {Count(data.ClueIds)}   时间锚 {Count(data.TimeAnchorIds)}   回声 {Count(data.EchoIds)}",
-                    UiTheme.Label(11)
-                );
-                GUI.Label(
-                    new Rect(
-                        card.x + 16f * scale,
-                        card.y + 76f * scale,
-                        card.width - 32f * scale,
-                        20f * scale
-                    ),
-                    FormatSaveTime(data.SavedAtUtc, slot),
-                    UiTheme.Label(10)
-                );
-            }
-            else
-            {
-                GUI.Label(
-                    new Rect(
-                        card.x + 16f * scale,
-                        card.y + 42f * scale,
-                        card.width - 32f * scale,
-                        42f * scale
-                    ),
-                    "空槽位\n可保存当前调查进度",
-                    UiTheme.Label(12, TextAnchor.MiddleCenter)
-                );
-            }
-
-            float buttonY = card.yMax - 43f * scale;
-            float buttonHeight = 32f * scale;
-            float innerWidth = card.width - 32f * scale;
-            if (slot == SaveSystem.AutoSlot)
-            {
-                GUI.enabled = hasSave;
-                if (GUI.Button(
-                    new Rect(
-                        card.x + 16f * scale,
-                        buttonY,
-                        innerWidth,
-                        buttonHeight
-                    ),
-                    hasSave ? "读取自动存档" : "暂无自动存档",
-                    UiTheme.Button(12)
-                ))
-                {
-                    RequestLoad(slot);
-                }
-                GUI.enabled = true;
-                return;
-            }
-
-            float saveWidth = innerWidth * 0.40f;
-            float loadWidth = innerWidth * 0.31f;
-            float deleteWidth = innerWidth - saveWidth - loadWidth
-                - 12f * scale;
-            if (GUI.Button(
-                new Rect(
-                    card.x + 16f * scale,
-                    buttonY,
-                    saveWidth,
-                    buttonHeight
-                ),
-                hasSave ? "覆盖" : "保存",
-                UiTheme.Button(12)
-            ))
-            {
-                RequestSave(slot);
-            }
-
-            GUI.enabled = hasSave;
-            if (GUI.Button(
-                new Rect(
-                    card.x + 16f * scale + saveWidth + 6f * scale,
-                    buttonY,
-                    loadWidth,
-                    buttonHeight
-                ),
-                "读取",
-                UiTheme.Button(12)
-            ))
-            {
-                RequestLoad(slot);
-            }
-            if (GUI.Button(
-                new Rect(
-                    card.xMax - 16f * scale - deleteWidth,
-                    buttonY,
-                    deleteWidth,
-                    buttonHeight
-                ),
-                "删除",
-                UiTheme.Button(12)
-            ))
-            {
-                RequestDelete(slot);
-            }
-            GUI.enabled = true;
-        }
-
-        private void DrawConfirmation()
-        {
-            float scale = UiTheme.Scale;
-            UiTheme.DrawRect(
-                new Rect(0f, 0f, Screen.width, Screen.height),
-                new Color(0f, 0f, 0f, 0.66f)
-            );
-
-            float width = Mathf.Min(Screen.width - 48f, 500f * scale);
-            float height = 238f * scale;
-            Rect dialog = new(
-                (Screen.width - width) * 0.5f,
-                (Screen.height - height) * 0.5f,
-                width,
-                height
-            );
-            DrawPanel(dialog);
-
-            string title;
-            string body;
-            switch (pendingAction)
-            {
-                case PendingAction.Save:
-                    title = "覆盖这个存档槽？";
-                    body = $"{SaveSystem.GetSlotDisplayName(pendingSlot)}已有进度。覆盖后，旧存档无法恢复。";
-                    break;
-                case PendingAction.Load:
-                    title = "读取这个存档？";
-                    body = $"将载入{SaveSystem.GetSlotDisplayName(pendingSlot)}。当前尚未保存的进度会丢失。";
-                    break;
-                default:
-                    title = "永久删除这个存档？";
-                    body = $"{SaveSystem.GetSlotDisplayName(pendingSlot)}删除后无法恢复。";
-                    break;
-            }
-
-            GUI.Label(
-                new Rect(
-                    dialog.x + 26f * scale,
-                    dialog.y + 18f * scale,
-                    dialog.width - 52f * scale,
-                    42f * scale
-                ),
-                title,
-                UiTheme.Label(23, TextAnchor.MiddleLeft, bold: true)
-            );
-            GUI.Label(
-                new Rect(
-                    dialog.x + 26f * scale,
-                    dialog.y + 66f * scale,
-                    dialog.width - 52f * scale,
-                    76f * scale
-                ),
-                body,
-                UiTheme.Label(14)
-            );
-
-            float buttonY = dialog.yMax - 66f * scale;
-            float buttonWidth = (dialog.width - 68f * scale) * 0.5f;
-            if (GUI.Button(
-                new Rect(
-                    dialog.x + 26f * scale,
-                    buttonY,
-                    buttonWidth,
-                    42f * scale
-                ),
-                "取消  [Esc]",
-                UiTheme.Button(14)
-            ))
-            {
-                CancelPending();
-            }
-            if (GUI.Button(
-                new Rect(
-                    dialog.x + 42f * scale + buttonWidth,
-                    buttonY,
-                    buttonWidth,
-                    42f * scale
-                ),
-                "确认",
-                UiTheme.Button(14)
-            ))
-            {
-                ConfirmPending();
-            }
+            RefreshStatus();
         }
 
         private static string SafeArea(string areaName)
         {
-            return string.IsNullOrWhiteSpace(areaName) ? "未知区域" : areaName;
+            return string.IsNullOrWhiteSpace(areaName)
+                ? "未知区域"
+                : areaName;
         }
 
         private static int Count(List<string> values)
@@ -679,13 +887,17 @@ namespace Demo02.UI
             };
         }
 
-        private static string FormatSaveTime(string savedAtUtc, int slot)
+        private static string FormatSaveTime(
+            string savedAtUtc,
+            int slot)
         {
-            if (!DateTime.TryParse(savedAtUtc, out DateTime savedAt))
+            if (!DateTime.TryParse(
+                    savedAtUtc,
+                    out DateTime savedAt
+                ))
             {
                 savedAt = SaveSystem.GetSlotLastWriteTime(slot);
             }
-
             return savedAt == DateTime.MinValue
                 ? "保存时间未知"
                 : $"保存于 {savedAt.ToLocalTime():yyyy-MM-dd HH:mm}";
@@ -693,14 +905,17 @@ namespace Demo02.UI
 
         private static string GetArgumentValue(string prefix)
         {
-            foreach (string argument in Environment.GetCommandLineArgs())
+            foreach (string argument in
+                     Demo02.Core.RuntimeLaunchOptions.Arguments)
             {
-                if (argument.StartsWith(prefix, StringComparison.Ordinal))
+                if (argument.StartsWith(
+                        prefix,
+                        StringComparison.Ordinal
+                    ))
                 {
                     return argument.Substring(prefix.Length);
                 }
             }
-
             return string.Empty;
         }
 
@@ -713,7 +928,6 @@ namespace Demo02.UI
             {
                 Directory.CreateDirectory(directory);
             }
-
             ScreenCapture.CaptureScreenshot(path);
             Debug.Log($"Save-slot preview captured to {path}");
         }

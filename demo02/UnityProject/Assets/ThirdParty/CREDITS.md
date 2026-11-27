@@ -7,6 +7,12 @@ is retained for provenance; CC-BY attribution is required.
   The project owner confirmed the author's written permission for non-video
   uses. Source provenance is recorded in
   `Assets/Demo02/Art/Characters/AnimeFishPilot/SOURCE.md`.
+- **荧 / Lumine** original character by miHoYo; PMX modification credited in
+  the source model as 观海. The project owner confirmed permission for this
+  local project use. The model may not be redistributed, disassembled for
+  other models, or used commercially under the source terms. Runtime model,
+  conversion notes and restrictions are recorded in
+  `Assets/Demo02/Art/Characters/Lumine/SOURCE.md`.
 - **Fantasy Town Kit** by Kenney, https://kenney.nl/assets/fantasy-town-kit,
   CC0 1.0. Selected models were imported unchanged; project materials and
   prefabs are stored under `Assets/Demo02/Art`.

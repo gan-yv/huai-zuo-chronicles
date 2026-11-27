@@ -8,9 +8,13 @@ namespace Demo02.Core
     [Serializable]
     public sealed class WorldSaveData
     {
-        public int Version = 1;
+        public const int CurrentVersion = 3;
+
+        public int Version = CurrentVersion;
         public string SavedAtUtc;
         public string SceneName;
+        public string ChapterId;
+        public string CaseId;
         public float PlayerX;
         public float PlayerY;
         public float PlayerZ;
@@ -41,8 +45,23 @@ namespace Demo02.Core
     }
 
     [Serializable]
+    internal sealed class SaveFileEnvelope
+    {
+        public const string CurrentFormat = "Demo02.Save";
+        public const int CurrentFormatVersion = 1;
+
+        public string Format = CurrentFormat;
+        public int FormatVersion = CurrentFormatVersion;
+        public int SaveVersion;
+        public string Checksum;
+        public string Payload;
+    }
+
+    [Serializable]
     public sealed class CombatantSaveData
     {
+        public string PersistentId;
+        // Retained for version 2 compatibility and diagnostics.
         public string ObjectName;
         public float Health;
         public bool Active;

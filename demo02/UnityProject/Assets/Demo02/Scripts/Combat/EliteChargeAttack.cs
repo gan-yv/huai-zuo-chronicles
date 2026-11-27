@@ -37,7 +37,7 @@ namespace Demo02.Combat
         {
             if (charging
                 || elite == null
-                || elite.Phase < 2
+                || elite.Phase != 2
                 || health == null
                 || !health.IsAlive
                 || Time.time < nextChargeTime
@@ -113,7 +113,13 @@ namespace Demo02.Combat
             {
                 ThirdPersonController controller =
                     player.GetComponent<ThirdPersonController>();
-                if (controller == null || !controller.IsInvulnerable)
+                if (controller != null && controller.IsInvulnerable)
+                {
+                    player.GetComponent<PlayerCombat>()
+                        ?.RewardPerfectDodge();
+                    GameAudio.PlayConfirm();
+                }
+                else
                 {
                     Combatant target = player.GetComponent<Combatant>();
                     float previousHealth = target != null

@@ -1,6 +1,6 @@
 using System;
+using Demo02.Core;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Demo02.WorldState
 {
@@ -26,8 +26,7 @@ namespace Demo02.WorldState
         private void Update()
         {
             if (Time.timeScale > 0f
-                && Keyboard.current != null
-                && Keyboard.current.qKey.wasPressedThisFrame)
+                && Demo02Input.ToggleTimePressed)
             {
                 ToggleLayer();
             }

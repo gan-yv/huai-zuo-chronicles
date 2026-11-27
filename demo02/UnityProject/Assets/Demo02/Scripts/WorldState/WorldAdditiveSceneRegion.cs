@@ -1,5 +1,5 @@
+using System.Collections.Generic;
 using Demo02.Combat;
-using Demo02.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,20 +14,37 @@ namespace Demo02.WorldState
         [SerializeField, Min(1f)] private float loadRadius = 18f;
         [SerializeField, Min(1f)] private float preloadRadius = 32f;
         [SerializeField, Min(1f)] private float unloadRadius = 30f;
+        [SerializeField, Min(0.1f)] private float retryBaseDelay = 0.75f;
         [SerializeField] private bool loadOnStart;
 
         private AsyncOperation loadOperation;
+        private AsyncOperation unloadOperation;
         private Scene loadedScene;
+        private WorldEncounterZone[] sceneZones;
+        private WorldContentEvent[] sceneContentEvents;
         private bool loaded;
         private bool completed;
         private float nextCheck;
+        private float nextRetryTime;
+        private int retryAttempt;
+        private string lastLoadError;
 
         public string RegionId => regionId;
         public string SceneName => sceneName;
         public string DisplayName => displayName;
         public float LoadRadius => loadRadius;
         public float PreloadRadius => preloadRadius;
-        public bool IsLoading => loadOperation != null;
+        public float UnloadRadius => unloadRadius;
+        public bool PreloadOnStart => loadOnStart;
+        public bool IsLoading =>
+            loadOperation != null || unloadOperation != null;
+        public bool IsUnloading => unloadOperation != null;
+        public bool IsWaitingForRetry =>
+            retryAttempt > 0
+            && Time.unscaledTime < nextRetryTime
+            && !IsLoading;
+        public int RetryAttempt => retryAttempt;
+        public string LastLoadError => lastLoadError;
         public bool IsLoaded => loaded;
         public bool IsCompleted => completed;
 
@@ -75,13 +92,35 @@ namespace Demo02.WorldState
             }
             nextCheck = Time.time + 0.3f;
 
+            if (unloadOperation != null)
+            {
+                if (unloadOperation.isDone)
+                {
+                    CompleteUnload();
+                }
+                return;
+            }
+
             if (IsLoading)
             {
                 if (loadOperation.isDone)
                 {
                     loadOperation = null;
-                    loaded = true;
                     loadedScene = SceneManager.GetSceneByName(sceneName);
+                    if (!loadedScene.IsValid()
+                        || !loadedScene.isLoaded)
+                    {
+                        RecordLoadFailure(
+                            $"Streaming scene failed to load: "
+                            + $"{displayName} ({sceneName})"
+                        );
+                        return;
+                    }
+                    retryAttempt = 0;
+                    nextRetryTime = 0f;
+                    lastLoadError = null;
+                    loaded = true;
+                    CacheSceneContent();
                     Debug.Log(
                         $"Streaming region loaded: {displayName} "
                         + $"({sceneName})"
@@ -104,9 +143,8 @@ namespace Demo02.WorldState
                 return;
             }
 
-            PlayerPartyController party =
-                FindAnyObjectByType<PlayerPartyController>();
-            Transform player = party != null ? party.ActiveCharacter : null;
+            Transform player =
+                WorldStreamingDirector.Instance?.PlayerTransform;
             if (player == null)
             {
                 return;
@@ -143,7 +181,11 @@ namespace Demo02.WorldState
 
         public bool BeginLoadFromDirector()
         {
-            if (loaded || loadOperation != null || completed)
+            if (loaded
+                || loadOperation != null
+                || unloadOperation != null
+                || completed
+                || Time.unscaledTime < nextRetryTime)
             {
                 return false;
             }
@@ -154,13 +196,35 @@ namespace Demo02.WorldState
             );
             if (loadOperation == null)
             {
-                Debug.LogError(
+                RecordLoadFailure(
                     $"Could not start streaming scene: {sceneName}"
                 );
-                completed = true;
                 return false;
             }
             return true;
+        }
+
+        private void CacheSceneContent()
+        {
+            List<WorldEncounterZone> zones = new();
+            List<WorldContentEvent> contentEvents = new();
+            foreach (GameObject rootObject in
+                     loadedScene.GetRootGameObjects())
+            {
+                zones.AddRange(
+                    rootObject.GetComponentsInChildren<
+                        WorldEncounterZone
+                    >(includeInactive: true)
+                );
+                contentEvents.AddRange(
+                    rootObject.GetComponentsInChildren<
+                        WorldContentEvent
+                    >(includeInactive: true)
+                );
+            }
+
+            sceneZones = zones.ToArray();
+            sceneContentEvents = contentEvents.ToArray();
         }
 
         private bool CanUnload()
@@ -170,18 +234,8 @@ namespace Demo02.WorldState
                 return false;
             }
 
-            WorldEncounterZone[] zones = Object.FindObjectsByType<
-                WorldEncounterZone
-            >(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            bool foundZone = false;
-            foreach (WorldEncounterZone zone in zones)
+            foreach (WorldEncounterZone zone in sceneZones)
             {
-                if (zone.gameObject.scene != loadedScene)
-                {
-                    continue;
-                }
-
-                foundZone = true;
                 zone.RefreshResolvedState();
                 if (!zone.IsResolved)
                 {
@@ -189,41 +243,72 @@ namespace Demo02.WorldState
                 }
             }
 
-            WorldContentEvent[] contentEvents = Object.FindObjectsByType<
-                WorldContentEvent
-            >(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            foreach (WorldContentEvent contentEvent in contentEvents)
+            foreach (WorldContentEvent contentEvent in sceneContentEvents)
             {
-                if (contentEvent.gameObject.scene != loadedScene)
-                {
-                    continue;
-                }
-
-                foundZone = true;
                 if (!contentEvent.IsCompleted)
                 {
                     return false;
                 }
             }
-            return foundZone;
+            return true;
         }
 
         private void Unload()
         {
             if (!loadedScene.IsValid() || !loadedScene.isLoaded)
             {
-                completed = true;
+                CompleteUnload();
                 return;
             }
 
-            SceneManager.UnloadSceneAsync(loadedScene);
+            unloadOperation = SceneManager.UnloadSceneAsync(loadedScene);
+            if (unloadOperation == null)
+            {
+                CompleteUnload();
+                return;
+            }
+
+            loaded = false;
+            Debug.Log(
+                $"Streaming region unload started: {displayName}"
+            );
+        }
+
+        private void CompleteUnload()
+        {
+            unloadOperation = null;
             completed = true;
             loaded = false;
+            loadedScene = default;
+            sceneZones = null;
+            sceneContentEvents = null;
             WorldRuntime.Instance?.MarkStreamingRegionCompleted(regionId);
             WorldStreamingDirector.Instance?.Cancel(this);
             Debug.Log(
                 $"Streaming region unloaded after completion: {displayName}"
             );
         }
+
+        private void RecordLoadFailure(string error)
+        {
+            retryAttempt++;
+            float delay = Mathf.Min(
+                8f,
+                retryBaseDelay * Mathf.Pow(2f, retryAttempt - 1)
+            );
+            nextRetryTime = Time.unscaledTime + delay;
+            lastLoadError = error;
+            WorldStreamingDirector.Instance?.Cancel(this);
+            Debug.LogWarning(
+                $"{error}. Retry {retryAttempt} in {delay:0.00}s."
+            );
+        }
+
+#if UNITY_EDITOR
+        public void RecordLoadFailureForTests(string error)
+        {
+            RecordLoadFailure(error);
+        }
+#endif
     }
 }

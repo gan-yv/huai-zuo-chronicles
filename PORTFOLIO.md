@@ -155,7 +155,7 @@ R          结局或队伍倒下后重开
 
 ### 内容系统
 
-- 案件资产位于 `Assets/Demo02/Data/Quests/Chapter01_Case.asset`，可直接在 Inspector 编辑。
+- 案件资产位于 `Assets/Demo02/Data/Cases/Chapter01_Case.asset`，可直接在 Inspector 编辑。
 - 调查案卷、证词面板、任务目标和推理文本只读取同一个案件资产。
 - 内容校验会检查重复 ID、缺失证据引用、矛盾答案和缺失阶段文案。
 - 对白脚本支持阶段、立场、证据去向和结局条件，并按条件自动匹配。

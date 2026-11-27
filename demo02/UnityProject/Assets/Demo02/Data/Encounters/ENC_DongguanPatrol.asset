@@ -15,6 +15,7 @@ MonoBehaviour:
   encounterId: dongguan-patrol
   displayName: "\u4E1C\u5173\u8857\u5DE1\u54E8"
   activationRadius: 17
+  enemyArchetype: 1
   enemyHealth: 60
   enemyDamage: 10
   enemyMoveSpeed: 2.2
