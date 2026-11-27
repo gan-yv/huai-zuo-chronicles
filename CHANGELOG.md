@@ -2,6 +2,18 @@
 
 本项目按可验证的开发里程碑记录变更。详细差异可通过 Git 提交和对应标签查看。
 
+## Stable World Object IDs v1.75.2 - 2026-11-27
+
+- 新增 `WorldObjectId` 场景组件和 `WorldRuntime` 对象注册表，按稳定 ID 查询
+  需要导航或交互的世界对象。
+- 任务导航不再通过 `NPC_ShenBo`、`RepairSite_TimeRift` 和 `Choice_Preserve`
+  等可变 GameObject 名称查找目标。
+- 地图快速旅行改为从世界运行时的出生点注册表获取 `WorldSpawnPoint`，不再调用
+  `GameObject.Find`。
+- NPC 和任务装配器为导航对象写入稳定 ID；场景升级检查会识别缺少注册组件的旧场景。
+- 世界回归检查必需对象 ID 和重复 ID；PlayMode 冒烟验证正式场景完成注册。
+- 架构审计禁止运行时源码继续使用 `GameObject.Find` 字符串查找。
+
 ## Centralized Runtime Services v1.75.1 - 2026-11-27
 
 - 新增 `GameServices.Resolve<T>()`，统一运行时代码的场景服务发现和缓存入口。

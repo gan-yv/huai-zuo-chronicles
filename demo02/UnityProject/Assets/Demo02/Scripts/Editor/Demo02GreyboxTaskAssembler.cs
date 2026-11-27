@@ -129,6 +129,9 @@ namespace Demo02.Editor
                 new Color(0.58f, 0.22f, 0.82f)
             );
             repairSite.AddComponent<RepairSite>();
+            repairSite
+                .AddComponent<WorldObjectId>()
+                .Configure("RepairSite_TimeRift");
 
             GameObject preserveOutcome =
                 Demo02SceneObjectFactory.CreateBlock(
@@ -164,6 +167,9 @@ namespace Demo02.Editor
                     preserveOutcome,
                     sealOutcome
                 );
+            preserveChoice
+                .AddComponent<WorldObjectId>()
+                .Configure("Choice_Preserve");
 
             GameObject sealChoice = Demo02SceneObjectFactory.CreateBlock(
                 root,
@@ -179,6 +185,9 @@ namespace Demo02.Editor
                     preserveOutcome,
                     sealOutcome
                 );
+            sealChoice
+                .AddComponent<WorldObjectId>()
+                .Configure("Choice_Seal");
 
             publicRecordVisual =
                 Demo02SceneObjectFactory.CreateBlock(

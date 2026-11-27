@@ -135,6 +135,16 @@ namespace Demo02.Editor
                         + $"resolution: {sourcePath}"
                     );
                 }
+                if (source.Contains(
+                        "GameObject.Find(",
+                        StringComparison.Ordinal
+                    ))
+                {
+                    throw new InvalidOperationException(
+                        "Runtime source relies on mutable GameObject names: "
+                        + sourcePath
+                    );
+                }
             }
 
             Debug.Log(

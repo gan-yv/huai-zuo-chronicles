@@ -47,6 +47,7 @@ namespace Demo02.UI
         private string statusMessage;
         private ScreenFade screenFade;
         private InvestigationState investigationState;
+        private WorldRuntime worldRuntime;
         private GameObject canvasObject;
         private Canvas canvas;
         private Text footerProgress;
@@ -75,6 +76,8 @@ namespace Demo02.UI
             screenFade = Demo02.Core.GameServices.Resolve<ScreenFade>();
             investigationState =
                 Demo02.Core.GameServices.Resolve<InvestigationState>();
+            worldRuntime =
+                Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (System.Array.IndexOf(
                 Demo02.Core.RuntimeLaunchOptions.Arguments,
                 "--preview-map"
@@ -843,8 +846,11 @@ namespace Demo02.UI
                 return;
             }
             GameAudio.PlayPortal();
-            GameObject spawn = GameObject.Find(spawnName);
-            if (spawn == null)
+            if (worldRuntime == null
+                || !worldRuntime.TryGetSpawnPoint(
+                    spawnName,
+                    out WorldSpawnPoint spawnPoint
+                ))
             {
                 statusMessage = $"找不到地点：{areaName}";
                 return;
@@ -856,7 +862,7 @@ namespace Demo02.UI
                 if (!screenFade.PlayTransition(() =>
                 {
                     LocalWorldPortal.TeleportParty(
-                        spawn.transform,
+                        spawnPoint.transform,
                         areaId,
                         areaName,
                         out _
@@ -868,7 +874,7 @@ namespace Demo02.UI
                 return;
             }
             if (!LocalWorldPortal.TeleportParty(
-                spawn.transform,
+                spawnPoint.transform,
                 areaId,
                 areaName,
                 out _
@@ -880,18 +886,17 @@ namespace Demo02.UI
 
         private static bool IsSpawnUnlocked(string spawnName)
         {
-            GameObject spawn = GameObject.Find(spawnName);
-            WorldSpawnPoint spawnPoint = spawn != null
-                ? spawn.GetComponent<WorldSpawnPoint>()
-                : null;
-            if (spawnPoint == null || !spawnPoint.IsFastTravelAnchor)
+            WorldRuntime runtime = WorldRuntime.Instance;
+            if (runtime == null
+                || !runtime.TryGetSpawnPoint(
+                    spawnName,
+                    out WorldSpawnPoint spawnPoint
+                )
+                || !spawnPoint.IsFastTravelAnchor)
             {
                 return true;
             }
-            return WorldRuntime.Instance == null
-                || WorldRuntime.Instance.IsAnchorUnlocked(
-                    spawnPoint.SpawnId
-                );
+            return runtime.IsAnchorUnlocked(spawnPoint.SpawnId);
         }
 
         private static string GetArgumentValue(string prefix)

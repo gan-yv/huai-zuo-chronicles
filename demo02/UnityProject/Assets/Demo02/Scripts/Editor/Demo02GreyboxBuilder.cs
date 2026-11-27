@@ -25,13 +25,44 @@ namespace Demo02.Editor
             Demo02ContentPipeline.BuildAll();
         }
 
-        internal static void BuildWorldArtifactsForPipeline()
+        public static void BuildWorldArtifactsForPipeline()
         {
             Demo02GreyboxSceneAssembler.BuildScene(forceRebuild: true);
+            ActivateMainSceneForArtifactBuild();
             Demo02GreyboxGameplayAssembler
                 .BuildStreamingEncounterScenes();
             Demo02GreyboxBootAssembler.BuildBootScene();
             Demo02GreyboxBootAssembler.ConfigureBuildSettings();
+        }
+
+        public static void RebuildWorldArtifactsForBatch()
+        {
+            RuntimeAssetBudgetSetup
+                .MakeEnvironmentMeshesReadableForBuild();
+            QuaterniusEnvironmentSetup.BuildAll();
+            ReadyMadeStreetDressingSetup.BuildAll();
+            ReadyMadeAudioSetup.BuildAll();
+            RuntimeAssetBudgetSetup.BuildAll();
+            BuildWorldArtifactsForPipeline();
+        }
+
+        private static void ActivateMainSceneForArtifactBuild()
+        {
+            UnityEngine.SceneManagement.Scene mainScene =
+                UnityEngine.SceneManagement.SceneManager.GetSceneByPath(
+                    Demo02GreyboxScenePaths.ScenePath
+                );
+            if (!mainScene.IsValid() || !mainScene.isLoaded)
+            {
+                mainScene = UnityEditor.SceneManagement
+                    .EditorSceneManager.OpenScene(
+                        Demo02GreyboxScenePaths.ScenePath,
+                        UnityEditor.SceneManagement.OpenSceneMode.Single
+                    );
+            }
+            UnityEngine.SceneManagement.SceneManager.SetActiveScene(
+                mainScene
+            );
         }
 
         public static void VerifyCombatDamageForBatch()

@@ -91,6 +91,9 @@ namespace Demo02.Editor
                 addNpcCollider: true
             );
             keeper.AddComponent<ShenBoInteractable>();
+            keeper
+                .AddComponent<WorldObjectId>()
+                .Configure("NPC_ShenBo");
             return keeper;
         }
 
@@ -369,6 +372,9 @@ namespace Demo02.Editor
             );
             npc.AddComponent<NpcDialogueInteractable>()
                 .ConfigureData(dialogueId);
+            npc
+                .AddComponent<WorldObjectId>()
+                .Configure(name);
             return npc;
         }
 

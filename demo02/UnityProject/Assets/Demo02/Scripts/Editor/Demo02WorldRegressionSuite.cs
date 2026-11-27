@@ -270,6 +270,31 @@ namespace Demo02.Editor
                         "World anchor network is incomplete."
                     );
                 }
+
+                WorldObjectId[] worldObjects = root
+                    .GetComponentsInChildren<WorldObjectId>(true);
+                string[] requiredObjectIds =
+                {
+                    "NPC_ShenBo",
+                    "NPC_WarehouseWorker",
+                    "NPC_TeaMaster",
+                    "RepairSite_TimeRift",
+                    "Choice_Preserve"
+                };
+                bool hasDuplicateIds = worldObjects
+                    .Where(worldObject =>
+                        !string.IsNullOrWhiteSpace(worldObject.ObjectId))
+                    .GroupBy(worldObject => worldObject.ObjectId)
+                    .Any(group => group.Count() > 1);
+                if (hasDuplicateIds
+                    || requiredObjectIds.Any(requiredId =>
+                        !worldObjects.Any(worldObject =>
+                            worldObject.ObjectId == requiredId)))
+                {
+                    throw new System.InvalidOperationException(
+                        "Stable world object registry is incomplete."
+                    );
+                }
             }
             finally
             {

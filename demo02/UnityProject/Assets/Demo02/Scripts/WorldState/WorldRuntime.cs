@@ -13,6 +13,7 @@ namespace Demo02.WorldState
     {
         private readonly Dictionary<string, WorldSpawnPoint> spawnPoints = new();
         private readonly Dictionary<string, WorldSpawnPoint> anchors = new();
+        private readonly Dictionary<string, WorldObjectId> worldObjects = new();
         private readonly HashSet<string> unlockedAnchorIds = new();
         private readonly HashSet<string> completedStreamingRegionIds =
             new();
@@ -75,6 +76,79 @@ namespace Demo02.WorldState
                     spawnPoints.Remove(spawnPoint.SpawnId);
                 }
             }
+        }
+
+        public bool TryGetSpawnPoint(
+            string spawnId,
+            out WorldSpawnPoint spawnPoint)
+        {
+            spawnPoint = null;
+            return !string.IsNullOrWhiteSpace(spawnId)
+                && spawnPoints.TryGetValue(spawnId, out spawnPoint)
+                && spawnPoint != null;
+        }
+
+        public void RegisterWorldObject(WorldObjectId worldObject)
+        {
+            if (worldObject == null
+                || string.IsNullOrWhiteSpace(worldObject.ObjectId))
+            {
+                return;
+            }
+
+            if (worldObjects.TryGetValue(
+                    worldObject.ObjectId,
+                    out WorldObjectId existing
+                )
+                && existing != null
+                && existing != worldObject)
+            {
+                Debug.LogError(
+                    $"Duplicate world object ID: {worldObject.ObjectId}",
+                    worldObject
+                );
+                return;
+            }
+            worldObjects[worldObject.ObjectId] = worldObject;
+        }
+
+        public void UnregisterWorldObject(WorldObjectId worldObject)
+        {
+            if (worldObject == null
+                || string.IsNullOrWhiteSpace(worldObject.ObjectId))
+            {
+                return;
+            }
+            if (worldObjects.TryGetValue(
+                    worldObject.ObjectId,
+                    out WorldObjectId current
+                )
+                && current == worldObject)
+            {
+                worldObjects.Remove(worldObject.ObjectId);
+            }
+        }
+
+        public bool TryGetWorldObject(
+            string objectId,
+            out WorldObjectId worldObject)
+        {
+            worldObject = null;
+            if (string.IsNullOrWhiteSpace(objectId)
+                || !worldObjects.TryGetValue(
+                    objectId,
+                    out WorldObjectId found
+                ))
+            {
+                return false;
+            }
+            if (found == null)
+            {
+                worldObjects.Remove(objectId);
+                return false;
+            }
+            worldObject = found;
+            return true;
         }
 
         public void RegisterAnchor(WorldSpawnPoint anchor)
@@ -366,9 +440,26 @@ namespace Demo02.WorldState
             {
                 CurrentDistrictId = scene.name;
             }
+            RegisterSceneWorldObjects(scene);
             if (!string.IsNullOrWhiteSpace(pendingSpawnId))
             {
                 StartCoroutine(PlacePlayerAtPendingSpawn());
+            }
+        }
+
+        private void RegisterSceneWorldObjects(Scene scene)
+        {
+            if (!scene.IsValid() || !scene.isLoaded)
+            {
+                return;
+            }
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                foreach (WorldObjectId worldObject in
+                         root.GetComponentsInChildren<WorldObjectId>(true))
+                {
+                    RegisterWorldObject(worldObject);
+                }
             }
         }
 

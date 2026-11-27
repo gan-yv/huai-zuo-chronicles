@@ -304,6 +304,14 @@ namespace Demo02.Editor
                 || existingRoot.GetComponentInChildren<
                     QuickHealController
                 >(true) == null
+                || root.Find("RepairSite_TimeRift")
+                    ?.GetComponent<WorldObjectId>() == null
+                || root.Find("Choice_Preserve")
+                    ?.GetComponent<WorldObjectId>() == null
+                || root.Find("NPC_ShenBo")
+                    ?.GetComponent<WorldObjectId>() == null
+                || root.Find("NPC_WarehouseWorker")
+                    ?.GetComponent<WorldObjectId>() == null
                 || root.Find("GameSession") == null;
         }
     }

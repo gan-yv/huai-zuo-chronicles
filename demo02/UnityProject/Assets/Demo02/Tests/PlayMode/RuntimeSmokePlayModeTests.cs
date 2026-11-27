@@ -95,6 +95,27 @@ namespace Demo02.Tests.PlayMode
                 Is.True
             );
             Assert.That(flowState, Is.SameAs(GameFlowController.Instance));
+            Assert.That(
+                WorldRuntime.Instance.TryGetWorldObject(
+                    "NPC_ShenBo",
+                    out _
+                ),
+                Is.True
+            );
+            Assert.That(
+                WorldRuntime.Instance.TryGetWorldObject(
+                    "RepairSite_TimeRift",
+                    out _
+                ),
+                Is.True
+            );
+            Assert.That(
+                WorldRuntime.Instance.TryGetWorldObject(
+                    "Choice_Preserve",
+                    out _
+                ),
+                Is.True
+            );
         }
 
         [UnityTest]

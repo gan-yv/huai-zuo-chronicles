@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.75.1
+# Huai-Zuo Chronicles v1.75.2
 
 发布日期：2026-11-27  
 平台：Windows x64 / Unity Project  
@@ -11,15 +11,16 @@
 - [项目首页](README.md)
 - [完整变更记录](CHANGELOG.md)
 
-本次版本统一运行时服务发现入口，不改变玩法、存档格式和内容版本。
+本次版本用稳定世界对象 ID 替代运行时字符串对象查找，不改变玩法、存档格式和
+内容版本。
 
 ## 本版重点
 
-- 新增 `GameServices.Resolve<T>()`，集中处理场景服务解析和缓存。
-- 迁移运行时全部直接 `FindAnyObjectByType` 调用到统一服务入口。
-- 已销毁 Unity 对象的服务注册会在下一次查询时自动失效。
-- 架构审计禁止运行时代码绕过统一入口执行场景类型搜索。
-- 增加服务解析、缓存和销毁失效的 EditMode 回归。
+- 新增 `WorldObjectId` 和 `WorldRuntime` 世界对象注册表。
+- 任务导航改用稳定对象 ID，不再依赖 NPC、修复点和结局选项的 GameObject 名称。
+- 地图快速旅行改用出生点注册表，不再使用 `GameObject.Find`。
+- 场景装配器为导航对象配置稳定 ID，重复或缺失 ID 会由内容回归发现。
+- 架构审计禁止运行时源码继续使用 `GameObject.Find`。
 
 ## 验证
 

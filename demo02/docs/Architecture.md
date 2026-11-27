@@ -45,6 +45,10 @@
 
 `WorldRuntime` 是跨场景世界会话入口，但具体状态按集合分类：已解锁锚点、已完成流式区域、已清理遭遇、已开始事件和已完成事件。
 
+需要被导航、任务或地图定位的场景对象使用 `WorldObjectId` 注册稳定 ID。
+运行时通过 `WorldRuntime.TryGetWorldObject` 和 `TryGetSpawnPoint` 查询，不使用
+可变 GameObject 名称。重复 ID 会作为内容装配错误处理。
+
 ## 共享服务
 
 - `GameplayUiState`：统一判断弹窗、对话、地图、案卷、背包、暂停和结局是否阻止玩法输入。

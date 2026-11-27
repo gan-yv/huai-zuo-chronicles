@@ -14,6 +14,7 @@ namespace Demo02.UI
         private InvestigationState investigationState;
         private PlayerPartyController party;
         private TimeLayerController timeLayerController;
+        private WorldRuntime worldRuntime;
         private Transform currentTarget;
         private string navigationHint = string.Empty;
         private Transform optionalTarget;
@@ -40,6 +41,8 @@ namespace Demo02.UI
             party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             timeLayerController =
                 Demo02.Core.GameServices.Resolve<TimeLayerController>();
+            worldRuntime =
+                Demo02.Core.GameServices.Resolve<WorldRuntime>();
 
             if (investigationState != null)
             {
@@ -267,12 +270,9 @@ namespace Demo02.UI
                     optional.TargetObjectName
                 ))
             {
-                GameObject targetObject = GameObject.Find(
+                optionalTarget = FindWorldObject(
                     optional.TargetObjectName
                 );
-                optionalTarget = targetObject != null
-                    ? targetObject.transform
-                    : null;
                 optionalHint = optional.TrackerHint;
             }
 
@@ -312,28 +312,34 @@ namespace Demo02.UI
                     }
                     return;
                 case ChapterStage.RepairRift:
-                    GameObject repairSite =
-                        GameObject.Find("RepairSite_TimeRift");
-                    currentTarget = repairSite != null
-                        ? repairSite.transform
-                        : null;
+                    currentTarget = FindWorldObject(
+                        "RepairSite_TimeRift"
+                    );
                     navigationHint = "压下被撕开的记录";
                     return;
                 case ChapterStage.FinalDecision:
-                    GameObject choice =
-                        GameObject.Find("Choice_Preserve");
-                    currentTarget = choice != null
-                        ? choice.transform
-                        : null;
+                    currentTarget = FindWorldObject(
+                        "Choice_Preserve"
+                    );
                     navigationHint = "决定盐引巷的命运";
                     return;
             }
         }
 
-        private static Transform FindShenBo()
+        private Transform FindShenBo()
         {
-            GameObject shenBo = GameObject.Find("NPC_ShenBo");
-            return shenBo != null ? shenBo.transform : null;
+            return FindWorldObject("NPC_ShenBo");
+        }
+
+        private Transform FindWorldObject(string objectId)
+        {
+            return worldRuntime != null
+                && worldRuntime.TryGetWorldObject(
+                    objectId,
+                    out WorldObjectId worldObject
+                )
+                ? worldObject.transform
+                : null;
         }
 
         private Transform FindUncollectedClue()
