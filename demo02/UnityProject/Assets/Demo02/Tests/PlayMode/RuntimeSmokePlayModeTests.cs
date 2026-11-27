@@ -2,6 +2,7 @@ using System.Collections;
 using Demo02.Core;
 using Demo02.Narrative;
 using Demo02.Player;
+using Demo02.UI;
 using Demo02.WorldState;
 using NUnit.Framework;
 using UnityEngine;
@@ -95,6 +96,26 @@ namespace Demo02.Tests.PlayMode
                 Is.True
             );
             Assert.That(flowState, Is.SameAs(GameFlowController.Instance));
+            Assert.That(
+                GameServices.TryGet<WorldRuntime>(out _),
+                Is.True
+            );
+            Assert.That(
+                GameServices.TryGet<GameFlowController>(out _),
+                Is.True
+            );
+            Assert.That(
+                GameServices.TryGet<ScreenFade>(out _),
+                Is.True
+            );
+            Assert.That(
+                GameServices.TryGet<SaveSlotController>(out _),
+                Is.True
+            );
+            Assert.That(
+                GameServices.TryGet<WorldContentTracker>(out _),
+                Is.True
+            );
             Assert.That(
                 WorldRuntime.Instance.TryGetWorldObject(
                     "NPC_ShenBo",

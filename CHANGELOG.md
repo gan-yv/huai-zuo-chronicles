@@ -2,6 +2,14 @@
 
 本项目按可验证的开发里程碑记录变更。详细差异可通过 Git 提交和对应标签查看。
 
+## Service-Owned Singleton Lifecycle v1.75.4 - 2026-11-27
+
+- 18 个运行时单例组件在 `Awake` 注册到 `GameServices`，销毁时解除注册。
+- 其他系统对静态 `Instance` 的 141 处访问迁移到 `GameServices.Resolve<T>()`。
+- 服务解析继续复用统一缓存，并在 Unity 对象销毁后自动清理失效引用。
+- 架构审计禁止跨类型读取静态 `Instance`；单例属性仅在自身文件内维护生命周期。
+- PlayMode 冒烟验证世界、流程、转场、存档和街区内容服务均已进入容器。
+
 ## Foundation Assembly Boundary v1.75.3 - 2026-11-27
 
 - 新增 `Demo02.Foundation` 运行时基础程序集，承载 `GameServices`、场景名称常量和

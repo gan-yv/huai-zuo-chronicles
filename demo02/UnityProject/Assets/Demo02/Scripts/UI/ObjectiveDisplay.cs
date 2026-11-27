@@ -246,7 +246,7 @@ namespace Demo02.UI
             }
 
             WorldContentEntry trackedContent =
-                WorldContentTracker.Instance?.GetTrackedEntry();
+                Demo02.Core.GameServices.Resolve<WorldContentTracker>()?.GetTrackedEntry();
             hasTrackedContent = trackedContent != null;
             street.gameObject.SetActive(hasTrackedContent);
             if (hasTrackedContent)

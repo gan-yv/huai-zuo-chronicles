@@ -40,7 +40,7 @@ namespace Demo02.Interaction
 
         public string Interact(PlayerInteractor interactor)
         {
-            DialogueController controller = DialogueController.Instance;
+            DialogueController controller = Demo02.Core.GameServices.Resolve<DialogueController>();
             if (controller == null)
             {
                 return "对话系统尚未初始化。";

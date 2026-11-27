@@ -42,10 +42,10 @@ namespace Demo02.Combat
 
         private void Start()
         {
-            WorldEncounterDirector.Instance?.Register(this);
+            Demo02.Core.GameServices.Resolve<WorldEncounterDirector>()?.Register(this);
             if (definition != null
-                && WorldRuntime.Instance != null
-                && WorldRuntime.Instance.IsEncounterCompleted(
+                && Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                && Demo02.Core.GameServices.Resolve<WorldRuntime>().IsEncounterCompleted(
                     definition.EncounterId
                 ))
             {
@@ -72,7 +72,7 @@ namespace Demo02.Combat
 
             nextPlayerCheck = Time.time + 0.25f;
             Transform player =
-                WorldStreamingDirector.Instance?.PlayerTransform;
+                Demo02.Core.GameServices.Resolve<WorldStreamingDirector>()?.PlayerTransform;
             if (player == null)
             {
                 return;
@@ -106,7 +106,7 @@ namespace Demo02.Combat
                 enemy.Died -= OnEnemyDied;
                 enemy.Died += OnEnemyDied;
             }
-            WorldEncounterDirector.Instance?.NotifyActivated(this);
+            Demo02.Core.GameServices.Resolve<WorldEncounterDirector>()?.NotifyActivated(this);
             Debug.Log($"Encounter activated: {definition.DisplayName}");
             return true;
         }
@@ -127,7 +127,7 @@ namespace Demo02.Combat
             resolved = !anyAlive;
             if (resolved && !wasResolved && definition != null)
             {
-                WorldRuntime.Instance?.MarkEncounterCompleted(
+                Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkEncounterCompleted(
                     definition.EncounterId
                 );
             }
@@ -140,7 +140,7 @@ namespace Demo02.Combat
 
         private void OnDestroy()
         {
-            WorldEncounterDirector.Instance?.Unregister(this);
+            Demo02.Core.GameServices.Resolve<WorldEncounterDirector>()?.Unregister(this);
             foreach (Combatant enemy in enemies)
             {
                 if (enemy != null)

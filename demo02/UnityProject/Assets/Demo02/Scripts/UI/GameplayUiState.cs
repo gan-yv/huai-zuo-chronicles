@@ -93,7 +93,7 @@ namespace Demo02.UI
         private static IGameFlowState ResolveGameFlow()
         {
             return GameServices.GetOrNull<IGameFlowState>()
-                ?? GameFlowController.Instance;
+                ?? Demo02.Core.GameServices.Resolve<GameFlowController>();
         }
     }
 }

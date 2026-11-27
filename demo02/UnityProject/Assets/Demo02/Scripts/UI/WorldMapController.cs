@@ -68,6 +68,7 @@ namespace Demo02.UI
                 return;
             }
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
             EnsureUi();
         }
 
@@ -137,6 +138,7 @@ namespace Demo02.UI
             GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
             if (canvasObject == null)
@@ -677,8 +679,8 @@ namespace Demo02.UI
 
         private void RefreshMap()
         {
-            string currentAreaId = WorldRuntime.Instance != null
-                ? WorldRuntime.Instance.CurrentAreaId
+            string currentAreaId = Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                ? Demo02.Core.GameServices.Resolve<WorldRuntime>().CurrentAreaId
                 : string.Empty;
             foreach (MapNodeView node in nodes)
             {
@@ -753,7 +755,7 @@ namespace Demo02.UI
 
         private void RefreshWorldMarkers()
         {
-            WorldContentTracker tracker = WorldContentTracker.Instance;
+            WorldContentTracker tracker = Demo02.Core.GameServices.Resolve<WorldContentTracker>();
             IReadOnlyList<WorldContentEntry> entries =
                 tracker != null ? tracker.Entries : null;
             int count = entries?.Count ?? 0;
@@ -821,8 +823,8 @@ namespace Demo02.UI
             string areaId,
             string displayName)
         {
-            string currentAreaId = WorldRuntime.Instance != null
-                ? WorldRuntime.Instance.CurrentAreaId
+            string currentAreaId = Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                ? Demo02.Core.GameServices.Resolve<WorldRuntime>().CurrentAreaId
                 : string.Empty;
             if (areaId == currentAreaId)
             {
@@ -886,7 +888,7 @@ namespace Demo02.UI
 
         private static bool IsSpawnUnlocked(string spawnName)
         {
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (runtime == null
                 || !runtime.TryGetSpawnPoint(
                     spawnName,

@@ -35,12 +35,14 @@ namespace Demo02.WorldState
         private void Awake()
         {
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
         }
 
         private void OnDestroy()
         {
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }
@@ -54,7 +56,7 @@ namespace Demo02.WorldState
 
         public WorldContentStatus GetStatus(WorldContentEntry entry)
         {
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (entry == null || runtime == null)
             {
                 return WorldContentStatus.Undiscovered;

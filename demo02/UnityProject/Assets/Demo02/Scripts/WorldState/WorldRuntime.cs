@@ -41,6 +41,7 @@ namespace Demo02.WorldState
             }
 
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
             if (GetComponent<WorldStreamingDirector>() == null)
             {
                 gameObject.AddComponent<WorldStreamingDirector>();
@@ -55,6 +56,7 @@ namespace Demo02.WorldState
             if (Instance == this)
             {
                 SceneManager.sceneLoaded -= OnSceneLoaded;
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }

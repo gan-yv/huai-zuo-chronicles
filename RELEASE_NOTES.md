@@ -1,4 +1,4 @@
-# Huai-Zuo Chronicles v1.75.3
+# Huai-Zuo Chronicles v1.75.4
 
 发布日期：2026-11-27  
 平台：Windows x64 / Unity Project  
@@ -11,14 +11,14 @@
 - [项目首页](README.md)
 - [完整变更记录](CHANGELOG.md)
 
-本次版本建立最底层 Foundation 程序集边界，不改变玩法、存档格式和内容版本。
+本次版本收口运行时单例生命周期，不改变玩法、存档格式和内容版本。
 
 ## 本版重点
 
-- 新增 `Demo02.Foundation` 程序集，收纳服务注册、场景常量和启动参数入口。
-- Runtime、Editor、EditMode 和 PlayMode 显式依赖 Foundation。
-- Foundation 禁止引用任何游戏程序集，依赖方向由架构测试强制检查。
-- 保留脚本 GUID，现有场景、Prefab 和构建引用保持兼容。
+- 18 个运行时单例组件在创建时注册、销毁时解除注册。
+- 跨类型静态 `Instance` 的 141 处读取迁移到统一服务解析。
+- 架构审计禁止新增跨类型静态单例访问。
+- PlayMode 验证世界、流程、转场、存档和街区内容服务注册。
 
 ## 验证
 

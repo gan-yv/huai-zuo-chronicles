@@ -12,7 +12,7 @@ namespace Demo02.WorldState
 
         private void Awake()
         {
-            runtime = WorldRuntime.Instance;
+            runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
         }
 
         public void Configure(string id, string areaDisplayName)
@@ -39,7 +39,7 @@ namespace Demo02.WorldState
                 return;
             }
 
-            runtime = runtime != null ? runtime : WorldRuntime.Instance;
+            runtime = runtime != null ? runtime : Demo02.Core.GameServices.Resolve<WorldRuntime>();
             runtime?.SetCurrentArea(areaId, displayName);
         }
     }

@@ -41,8 +41,8 @@ namespace Demo02.Interaction
 
         private void Start()
         {
-            inventoryState = InventoryState.Instance != null
-                ? InventoryState.Instance
+            inventoryState = Demo02.Core.GameServices.Resolve<InventoryState>() != null
+                ? Demo02.Core.GameServices.Resolve<InventoryState>()
                 : Demo02.Core.GameServices.Resolve<InventoryState>();
             InvestigationState investigation =
                 Demo02.Core.GameServices.Resolve<InvestigationState>();

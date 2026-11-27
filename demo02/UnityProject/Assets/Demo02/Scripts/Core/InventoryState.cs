@@ -21,12 +21,14 @@ namespace Demo02.Core
         private void Awake()
         {
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
         }
 
         private void OnDestroy()
         {
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }

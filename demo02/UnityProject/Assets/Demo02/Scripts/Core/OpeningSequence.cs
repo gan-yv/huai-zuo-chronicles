@@ -9,7 +9,7 @@ namespace Demo02.Core
     {
         private void Start()
         {
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (runtime == null || !runtime.ConsumeOpeningRequest())
             {
                 return;

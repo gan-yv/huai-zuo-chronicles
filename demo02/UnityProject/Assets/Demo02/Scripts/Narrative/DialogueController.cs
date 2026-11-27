@@ -58,6 +58,7 @@ namespace Demo02.Narrative
                 return;
             }
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
             EnsureUi();
         }
 
@@ -66,6 +67,7 @@ namespace Demo02.Narrative
             GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
             Time.timeScale = 1f;

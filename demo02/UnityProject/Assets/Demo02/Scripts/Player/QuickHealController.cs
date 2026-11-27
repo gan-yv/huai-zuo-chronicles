@@ -24,8 +24,8 @@ namespace Demo02.Player
         private void Start()
         {
             party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
-            inventory = InventoryState.Instance != null
-                ? InventoryState.Instance
+            inventory = Demo02.Core.GameServices.Resolve<InventoryState>() != null
+                ? Demo02.Core.GameServices.Resolve<InventoryState>()
                 : Demo02.Core.GameServices.Resolve<InventoryState>();
             investigation = Demo02.Core.GameServices.Resolve<InvestigationState>();
         }

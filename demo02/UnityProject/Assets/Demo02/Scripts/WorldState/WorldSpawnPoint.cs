@@ -30,19 +30,19 @@ namespace Demo02.WorldState
 
         private void Awake()
         {
-            WorldRuntime.Instance?.RegisterSpawnPoint(this);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.RegisterSpawnPoint(this);
             if (isFastTravelAnchor)
             {
-                WorldRuntime.Instance?.RegisterAnchor(this);
+                Demo02.Core.GameServices.Resolve<WorldRuntime>()?.RegisterAnchor(this);
             }
         }
 
         private void OnDestroy()
         {
-            WorldRuntime.Instance?.UnregisterSpawnPoint(this);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.UnregisterSpawnPoint(this);
             if (isFastTravelAnchor)
             {
-                WorldRuntime.Instance?.UnregisterAnchor(this);
+                Demo02.Core.GameServices.Resolve<WorldRuntime>()?.UnregisterAnchor(this);
             }
         }
     }

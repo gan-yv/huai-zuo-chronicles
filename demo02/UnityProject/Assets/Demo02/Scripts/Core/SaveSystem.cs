@@ -155,7 +155,7 @@ namespace Demo02.Core
             party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             timeLayerController = Demo02.Core.GameServices.Resolve<TimeLayerController>();
 
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (runtime != null && runtime.PendingSave != null)
             {
                 WorldSaveData pendingSave = runtime.PendingSave;
@@ -263,7 +263,7 @@ namespace Demo02.Core
 
             slotIndex = Mathf.Clamp(slotIndex, AutoSlot, ManualSlotCount);
             Transform activeCharacter = party.ActiveCharacter;
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             WorldSaveData data = new()
             {
                 Version = WorldSaveData.CurrentVersion,
@@ -429,7 +429,7 @@ namespace Demo02.Core
 
         private static bool LoadSaveData(WorldSaveData data, int slotIndex)
         {
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (runtime == null)
             {
                 Debug.LogError("WorldRuntime is missing while loading a save.");
@@ -478,19 +478,19 @@ namespace Demo02.Core
             );
             timeLayerController.SetLayer(data.TimeLayer);
             party.RestoreActiveCharacter(data.ActivePartyIndex);
-            WorldRuntime.Instance?.RestoreUnlockedAnchors(
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.RestoreUnlockedAnchors(
                 data.UnlockedAnchorIds
             );
-            WorldRuntime.Instance?.RestoreCompletedStreamingRegions(
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.RestoreCompletedStreamingRegions(
                 data.CompletedStreamingRegionIds
             );
-            WorldRuntime.Instance?.RestoreCompletedEncounters(
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.RestoreCompletedEncounters(
                 data.CompletedEncounterIds
             );
-            WorldRuntime.Instance?.RestoreCompletedWorldContent(
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.RestoreCompletedWorldContent(
                 data.CompletedWorldContentIds
             );
-            WorldRuntime.Instance?.RestoreStartedWorldContent(
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.RestoreStartedWorldContent(
                 data.StartedWorldContentIds
             );
             inventoryState?.Restore(
@@ -523,11 +523,11 @@ namespace Demo02.Core
                 }
             }
 
-            WorldRuntime.Instance?.RestoreChapterIdentity(
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.RestoreChapterIdentity(
                 data.ChapterId,
                 data.CaseId
             );
-            WorldRuntime.Instance?.SetCurrentArea(data.AreaId, data.AreaName);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.SetCurrentArea(data.AreaId, data.AreaName);
         }
 
         private static void RestoreCombatantStates(
@@ -631,7 +631,7 @@ namespace Demo02.Core
                 return string.Empty;
             }
 
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             List<string> state = new()
             {
                 "scene:" + SceneManager.GetActiveScene().name,

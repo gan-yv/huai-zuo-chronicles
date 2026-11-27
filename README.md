@@ -13,7 +13,7 @@
 
 | 项目 | 内容 |
 |---|---|
-| 当前版本 | **v1.75.3** |
+| 当前版本 | **v1.75.4** |
 | 引擎 | Unity 6000.5.7f1、Universal Render Pipeline |
 | 语言 | C# |
 | 目标平台 | Windows x64 |
@@ -94,6 +94,7 @@
 ### 运行时服务
 
 - `GameServices` 提供 Composition Root 和服务契约。
+- 运行时场景服务注册后在 `GameServices` 中解析，其他系统不再读取静态单例。
 - `IGameFlowState` 隔离暂停与结束状态。
 - `IContentProvider` 隔离 Resources 和未来 Addressables 实现。
 - `RuntimeLaunchOptions` 统一预览、截图、测试和性能采样参数。

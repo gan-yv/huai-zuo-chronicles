@@ -68,8 +68,8 @@ namespace Demo02.WorldState
 
         private void Start()
         {
-            if (WorldRuntime.Instance != null
-                && WorldRuntime.Instance.IsStreamingRegionCompleted(
+            if (Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                && Demo02.Core.GameServices.Resolve<WorldRuntime>().IsStreamingRegionCompleted(
                     regionId
                 ))
             {
@@ -77,7 +77,7 @@ namespace Demo02.WorldState
             }
             if (loadOnStart)
             {
-                WorldStreamingDirector.Instance?.RequestLoad(
+                Demo02.Core.GameServices.Resolve<WorldStreamingDirector>()?.RequestLoad(
                     this,
                     urgent: true
                 );
@@ -133,18 +133,18 @@ namespace Demo02.WorldState
             {
                 return;
             }
-            if (WorldRuntime.Instance != null
-                && WorldRuntime.Instance.IsStreamingRegionCompleted(
+            if (Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                && Demo02.Core.GameServices.Resolve<WorldRuntime>().IsStreamingRegionCompleted(
                     regionId
                 ))
             {
                 completed = true;
-                WorldStreamingDirector.Instance?.Cancel(this);
+                Demo02.Core.GameServices.Resolve<WorldStreamingDirector>()?.Cancel(this);
                 return;
             }
 
             Transform player =
-                WorldStreamingDirector.Instance?.PlayerTransform;
+                Demo02.Core.GameServices.Resolve<WorldStreamingDirector>()?.PlayerTransform;
             if (player == null)
             {
                 return;
@@ -157,7 +157,7 @@ namespace Demo02.WorldState
             {
                 if (distanceSquared <= loadRadius * loadRadius)
                 {
-                    WorldStreamingDirector.Instance?.RequestLoad(
+                    Demo02.Core.GameServices.Resolve<WorldStreamingDirector>()?.RequestLoad(
                         this,
                         urgent: true
                     );
@@ -165,7 +165,7 @@ namespace Demo02.WorldState
                 else if (distanceSquared
                          <= preloadRadius * preloadRadius)
                 {
-                    WorldStreamingDirector.Instance?.RequestLoad(
+                    Demo02.Core.GameServices.Resolve<WorldStreamingDirector>()?.RequestLoad(
                         this,
                         urgent: false
                     );
@@ -282,8 +282,8 @@ namespace Demo02.WorldState
             loadedScene = default;
             sceneZones = null;
             sceneContentEvents = null;
-            WorldRuntime.Instance?.MarkStreamingRegionCompleted(regionId);
-            WorldStreamingDirector.Instance?.Cancel(this);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkStreamingRegionCompleted(regionId);
+            Demo02.Core.GameServices.Resolve<WorldStreamingDirector>()?.Cancel(this);
             Debug.Log(
                 $"Streaming region unloaded after completion: {displayName}"
             );
@@ -298,7 +298,7 @@ namespace Demo02.WorldState
             );
             nextRetryTime = Time.unscaledTime + delay;
             lastLoadError = error;
-            WorldStreamingDirector.Instance?.Cancel(this);
+            Demo02.Core.GameServices.Resolve<WorldStreamingDirector>()?.Cancel(this);
             Debug.LogWarning(
                 $"{error}. Retry {retryAttempt} in {delay:0.00}s."
             );

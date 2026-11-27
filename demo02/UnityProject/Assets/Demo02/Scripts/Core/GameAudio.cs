@@ -44,6 +44,7 @@ namespace Demo02.Core
             }
 
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
             IsMuted = PlayerPrefs.GetInt(MutedPreference, 0) == 1;
 
             ambientSource = CreateSource("Ambient Wind", loop: true, volume: 0.17f);
@@ -378,6 +379,7 @@ namespace Demo02.Core
         {
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
 

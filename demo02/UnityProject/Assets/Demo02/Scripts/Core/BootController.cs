@@ -319,7 +319,7 @@ namespace Demo02.Core
             string areaName = chapter != null
                 ? chapter.EntryAreaName
                 : "官署前街";
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (runtime != null)
             {
                 runtime.BeginChapter(

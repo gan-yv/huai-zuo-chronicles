@@ -43,6 +43,7 @@ namespace Demo02.Core
         private void Awake()
         {
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
             GameServices.Register<IGameFlowState>(this);
             investigationState = Demo02.Core.GameServices.Resolve<InvestigationState>();
             party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
@@ -269,7 +270,7 @@ namespace Demo02.Core
             {
                 controller.enabled = wasEnabled;
             }
-            WorldRuntime.Instance?.SetCurrentArea(
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.SetCurrentArea(
                 areaId,
                 areaName
             );
@@ -301,7 +302,7 @@ namespace Demo02.Core
             );
             yield return null;
             PaperKiteStoryController story =
-                PaperKiteStoryController.Instance;
+                Demo02.Core.GameServices.Resolve<PaperKiteStoryController>();
             if (story == null)
             {
                 yield break;
@@ -326,7 +327,7 @@ namespace Demo02.Core
                 "东关街"
             );
             yield return null;
-            PaperKiteStoryController.Instance
+            Demo02.Core.GameServices.Resolve<PaperKiteStoryController>()
                 ?.CompletePublicChoiceFromPreview();
         }
 
@@ -430,6 +431,7 @@ namespace Demo02.Core
             GameServices.Unregister<IGameFlowState>(this);
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }
@@ -441,8 +443,8 @@ namespace Demo02.Core
                 return;
             }
 
-            if (SaveSlotController.Instance != null
-                && SaveSlotController.Instance.IsOpen)
+            if (Demo02.Core.GameServices.Resolve<SaveSlotController>() != null
+                && Demo02.Core.GameServices.Resolve<SaveSlotController>().IsOpen)
             {
                 return;
             }
@@ -824,9 +826,9 @@ namespace Demo02.Core
                 Time.timeScale = 0f;
             }
 
-            if (SaveSlotController.Instance != null)
+            if (Demo02.Core.GameServices.Resolve<SaveSlotController>() != null)
             {
-                SaveSlotController.Instance.Open();
+                Demo02.Core.GameServices.Resolve<SaveSlotController>().Open();
             }
         }
 

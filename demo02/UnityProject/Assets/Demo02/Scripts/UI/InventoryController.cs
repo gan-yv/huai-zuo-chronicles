@@ -35,12 +35,13 @@ namespace Demo02.UI
             }
 
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
         }
 
         private void Start()
         {
-            inventoryState = InventoryState.Instance != null
-                ? InventoryState.Instance
+            inventoryState = Demo02.Core.GameServices.Resolve<InventoryState>() != null
+                ? Demo02.Core.GameServices.Resolve<InventoryState>()
                 : Demo02.Core.GameServices.Resolve<InventoryState>();
             party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             investigationState =
@@ -130,6 +131,7 @@ namespace Demo02.UI
             GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }
@@ -137,8 +139,8 @@ namespace Demo02.UI
         private bool IsBlockedByOtherUi()
         {
             return GameplayUiState.HasOpenModalExcept(this)
-                || (ScreenFade.Instance != null
-                    && ScreenFade.Instance.IsTransitioning);
+                || (Demo02.Core.GameServices.Resolve<ScreenFade>() != null
+                    && Demo02.Core.GameServices.Resolve<ScreenFade>().IsTransitioning);
         }
 
         private void OnGUI()

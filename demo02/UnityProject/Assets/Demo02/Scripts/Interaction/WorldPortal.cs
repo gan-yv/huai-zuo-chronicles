@@ -21,7 +21,7 @@ namespace Demo02.Interaction
 
         public string Interact(PlayerInteractor interactor)
         {
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (runtime == null)
             {
                 return "世界运行时尚未初始化。";

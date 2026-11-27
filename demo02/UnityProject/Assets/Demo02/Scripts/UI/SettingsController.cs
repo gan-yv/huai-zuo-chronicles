@@ -51,6 +51,7 @@ namespace Demo02.UI
                 return;
             }
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
             EnsureUi();
         }
 
@@ -110,8 +111,8 @@ namespace Demo02.UI
             if (!Demo02Input.SettingsPressed
                 || Time.timeScale <= 0f
                 || GameplayUiState.HasOpenModalExcept(this)
-                || (ScreenFade.Instance != null
-                    && ScreenFade.Instance.IsTransitioning))
+                || (Demo02.Core.GameServices.Resolve<ScreenFade>() != null
+                    && Demo02.Core.GameServices.Resolve<ScreenFade>().IsTransitioning))
             {
                 return;
             }
@@ -165,6 +166,7 @@ namespace Demo02.UI
             GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
             if (canvasObject == null)

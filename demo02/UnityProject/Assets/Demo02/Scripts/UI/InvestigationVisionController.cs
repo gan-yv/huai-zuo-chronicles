@@ -27,6 +27,7 @@ namespace Demo02.UI
             }
 
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
         }
 
         private void Start()
@@ -54,7 +55,7 @@ namespace Demo02.UI
 
             if (Time.timeScale <= 0f
                 || GameplayUiState.IsGameplayBlocked
-                || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
+                || (Demo02.Core.GameServices.Resolve<ScreenFade>() != null && Demo02.Core.GameServices.Resolve<ScreenFade>().IsTransitioning))
             {
                 return;
             }
@@ -308,6 +309,7 @@ namespace Demo02.UI
         {
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }

@@ -67,8 +67,8 @@ namespace Demo02.WorldState
             (investigationState != null
                 && (investigationState.HasFact(PublicChoiceFact)
                     || investigationState.HasFact(PrivateChoiceFact)))
-            || (WorldRuntime.Instance != null
-                && WorldRuntime.Instance.IsWorldContentCompleted(ContentId));
+            || (Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                && Demo02.Core.GameServices.Resolve<WorldRuntime>().IsWorldContentCompleted(ContentId));
 
         public void Configure(
             Transform storyteller,
@@ -91,6 +91,7 @@ namespace Demo02.WorldState
         private void Awake()
         {
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
         }
 
         private void Start()
@@ -100,7 +101,7 @@ namespace Demo02.WorldState
             timeLayerController =
                 Demo02.Core.GameServices.Resolve<TimeLayerController>();
             party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
-            contentTracker = WorldContentTracker.Instance;
+            contentTracker = Demo02.Core.GameServices.Resolve<WorldContentTracker>();
             RefreshState(force: true);
         }
 
@@ -108,6 +109,7 @@ namespace Demo02.WorldState
         {
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }
@@ -121,7 +123,7 @@ namespace Demo02.WorldState
                 timeLayerController =
                     Demo02.Core.GameServices.Resolve<TimeLayerController>();
                 party = Demo02.Core.GameServices.Resolve<PlayerPartyController>();
-                contentTracker = WorldContentTracker.Instance;
+                contentTracker = Demo02.Core.GameServices.Resolve<WorldContentTracker>();
                 hasRefreshed = false;
             }
 
@@ -139,7 +141,7 @@ namespace Demo02.WorldState
                 return PaperKiteStoryStage.Choice;
             }
 
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (runtime == null
                 || !runtime.IsWorldContentStarted(ContentId))
             {
@@ -167,7 +169,7 @@ namespace Demo02.WorldState
             hasRefreshed = true;
             if (stage == PaperKiteStoryStage.Completed)
             {
-                WorldRuntime.Instance?.MarkWorldContentCompleted(
+                Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkWorldContentCompleted(
                     ContentId
                 );
             }
@@ -223,7 +225,7 @@ namespace Demo02.WorldState
 
         public void InteractStoryteller()
         {
-            DialogueController dialogue = DialogueController.Instance;
+            DialogueController dialogue = Demo02.Core.GameServices.Resolve<DialogueController>();
             if (dialogue == null || dialogue.IsOpen)
             {
                 return;
@@ -327,7 +329,7 @@ namespace Demo02.WorldState
                 return;
             }
 
-            DialogueController dialogue = DialogueController.Instance;
+            DialogueController dialogue = Demo02.Core.GameServices.Resolve<DialogueController>();
             if (dialogue == null || dialogue.IsOpen)
             {
                 return;
@@ -382,7 +384,7 @@ namespace Demo02.WorldState
                 return "屋顶航线尚未完成，旧风线还没有完全显露。";
             }
 
-            DialogueController dialogue = DialogueController.Instance;
+            DialogueController dialogue = Demo02.Core.GameServices.Resolve<DialogueController>();
             if (dialogue == null || dialogue.IsOpen || party == null)
             {
                 return string.Empty;
@@ -458,7 +460,7 @@ namespace Demo02.WorldState
                 return;
             }
 
-            WorldRuntime.Instance?.MarkWorldContentStarted(ContentId);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkWorldContentStarted(ContentId);
             GameAudio.PlayConfirm();
             RefreshState(force: true);
         }
@@ -466,7 +468,7 @@ namespace Demo02.WorldState
         private void SecureTrail()
         {
             investigationState?.SetFact(TrailFact);
-            WorldRuntime.Instance?.MarkEncounterCompleted(ReadyId);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkEncounterCompleted(ReadyId);
             GameAudio.PlayConfirm();
             RefreshState(force: true);
         }
@@ -486,8 +488,8 @@ namespace Demo02.WorldState
             investigationState.SetFact(
                 makePublic ? PublicChoiceFact : PrivateChoiceFact
             );
-            InventoryState inventory = InventoryState.Instance != null
-                ? InventoryState.Instance
+            InventoryState inventory = Demo02.Core.GameServices.Resolve<InventoryState>() != null
+                ? Demo02.Core.GameServices.Resolve<InventoryState>()
                 : Demo02.Core.GameServices.Resolve<InventoryState>();
             if (inventory != null
                 && inventory.GetCount(RewardItemId) <= 0)
@@ -496,7 +498,7 @@ namespace Demo02.WorldState
             }
             bool hasReward = inventory != null
                 && inventory.GetCount(RewardItemId) > 0;
-            WorldRuntime.Instance?.MarkWorldContentCompleted(ContentId);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkWorldContentCompleted(ContentId);
             string outcome = makePublic
                 ? "沈阿绫重新入册，获得信物“纸鸢旧信”。"
                 : "名字留在街坊记忆中，获得信物“纸鸢旧信”。";
@@ -549,7 +551,7 @@ namespace Demo02.WorldState
             investigationState?.SetFact(PresentTraceFact);
             investigationState?.SetFact(PastTraceFact);
             investigationState?.SetFact(TrailFact);
-            WorldRuntime.Instance?.MarkEncounterCompleted(ReadyId);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkEncounterCompleted(ReadyId);
             party ??= Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             party?.RestoreActiveCharacter(0);
             RefreshState(force: true);

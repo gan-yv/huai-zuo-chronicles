@@ -31,8 +31,8 @@ namespace Demo02.UI
 
         private void Start()
         {
-            worldRuntime = WorldRuntime.Instance != null
-                ? WorldRuntime.Instance
+            worldRuntime = Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                ? Demo02.Core.GameServices.Resolve<WorldRuntime>()
                 : Demo02.Core.GameServices.Resolve<WorldRuntime>();
         }
 
@@ -88,10 +88,10 @@ namespace Demo02.UI
         {
             bool visible = !string.IsNullOrWhiteSpace(shownAreaName)
                 && !GameplayUiState.IsGameplayBlocked
-                && (InvestigationVisionController.Instance == null
-                    || !InvestigationVisionController.Instance.IsActive)
-                && (ScreenFade.Instance == null
-                    || !ScreenFade.Instance.IsTransitioning);
+                && (Demo02.Core.GameServices.Resolve<InvestigationVisionController>() == null
+                    || !Demo02.Core.GameServices.Resolve<InvestigationVisionController>().IsActive)
+                && (Demo02.Core.GameServices.Resolve<ScreenFade>() == null
+                    || !Demo02.Core.GameServices.Resolve<ScreenFade>().IsTransitioning);
             if (!visible)
             {
                 canvas.enabled = false;

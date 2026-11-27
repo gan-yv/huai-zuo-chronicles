@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -163,6 +164,29 @@ namespace Demo02.Editor
                         "Runtime source relies on mutable GameObject names: "
                         + sourcePath
                     );
+                }
+                string ownerType = Path.GetFileNameWithoutExtension(
+                    sourcePath
+                );
+                foreach (Match instance in Regex.Matches(
+                             source,
+                             @"\b(?<type>[A-Za-z_]\w*)\.Instance\b"
+                         ))
+                {
+                    string referencedType = instance
+                        .Groups["type"]
+                        .Value;
+                    if (!string.Equals(
+                            referencedType,
+                            ownerType,
+                            StringComparison.Ordinal
+                        ))
+                    {
+                        throw new InvalidOperationException(
+                            "Runtime source bypasses GameServices for a "
+                            + $"singleton dependency: {sourcePath}"
+                        );
+                    }
                 }
             }
 

@@ -90,8 +90,8 @@ namespace Demo02.Combat
         private void Update()
         {
             if (Time.timeScale <= 0f
-                || (ScreenFade.Instance != null
-                    && ScreenFade.Instance.IsTransitioning)
+                || (Demo02.Core.GameServices.Resolve<ScreenFade>() != null
+                    && Demo02.Core.GameServices.Resolve<ScreenFade>().IsTransitioning)
                 || GameplayUiState.IsGameplayBlocked)
             {
                 attackQueued = false;

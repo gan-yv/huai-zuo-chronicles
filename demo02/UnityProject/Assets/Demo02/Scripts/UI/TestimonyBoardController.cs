@@ -32,6 +32,7 @@ namespace Demo02.UI
             }
 
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
         }
 
         private void Start()
@@ -163,6 +164,7 @@ namespace Demo02.UI
             GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }
@@ -655,8 +657,8 @@ namespace Demo02.UI
         private bool IsBlockedByOtherUi()
         {
             return GameplayUiState.HasOpenModalExcept(this)
-                || (ScreenFade.Instance != null
-                    && ScreenFade.Instance.IsTransitioning);
+                || (Demo02.Core.GameServices.Resolve<ScreenFade>() != null
+                    && Demo02.Core.GameServices.Resolve<ScreenFade>().IsTransitioning);
         }
 
         private void PreparePreview()

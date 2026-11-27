@@ -20,8 +20,8 @@ namespace Demo02.WorldState
         public bool CanInteract =>
             spawnPoint != null
             && spawnPoint.IsFastTravelAnchor
-            && WorldRuntime.Instance != null
-            && !WorldRuntime.Instance.IsAnchorUnlocked(
+            && Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+            && !Demo02.Core.GameServices.Resolve<WorldRuntime>().IsAnchorUnlocked(
                 spawnPoint.SpawnId
             );
 
@@ -48,7 +48,7 @@ namespace Demo02.WorldState
                 return "锚点尚未登记。";
             }
 
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (runtime == null)
             {
                 return "世界状态尚未就绪。";
@@ -63,8 +63,8 @@ namespace Demo02.WorldState
         public void RefreshVisual()
         {
             bool unlocked = spawnPoint != null
-                && WorldRuntime.Instance != null
-                && WorldRuntime.Instance.IsAnchorUnlocked(
+                && Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                && Demo02.Core.GameServices.Resolve<WorldRuntime>().IsAnchorUnlocked(
                     spawnPoint.SpawnId
                 );
             markerTint ??= GetComponentInChildren<ColorTint>(true);

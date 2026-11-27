@@ -25,13 +25,13 @@ namespace Demo02.WorldState
 
         public bool CanUseLift =>
             !active
-            && WorldRuntime.Instance != null
-            && !WorldRuntime.Instance.IsWorldContentCompleted(contentId);
+            && Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+            && !Demo02.Core.GameServices.Resolve<WorldRuntime>().IsWorldContentCompleted(contentId);
 
         public bool IsActive => active;
         public bool IsCompleted =>
-            WorldRuntime.Instance != null
-            && WorldRuntime.Instance.IsWorldContentCompleted(contentId);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+            && Demo02.Core.GameServices.Resolve<WorldRuntime>().IsWorldContentCompleted(contentId);
 
         public void Configure(
             string id,
@@ -54,7 +54,7 @@ namespace Demo02.WorldState
             checkpointIndex = 0;
             startedAt = Time.time;
             liftGraceUntil = startedAt + 1.25f;
-            WorldRuntime.Instance?.MarkWorldContentStarted(contentId);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkWorldContentStarted(contentId);
             PlayerPartyController party =
                 Demo02.Core.GameServices.Resolve<PlayerPartyController>();
             Transform player = party != null ? party.ActiveCharacter : null;
@@ -68,8 +68,8 @@ namespace Demo02.WorldState
         {
             if (!active)
             {
-                if (WorldRuntime.Instance == null
-                    || WorldRuntime.Instance.IsWorldContentCompleted(
+                if (Demo02.Core.GameServices.Resolve<WorldRuntime>() == null
+                    || Demo02.Core.GameServices.Resolve<WorldRuntime>().IsWorldContentCompleted(
                         contentId
                     ))
                 {
@@ -133,9 +133,9 @@ namespace Demo02.WorldState
             }
 
             active = false;
-            WorldRuntime.Instance?.MarkWorldContentCompleted(contentId);
-            InventoryState inventory = InventoryState.Instance != null
-                ? InventoryState.Instance
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkWorldContentCompleted(contentId);
+            InventoryState inventory = Demo02.Core.GameServices.Resolve<InventoryState>() != null
+                ? Demo02.Core.GameServices.Resolve<InventoryState>()
                 : Demo02.Core.GameServices.Resolve<InventoryState>();
             inventory?.AddItem("ginger-tea", 2);
             finishUntil = Time.unscaledTime + 4f;

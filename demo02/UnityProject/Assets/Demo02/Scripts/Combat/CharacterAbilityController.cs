@@ -278,8 +278,8 @@ namespace Demo02.Combat
         private static bool CanReadInput()
         {
             return Time.timeScale > 0f
-                && (ScreenFade.Instance == null
-                    || !ScreenFade.Instance.IsTransitioning)
+                && (Demo02.Core.GameServices.Resolve<ScreenFade>() == null
+                    || !Demo02.Core.GameServices.Resolve<ScreenFade>().IsTransitioning)
                 && !GameplayUiState.IsGameplayBlocked;
         }
     }

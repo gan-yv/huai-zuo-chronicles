@@ -19,6 +19,7 @@ namespace Demo02.Player
         private void Awake()
         {
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
         }
 
         private void Start()
@@ -39,13 +40,14 @@ namespace Demo02.Player
         {
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }
 
         public void Refresh()
         {
-            WorldRuntime runtime = WorldRuntime.Instance;
+            WorldRuntime runtime = Demo02.Core.GameServices.Resolve<WorldRuntime>();
             if (runtime == null)
             {
                 return;

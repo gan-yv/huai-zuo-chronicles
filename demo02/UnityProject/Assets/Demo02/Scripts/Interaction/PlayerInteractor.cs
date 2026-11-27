@@ -23,15 +23,15 @@ namespace Demo02.Interaction
         {
             if (Time.timeScale <= 0f
                 || GameplayUiState.IsGameplayBlocked
-                || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
+                || (Demo02.Core.GameServices.Resolve<ScreenFade>() != null && Demo02.Core.GameServices.Resolve<ScreenFade>().IsTransitioning))
             {
                 ClearInteraction();
                 return;
             }
 
-            if (DialogueController.Instance != null
-                && (DialogueController.Instance.IsOpen
-                    || DialogueController.Instance.LastClosedFrame == Time.frameCount))
+            if (Demo02.Core.GameServices.Resolve<DialogueController>() != null
+                && (Demo02.Core.GameServices.Resolve<DialogueController>().IsOpen
+                    || Demo02.Core.GameServices.Resolve<DialogueController>().LastClosedFrame == Time.frameCount))
             {
                 ClearInteraction();
                 return;
@@ -72,7 +72,7 @@ namespace Demo02.Interaction
         private void OnGUI()
         {
             if (GameplayUiState.IsGameplayBlocked
-                || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
+                || (Demo02.Core.GameServices.Resolve<ScreenFade>() != null && Demo02.Core.GameServices.Resolve<ScreenFade>().IsTransitioning))
             {
                 return;
             }

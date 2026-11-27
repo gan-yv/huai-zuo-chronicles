@@ -69,8 +69,8 @@ namespace Demo02.UI
             encounterState = Demo02.Core.GameServices.Resolve<EncounterState>();
             timeLayerController =
                 Demo02.Core.GameServices.Resolve<TimeLayerController>();
-            worldRuntime = WorldRuntime.Instance != null
-                ? WorldRuntime.Instance
+            worldRuntime = Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                ? Demo02.Core.GameServices.Resolve<WorldRuntime>()
                 : Demo02.Core.GameServices.Resolve<WorldRuntime>();
             previousAliveEnemies = encounterState != null
                 ? encounterState.AliveEnemyCount
@@ -371,20 +371,20 @@ namespace Demo02.UI
                 root,
                 1,
                 "MapButton",
-                () => WorldMapController.Instance?.ToggleMap()
+                () => Demo02.Core.GameServices.Resolve<WorldMapController>()?.ToggleMap()
             );
             CreateUtilityButton(
                 root,
                 2,
                 "JournalButton",
-                () => InvestigationJournalController.Instance
+                () => Demo02.Core.GameServices.Resolve<InvestigationJournalController>()
                     ?.ToggleJournal()
             );
             CreateUtilityButton(
                 root,
                 3,
                 "InventoryButton",
-                () => InventoryController.Instance
+                () => Demo02.Core.GameServices.Resolve<InventoryController>()
                     ?.ToggleInventory()
             );
         }

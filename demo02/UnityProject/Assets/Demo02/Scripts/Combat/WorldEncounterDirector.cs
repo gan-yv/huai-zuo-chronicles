@@ -21,12 +21,14 @@ namespace Demo02.Combat
             }
 
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
         }
 
         private void OnDestroy()
         {
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }

@@ -88,7 +88,7 @@ namespace Demo02.Interaction
 
         public string Interact(PlayerInteractor interactor)
         {
-            DialogueController dialogue = DialogueController.Instance;
+            DialogueController dialogue = Demo02.Core.GameServices.Resolve<DialogueController>();
             if (companion == null
                 || companion.IsInCombat
                 || dialogue == null

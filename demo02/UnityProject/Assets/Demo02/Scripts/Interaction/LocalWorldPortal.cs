@@ -85,7 +85,7 @@ namespace Demo02.Interaction
                 controller.enabled = true;
             }
 
-            WorldRuntime.Instance?.SetCurrentArea(areaId, areaName);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.SetCurrentArea(areaId, areaName);
             message = $"抵达{areaName}。";
             return true;
         }

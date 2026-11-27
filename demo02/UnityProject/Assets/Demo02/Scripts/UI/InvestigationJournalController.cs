@@ -28,6 +28,7 @@ namespace Demo02.UI
             }
 
             Instance = this;
+            Demo02.Core.GameServices.Register(this);
         }
 
         private void Start()
@@ -63,7 +64,7 @@ namespace Demo02.UI
             if (!Demo02Input.JournalPressed
                 || GameplayUiState.HasOpenModalExcept(this)
                 || Time.timeScale <= 0f
-                || (ScreenFade.Instance != null && ScreenFade.Instance.IsTransitioning))
+                || (Demo02.Core.GameServices.Resolve<ScreenFade>() != null && Demo02.Core.GameServices.Resolve<ScreenFade>().IsTransitioning))
             {
                 return;
             }
@@ -113,6 +114,7 @@ namespace Demo02.UI
             GameplayUiState.UnregisterModal(this);
             if (Instance == this)
             {
+                Demo02.Core.GameServices.Unregister(this);
                 Instance = null;
             }
         }
@@ -527,12 +529,12 @@ namespace Demo02.UI
                     + $"/{investigationState.RequiredTimeAnchorCount}"
                     + $"\n残留回声：{investigationState.DiscoveredEchoCount}/3"
                     + GetStoryFactSummary(investigationState.CaseContent)
-                    + (WorldContentTracker.Instance != null
-                        ? WorldContentTracker.Instance.GetJournalSummary()
+                    + (Demo02.Core.GameServices.Resolve<WorldContentTracker>() != null
+                        ? Demo02.Core.GameServices.Resolve<WorldContentTracker>().GetJournalSummary()
                         : string.Empty)
                     + "\n"
-                    + (ContinuationLoadout.Instance != null
-                        ? ContinuationLoadout.Instance.GetJournalSummary()
+                    + (Demo02.Core.GameServices.Resolve<ContinuationLoadout>() != null
+                        ? Demo02.Core.GameServices.Resolve<ContinuationLoadout>().GetJournalSummary()
                         : "续式槽位：未初始化")
                     + $"\n调查立场：{ChapterCopy.GetStanceLabel(investigationState)}"
                     + $"\n证据去向：{ChapterCopy.GetPlanLabel(investigationState)}"

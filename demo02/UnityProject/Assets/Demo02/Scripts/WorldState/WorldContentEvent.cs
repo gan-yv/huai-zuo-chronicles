@@ -40,14 +40,14 @@ namespace Demo02.WorldState
             rewardItemId = itemId;
             rewardAmount = Mathf.Max(1, amount);
             rewardText = completionText;
-            completed = WorldRuntime.Instance != null
-                && WorldRuntime.Instance.IsWorldContentCompleted(contentId);
+            completed = Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                && Demo02.Core.GameServices.Resolve<WorldRuntime>().IsWorldContentCompleted(contentId);
         }
 
         private void Start()
         {
-            completed = WorldRuntime.Instance != null
-                && WorldRuntime.Instance.IsWorldContentCompleted(contentId);
+            completed = Demo02.Core.GameServices.Resolve<WorldRuntime>() != null
+                && Demo02.Core.GameServices.Resolve<WorldRuntime>().IsWorldContentCompleted(contentId);
         }
 
         public bool TryCompleteReward(out string message)
@@ -63,8 +63,8 @@ namespace Demo02.WorldState
                 return false;
             }
 
-            InventoryState inventory = InventoryState.Instance != null
-                ? InventoryState.Instance
+            InventoryState inventory = Demo02.Core.GameServices.Resolve<InventoryState>() != null
+                ? Demo02.Core.GameServices.Resolve<InventoryState>()
                 : Demo02.Core.GameServices.Resolve<InventoryState>();
             if (inventory != null
                 && !string.IsNullOrWhiteSpace(rewardItemId)
@@ -75,7 +75,7 @@ namespace Demo02.WorldState
             }
 
             completed = true;
-            WorldRuntime.Instance?.MarkWorldContentCompleted(contentId);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkWorldContentCompleted(contentId);
             GameAudio.PlayConfirm();
             message = rewardText;
             LastCompletedText = $"{displayName} · {rewardText}";
@@ -85,7 +85,7 @@ namespace Demo02.WorldState
 
         public void Discover()
         {
-            WorldRuntime.Instance?.MarkWorldContentStarted(contentId);
+            Demo02.Core.GameServices.Resolve<WorldRuntime>()?.MarkWorldContentStarted(contentId);
         }
 
         public static void AnnounceCompletion(
