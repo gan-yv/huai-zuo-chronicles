@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Latest playable release
+    url: https://github.com/gan-yv/huai-zuo-chronicles/releases/latest
+    about: Download the latest release or read version-specific notes.
+  - name: Architecture and maintenance docs
+    url: https://github.com/gan-yv/huai-zuo-chronicles/blob/main/MAINTENANCE.md
+    about: Review project maintenance, testing and release requirements.

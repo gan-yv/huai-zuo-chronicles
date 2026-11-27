@@ -1,0 +1,24 @@
+name: Repository Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate repository metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validate versions, links and architecture boundaries
+        shell: pwsh
+        run: ./demo02/tools/validation/validate-repository.ps1

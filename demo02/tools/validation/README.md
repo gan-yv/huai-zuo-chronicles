@@ -1,11 +1,16 @@
-# validation
+# Repository validation
 
-后续在这里添加工程校验脚本，优先覆盖：
+Run from the repository root:
 
-- 必需目录和文件是否存在。
-- Markdown 相对链接是否有效。
-- Unity 运行时资源是否误放源文件。
-- 构建产物、生成目录或秘密文件是否被 Git 跟踪。
-- 文件命名是否符合规范。
+```powershell
+pwsh ./demo02/tools/validation/validate-repository.ps1
+```
 
-校验脚本失败时必须阻止合并，不用人工目测代替。
+The validation covers:
+
+- `version.json`, ProjectSettings, README and CHANGELOG consistency.
+- Runtime references to editor code or direct process argument reads.
+- Required runtime, editor and EditMode test assemblies.
+- Broken local Markdown links.
+
+GitHub Actions runs the same script for changes targeting `main`.

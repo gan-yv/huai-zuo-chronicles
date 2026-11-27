@@ -1,0 +1,41 @@
+name: Feature request
+description: Suggest a gameplay, content, tooling or accessibility improvement.
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What player or developer problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Gameplay
+        - Narrative and content
+        - Combat and AI
+        - UI and accessibility
+        - Engineering architecture
+        - Content pipeline and tooling
+        - Build, testing and release
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks or migration impact

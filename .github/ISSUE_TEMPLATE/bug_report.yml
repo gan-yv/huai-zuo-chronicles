@@ -1,0 +1,65 @@
+name: Bug report
+description: Report a reproducible gameplay, build or editor problem.
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the project. Please include enough detail to reproduce the issue.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Release tag or commit where the issue occurs.
+      placeholder: portfolio-v1.74.2
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Gameplay
+        - Narrative
+        - Combat
+        - UI and input
+        - Save and load
+        - World streaming
+        - Editor and content pipeline
+        - Build and platform
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Start from Boot...
+        2. Travel to...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, GPU, resolution, input device and build source.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      render: text

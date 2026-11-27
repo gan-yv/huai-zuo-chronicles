@@ -13,7 +13,7 @@
 
 | 项目 | 内容 |
 |---|---|
-| 当前版本 | **v1.74.2** |
+| 当前版本 | **v1.74.3** |
 | 引擎 | Unity 6000.5.7f1、Universal Render Pipeline |
 | 语言 | C# |
 | 目标平台 | Windows x64 |
@@ -47,7 +47,7 @@
 
 ## 当前可玩版本
 
-最新版本：[**portfolio-v1.74.2**](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.74.2)
+最新版本：[**portfolio-v1.74.3**](https://github.com/gan-yv/huai-zuo-chronicles/releases/tag/portfolio-v1.74.3)
 
 - 所有历史版本及逐版本更新说明：[GitHub Releases](https://github.com/gan-yv/huai-zuo-chronicles/releases)
 - 带 Windows 构建附件的版本：以对应 Release 的 Assets 为准
